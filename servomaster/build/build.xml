@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.26 2004-10-13 03:00:40 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.27 2004-10-13 07:30:13 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -306,8 +306,11 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
-
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${javax-usb.jar}"/>
+            </classpath>
+        </javac>
     </target>
     
     <target name="test" depends="model">

@@ -75,7 +75,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.5 2001-09-02 06:36:07 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.6 2001-09-03 08:29:23 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -568,7 +568,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     /**
      * Adjust the initial position.
      */
-    public synchronized void setTrim(int trim) throws IOException {
+    public synchronized void setHeader(int trim) throws IOException {
     
         if ( portName == null ) {
         
@@ -585,6 +585,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
         // VT: FIXME: account for the pulse length?
         
         trim |= 0x60;
+        
+        System.err.println("Trim: " + trim + ": 0x" + Integer.toHexString(trim));
         
         send((byte)trim);
     }
@@ -802,14 +804,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
             throw new Error("Not Implemented");
         }
         
-        public void setTrim(int trim) {
+        public void setTrim(int trim) throws IOException {
         
             if ( !enabled ) {
             
                 throw new IllegalStateException("Not enabled");
             }
         
-            throw new Error("Not Implemented");
+            int position = getActualPosition();
+            setHeader(trim);
+            setActualPosition(position);
+            
+            //System.err.println("Trim: " + trim + ": ignored");
         }
         
         public int getPosition() {

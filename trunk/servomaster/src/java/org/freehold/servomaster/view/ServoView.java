@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.3 2001-09-02 06:13:45 vtt Exp $
+ * @version $Id: ServoView.java,v 1.4 2001-09-02 06:36:07 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -283,7 +283,9 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      */
     public void positionChanged(Servo source, int position) {
     
-        System.err.println("Position requested: " + position);
+        // This notification doesn't have to be visibly reflected
+    
+        //System.err.println("Position requested: " + position);
     }
     
     /**

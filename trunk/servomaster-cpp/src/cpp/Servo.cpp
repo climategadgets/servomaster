@@ -1,4 +1,4 @@
-// $Id: Servo.cpp,v 1.4 2002-09-13 08:37:53 vtt Exp $
+// $Id: Servo.cpp,v 1.5 2002-09-14 03:32:56 vtt Exp $
 #include <Servo.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@ namespace servomaster {
         return servoController;
     }
     
-    void Servo::attach(TransitionController *transitionController) {
+    TransitionController *Servo::attach(TransitionController *transitionController) {
     
         // VT: FIXME: Get the synchronization lock
         
@@ -52,7 +52,11 @@ namespace servomaster {
             s = s->getTarget();
         }
         
+        TransitionController *old = this->transitionController;
+        
         this->transitionController = transitionController;
+        
+        return old;
     }
     
     TransitionController *Servo::getTransitionController() {

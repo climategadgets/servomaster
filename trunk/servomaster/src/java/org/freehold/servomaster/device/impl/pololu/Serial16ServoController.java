@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.model.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.10 2005-02-03 06:51:49 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.11 2005-02-03 07:20:41 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -151,14 +151,11 @@ public class Serial16ServoController extends AbstractSerialServoController {
                 // setActualPosition() calls the controller's synchronized methods
                 // and the deadlock can occur if *this* method was made synchronized
                 
-                //send(renderPositionCommand(id, requestedPosition));
+                send(PacketBuilder.setAbsolutePosition((byte)id, units));
                 this.actualPosition = position;
             }
             
             actualPositionChanged();
-            
-            // FIXME: Again, this stupid problem I forgot the solution of:
-            // can't access the outer class. Oh well.
             
             Serial16ServoController.this.touch();
         }

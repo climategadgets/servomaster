@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.17 2002-01-20 06:33:44 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.18 2002-01-20 06:48:55 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -827,8 +827,25 @@ public class FT639ServoController implements ServoController, FT639Constants {
         protected synchronized void setActualPosition(double position) throws IOException {
         
             checkPosition(position);
+            
+            // Let's see if we really have to do it
+            
+            int requestedPosition = double2int(position);
+            
+            if ( double2int(this.actualPosition) == requestedPosition ) {
+            
+                // Nah, we don't have to bother.
+                
+                // Chances are that if we're going to go ahead with it, the
+                // time spent on transmitting the control signal is going to
+                // be much more than spent in double2int().
+                
+                //System.err.println("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
+                return;
+            }
+            
             setActiveMode();
-            send(renderPositionCommand(id, double2int(position)));
+            send(renderPositionCommand(id, requestedPosition));
             this.actualPosition = position;
             actualPositionChanged();
             

@@ -33,7 +33,7 @@ import org.freehold.servomaster.device.model.transform.Reverser;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.9 2002-01-01 00:31:53 vtt Exp $
+ * @version $Id: ServoView.java,v 1.10 2002-01-01 00:36:26 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -154,8 +154,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         try {
         
             this.precision = controller.getMetaData().getPrecision();
-            
-            System.out.println("Controller precision for servo #" + servoName + " is " + precision);
         
         } catch ( UnsupportedOperationException ex ) {
         

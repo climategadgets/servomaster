@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.7 2005-01-14 02:59:20 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.8 2005-01-14 03:27:13 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -224,7 +224,7 @@ abstract public class AbstractServoController implements ServoController {
 
     public Meta getMeta() {
     
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This driver class doesn't provide metadata (most probably oversight on developer's part)");
     }
     
     /**

@@ -10,18 +10,30 @@
     
         <h1>ServoMaster: A Dream About The Ideal Servo Controller</h1>
     
+        <font size="-1"><i>As the work continues, some of the ideas below
+        will be implemented.  As soon as that happens, the corresponding
+        parts of the text will be marked <font
+        color="blue">blue</font>.</i></font>
+        
+        <p>
+        
         An ideal servo controller should be able to do at least this:
         
         <ul>
             
             <li> Report the status.
             
-            <li> Support the capabilities discovery. Of course, on the
-                 hardware level the servo can't really tell much about
-                 itself, but the abstraction should support it.
+            <li> <font color="blue">Support the capabilities
+                 discovery.</font> Of course, on the hardware level the
+                 servo can't really tell much about itself, but the
+                 abstraction should support it.
                  
             <li> Implication: a database of servos in existence would not
                  take much space, but will be very useful.
+                 
+            <li> Complication: the servo speed and torque changes as the
+                 voltage changes, so coming up with a uniform description
+                 for this dependency is going to be tricky.
             
             <li> It should be possible to control the parameters for each
                  servo separately (in other words, the servo abstraction
@@ -35,18 +47,20 @@
                  used. Implied: range should be included into capabilities
                  discovery.
                  
-            <li> It should be possible to preset the servo center. The
-                 actual implementation center may be different from position
-                 128 due to the limits described above.
+            <li> It should be possible to preset the servo center position. 
+                 The actual implementation center may be different from
+                 position 128 (assuming the max is 255) due to the limits
+                 described above.
                  
-            <li> The servo interface shouldn't realy accept the values from
-                 0 to 255 for the servo position, but rather 0.0 to 1.0
-                 (extreme left to extreme right). The reason is, different
-                 controllers have different value ranges - some operate from
-                 0 to 255, some from 0 to 254, some use the high bit as the
-                 direction indicator and the rest as position. Implied:
-                 precision is different. Implied: controller precision
-                 should be included into capabilities discovery.
+            <li> <font color="blue">The servo interface shouldn't realy
+                 accept the values from 0 to 255 for the servo position, but
+                 rather 0.0 to 1.0 (extreme left to extreme right). The
+                 reason is, different controllers have different value
+                 ranges - some operate from 0 to 255, some from 0 to 254,
+                 some use the high bit as the direction indicator and the
+                 rest as position. Implied: precision is different. Implied:
+                 controller precision should be included into capabilities
+                 discovery.</font>
                  
             <li> Consequence: why not allow to set the arbitrary left,
                  center and right border, like it is possible to do with the
@@ -58,7 +72,7 @@
                  movement, as well as applications where the natural input
                  value range differs from 0...1 (for example, steering
                  wheels and rudders). This abstraction shouldn't be really a
-                 part of the servo astraction, but rather a module you can
+                 part of the servo abstraction, but rather a module you can
                  plug the servo into.
             
             <li> Inverting the coordinate polarity to reverse the servo is

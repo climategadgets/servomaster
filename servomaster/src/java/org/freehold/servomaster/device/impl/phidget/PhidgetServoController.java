@@ -23,9 +23,9 @@ import usb.core.Interface;
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
 import org.freehold.servomaster.device.model.Servo;
-import org.freehold.servomaster.device.model.ServoMetaData;
+import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.ServoControllerMetaData;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
 
 import org.freehold.servomaster.device.impl.phidget.Firmware;
@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.12 2002-09-20 02:28:57 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.13 2002-09-30 00:31:40 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -151,13 +151,8 @@ public class PhidgetServoController extends AbstractServoController {
      * @exception UnsupportedOperationException if the device revision is
      * not supported by this driver.
      */
-    public synchronized void init(String portName) throws IOException {
+    protected  void doInit(String portName) throws IOException {
     
-        if ( this.portName != null ) {
-        
-            throw new IllegalStateException("Already initialized");
-        }
-        
         try {
         
             thePhidgetServo = findUSB(portName);
@@ -181,6 +176,19 @@ public class PhidgetServoController extends AbstractServoController {
             DeviceDescriptor dd = thePhidgetServo.getDeviceDescriptor();
             String serial = dd.getSerial(defaultLanguage);
             String product = Integer.toHexString(dd.getProductId());
+            
+            // VT: NOTE: Serial number can be null. At least it
+            // is with the current firmware release for
+            // AdvancedServo. The implication is that there can
+            // be just one instance of AdvancedServo on the
+            // system.
+            
+            if ( serial == null ) {
+            
+                // FIXME: this is a hack, but unavoidable one
+                
+                serial = "null";
+            }
             
             protocolHandler = (ProtocolHandler)protocolHandlerMap.get(product);
             
@@ -237,9 +245,11 @@ public class PhidgetServoController extends AbstractServoController {
         }
     }
     
-    public ServoControllerMetaData getMetaData() {
+    public synchronized Meta getMeta() {
     
-        return new PhidgetServoControllerMetaData();
+        checkInit();
+    
+        return protocolHandler.getMeta();
     }
 
     public String getPort() {
@@ -251,7 +261,13 @@ public class PhidgetServoController extends AbstractServoController {
     
     protected void checkInit() {
     
-        if ( portName == null ) {
+        // VT: FIXME: AdvancedServo hack. Under normal circumstances, if the
+        // portName is null, the controller is not considered initialized. 
+        // However, in this case the portName is not easily available, so
+        // we'll settle for protocolHandler, until Chester fixes the serial
+        // number or I get time to extract it from the microcontroller.
+    
+        if ( protocolHandler == null ) {
         
             throw new IllegalStateException("Not initialized");
         }
@@ -306,7 +322,7 @@ public class PhidgetServoController extends AbstractServoController {
         // VT: NOTE: There is no sanity checking, I expect the author of the
         // calling code to be sane - this is a protected method
     
-        return new PhidgetServo(this, id);
+        return protocolHandler.createServo(this, id);
     }
 
     /**
@@ -493,9 +509,21 @@ public class PhidgetServoController extends AbstractServoController {
                     // should appear as a device with a different product ID
                     // by now. If it is still a SoftPhidget, we've failed.
                     
+                    // The USB device handle for the device which used to be
+                    // a SoftPhidget is now stale, so we have to reset the
+                    // enumeration to the root device. Since we're adding
+                    // the devices found to the *set*, there's nothing to
+                    // worry about - we will just lose some time, but there
+                    // will be no duplicates.
+                    
+                    // And since we're doing the job all over again starting
+                    // from this method's entry point, we'll just return
+                    // afterwards.
+                    
                     try {
                     
-                        find(portName, child, found, false);
+                        find(portName, root, found, false);
+                        return;
 
                     } catch ( BootException bex2 ) {
                     
@@ -557,7 +585,9 @@ public class PhidgetServoController extends AbstractServoController {
                         
                         // VT: NOTE: Serial number can be null. At least it
                         // is with the current firmware release for
-                        // AdvancedServo
+                        // AdvancedServo. The implication is that there can
+                        // be just one instance of AdvancedServo on the
+                        // system.
                         
                         if ( serial == null ) {
                         
@@ -646,122 +676,6 @@ public class PhidgetServoController extends AbstractServoController {
         
         }
     }
-    
-    protected class PhidgetServoControllerMetaData implements ServoControllerMetaData {
-    
-        public String getManufacturerURL() {
-        
-            return "http://www.cpsc.ucalgary.ca/grouplab/phidgets/phidget-servo/phidget-servo.html";
-        }
-        
-        public String getManufacturerName() {
-        
-            // VT: FIXME: Get the manufacturer from the USB device?
-            
-            return "GLAB Chester";
-        }
-        
-        public String getModelName() {
-        
-            // VT: FIXME: it may be UniServo, QuadServo, AdvancedServo
-            
-            return "PhidgetServo";
-        }
-        
-        public int getMaxServos() {
-        
-            return protocolHandler.getServoCount();
-        }
-        
-        public boolean supportsSilentMode() {
-        
-            // VT: FIXME: Verify if AdvancedServo supports this
-            
-            return true;
-        }
-        
-        public int getPrecision() {
-        
-            // FIXME: This has to be determined. Since the controller
-            // accepts the raw values in microseconds, and the usable range
-            // is at least 1000us to 2000us and quite possibly beyond, it is
-            // AT LEAST this much.
-            
-            return 1000;
-        }
-        
-        public int getBandwidth() {
-        
-            // FIXME
-            
-            return (2400 / 8) / 2;
-        }
-    }
-    
-    public class PhidgetServo extends AbstractServo {
-    
-        private int id;
-        
-        protected PhidgetServo(ServoController sc, int id) throws IOException {
-        
-            super(sc, null);
-            
-            this.id = id;
-        }
-        
-        public ServoMetaData[] getMetaData() {
-        
-            // FIXME
-            throw new UnsupportedOperationException();
-        }
-
-        public String getName() {
-        
-            return Integer.toString(id);
-        }
-        
-        protected void setActualPosition(double position) throws IOException {
-        
-            checkInit();
-            checkPosition(position);
-            
-            protocolHandler.setActualPosition(id, position);
-            
-            this.actualPosition = position;
-            actualPositionChanged();
-        }
-        
-        public void setRange(int range) {
-        
-            throw new UnsupportedOperationException();
-        }
-        
-        public void setRange(int min_pulse, int max_pulse) throws IOException {
-        
-            if ( min_pulse >= max_pulse ) {
-            
-                throw new IllegalArgumentException("Inverted pulse length values: min >= max ("
-                	+ min_pulse
-                	+ " >= "
-                	+ max_pulse
-                	+ ")");
-            }
-            
-            if ( min_pulse < 150 ) {
-            
-                throw new IllegalArgumentException("Unreasonably short min_pulse: " + min_pulse + ", 150 recommended");
-            }
-
-            if ( max_pulse > 2500 ) {
-            
-                throw new IllegalArgumentException("Unreasonably long max_pulse: " + max_pulse + ", 2500 recommended");
-            }
-            
-            protocolHandler.setRange(id, min_pulse, max_pulse);
-            
-            setActualPosition(actualPosition);
-        }
-    }
 
     protected SilentProxy createSilentProxy() {
     
@@ -824,6 +738,33 @@ public class PhidgetServoController extends AbstractServoController {
     protected abstract class ProtocolHandler {
     
         /**
+         * Controller metadata.
+         */
+        private final Meta meta;
+        
+        ProtocolHandler() {
+        
+            meta = createMeta();
+        }
+        
+        abstract protected Meta createMeta();
+        
+        Meta getMeta() {
+        
+            return meta;
+        }
+        
+        /**
+         * Get the device model name.
+         *
+         * This method is here because the protocol handlers are create
+         * before the actual devices are found. Ideally, the model name
+         * should be retrieved from the USB device (and possibly, it will be
+         * done so later), but so far this will do.
+         */
+        abstract protected String getModelName();
+        
+        /**
          * Reset the controller.
          */
         abstract public void reset() throws IOException;
@@ -850,11 +791,82 @@ public class PhidgetServoController extends AbstractServoController {
          */
         abstract public void silence() throws IOException;
         
+        abstract public Servo createServo(ServoController sc, int id) throws IOException;
+        
         /**
-         * Set the pulse range.
+         * Base class representing all the common (or default) features and
+         * properties of the Phidgets family of servo controllers.
          */
-        abstract public void setRange(int id, int min_pulse, int max_pulse);
+        protected class PhidgetMeta extends AbstractMeta {
+        
+            public PhidgetMeta() {
+            
+                properties.put("manufacturer/name", "Phidgets, Inc.");
+                properties.put("manufacturer/URL", "http://www.phidgets.com/");
+                properties.put("manufacturer/model", getModelName());
+                properties.put("controller/maxservos", Integer.toString(getServoCount()));
+            }
+        }
 
+        abstract public class PhidgetServo extends AbstractServo {
+        
+            /**
+             * Servo number.
+             */
+            protected int id;
+            
+            /**
+             * Servo metadata.
+             */
+            private Meta meta;
+            
+            protected PhidgetServo(ServoController sc, int id) throws IOException {
+            
+                super(sc, null);
+                
+                this.id = id;
+                this.meta = createServoMeta();
+            }
+            
+            public Meta getMeta() {
+            
+                return meta;
+            }
+            
+            /**
+             * Template method to create the instance of the metadata for
+             * the servo.
+             *
+             * @return Class specific metadata instance.
+             */
+            abstract protected Meta createServoMeta();
+
+            public String getName() {
+            
+                return Integer.toString(id);
+            }
+            
+            protected void setActualPosition(double position) throws IOException {
+            
+                checkInit();
+                checkPosition(position);
+                
+                protocolHandler.setActualPosition(id, position);
+                
+                this.actualPosition = position;
+                actualPositionChanged();
+            }
+            
+            protected class PhidgetServoMeta extends AbstractMeta {
+            
+                public PhidgetServoMeta() {
+                
+                    // VT: FIXME
+                    
+                    properties.put("servo/precision", "1500");
+                }
+            }
+        }
     }
     
     /**
@@ -866,16 +878,6 @@ public class PhidgetServoController extends AbstractServoController {
          * Current servo position in device coordinates.
          */
         protected int servoPosition[] = new int[4];
-        
-        /**
-         * Minimum pulse lengths for the servos.
-         */
-        protected int min_pulse[] = new int[4];
-         
-        /**
-         * Maximum pulse lenghts for the servos.
-         */
-        protected int max_pulse[] = new int[4];
         
         /**
          * 'sent' flag.
@@ -894,18 +896,12 @@ public class PhidgetServoController extends AbstractServoController {
          * Byte buffer to compose the packet into.
          *
          * This buffer is not thread safe, but the {@link
-         * PhidgetServoController#send invocation context} makes sure it
-         * never gets corrupted.
+         * #send invocation context} makes sure it never gets corrupted.
          */
         protected byte buffer[] = new byte[6];
         
         ProtocolHandler003() {
         
-            for ( int id = 0; id < 4; id++ ) {
-            
-                min_pulse[id] = 1000;
-                max_pulse[id] = 2000;
-            }
         }
         
         public void reset() throws IOException {
@@ -948,7 +944,9 @@ public class PhidgetServoController extends AbstractServoController {
         
             // Tough stuff, we're dealing with timing now...
             
-            int microseconds = (int)(min_pulse[id] + (position * (max_pulse[id] - min_pulse[id])));
+            PhidgetServo003 servo = (PhidgetServo003)servoSet[id];
+            
+            int microseconds = (int)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
             
             // VT: NOTE: We need to know all the servo's positions because
             // they get transmitted in one packet
@@ -1054,6 +1052,7 @@ public class PhidgetServoController extends AbstractServoController {
             
             thePhidgetServo.control(message);
         }
+
         /**
          * Remember the servo timing and clear the "sent" flag.
          *
@@ -1076,11 +1075,106 @@ public class PhidgetServoController extends AbstractServoController {
             
             send(new byte[6]);
         }
+
+        protected Meta createMeta() {
         
-        public void setRange(int id, int min_pulse, int max_pulse) {
+            return new PhidgetMeta003();
+        }
         
-            this.min_pulse[id] = min_pulse;
-            this.max_pulse[id] = max_pulse;
+        public Servo createServo(ServoController sc, int id) throws IOException {
+        
+            return new PhidgetServo003(sc, id);
+        }
+        
+        protected class PhidgetMeta003 extends PhidgetMeta {
+        
+            PhidgetMeta003() {
+            
+                features.put("controller/silent", new Boolean(true));
+                features.put("controller/protocol/USB", new Boolean(true));
+                
+                // VT: FIXME
+                
+                properties.put("controller/bandwidth", Integer.toString((2400 / 8) / 2));
+                properties.put("controller/precision", "1500");
+                
+                // Silent timeout is five seconds
+
+                properties.put("controller/silent", "5000");
+
+                // Milliseconds are default servo range units for v3
+                // protocol
+                
+                properties.put("servo/range/units", "\u03BCs");
+                
+                // Default range is 500us to 2000us
+                
+                properties.put("servo/range/min", "500");
+                properties.put("servo/range/max", "2000");
+            }
+        }
+        
+        public class PhidgetServo003 extends PhidgetServo {
+        
+            int min_pulse = 500;
+            int max_pulse = 2000;
+        
+            public PhidgetServo003(ServoController sc, int id) throws IOException {
+            
+                super(sc, id);
+            }
+            
+            protected Meta createServoMeta() {
+            
+                return new PhidgetServoMeta003();
+            }
+        
+            protected class PhidgetServoMeta003 extends PhidgetServoMeta {
+            
+                PhidgetServoMeta003() {
+                
+                    PropertyWriter pwMin = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            min_pulse = Integer.parseInt(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                        }
+                    };
+                    
+                    PropertyWriter pwMax = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            max_pulse = Integer.parseInt(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                        }
+                    };
+                    
+                    propertyWriters.put("servo/range/min", pwMin);
+                    propertyWriters.put("servo/range/max", pwMax);
+                }
+            }
         }
     }
     
@@ -1089,6 +1183,11 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler0x38 extends ProtocolHandler003 {
     
+        protected String getModelName() {
+        
+            return "PhidgetServo";
+        }
+        
         public int getServoCount() {
         
             return 4;
@@ -1102,6 +1201,11 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler0x39 extends ProtocolHandler003 {
     
+        protected String getModelName() {
+        
+            return "UniServo";
+        }
+        
         public int getServoCount() {
         
             return 1;
@@ -1113,18 +1217,17 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler0x3B extends ProtocolHandler {
     
-        private ServoState servoState[] = new ServoState[8];
         private OutputStream out;
         
         ProtocolHandler0x3B() {
         
-            for ( int idx = 0; idx < 8; idx++ ) {
-            
-                servoState[idx] = new ServoState(idx);
-            }
-            
         }
     
+        protected String getModelName() {
+        
+            return "PhidgetAdvancedServo";
+        }
+        
         public void reset() {
         
             // FIXME
@@ -1137,16 +1240,17 @@ public class PhidgetServoController extends AbstractServoController {
         
         public synchronized void setActualPosition(int id, double position) throws IOException {
         
-            send(servoState[id].setPosition(position));
+            if ( servoSet[id] == null ) {
+            
+                throw new IllegalStateException("servoSet[" + id + "] is still null");
+            }
+            
+            PhidgetServo0x3B servo = (PhidgetServo0x3B)servoSet[id];
+        
+            send(servo.renderPosition(position));
         }
         
         public void silence() throws IOException {
-        
-            // Not supported
-        }
-        
-        public void setRange(int id, int min_pulse, int max_pulse) {
-        
         
             // Not supported
         }
@@ -1193,13 +1297,32 @@ public class PhidgetServoController extends AbstractServoController {
             out.write(buffer);
             out.flush();
         }
+        
+        public Servo createServo(ServoController sc, int id) throws IOException {
+        
+            return new PhidgetServo0x3B(sc, id);
+        }
 
-        protected class ServoState {
+        public class PhidgetServo0x3B extends PhidgetServo {
         
             /**
              * Servo position, degrees.
              */
             float position;
+            
+            /**
+             * Minimum position offset, degrees.
+             *
+             * Default is 0.
+             */
+            int min_offset = 0;
+            
+            /**
+             * Maximum position offset, degrees.
+             *
+             * Default is 180.
+             */
+            int max_offset = 180;
             
             /**
              * Servo velocity, degrees per second.
@@ -1215,8 +1338,7 @@ public class PhidgetServoController extends AbstractServoController {
              * Byte buffer to compose the packet into.
              *
              * This buffer is not thread safe, but the {@link
-             * PhidgetServoController#send invocation context} makes sure it
-             * never gets corrupted.
+             * #send invocation context} makes sure it never gets corrupted.
              *
              * <p>
              *
@@ -1234,19 +1356,7 @@ public class PhidgetServoController extends AbstractServoController {
              */
             private byte[] buffer = new byte[16];
             
-            ServoState(int id) {
-            
-                // We will never touch this again
-                
-                buffer[0] = (byte)id;
-                
-                // Initial values
-                
-                velocity = 360;
-                acceleration = 360;
-            }
-            
-            public byte[] setPosition(double position) {
+            public byte[] renderPosition(double position) {
             
                 // The requested position is 0 to 1, but the device position
                 // is 0 to 180 - have to translate
@@ -1254,15 +1364,16 @@ public class PhidgetServoController extends AbstractServoController {
                 // VT: FIXME: adjustment for terminal positions may be
                 // required
                 
-                this.position = (float)(position * 180);
+                this.position = (float)min_offset + (float)(position * (max_offset - min_offset));
                 
                 float2byte(this.position, buffer, 4);
                 float2byte(this.velocity/50, buffer, 8);
                 float2byte(this.acceleration/50, buffer, 12);
                 
-                System.err.println("Position: " + this.position);
-                System.err.print("Buffer:");
+                //System.err.println("Position: " + this.position);
+                //System.err.print("Buffer:");
                 
+                /*
                 for ( int idx = 0; idx < buffer.length; idx++ ) {
                 
                     if ( (idx % 4) == 0 && idx > 0 ) {
@@ -1275,6 +1386,8 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 System.err.println("");
                 
+                 */
+                
                 return buffer;
             }
             
@@ -1286,6 +1399,158 @@ public class PhidgetServoController extends AbstractServoController {
                 buffer[offset + 1] = (byte)((bits >> 8) & 0xFF);
                 buffer[offset + 2] = (byte)((bits >> 16) & 0xFF);
                 buffer[offset + 3] = (byte)((bits >> 24) & 0xFF);
+            }
+
+            public PhidgetServo0x3B(ServoController sc, int id) throws IOException {
+            
+                super(sc, id);
+
+                // We will never touch this again
+                
+                buffer[0] = (byte)id;
+                
+                // Initial values
+                
+                velocity = 360;
+                acceleration = 360;
+            }
+            
+            protected Meta createServoMeta() {
+            
+                return new PhidgetServoMeta0x3B();
+            }
+        
+            protected class PhidgetServoMeta0x3B extends PhidgetServoMeta {
+            
+                PhidgetServoMeta0x3B() {
+                
+                    PropertyWriter pwMin = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            min_offset = Integer.parseInt(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/precision", Integer.toString(max_offset - min_offset));
+                        }
+                    };
+                    
+                    PropertyWriter pwMax = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            max_offset = Integer.parseInt(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/precision", Integer.toString(max_offset - min_offset));
+                        }
+                    };
+                    
+                    PropertyWriter pwVelocity = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            velocity = Float.parseFloat(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/velocity", Float.toString(velocity));
+                        }
+                    };
+                    
+                    PropertyWriter pwAcceleration = new PropertyWriter() {
+                    
+                        public void set(String key, Object value) {
+                        
+                            acceleration = Float.parseFloat(value.toString());
+                            
+                            try {
+                            
+                                setActualPosition(actualPosition);
+
+                            } catch ( IOException ioex ) {
+                            
+                                ioex.printStackTrace();
+                            }
+                            
+                            properties.put("servo/acceleration", Float.toString(acceleration));
+                        }
+                    };
+                    
+                    propertyWriters.put("servo/range/min", pwMin);
+                    propertyWriters.put("servo/range/max", pwMax);
+                    propertyWriters.put("servo/velocity", pwVelocity);
+                    propertyWriters.put("servo/acceleration", pwAcceleration);
+
+                    // Default velocity is 360 degrees/sec, default acceleration
+                    // is 360 dev/sec^2. Maybe it is too much, but I don't care
+                    // to find out at this time.
+                    
+                    properties.put("servo/velocity", "360");
+                    properties.put("servo/acceleration", "360");
+                }
+            }
+        }
+
+        protected Meta createMeta() {
+        
+            return new PhidgetMeta0x3B();
+        }
+        
+        protected class PhidgetMeta0x3B extends PhidgetMeta {
+        
+            PhidgetMeta0x3B() {
+            
+                features.put("controller/protocol/USB", new Boolean(true));
+                
+                // NOTE: This controller does indeed have the 'serial' feature,
+                // but it is permanently disabled
+                
+                features.put("controller/protocol/serial", new Boolean(false));
+                
+                // VT: FIXME
+                
+                properties.put("controller/bandwidth", Integer.toString((2400 / 8) / 2));
+                properties.put("controller/precision", "1500");
+
+                // Degrees are default servo range units for 0x3B protocol
+                
+                properties.put("servo/range/units", "\u00B0");
+                
+                // Default range is 0 to 180 degrees
+                
+                properties.put("servo/range/min", "0");
+                properties.put("servo/range/max", "180");
+                
+                // Default velocity is 360 degrees/sec, default acceleration
+                // is 360 dev/sec^2. Maybe it is too much, but I don't care
+                // to find out at this time.
+                
+                properties.put("servo/velocity", "360");
+                properties.put("servo/acceleration", "360");
             }
         }
     }

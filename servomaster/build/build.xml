@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.18 2002-09-20 02:32:14 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.19 2002-09-30 00:31:40 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -147,11 +147,10 @@
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
             
                 <include name="device/model/Meta.java"/>
+                <include name="device/model/AbstractMeta.java"/>
                 <include name="device/model/Servo.java"/>
-                <include name="device/model/ServoMetaData.java"/>
                 <include name="device/model/ServoListener.java"/>
                 <include name="device/model/ServoController.java"/>
-                <include name="device/model/ServoControllerMetaData.java"/>
                 <include name="device/model/ServoControllerListener.java"/>
                 <include name="device/model/AbstractServo.java"/>
                 <include name="device/model/AbstractServoController.java"/>
@@ -172,6 +171,8 @@
                 <include name="device/model/transform/LinearTransformer.java"/>
 
                 <include name="device/model/transition/CrawlTransitionController.java"/>
+                
+                <include name="util/ImmutableIterator.java"/>
                 
             </fileset>
 

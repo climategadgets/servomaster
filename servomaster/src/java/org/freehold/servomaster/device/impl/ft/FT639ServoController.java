@@ -16,10 +16,10 @@ import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.AbstractServo;
-import org.freehold.servomaster.device.model.ServoMetaData;
+import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.AbstractServoController;
-import org.freehold.servomaster.device.model.ServoControllerMetaData;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
@@ -82,7 +82,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.27 2002-03-14 17:33:47 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.28 2002-09-30 00:31:40 vtt Exp $
  */
 public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
@@ -138,6 +138,11 @@ public class FT639ServoController extends AbstractServoController implements FT6
     private boolean repositioningNow = false;
     
     /**
+     * Metadata instance.
+     */
+    private Meta meta;
+    
+    /**
      * Create the controller instance.
      *
      * <p>
@@ -178,7 +183,6 @@ public class FT639ServoController extends AbstractServoController implements FT6
     public FT639ServoController(String portName) throws IOException {
     
         init(portName);
-    
     }
     
     /**
@@ -190,13 +194,8 @@ public class FT639ServoController extends AbstractServoController implements FT6
      *
      * @exception IllegalStateException if the controller has already been initialized.
      */
-    public synchronized void init(String portName) throws IOException {
+    protected void doInit(String portName) throws IOException {
     
-        if ( this.portName != null ) {
-        
-            throw new IllegalStateException("Already initialized");
-        }
-
         this.portName = portName;
         
         if ( this.portName == null ) {
@@ -535,9 +534,14 @@ public class FT639ServoController extends AbstractServoController implements FT6
         setRange(range);
     }
     
-    public ServoControllerMetaData getMetaData() {
+    public synchronized Meta getMeta() {
     
-        return new FT639MetaData();
+        if ( meta == null ) {
+        
+            meta = new FT639Meta();
+        }
+        
+        return meta;
     }
     
     public String getPort() {
@@ -562,44 +566,32 @@ public class FT639ServoController extends AbstractServoController implements FT6
         return true;
     }
 
-    protected class FT639MetaData implements ServoControllerMetaData {
+    protected class FT639Meta extends AbstractMeta {
     
-        public String getManufacturerURL() {
+        public FT639Meta() {
         
-            return "http://www.ferrettronics.com/";
-        }
-        
-        public String getManufacturerName() {
-        
-            return "FerretTronics";
-        }
-        
-        public String getModelName() {
-        
-            return "FT639";
-        }
-        
-        public int getMaxServos() {
-        
-            return 5;
-        }
-        
-        public boolean supportsSilentMode() {
-        
-            return true;
-        }
-        
-        public int getPrecision() {
-        
-            return 256;
-        }
-        
-        public int getBandwidth() {
-        
+            features.put("manufacturer/name", "FerretTronics");
+            features.put("manufacturer/URL", "http://www.ferrettronics.com/");
+            features.put("manufacturer/model", "FT639");
+            features.put("controller/silent", new Boolean(true));
+            features.put("controller/protocol/serial", new Boolean(true));
+            
+            properties.put("controller/maxservos", "5");
+            
             // 2400 baud max
             // 2 bytes per command
             
-            return (2400 / 8) / 2;
+            properties.put("controller/bandwidth", Integer.toString((2400 / 8) / 2));
+            properties.put("controller/precision", "256");
+            
+            // Silent timeout is five seconds
+
+            properties.put("controller/silent", "5000");
+            
+            // Default range is 90 degrees
+            // Warning: this is an FT639 specific property
+            
+            properties.put("controller/range", "90");
         }
     }
     
@@ -695,8 +687,10 @@ public class FT639ServoController extends AbstractServoController implements FT6
         
         private static final double step = 1.0 / 255.0;
         
-        public ServoMetaData[] getMetaData() {
+        public Meta getMeta() {
         
+            // VT: FIXME
+            
             throw new UnsupportedOperationException("Capabilities discovery is not supported");
         }
     }

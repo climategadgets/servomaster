@@ -25,7 +25,7 @@ import javax.swing.WindowConstants;
 
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.ServoControllerMetaData;
+import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.TransitionController;
 
 /**
@@ -64,7 +64,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.15 2002-05-02 01:26:05 vtt Exp $
+ * @version $Id: Console.java,v 1.16 2002-09-30 00:31:41 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 
@@ -177,35 +177,42 @@ public class Console implements ActionListener, WindowListener {
             
             // Let's see if they support metadata
             
-            ServoControllerMetaData scmeta = null;
+            Meta controllerMeta = null;
             
             try {
             
-                scmeta = controller.getMetaData();
+                controllerMeta = controller.getMeta();
                 
-                System.out.println("=== META: "
-                                   + scmeta.getModelName()
-                                   + " manufactured by "
-                                   + scmeta.getManufacturerName()
-                                   + " ("
-                                   + scmeta.getManufacturerURL()
-                                   + ")");
-                                   
-                System.out.println("=== META: supports up to "
-                                   + scmeta.getMaxServos()
-                                   + " servos, "
-                                   + scmeta.getPrecision()
-                                   + " steps, up to "
-                                   + scmeta.getBandwidth()
-                                   + " commands per second");
-                                   
-                if ( scmeta.supportsSilentMode() ) {
+                System.out.println("Features:");
                 
-                    System.out.println("=== META: supports silent mode");
+                for ( Iterator cif = controllerMeta.getFeatures(); cif.hasNext(); ) {
+                
+                    String key = (String)cif.next();
                     
-                    controller.setSilentMode(true);
-                    controller.setSilentTimeout(10000, 30000);
-                    silencerPanel = new SilencerPanel(controller);
+                    System.out.println(key + ": " + controllerMeta.getFeature(key));
+                }
+
+                System.out.println("Properties:");
+                
+                for ( Iterator cip = controllerMeta.getProperties(); cip.hasNext(); ) {
+                
+                    String key = (String)cip.next();
+                
+                    System.out.println(key + ": " + controllerMeta.getProperty(key));
+                }
+                
+                try {
+                
+                    if ( controllerMeta.getFeature("controller/silent") ) {
+                    
+                        controller.setSilentMode(true);
+                        controller.setSilentTimeout(10000, 30000);
+                        silencerPanel = new SilencerPanel(controller);
+                    }
+                    
+                } catch ( UnsupportedOperationException ex ) {
+                
+                    System.out.println("Controller doesn't support servo shutoff");
                 }
                 
             

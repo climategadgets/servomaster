@@ -5,7 +5,7 @@ import java.io.IOException;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.ServoListener;
-import org.freehold.servomaster.device.model.ServoMetaData;
+import org.freehold.servomaster.device.model.Meta;
 
 /**
  * The coordinate transformer skeleton.
@@ -14,7 +14,7 @@ import org.freehold.servomaster.device.model.ServoMetaData;
  * means to perform the actual coordinate transformation.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.4 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.5 2002-09-30 00:31:40 vtt Exp $
  */
 abstract public class AbstractCoordinateTransformer extends AbstractServo {
 
@@ -94,11 +94,6 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
         return resolve(getTarget().getActualPosition());
     }
     
-    public void setRange(int range) throws IOException {
-    
-        getTarget().setRange(range);
-    }
-    
     public void addListener(ServoListener listener) {
     
         getTarget().addListener(listener);
@@ -114,9 +109,9 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
         getTarget().setEnabled(enabled);
     }
     
-    public ServoMetaData[] getMetaData() {
+    public Meta getMeta() {
     
-        return getTarget().getMetaData();
+        return getTarget().getMeta();
     }
     
     protected void setActualPosition(double position) throws IOException {

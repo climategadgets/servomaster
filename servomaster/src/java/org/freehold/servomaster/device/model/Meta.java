@@ -1,6 +1,5 @@
 package org.freehold.servomaster.device.model;
 
-import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -48,7 +47,7 @@ import java.util.Iterator;
  * <code>controller/precision</code>.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: Meta.java,v 1.1 2002-09-21 00:23:09 vtt Exp $
+ * @version $Id: Meta.java,v 1.2 2002-09-30 00:31:40 vtt Exp $
  */
 public interface Meta {
 
@@ -71,15 +70,44 @@ public interface Meta {
      *
      * @exception UnsupportedOperationException if this feature is not
      * supported.
-     *
-     * @exception IOException if there was an I/O error communicating with
-     * the hardware.
      */
-    public boolean getFeature(String id) throws IOException;
+    public boolean getFeature(String id);
     
-    public void setFeature(String id, boolean value) throws IOException;
+    /**
+     * Set the feature.
+     *
+     * @param id Feature name.
+     *
+     * @param value Feature value.
+     *
+     * @exception UnsupportedOperationException if this feature is not
+     * supported.
+     *
+     * @exception IllegalAccessError if this feature is read only.
+     */
+    public void setFeature(String id, boolean value);
     
-    public Object getProperty(String id) throws IOException;
+    /**
+     * Get the property.
+     *
+     * @param id Property name.
+     *
+     * @exception UnsupportedOperationException if this property is not
+     * supported.
+     */
+    public Object getProperty(String id);
     
-    public void setProperty(String id, Object value) throws IOException;
+    /**
+     * Set the property.
+     *
+     * @param id Feature name.
+     *
+     * @param value Feature value.
+     *
+     * @exception UnsupportedOperationException if this property is not
+     * supported.
+     *
+     * @exception IllegalAccessError if this property is read only.
+     */
+    public void setProperty(String id, Object value);
 }

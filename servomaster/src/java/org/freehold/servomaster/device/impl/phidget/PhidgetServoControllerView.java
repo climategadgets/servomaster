@@ -17,6 +17,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.view.ServoControllerView;
@@ -31,10 +33,15 @@ import org.freehold.servomaster.view.ServoControllerView;
  *
  * <ul>
  *
- * <li> Setting the minimum and maximum pulse length for each individual
+ * <li> Setting the minimum and maximum pulse length (for Phidget v3
+ *      protocol) or range (for Phidget v4 protocol) for each individual
  *      servo.
  *
- * <li> Setting the silent mode for each individual servo.
+ * <li> Setting the silent mode for each individual servo (for Phidget v3
+ *      protocol).
+ *
+ * <li> Setting the velocity and acceleration for each individual servo (for
+ *      Phidget v4 protocol).
  *
  * <li> Enabling or disabling disconnected operation (when the actual USB
  *      device is not plugged in).
@@ -42,7 +49,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: PhidgetServoControllerView.java,v 1.3 2002-03-12 07:07:00 vtt Exp $
+ * @version $Id: PhidgetServoControllerView.java,v 1.4 2002-09-30 00:31:40 vtt Exp $
  */
 public class PhidgetServoControllerView extends JPanel implements ServoControllerListener, ServoControllerView {
 
@@ -71,7 +78,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             
             for ( Iterator i = servos.iterator(); i.hasNext(); ) {
             
-                add(new ServoPanel((PhidgetServoController.PhidgetServo)i.next()));
+                add(new ServoPanel((Servo)i.next()));
             }
 
         } catch ( IOException ioex ) {
@@ -94,14 +101,28 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
     
     private class ServoPanel extends JPanel implements ChangeListener, ItemListener {
     
-        private PhidgetServoController.PhidgetServo servo;
+        private Servo servo;
         private JCheckBox silentBox;
         private JLabel silentLabel;
+        
         private JLabel rangeLabel;
         private JSlider minSlider;
         private JSlider maxSlider;
         
-        ServoPanel(PhidgetServoController.PhidgetServo servo) {
+        private String units;
+        private int defaultRangeMin;
+        private int defaultRangeMax;
+        private int min;
+        private int max;
+        
+        private JLabel vaLabel;
+        private JSlider vSlider;
+        private JSlider aSlider;
+        
+        private String velocity;
+        private String acceleration;
+        
+        ServoPanel(Servo servo) {
         
             this.servo = servo;
             
@@ -120,32 +141,23 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             cs.weightx = 1;
             cs.weighty = 0;
             
-            /*
-            silentBox = new JCheckBox("Silent");
-            silentBox.setToolTipText("Silent mode: stop the servo control pulse after period of inactivity");
+            // The servo range now can be calculated based on the metadata
+            // provided by the servo itself. Note that in this case we a)
+            // know that the controller supports this particular metadata b)
+            // we're taking the controller meta, not the servo meta, 'cause
+            // we need the defaults.
             
-            // VT: FIXME
-            silentBox.setEnabled(false);
+            Meta meta = servo.getController().getMeta();
+            units = meta.getProperty("servo/range/units").toString();
             
-            layout.setConstraints(silentBox, cs);
-            add(silentBox);
+            String min = meta.getProperty("servo/range/min").toString();
+            String max = meta.getProperty("servo/range/max").toString();
             
-            cs.gridy++;
+            defaultRangeMin = Integer.parseInt(min);
+            defaultRangeMax = Integer.parseInt(max);
             
-            silentLabel = new JLabel("ACTIVE", JLabel.CENTER);
-            silentLabel.setToolTipText("Current servo status");
-            
-            // VT: FIXME
-            silentLabel.setEnabled(false);
-            
-            layout.setConstraints(silentLabel, cs);
-            add(silentLabel);
-            
-            cs.gridy++;
-            
-            */
-            rangeLabel = new JLabel("1000us/2000us");
-            rangeLabel.setToolTipText("Current minimum/maximum servo pulse length");
+            rangeLabel = new JLabel(min + units + "/" + max + units);
+            rangeLabel.setToolTipText("Current minimum/maximum servo position");
             rangeLabel.setBorder(BorderFactory.createTitledBorder("Range"));
             
             layout.setConstraints(rangeLabel, cs);
@@ -158,10 +170,27 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             cs.fill = GridBagConstraints.BOTH;
             cs.weighty = 1;
             
-            minSlider = new JSlider(JSlider.VERTICAL, 150, 1400, 1000);
-            minSlider.setToolTipText("Move this to set the minimum servo pulse length");
-            minSlider.setMajorTickSpacing(250);
-            minSlider.setMinorTickSpacing(50);
+            // Now that we have the metadata, we can properly calculate the
+            // minimum and maximum slider positions. Let's suppose that the
+            // default servo controller setup is OK for most servos, and
+            // allow 25% edge outside the default range. This is a demo
+            // console, all in all, so the exact range doesn't really
+            // matter.
+            
+            // VT: NOTE: What it does matter for, though, is determining the
+            // physical range of each particular servo.
+            
+            int delta = (defaultRangeMax - defaultRangeMin) / 4;
+            
+            // Same goes for ticks.
+            
+            int majorTicks = delta;
+            int minorTicks = majorTicks / 10;
+            
+            minSlider = new JSlider(JSlider.VERTICAL, defaultRangeMin - delta, defaultRangeMin + delta, defaultRangeMin);
+            minSlider.setToolTipText("Move this to set the minimum servo position");
+            minSlider.setMajorTickSpacing(majorTicks);
+            minSlider.setMinorTickSpacing(minorTicks);
             minSlider.setPaintTicks(true);
             minSlider.setPaintLabels(true);
             minSlider.setSnapToTicks(false);
@@ -171,10 +200,10 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             
             cs.gridx = 1;
             
-            maxSlider = new JSlider(JSlider.VERTICAL, 1600, 2500, 2000);
-            maxSlider.setToolTipText("Move this to set the maximum servo pulse length");
-            maxSlider.setMajorTickSpacing(250);
-            maxSlider.setMinorTickSpacing(50);
+            maxSlider = new JSlider(JSlider.VERTICAL, defaultRangeMax - delta, defaultRangeMax + delta, defaultRangeMax);
+            maxSlider.setToolTipText("Move this to set the maximum servo position");
+            maxSlider.setMajorTickSpacing(majorTicks);
+            maxSlider.setMinorTickSpacing(minorTicks);
             maxSlider.setPaintTicks(true);
             maxSlider.setPaintLabels(true);
             maxSlider.setSnapToTicks(false);
@@ -184,24 +213,94 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             
             minSlider.addChangeListener(this);
             maxSlider.addChangeListener(this);
+            
+            // Let's find out if the servo supports velocity and
+            // acceleration (come in pair)
+            
+            try {
+            
+                velocity = servo.getMeta().getProperty("servo/velocity").toString();
+                acceleration = servo.getMeta().getProperty("servo/acceleration").toString();
+            
+                cs.gridy += 2;
+                cs.gridx = 0;
+                cs.gridwidth = 2;
+                cs.gridheight = 1;
+                
+                vaLabel = new JLabel(velocity + "/" + acceleration);
+                vaLabel.setToolTipText("Current servo velocity and acceleration");
+                vaLabel.setBorder(BorderFactory.createTitledBorder("Vel/Accel"));
+                
+                layout.setConstraints(vaLabel, cs);
+                add(vaLabel);
+                
+                cs.gridy++;
+                cs.gridwidth = 1;
+                
+                vSlider = new JSlider(JSlider.VERTICAL, 0, 360, 360);
+                vSlider.setToolTipText("Move this to set the servo velocity");
+                vSlider.setMajorTickSpacing(90);
+                vSlider.setMinorTickSpacing(10);
+                vSlider.setPaintTicks(true);
+                vSlider.setPaintLabels(true);
+                vSlider.setSnapToTicks(false);
+                
+                layout.setConstraints(vSlider, cs);
+                add(vSlider);
+                
+                cs.gridx = 1;
+
+                aSlider = new JSlider(JSlider.VERTICAL, 0, 360, 360);
+                aSlider.setToolTipText("Move this to set the servo acceleration");
+                aSlider.setMajorTickSpacing(45);
+                aSlider.setMinorTickSpacing(5);
+                aSlider.setPaintTicks(true);
+                aSlider.setPaintLabels(true);
+                aSlider.setSnapToTicks(false);
+                
+                layout.setConstraints(aSlider, cs);
+                add(aSlider);
+                
+                vSlider.addChangeListener(this);
+                aSlider.addChangeListener(this);
+                                    
+            } catch ( UnsupportedOperationException uoex ) {
+            
+                System.err.println("Servo doesn't support velocity/acceleration");
+            }
         }
 
         public void stateChanged(ChangeEvent e) {
         
             Object source = e.getSource();
             
-            int min = minSlider.getValue();
-            int max = maxSlider.getValue();
+            if ( source == minSlider ) {
             
-            rangeLabel.setText(Integer.toString(min) + "us/" + max + "us");
-            
-            try {
-            
-                servo.setRange(min, max);
+                min = minSlider.getValue();
                 
-            } catch ( IOException ioex ) {
+                servo.getMeta().setProperty("servo/range/min", Integer.toString(min));
+                rangeLabel.setText(Integer.toString(min) + units + "/" + max + units);
+                
+            } else if ( source == maxSlider ) {
             
-                ioex.printStackTrace();
+                max = maxSlider.getValue();
+                
+                servo.getMeta().setProperty("servo/range/max", Integer.toString(max));
+                rangeLabel.setText(Integer.toString(min) + units + "/" + max + units);
+                
+            } else if ( source == vSlider ) {
+            
+                velocity = Float.toString((float)vSlider.getValue());
+                servo.getMeta().setProperty("servo/velocity", velocity);
+                
+                vaLabel.setText(velocity + "/" + acceleration);
+            
+            } else if ( source == aSlider ) {
+            
+                acceleration = Float.toString((float)aSlider.getValue());
+                servo.getMeta().setProperty("servo/acceleration", acceleration);
+                
+                vaLabel.setText(velocity + "/" + acceleration);
             }
         }
 

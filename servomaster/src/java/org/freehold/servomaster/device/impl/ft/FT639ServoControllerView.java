@@ -41,7 +41,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoControllerView.java,v 1.3 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: FT639ServoControllerView.java,v 1.4 2002-01-01 01:55:39 vtt Exp $
  */
 public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {
 
@@ -105,7 +105,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         
         JPanel rangePanel = new JPanel();
         
-        rangePanel.setLayout(new GridLayout(2,1));
+        rangePanel.setLayout(new GridLayout(2, 1));
         rangePanel.setToolTipText("Select the servo range");
 
         range90 = new JRadioButton("90\u00B0", true);

@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.14 2002-01-05 04:05:23 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.15 2002-01-10 02:29:10 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -664,6 +664,16 @@ public class FT639ServoController implements ServoController, FT639Constants {
     public ServoControllerMetaData getMetaData() {
     
         return new FT639MetaData();
+    }
+    
+    public String getPort() {
+    
+        if ( portName == null ) {
+        
+            throw new IllegalStateException("Not initialized yet");
+        }
+        
+        return portName;
     }
 
     protected class FT639MetaData implements ServoControllerMetaData {

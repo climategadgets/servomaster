@@ -46,7 +46,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.32 2004-10-13 06:58:53 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.33 2004-10-13 07:19:34 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
@@ -535,7 +535,9 @@ public class PhidgetServoController extends AbstractUsbServoController {
             
                 if ( theServoController == null ) {
                 
-                    throw new IllegalStateException("Null theServoController?");
+                    // There's nothing we can do at this point
+                
+                    return;
                 }
             
                 UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
@@ -555,11 +557,12 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 
                     UsbEndpoint e = (UsbEndpoint)i.next();
                     UsbEndpointDescriptor ed = e.getUsbEndpointDescriptor();
-                    System.err.println("Endpoint: " + Integer.toHexString(ed.bEndpointAddress()));
+                    System.err.println("Endpoint: " + Integer.toHexString(ed.bEndpointAddress() & 0xFF));
                     
                     if ( ed.bEndpointAddress() == 0x01 ) {
                     
                         endpoint = e;
+                        break;
                     }
                 }
                 
@@ -580,12 +583,30 @@ public class PhidgetServoController extends AbstractUsbServoController {
         protected synchronized void send(byte buffer[]) throws UsbException {
         
             init();
+            
+            if ( out == null ) {
+            
+                // VT: FIXME: I guess a sent flag like for QuadServo will
+                // help
+                
+                return;
+            }
         
             UsbIrp message = out.createUsbIrp();
             
             message.setData(buffer);
             
-            out.syncSubmit(message);
+            try {
+            
+                out.syncSubmit(message);
+                
+            } catch ( UsbException usbex ) {
+            
+                // Ouch! The pipe is most probably not valid anymore
+                
+                out = null;
+                throw usbex;
+            }
         }
         
         public Servo createServo(ServoController sc, int id) throws IOException {

@@ -1,4 +1,4 @@
 version=@VERSION@
 prefix=@prefix@
-ft639.enabled=@FT_ENABLED@
-phidget.enabled=@PHIDGET_ENABLED@
+serial.enabled=@SERIAL_ENABLED@
+usb.enabled=@USB_ENABLED@

@@ -32,7 +32,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.5 2002-05-13 03:20:05 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.6 2002-05-13 04:46:42 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -836,6 +836,13 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler003 extends ProtocolHandler {
     
+        /**
+         * Byte buffer to compose the packet into.
+         *
+         * This buffer is not thread safe, but the {@link
+         * PhidgetServoController#send invocation context} makes sure it
+         * never gets corrupted.
+         */
         byte buffer[] = new byte[6];
 
         /**

@@ -11,12 +11,12 @@ import java.awt.event.ItemListener;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -35,7 +35,7 @@ import org.freehold.servomaster.device.model.transition.CrawlTransitionControlle
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.17 2002-01-03 01:52:27 vtt Exp $
+ * @version $Id: ServoView.java,v 1.18 2002-01-03 03:28:02 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -72,34 +72,14 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     private JCheckBox enableBox;
     
     /**
-     * Button group for the transition controller selection.
-     */
-    private ButtonGroup transitionGroup = new ButtonGroup();
-    
-    /**
      * Panel containing the transition controller selection.
      */
     private JPanel transitionPanel;
     
     /**
-     * Radio button for selecting no transition controller (default).
+     * Combo box for selecting the transition controller.
      */
-    private JRadioButton transitionNoneBox;
-    
-    /**
-     * Radio button for selecting the crawl transition controller.
-     */
-    private JRadioButton transitionCrawlBox;
-    
-    /**
-     * Radio button for selecting the linear transition controller.
-     */
-    private JRadioButton transitionLinearBox;
-    
-    /**
-     * Button group for the mapper selection.
-     */
-    private ButtonGroup mapperGroup = new ButtonGroup();
+    private JComboBox transitionComboBox;
     
     /**
      * Panel containing the mapper selection radio buttons.
@@ -107,19 +87,9 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     private JPanel mapperPanel;
     
     /**
-     * Radio button for selecting the normal mapper (default).
+     * Combo box for selecting the mapper.
      */
-    private JRadioButton normalBox;
-    
-    /**
-     * Radio button for selecting the reverse mapper.
-     */
-    private JRadioButton reverseBox;
-    
-    /**
-     * Radio button for selecting the linear mapper.
-     */
-    private JRadioButton linearBox;
+    private JComboBox mapperComboBox;
     
     /**
      * The label displaying the current position.
@@ -212,82 +182,48 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         enableBox.setToolTipText("Enable or disable this servo");
         enableBox.addItemListener(this);
         
-        cs.gridy = 1;
+        cs.gridy++;
         
         layout.setConstraints(enableBox, cs);
         add(enableBox);
         
         transitionPanel = new JPanel();
         
-        // VT: FIXME: make it 3,1 when the linear is implemented
-        
-        transitionPanel.setLayout(new GridLayout(2, 1));
-        transitionPanel.setToolTipText("Select the transition controller");
-        
-        transitionNoneBox = new JRadioButton("Instant", true);
-        transitionNoneBox.addActionListener(this);
-        transitionNoneBox.setToolTipText("No transition controller, instant movement");
-        
-        transitionGroup.add(transitionNoneBox);
-        transitionPanel.add(transitionNoneBox);
+        String transition[] = { "Instant", "Crawl" };
 
-        transitionCrawlBox = new JRadioButton("Crawl");
-        transitionCrawlBox.addActionListener(this);
-        transitionCrawlBox.setToolTipText("Crawl as fast as I/O and controller allow");
+        transitionComboBox = new JComboBox(transition);
+        transitionComboBox.setToolTipText("Select the transition controller");
+        transitionComboBox.addActionListener(this);
         
-        transitionGroup.add(transitionCrawlBox);
-        transitionPanel.add(transitionCrawlBox);
-
-        /*
+        //transitionPanel.add(transitionComboBox);
         
-        VT: FIXME: linear transition controller is not implemented yet
-        
-        transitionLinearBox = new JRadioButton("Linear");
-        transitionLinearBox.addActionListener(this);
-        transitionLinearBox.setToolTipText("Linearly move in 3 seconds");
-        
-        transitionGroup.add(transitionLinearBox);
-        transitionPanel.add(transitionLinearBox);
-
-         */
-         
         cs.gridy++;
         
         transitionPanel.setBorder(BorderFactory.createTitledBorder("Transition"));
-        layout.setConstraints(transitionPanel, cs);
-        add(transitionPanel);
+        //layout.setConstraints(transitionPanel, cs);
+        //add(transitionPanel);
+        
+        layout.setConstraints(transitionComboBox, cs);
+        add(transitionComboBox);
         
         cs.gridy++;
         
         mapperPanel = new JPanel();
         
-        mapperPanel.setLayout(new GridLayout(3, 1));
-        mapperPanel.setToolTipText("Select the servo mapping");
+        String mapping[] = { "Direct", "Reverse", "Linear" };
         
-        normalBox = new JRadioButton("Normal", true);
-        normalBox.addActionListener(this);
-        normalBox.setToolTipText("Servo angular position reflects slider position");
+        mapperComboBox = new JComboBox(mapping);
+        mapperComboBox.setToolTipText("Select the coordinate transformer");
+        mapperComboBox.addActionListener(this);
         
-        mapperGroup.add(normalBox);
-        mapperPanel.add(normalBox);
-        
-        reverseBox = new JRadioButton("Reversed");
-        reverseBox.addActionListener(this);
-        reverseBox.setToolTipText("Servo position is reversed");
-        
-        mapperGroup.add(reverseBox);
-        mapperPanel.add(reverseBox);
-
-        linearBox = new JRadioButton("Linear");
-        linearBox.addActionListener(this);
-        linearBox.setToolTipText("Servo position is linear, not angular");
-        
-        mapperGroup.add(linearBox);
-        mapperPanel.add(linearBox);
+        //mapperPanel.add(mapperComboBox);
         
         mapperPanel.setBorder(BorderFactory.createTitledBorder("Mapping"));
-        layout.setConstraints(mapperPanel, cs);
-        add(mapperPanel);
+        //layout.setConstraints(mapperPanel, cs);
+        //add(mapperPanel);
+        
+        layout.setConstraints(mapperComboBox, cs);
+        add(mapperComboBox);
 
         cs.gridy++;
         
@@ -301,6 +237,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         
         cs.gridy++;
         cs.gridwidth = 1;
+        cs.gridheight = GridBagConstraints.REMAINDER;
         cs.weighty = 1;
         cs.fill = GridBagConstraints.VERTICAL;
         
@@ -376,13 +313,8 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
             
             controlSlider.setEnabled(enabled);
 
-            transitionNoneBox.setEnabled(enabled);
-            transitionCrawlBox.setEnabled(enabled);
-            //transitionLinearBox.setEnabled(enabled);
-
-            normalBox.setEnabled(enabled);
-            reverseBox.setEnabled(enabled);
-            linearBox.setEnabled(enabled);
+            transitionComboBox.setEnabled(enabled);
+            mapperComboBox.setEnabled(enabled);
         }
     }
     
@@ -391,7 +323,68 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         try {
         
             Servo current = target;
+            Object source = e.getSource();
+            JComboBox cb = null;
+            
+            if ( source == transitionComboBox ) {
+            
+                cb = (JComboBox)source;
+                
+                switch ( cb.getSelectedIndex() ) {
+                
+                    case 0:
+                    
+                        // No transition controller
+
+                        servo.attach(null);
+                        break;
+                        
+                    case 1:
+                    
+                        // Crawler
+
+                        servo.attach(new CrawlTransitionController());
+                        break;
+                        
+                    default:
+                    
+                        System.err.println("Unknown transition controller: " + cb.getSelectedItem());
+                }
+            
+            } else if ( source == mapperComboBox ) {
+            
+                cb = (JComboBox)source;
+                
+                switch ( cb.getSelectedIndex() ) {
+                
+                    case 0:
+                    
+                        // No coordinate transformation
+
+                        target = servo;
+                        break;
+                        
+                    case 1:
+                    
+                        // Reverser
+
+                        target = reverse;
+                        break;
+                        
+                    case 2:
+                    
+                        // Linear
+                        
+                        target = linear;
+                        break;
+                        
+                    default:
+                    
+                        System.err.println("Unknown coordinate transformer: " + cb.getSelectedItem());
+                }
+            }
         
+        /*
             if ( e.getSource() == normalBox ) {
             
                 target = servo;
@@ -411,7 +404,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
             } else if ( e.getSource() == transitionCrawlBox ) {
             
                 servo.attach(new CrawlTransitionController());
-            }
+            } */
             
             if ( current != target ) {
             

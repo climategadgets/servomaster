@@ -475,9 +475,34 @@ org.freehold.servomaster.device.impl.ft.FT639ServoController \
                                          
                                          <p>
                                          
-                                         That's it, you should be seeing the console right now.
+                                         That's it, you should be seeing the
+                                         console right now. Additionally,
+                                         the following output goes to the
+                                         console:
+                                         
+                                         <pre>
+                                         
+Features:
+controller/protocol/serial: true
+controller/silent: true
+Properties:
+controller/bandwidth: 150
+controller/maxservos: 5
+controller/precision: 256
+controller/range: 90
+controller/silent: 5000
+manufacturer/URL: http://www.ferrettronics.com/
+manufacturer/model: FT639
+manufacturer/name: FerretTronics
+                                         
         
-                                    
+                                        </pre>
+                                        
+                                        See the <a
+                                        href="../meta/index.html">metadata</a>
+                                        manual for additional information
+                                        about the output.
+                                        
                                 </ol>
                             
                             </blockquote>
@@ -505,18 +530,15 @@ org.freehold.servomaster.device.impl.ft.FT639ServoController \
                             
                                 <img src="images/servomaster_console.png" alt="ServoMaster Console">
                                 
+                                <h3>Display elements common to all servo controllers</h3>
+                                
+                                The top section of the console contains the
+                                elements common to all the servo
+                                controllers: the GUI elements for the servos
+                                themselves. There are following subelements:
+                                
                                 <dl>
                                 
-                                    <dt> <b>Silent</b>
-                                    
-                                    <dd> The <b>Silent</b> checkbox, if
-                                         checked (default if the controller
-                                         <a
-                                         href="apidocs/org/freehold/servomaster/device/model/ServoControllerMetaData.html">supports</a>
-                                         it), puts the controller in a
-                                         'sleep' mode - stops the servo
-                                         pulse after a timeout.
-                                    
                                     <dt> <b>ID</b>
                                     
                                     <dd> is a controller-specific servo name.
@@ -565,12 +587,51 @@ org.freehold.servomaster.device.impl.ft.FT639ServoController \
                                 
                                 </dl>
                                 
-                                The stuff below pertains to the specific
-                                controller features, and is usually either
-                                self-explanatory or too weird to bother.
-                                Since the controller name is there, just
-                                look up the release notes on that particular
-                                controller in the <a
+                                <h3>Controller specific display elements</h3>
+                                
+                                Depending on features supported by
+                                particular servo controllers, additional
+                                panels may show up. One frequently
+                                encountered feature is the silent mode
+                                support.
+                                
+                                <dl>
+                                    <dt> <b>Enable</b>
+                                    
+                                    <dd> The <b>Enable</b> checkbox, if
+                                         checked (default if the controller
+                                         <a
+                                         href="apidocs/org/freehold/servomaster/device/model/Meta.html">supports</a>
+                                         it), puts the controller in a
+                                         'sleep' mode - stops the servo
+                                         pulse after a timeout.
+                                         
+                                    <dt> <b>Timeout</b>
+                                    
+                                    <dd> Defines how long the controller
+                                         will keep the servos energized with no
+                                         input.
+                                         
+                                    <dt> <b>Heartbeat</b>
+                                    
+                                    <dd> To prevent the servos to drift
+                                         under load, the controller may
+                                         reissue the positional commands
+                                         once in a while even if it is in a
+                                         sleeping mode.  Heartbeat interval
+                                         determines how often does this
+                                         happen.
+                                
+                                </dl>
+                                
+                                <hr width=100 align=left>
+                                
+                                The rest of the console pertains to the
+                                specific controller features, and is usually
+                                either self-explanatory or too weird to
+                                bother.  Since the controller name is there,
+                                just look up the release notes on that
+                                particular controller in the <a
                                 href="index.html">index</a>.
                                 
                             

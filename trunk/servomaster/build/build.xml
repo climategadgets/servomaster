@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.12 2002-01-05 04:05:23 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.13 2002-02-20 08:25:12 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -64,6 +64,7 @@
     <property name="model.build.src" value="../build/src/model"/>
     <property name="ft639.build.src" value="../build/src/ft639"/>
     <property name="view.build.src" value="../build/src/view"/>
+    <property name="test.build.src" value="../build/src/test"/>
 
     <!--
     
@@ -76,7 +77,7 @@
          
       -->
     
-    <target name="servomaster" depends="prepare,model,ft639,view">
+    <target name="servomaster" depends="prepare,model,ft639,view,test">
     
         <mkdir dir="${build.dir}/META-INF"/>
         
@@ -205,6 +206,22 @@
 
     </target>
     
+    <target name="test" depends="model,ft639">
+    
+        <copy todir="${test.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="test/integration/SyncCheck.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}"/>
+
+    </target>
+
     <target name="dist">
 
         <mkdir dir="${dist.dir}"/>

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and smooth positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: Servo.java,v 1.2 2001-09-01 21:46:25 vtt Exp $
  */
 public interface Servo {
 
@@ -61,6 +61,9 @@ public interface Servo {
      *
      * @exception IOException if there was a problem communicating with the
      * device, or the device was unable to complete the operation.
+     *
+     * @exception IllegalStateException if the servo is currently {@link
+     * #setEnabled disabled}.
      */
     public void setPosition(int position, boolean smooth, long transitionTime) throws IOException;
     
@@ -97,12 +100,12 @@ public interface Servo {
     public int getActualPosition();
     
     /**
-     * Set the operating angle.
+     * Set the operating range.
      *
      * @param range Either {@link #RANGE_90 RANGE_90} or {@link #RANGE_180
      * RANGE_180}.
      *
-     * @exception IllegalArgumentException if the angle specified is not one
+     * @exception IllegalArgumentException if the range specified is not one
      * of allowed values.
      *
      * @exception UnsupportedOperationException if the hardware controller
@@ -134,4 +137,14 @@ public interface Servo {
      * doesn't support listeners.
      */
     public void removeListener(ServoListener listener);
+    
+    /**
+     * Enable or disable the servo.
+     *
+     * @param enable <code>true</code> to enable.
+     *
+     * @exception IOException if ther was a problem communicating with the
+     * hardware controller.
+     */
+    public void setEnabled(boolean enabled) throws IOException;
 }

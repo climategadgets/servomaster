@@ -32,7 +32,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.6 2002-05-13 04:46:42 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.7 2002-09-17 17:22:46 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -377,7 +377,16 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // Let's start walking down
                 
-                find(portName, rootHub, found);
+                try {
+                
+                    find(portName, rootHub, found, true);
+                
+                } catch ( BootException bex ) {
+                
+                    bex.printStackTrace();
+                    
+                    throw new IllegalStateException("BootException shouldn't have propagated here");
+                }
             }
             
             if ( found.size() == 1 ) {
@@ -467,8 +476,10 @@ public class PhidgetServoController extends AbstractServoController {
      * may be the device being eventually added to the set. Can be <code>null</code>.
      *
      * @param found Set to put the found devices into.
+     *
+     * @param boot Whether to boot the phidget if one is found.
      */
-    private void find(String portName, Device root, Set found) throws IOException {
+    private void find(String portName, Device root, Set found, boolean boot) throws IOException, BootException {
     
         if ( root == null ) {
         
@@ -481,47 +492,140 @@ public class PhidgetServoController extends AbstractServoController {
         
             for ( int port = 0; port < root.getNumPorts(); port++ ) {
             
+                System.err.println("Hub " + dd.getSerial(0) + ": port " + (port + 1));
+            
                 Device child = root.getChild(port + 1);
-                find(portName, child, found);
+                
+                try {
+                
+                    find(portName, child, found, true);
+                    
+                } catch ( BootException bex ) {
+                
+                    // This means that SoftPhidget was found and booted, it
+                    // should appear as a device with a different product ID
+                    // by now. If it is still a SoftPhidget, we've failed.
+                    
+                    try {
+                    
+                        find(portName, child, found, false);
+
+                    } catch ( BootException bex2 ) {
+                    
+                        System.err.println("Failed to boot SoftPhidget at hub " + dd.getSerial(0) + ": port " + (port + 1));
+                    }
+                }
             }
             
         } else {
         
             // This may be our chance
             
-            int languageSet[] = ControlMessage.getLanguages(root);
-            int defaultLanguage = 0;
+            // Check the vendor/product ID first in case the device
+            // is not very smart and doesn't support control messages
             
-            if ( languageSet != null && languageSet.length != 0 ) {
+            if ( dd.getVendorId() == 0x6c2 ) {
             
-                defaultLanguage = languageSet[0];
-            }
+                System.err.println("Phidget: " + Integer.toHexString(dd.getProductId()));
             
-            String product = dd.getProduct(defaultLanguage);
-            
-            if ( "PhidgetServo".equals(product) ) {
-            
-                // Yes!
+                // 0x6c2 is a Phidget
                 
-                String serial = dd.getSerial(defaultLanguage);
+                switch ( dd.getProductId() ) {
                 
-                System.err.println("Serial found: " + serial);
-                
-                if ( portName == null ) {
-                
-                    found.add(root);
+                    case 0x0038:
                     
-                    return;
-                }
-                
-                // Bold assumption: serial is not null
-                
-                if ( serial.equals(portName) ) {
-                
-                    found.add(root);
-                    return;
+                        // QuadServo
+                        
+                        if ( portName == null ) {
+                        
+                            // We don't even have to see the serial number
+                        
+                            found.add(root);
+                            
+                            return;
+                        }
+                        
+                        // Port name was specified, so we have to retrieve
+                        // it
+                        
+                        int languageSet[] = ControlMessage.getLanguages(root);
+                        int defaultLanguage = 0;
+                        
+                        if ( languageSet != null && languageSet.length != 0 ) {
+                        
+                            defaultLanguage = languageSet[0];
+                        }
+                        
+                        String product = dd.getProduct(defaultLanguage);
+                        
+                        if ( !"PhidgetServo".equals(product) ) {
+                        
+                            throw new IllegalStateException("Vendor/Product ID match (0x6c2/0x0038), but the name doesn't (" + product + "???");
+                        }
+                        
+                        String serial = dd.getSerial(defaultLanguage);
+                        
+                        System.err.println("Serial found: " + serial);
+                        
+                        // Bold assumption: serial is not null
+                            
+                        if ( serial.equals(portName) ) {
+                            
+                            found.add(root);
+                            return;
+                        }
+                        
+                        break;
+                        
+                    case 0x0060:
+                    
+                        // SoftPhidget
+                        
+                        System.err.println("SoftPhidget found");
+                        
+                        if ( !boot ) {
+                        
+                            // Oops...
+                            
+                            throw new BootException("Second time, refusing to boot");
+                        }
+
+                        boot(root);
+                        
+                        // The device enumeration path is broken now, since
+                        // the product ID has changed after the boot.
+                        // However, it is clear that the device is confined
+                        // to the same hub, so we have to just restart the
+                        // search on the same hub.
+                        
+                        throw new BootException("Need to re-read the device information");
+                        
+                    default:
+                    
+                        System.err.println("Phidget: unknown: " + Integer.toHexString(dd.getProductId()));
                 }
             }
+        }
+    }
+    
+    /**
+     * Boot the SoftPhidget.
+     *
+     * @param target Device to boot.
+     */
+    private void boot(Device target) {
+    
+        System.err.println("Booting " + target.getDeviceDescriptor().getSerial(0));
+        
+        try {
+        
+            // The SoftPhidget is supposed to boot in about 200ms, let's be
+            // paranoid
+            
+            Thread.sleep(500);
+            
+        } catch ( InterruptedException iex ) {
+        
         }
     }
     
@@ -870,6 +974,18 @@ public class PhidgetServoController extends AbstractServoController {
             buffer[4] |= (byte)((servoPosition[3] / 256) * 16);
             
             return buffer;
+        }
+    }
+    
+    /**
+     * This exception gets thrown whenever there was a SoftPhidget that had
+     * to be booted, therefore the normal device enumeration was broken.
+     */
+    protected class BootException extends Exception {
+    
+        BootException(String message) {
+        
+            super(message);
         }
     }
 }

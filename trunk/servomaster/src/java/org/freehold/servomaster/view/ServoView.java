@@ -25,16 +25,14 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.2 2001-09-01 21:48:24 vtt Exp $
+ * @version $Id: ServoView.java,v 1.3 2001-09-02 06:13:45 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
     /**
-     * The servo index.
-     *
-     * VT: FIXME: has to be replaced with the servo name, or eliminated.
+     * The servo name.
      */
-    private int index;
+    private String servoName;
     
     /**
      * The servo to display the status of and control.
@@ -106,15 +104,15 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      *
      * @param controller The controller to request the instance from.
      *
-     * @param index Servo number.
+     * @param servoName Servo name.
      */
-    ServoView(ServoController controller, int index) {
+    ServoView(ServoController controller, String servoName) {
     
-        this.index = index;
+        this.servoName = servoName;
         
         try {
         
-            this.servo = controller.getServo(Integer.toString(index));
+            this.servo = controller.getServo(servoName);
             
         } catch ( Throwable t ) {
         
@@ -134,7 +132,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         cs.gridy = 0;
         cs.gridwidth = 2;
         
-        JLabel servoLabel = new JLabel("ID: " + index, JLabel.CENTER);
+        JLabel servoLabel = new JLabel("ID: " + servoName, JLabel.CENTER);
         servoLabel.setBorder(BorderFactory.createEtchedBorder());
         servoLabel.setForeground(Color.black);
         
@@ -225,7 +223,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         
         if ( source == trimSlider ) {
         
-            //System.out.println("Trim " + index + ": " + trimSlider.getValue());
+            //System.out.println("Trim " + servoName + ": " + trimSlider.getValue());
 
             position = trimSlider.getValue();
             
@@ -295,6 +293,6 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      */
     public void actualPositionChanged(Servo source, int position) {
     
-        viewSlider.setValue(position);
+        setPosition(position);
     }
 }

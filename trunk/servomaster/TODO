@@ -1,4 +1,2 @@
-- Add the docs directory to the 'make dist' target
 - Figure out the trim works for FT639
 - Add more buttons on the Console ("swing" demo, "clock" demo, etc.)
-- Make the Console truly controller-independent

@@ -1,8 +1,10 @@
 package org.freehold.servomaster.device.model;
 
 /**
+ * Allows to track the servo controller status change.
+ *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoControllerListener.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: ServoControllerListener.java,v 1.2 2002-01-02 09:11:18 vtt Exp $
  */
 public interface ServoControllerListener {
 

@@ -1,5 +1,7 @@
 package org.freehold.servomaster.view;
 
+import org.freehold.servomaster.device.model.ServoController;
+
 /**
  * The servo controller view.
  *
@@ -17,10 +19,8 @@ package org.freehold.servomaster.view;
  * else would people know how smart your controller is???).
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoControllerView.java,v 1.2 2001-12-14 05:08:45 vtt Exp $
+ * @version $Id: ServoControllerView.java,v 1.3 2002-01-02 09:11:18 vtt Exp $
  */
-import org.freehold.servomaster.device.model.ServoController;
-
 public interface ServoControllerView {
 
     /**

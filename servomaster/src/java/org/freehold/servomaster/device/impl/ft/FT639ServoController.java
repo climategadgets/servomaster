@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.11 2002-01-02 03:51:13 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.12 2002-01-02 09:11:18 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -381,7 +381,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         // VT: NOTE: There is no sanity checking, I expect the author of the
         // calling code to be sane - this is a protected method
     
-        return new FT639Servo(id);
+        return new FT639Servo(this, id);
     }
 
     /**
@@ -715,47 +715,13 @@ public class FT639ServoController implements ServoController, FT639Constants {
         private int id;
         
         /**
-         * Requested position.
-         */
-        private double position;
-        
-        /**
-         * Actual position.
-         *
-         * <p>
-         *
-         * Differs from {@link #position requested position} when the smooth
-         * mode is engaged.
-         */
-        private double actualPosition;
-        
-        /**
-         * Enabled mode.
-         */
-        private boolean enabled = true;
-        
-        /**
-         * The smoother thread.
-         *
-         * This thread is created when the {@link #setPosition
-         * setPosition()} is called with the <code>smooth</code> argument
-         * set to true. The thread performs the transition (meanwhile
-         * watching for the possible change of the requested position) and
-         * then terminates.
-         */
-        private Thread transitionController = null;
-        
-        /**
-         * The listener set.
-         */
-        private Set listenerSet = new HashSet();
-    
-        /**
          * Create an instance.
          *
          * @param id The servo ID.
          */
-        protected FT639Servo(int id) throws IOException {
+        protected FT639Servo(ServoController sc, int id) throws IOException {
+        
+            super(sc, null);
         
             // Sanity checking is performed by the controller class
             
@@ -770,37 +736,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
             return Integer.toString(id);
         }
         
-        public void setEnabled(boolean enabled) {
-        
-            this.enabled = enabled;
-        }
-        
-        public synchronized void setPosition(double position) throws IOException {
-        
-            if ( !enabled ) {
-            
-                throw new IllegalStateException("Not enabled");
-            }
-        
-            this.position = position;
-
-            if ( transitionController != null ) {
-            
-                throw new Error("Not Implemented");
-                
-                //Runnable r = new TransitionController();
-                
-                //transitionController = new Thread(r);
-                //transitionController.start();
-
-            } else {
-            
-                setActualPosition(position);
-            }
-            
-            positionChanged();
-        }
-        
         protected synchronized void setActualPosition(double position) throws IOException {
         
             checkPosition(position);
@@ -811,64 +746,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
             
             startTimeout();
         }
-        
-        /**
-         * Notify the listeners about the change in requested position.
-         */
-        private synchronized void positionChanged() {
-        
-            for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-            
-                ((ServoListener)i.next()).positionChanged(this, position);
-            }
-        }
-        
-        /**
-         * Notify the listeners about the change in actual position.
-         */
-        private synchronized void actualPositionChanged() {
-        
-            for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-            
-                ((ServoListener)i.next()).actualPositionChanged(this, actualPosition);
-            }
-        }
-        
+
         public void setRange(int range) {
         
             throw new UnsupportedOperationException("This operation is controller-specific for FT639, you have to invoke it on the controller");
         }
         
-        public double getPosition() {
-        
-            return position;
-        }
-        
-        public double getActualPosition() {
-        
-            return actualPosition;
-        }
-        
-        public synchronized void addListener(ServoListener listener) {
-        
-            listenerSet.add(listener);
-        }
-        
-        public synchronized void removeListener(ServoListener listener) {
-        
-            if ( !listenerSet.contains(listener) ) {
-            
-                throw new IllegalArgumentException("Not a registered listener: "
-                                                   + listener.getClass().getName()
-                                                   + "@"
-                                                   + listener.hashCode());
-            }
-            
-            listenerSet.remove(listener);
-        }
-        
         private static final double step = 1.0 / 255.0;
         
+        /*
         protected class TransitionController implements Runnable {
         
             public void run() {
@@ -930,6 +816,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 transitionController = null;
             }
         }
+        
+        */
         
         public ServoMetaData[] getMetaData() {
         

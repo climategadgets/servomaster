@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.8 2002-01-02 03:51:13 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.9 2002-01-02 09:11:18 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -120,6 +120,7 @@
                 <include name="device/model/ServoControllerListener.java"/>
                 <include name="device/model/AbstractServo.java"/>
                 <include name="device/model/TransitionController.java"/>
+                <include name="device/model/TransitionToken.java"/>
 
                 <include name="device/model/transform/AbstractCoordinateTransformer.java"/>
                 <include name="device/model/transform/Reverser.java"/>
@@ -127,6 +128,8 @@
                 <include name="device/model/transform/CosineTransformer.java"/>
                 <include name="device/model/transform/ScaleTransformer.java"/>
                 <include name="device/model/transform/LinearTransformer.java"/>
+
+                <include name="device/model/transition/CrawlTransitionController.java"/>
                 
             </fileset>
 

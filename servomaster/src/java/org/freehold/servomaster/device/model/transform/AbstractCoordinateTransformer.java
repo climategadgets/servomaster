@@ -8,14 +8,25 @@ import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoMetaData;
 
 /**
+ * The coordinate transformer skeleton.
+ *
+ * Provides the 'wrapper' for the servo being controlled, as well as the
+ * means to perform the actual coordinate transformation.
+ *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.3 2002-01-02 03:58:58 vtt Exp $
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.4 2002-01-02 09:11:18 vtt Exp $
  */
 abstract public class AbstractCoordinateTransformer extends AbstractServo {
 
+    /**
+     * Create the instance.
+     *
+     * @param target Servo to control. May be another coordinate transformer
+     * as well.
+     */
     public AbstractCoordinateTransformer(Servo target) {
     
-        super(target);
+        super(null, target);
     
         if ( getTarget() == null ) {
         

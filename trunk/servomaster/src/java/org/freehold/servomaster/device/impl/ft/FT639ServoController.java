@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.38 2005-01-21 06:35:43 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.39 2005-01-21 07:15:05 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -411,6 +411,14 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             setPosition((255 >> 1)/255.0);
         }
         
+        /**
+         * {@inheritDoc}
+         */
+        protected Meta createMeta() {
+        
+            return new FT639ServoMeta();
+        }
+        
         protected void setActualPosition(double position) throws IOException {
         
             checkInit();
@@ -461,11 +469,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         
         private static final double step = 1.0 / 255.0;
         
-        public Meta getMeta() {
-        
-            return new FT639ServoMeta();
-        }
-
         protected class FT639ServoMeta extends AbstractMeta {
         
             public FT639ServoMeta() {

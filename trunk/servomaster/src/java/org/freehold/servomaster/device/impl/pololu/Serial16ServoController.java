@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.impl.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.6 2005-01-21 06:35:43 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.7 2005-01-21 07:15:06 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -128,21 +128,14 @@ public class Serial16ServoController extends AbstractSerialServoController {
         short min_pulse = MIN_PULSE;
         short max_pulse = MAX_PULSE;
     
-        // VT: FIXME: Hmm... UsbServo does the same thing... Remove
-        // redundancies?
-    
-        private final Meta meta;
-    
         PololuServo(ServoController sc, int id) {
         
             super(sc, id);
-            
-            this.meta = new PololuServoMeta();
         }
         
-        public Meta getMeta() {
+        public Meta createMeta() {
         
-            return meta;
+            return new PololuServoMeta();
         }
 
         protected void setActualPosition(double position) throws IOException {

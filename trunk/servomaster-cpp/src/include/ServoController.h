@@ -1,4 +1,4 @@
-// $Id: ServoController.h,v 1.4 2002-09-13 08:37:53 vtt Exp $
+// $Id: ServoController.h,v 1.5 2003-09-03 06:20:01 vtt Exp $
 #ifndef SERVOCONTROLLER_H
 #define SERVOCONTROLLER_H
 
@@ -14,7 +14,7 @@ namespace servomaster {
         
             bool connected;
             bool disconnected;
-            const char *portName;
+            char *portName;
             virtual void checkInit() = 0;
             
         public:

@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.9 2003-09-03 05:40:11 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.10 2003-09-03 06:20:01 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -42,7 +42,7 @@ namespace servomaster {
         delete protocolHandler;
     }
     
-    void PhidgetServoController::init(const char *portName) {
+    void PhidgetServoController::init(const char *_portName) {
     
         if ( this->portName != NULL ) {
         
@@ -50,13 +50,13 @@ namespace servomaster {
             throw std::runtime_error("Already initialized");
         }
         
-        printf("Init: port %s\n", portName);
+        printf("Init: port %s\n", _portName);
     
-        thePhidgetServo = findUSB(portName);
+        thePhidgetServo = findUSB(_portName);
         
         // VT: FIXME: Handle the disconnected case
 
-        this->portName = (const char *)malloc(sizeof(char) *strlen(thePhidgetServo->getSerial()));
+        this->portName = (char *)malloc(sizeof(char) *strlen(thePhidgetServo->getSerial()));
         
         strcpy((char *)this->portName, thePhidgetServo->getSerial());
         
@@ -89,7 +89,7 @@ namespace servomaster {
         }
     }
     
-    phidget::UsbContext *PhidgetServoController::findUSB(const char *portName) {
+    phidget::UsbContext *PhidgetServoController::findUSB(const char *_portName) {
     
         phidget::UsbContext **found = findUSB();
         
@@ -104,7 +104,7 @@ namespace servomaster {
         
         phidget::UsbContext *theRightOne = NULL;
         
-        if ( portName == NULL ) {
+        if ( _portName == NULL ) {
         
             // If the portName parameter is null, one servo controller is
             // expected to be found. If there's none or more than one, boom.
@@ -121,7 +121,6 @@ namespace servomaster {
             free(found);
             
             return result;
-
         }
         
         // If the portName parameter is not null, this meanst that the
@@ -151,7 +150,7 @@ namespace servomaster {
                 continue;
             }
         
-            if ( strcmp(serial, portName) == 0 ) {
+            if ( strcmp(serial, _portName) == 0 ) {
             
                 // We've found the one they were looking for
                 
@@ -285,10 +284,10 @@ namespace servomaster {
     
     namespace phidget {
     
-        ControllerDescriptor::ControllerDescriptor(const char *model, int vendorID, int productID) :
-            model(model),
-            vendorID(vendorID),
-            productID(productID) {
+        ControllerDescriptor::ControllerDescriptor(const char *_model, int _vendorID, int _productID) :
+            model(_model),
+            vendorID(_vendorID),
+            productID(_productID) {
         }
         
         unsigned long ControllerDescriptor::getProtocolHandlerId() const {
@@ -296,11 +295,11 @@ namespace servomaster {
             return (vendorID << 16) | productID;
         }
                 
-        UsbContext::UsbContext(struct usb_device *device, ControllerDescriptor *cd) :
+        UsbContext::UsbContext(struct usb_device *_device, ControllerDescriptor *cd) :
             ControllerDescriptor(*cd),
             serial(NULL) {
         
-            this->device = device;
+            this->device = _device;
             printf("UsbContext: created: %s %x\n", model, (unsigned int)this);
         }
         
@@ -439,12 +438,14 @@ namespace servomaster {
         
             // We assume that the positions array contains 8 positions
             
+            // VT: FIXME: WTF?
+            
             return NULL;
         }
         
-        PhidgetServo::PhidgetServo(ServoController *controller, int id) :
+        PhidgetServo::PhidgetServo(ServoController *controller, int _id) :
             Servo(controller, NULL),
-            id(id),
+            id(_id),
             min_pulse(1000),
             max_pulse(2000) {
             
@@ -462,14 +463,14 @@ namespace servomaster {
             printf("PhidgetServo: destroyed #%X: %X\n", id, (unsigned int)this);
         }
         
-        void PhidgetServo::setActualPosition(double position) {
+        void PhidgetServo::setActualPosition(double _position) {
         
             //checkInit();
-            checkPosition(position);
+            checkPosition(_position);
             
             // Tough stuff, we're dealing with timing now...
             
-            int microseconds = (int)(min_pulse + (position * (max_pulse - min_pulse)));
+            int microseconds = (int)(min_pulse + (_position * (max_pulse - min_pulse)));
             
             // VT: NOTE: We need to know all the servo's positions because
             // they get transmitted in one packet
@@ -487,7 +488,7 @@ namespace servomaster {
             
             controller->send();
             
-            this->actualPosition = position;
+            this->actualPosition = _position;
             //actualPositionChanged();
         }
     }

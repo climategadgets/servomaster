@@ -54,7 +54,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      * the proper protocol handler resolved and assigned to the {@link
      * #protocolHandler instance protocol handler}.
      */
-    protected Map protocolHandlerMap = new HashMap();
+    private Map protocolHandlerMap = new HashMap();
      
     /**
      * The protocol handler taking care of this specific instance.
@@ -127,6 +127,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      * @see #isOnly
      */
     abstract protected void fillProtocolHandlerMap();
+    
+    protected final void registerHandler(String signature, UsbProtocolHandler handler) {
+    
+        protocolHandlerMap.put(signature, handler);
+    }
     
     /**
      * Is this class handling only one type of a device?
@@ -425,9 +430,24 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         }
     }
     
+    /**
+     * Get device signature, in "${vendor-id}:${product-id}" form.
+     *
+     * @return Device signature.
+     */
     protected final String getSignature(UsbDeviceDescriptor dd) {
     
         return Integer.toHexString(dd.idVendor()) + ":" + Integer.toHexString(dd.idProduct());
+    }
+    
+    /**
+     * Get a protocol handler for a device, if one exists.
+     */
+    protected final UsbProtocolHandler getProtocolHandler(UsbDevice target) {
+    
+        String signature = getSignature(target.getUsbDeviceDescriptor());
+        
+        return (UsbProtocolHandler)protocolHandlerMap.get(signature);
     }
 
     /**
@@ -567,7 +587,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         return portName;
     }
     
-    protected void checkInit() {
+    protected synchronized void checkInit() {
     
         // VT: NOTE: Checking for initialization is quite complicated in
         // this case. Here are following scenarios:
@@ -599,9 +619,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         // time, the protocol handler will be created, portName remembered,
         // and the capabilities will be known from that point on.
         
-        // VT: FIXME: PhidgetAdvancedServo doesn't return serial number -
-        // TUSB hack pending
-        
         if ( protocolHandler == null && portName == null ) {
         
             // VT: FIXME: It might be a good idea to try to reinit the
@@ -621,7 +638,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         }
     }
     
-    public Servo getServo(String id) throws IOException {
+    public Servo synchronized getServo(String id) throws IOException {
     
         checkInit();
         
@@ -684,11 +701,51 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         return servos.iterator();
     }
     
-    public final void usbDeviceAttached(UsbServicesEvent e) {
+    public synchronized final void usbDeviceAttached(UsbServicesEvent e) {
     
         try {
         
             System.out.println("*** USB device attached: " + e.getUsbDevice().getProductString());
+            
+            // Let's see if this is by chance our runaway device
+            
+            UsbDevice arrival = e.getUsbDevice();
+            UsbProtocolHandler handler = getProtocolHandler(arrival);
+            
+            if ( handler == null ) {
+            
+                // It's not ours
+                
+                return;
+            }
+            
+            // All right, it may be ours.
+            
+            String arrivalSerial = arrival.getSerialNumberString();
+            
+            if ( portName != null && portName.equals(arrivalSerial) ) {
+            
+                // Damn! This is our runaway device - we've slept through
+                // departure somehow...
+                
+                // VT: NOTE: upon departure, theServoController should have
+                // become null
+                
+                theServoController = arrival;
+                
+                // A protocol handler is basically a singleton in this
+                // context, let's override it just in case
+                
+                protocolHandler = handler;
+                
+                // Protocol handler may be stateful, need to reset it
+                
+                handler.reset();
+                
+                // VT: FIXME: Broadcast arrival notification
+                
+                System.err.println("*** Restored device");
+            }
             
         } catch ( Throwable t ) {
         
@@ -898,38 +955,18 @@ abstract public class AbstractUsbServoController extends AbstractServoController
                     
                 } catch ( IOException usbex ) {
                 
-                    /// VT: FIXME
-                
                     connected = false;
+                    theServoController = null;
                 
                     if ( !isDisconnectAllowed() ) {
                     
                         // Too bad
                         
-                        throw (IOException)(new IOException("Disconnect not allowed").initCause(usbex));
+                        throw (IOException)(new IOException("Device departed, disconnect not allowed").initCause(usbex));
                     }
-                
-                    // VT: NOTE: This block is dependent on jUSB error message
-                    // text
-                    
-                    String xmessage = usbex.getMessage();
-                    
-                    if ( xmessage == null ) {
-                    
-                        // Can't determine what kind of problem it is
-                        
-                        throw (IOException)(new IOException("Unknown problem").initCause(usbex));
-                    }
-                    
-                    if ( "USB communication failure".equals(xmessage) ) {
-                    
-                        // This probably means that the controller was
-                        // disconnected
-                        
-                        System.err.println("Assumed disconnect, reason: " + xmessage);
-                        
-                        theServoController = null;
-                    }
+
+                    System.err.println("Assumed disconnect, reason:");
+                    usbex.printStackTrace();
                 }
             }
         }

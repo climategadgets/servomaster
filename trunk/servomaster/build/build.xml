@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.31 2005-01-14 01:07:27 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.32 2005-01-14 02:58:44 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -483,6 +483,7 @@
             <group title="Model" packages="org.freehold.servomaster.device.model*"/>
             <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>
             <group title="PhidgetServo Driver" packages="org.freehold.servomaster.device.impl.phidget"/>
+            <group title="Pololu Drivers" packages="org.freehold.servomaster.device.impl.pololu"/>
             <group title="View" packages="org.freehold.servomaster.view"/>
             <group title="Tests" packages="org.freehold.servomaster.test*"/>
             

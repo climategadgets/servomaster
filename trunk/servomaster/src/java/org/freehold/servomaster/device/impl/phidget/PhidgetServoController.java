@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.20 2003-07-03 08:38:16 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.21 2003-07-03 18:07:59 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -1579,9 +1579,9 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // 16218
                 
-                float2byte((this.position + 23) * 16218, buffer, 4);
-                float2byte((this.velocity / 50) * 16218, buffer, 8);
-                float2byte((this.acceleration / 50) * 16218, buffer, 12);
+                float2byte((this.position + 23) * 8109, buffer, 4);
+                float2byte((this.velocity / 50) * 8109, buffer, 8);
+                float2byte((this.acceleration / 50) * 8109, buffer, 12);
                 
                 //System.err.println("Position: " + this.position);
                 //System.err.print("Buffer:");

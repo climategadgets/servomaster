@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.11 2002-09-18 08:17:47 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.12 2002-09-20 02:28:57 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -262,7 +262,6 @@ public class PhidgetServoController extends AbstractServoController {
         checkInit();
         
         protocolHandler.reset();
-        
     }
     
     public Servo getServo(String id) throws IOException {
@@ -856,24 +855,6 @@ public class PhidgetServoController extends AbstractServoController {
          */
         abstract public void setRange(int id, int min_pulse, int max_pulse);
 
-        protected synchronized void send(byte buffer[]) throws IOException {
-        
-            ControlMessage message = new ControlMessage();
-
-            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
-                                         |ControlMessage.TYPE_CLASS
-                                         |ControlMessage.RECIPIENT_INTERFACE));
-            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
-            message.setValue((short)0x0200);
-            message.setIndex((byte)0);
-            message.setLength(buffer.length);
-            message.setBuffer(buffer);
-            
-            // The instance has to be non-null at this point, or the
-            // IOException was already thrown
-            
-            thePhidgetServo.control(message);
-        }
     }
     
     /**
@@ -1055,6 +1036,24 @@ public class PhidgetServoController extends AbstractServoController {
             }
         }
         
+        protected synchronized void send(byte buffer[]) throws IOException {
+        
+            ControlMessage message = new ControlMessage();
+
+            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
+                                         |ControlMessage.TYPE_CLASS
+                                         |ControlMessage.RECIPIENT_INTERFACE));
+            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
+            message.setValue((short)0x0200);
+            message.setIndex((byte)0);
+            message.setLength(buffer.length);
+            message.setBuffer(buffer);
+            
+            // The instance has to be non-null at this point, or the
+            // IOException was already thrown
+            
+            thePhidgetServo.control(message);
+        }
         /**
          * Remember the servo timing and clear the "sent" flag.
          *
@@ -1158,6 +1157,12 @@ public class PhidgetServoController extends AbstractServoController {
             
                 Configuration cf = thePhidgetServo.getConfiguration();
                 Interface iface = cf.getInterface(0, 0);
+                
+                if ( !iface.claim() ) {
+                
+                    throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                }
+                
                 Endpoint endpoint = null;
                 
                 for ( int idx = 0; idx < iface.getNumEndpoints(); idx++ ) {
@@ -1233,15 +1238,12 @@ public class PhidgetServoController extends AbstractServoController {
             
                 // We will never touch this again
                 
-                // VT: FIXME: Is it a little endian or big endian?
-                
                 buffer[0] = (byte)id;
                 
-                // VT: FIXME: This stuff will be properly handled when the
-                // metadata is ready
+                // Initial values
                 
-                velocity = 180;
-                acceleration = 180;
+                velocity = 360;
+                acceleration = 360;
             }
             
             public byte[] setPosition(double position) {
@@ -1278,11 +1280,7 @@ public class PhidgetServoController extends AbstractServoController {
             
             private void float2byte(float value, byte buffer[], int offset) {
             
-                // VT: FIXME: Is it a little endian or big endian?
-                
                 int bits = Float.floatToIntBits(value);
-                
-                // This is big endian
                 
                 buffer[offset + 0] = (byte)(bits & 0xFF);
                 buffer[offset + 1] = (byte)((bits >> 8) & 0xFF);

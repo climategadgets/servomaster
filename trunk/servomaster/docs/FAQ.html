@@ -137,6 +137,26 @@
                   
                   As a rule of thumb, the newer the version of the JDK/JRE,
                   the less problems you will have.
+                  
+                  <p>
+                  
+             <dt> <strong>Every time the USB device is disconnected and then
+                  reconnected again, I get the <code>SecurityException</code>.
+                  How to avoid this?</strong>
+                  
+             <dd> You have to properly mount the usbfs. It would be a good
+                  idea to add the following entry to your
+                  <code>/etc/fstab</code>:
+                  
+                  <blockquote>
+                  
+                      <code>usbdevfs /proc/bus/usb usbdevfs devmode=0666 0 0</code>
+                      
+                  </blockquote>
+                  
+                  This will enable all the users to access the usbfs.
+                  Alternatives are possible, look up the usbfs documentation
+                  for that.
         
         </dl>
 

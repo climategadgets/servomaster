@@ -49,7 +49,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: PhidgetServoControllerView.java,v 1.4 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: PhidgetServoControllerView.java,v 1.5 2002-09-30 01:02:28 vtt Exp $
  */
 public class PhidgetServoControllerView extends JPanel implements ServoControllerListener, ServoControllerView {
 
@@ -252,8 +252,8 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
                 aSlider = new JSlider(JSlider.VERTICAL, 0, 360, 360);
                 aSlider.setToolTipText("Move this to set the servo acceleration");
-                aSlider.setMajorTickSpacing(45);
-                aSlider.setMinorTickSpacing(5);
+                aSlider.setMajorTickSpacing(90);
+                aSlider.setMinorTickSpacing(10);
                 aSlider.setPaintTicks(true);
                 aSlider.setPaintLabels(true);
                 aSlider.setSnapToTicks(false);

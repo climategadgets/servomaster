@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.17 2003-06-08 01:30:49 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.18 2003-06-16 07:03:01 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -63,7 +63,7 @@ public class PhidgetServoController extends AbstractServoController {
      * the proper protocol handler resolved and assigned to the {@link
      * #protocolHandler instance protocol handler}.
      */
-    private Map protocolHandlerMap = new HashMap();
+    protected Map protocolHandlerMap = new HashMap();
      
     /**
      * The USB device object corresponding to the servo controller.
@@ -90,9 +90,41 @@ public class PhidgetServoController extends AbstractServoController {
      */
     public PhidgetServoController() {
     
+        fillProtocolHandlerMap();
+    }
+    
+    /**
+     * Fill the protocol handler map.
+     *
+     * This class puts all the protocol handlers known to it into the {@link
+     * #protocolHandlerMap protocol handler map}, so the devices can be
+     * recognized. However, this presents some difficulties in relation to
+     * disconnected mode if a particular, known beforehand, type of device
+     * with a known identifier must be operated, but it is not be present at
+     * the driver startup time. If this is the case, then subclasses of this
+     * class must be used that fill the protocol handler map
+     * with the only protocol handler.
+     *
+     * @see #isOnly
+     */
+    protected void fillProtocolHandlerMap() {
+    
         protocolHandlerMap.put("38", new ProtocolHandler0x38());
         protocolHandlerMap.put("39", new ProtocolHandler0x39());
         protocolHandlerMap.put("3b", new ProtocolHandler0x3B());
+    }
+    
+    /**
+     * Is this class handling only one type of Phidget?
+     *
+     * @return true if only one type of Phidget is supported.
+     */
+    protected boolean isOnly() {
+    
+        // VT: FIXME: This may be a problem for AdvancedServo, since we have
+        // to identify two product ids - check the code
+    
+        return protocolHandlerMap.size() == 1;
     }
     
     /**

@@ -575,13 +575,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         return protocolHandler.getMeta();
     }
 
-    public String getPort() {
-    
-        checkInit();
-        
-        return portName;
-    }
-    
     protected synchronized void checkInit() {
     
         // VT: NOTE: Checking for initialization is quite complicated in

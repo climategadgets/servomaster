@@ -160,6 +160,14 @@
                                 will be marked <font
                                 color="blue">blue</font>.
                                 
+                                <p>
+                                
+                                As the number of supported servo controllers
+                                grows, a necessity for the mapping between
+                                the controller models and supported features
+                                becomes obvious. It will be provided here
+                                soon.
+                                
                             </blockquote>
                             </td>
                         </tr>
@@ -196,36 +204,41 @@
                                          uniform description for this
                                          dependency is going to be tricky.
                                     
-                                    <li> It should be possible to control
-                                         the parameters for each servo
-                                         separately (in other words, the
-                                         servo abstraction should be
-                                         configurable).
+                                    <li> <font color="blue">It should be
+                                         possible to control the parameters
+                                         for each servo separately (in other
+                                         words, the servo abstraction should
+                                         be configurable).</font>
                                     
-                                    <li> It should be possible to preset the
-                                         minimum and maximum angle for the
-                                         servo. And not only 90&deg; vs.
-                                         180&deg;, but arbitrary angle.
+                                    <li> <font color="blue">It should be
+                                         possible to preset the minimum and
+                                         maximum angle for the servo. And
+                                         not only 90&deg; vs.  180&deg;, but
+                                         arbitrary angle.</font>
                                          
-                                    <li> Implied: the pulse length range.
-                                         The limits may be defined by the
-                                         servo construction and/or
-                                         mechanical layout of the apparatus
-                                         in which the servo is used. This is
-                                         going to get really technical, but
-                                         the ability to specify the minimum
-                                         and maximum pulse length just has
-                                         to be present.
+                                    <li> <font color="blue">Implied: the
+                                         pulse length range.  The limits may
+                                         be defined by the servo
+                                         construction and/or mechanical
+                                         layout of the apparatus in which
+                                         the servo is used. This is going to
+                                         get really technical, but the
+                                         ability to specify the minimum and
+                                         maximum pulse length just has to be
+                                         present.</font>
                                          
-                                    <li> Implied: range should be included
-                                         into capabilities discovery.
-                                         Implied: the capabilities for each
-                                         particular servo are different.
+                                    <li> <font color="blue">Implied: range
+                                         should be included into
+                                         capabilities discovery.  Implied:
+                                         the capabilities for each
+                                         particular servo are
+                                         different.</font>
                                          
-                                    <li> Even though the actual range may be
-                                         different from 90&deg; or 180&deg;,
-                                         the number of steps to cover the
-                                         actual range should be the same.
+                                    <li> <font color="blue">Even though the
+                                         actual range may be different from
+                                         90&deg; or 180&deg;, the number of
+                                         steps to cover the actual range
+                                         should be the same.</font>
                                          
                                     <li> Exactly as the capabilities of each
                                          physical instance of the servo are
@@ -330,11 +343,12 @@
                                          resource hungry. The currently
                                          available solutions require a
                                          dedicated serial port to control
-                                         them, why? Good candidates: USB,
-                                         1-Wire.
+                                         them, why? Good candidates: <font
+                                         color="blue">USB</font>, 1-Wire.
                                          
-                                    <li> Smooth transition done in hardware
-                                         is a desirable feature.
+                                    <li> <font color="blue">Smooth
+                                         transition done in hardware is a
+                                         desirable feature.</font>
                                     
                                     <li> <font color="blue">Actually, it
                                          goes beyond just the smooth

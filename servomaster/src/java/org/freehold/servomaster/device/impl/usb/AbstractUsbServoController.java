@@ -478,7 +478,9 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             
             if ( iface.isClaimed() ) {
             
-                throw new IOException("Can't claim interface - already claimed");
+                throw new IOException(
+                      "Can't claim interface - already claimed. "
+                    + "Make sure no other applications or modules (hid.o in particular) use this device");
             }
             
             iface.claim();

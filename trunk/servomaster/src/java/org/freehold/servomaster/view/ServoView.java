@@ -35,7 +35,7 @@ import org.freehold.servomaster.device.model.transition.CrawlTransitionControlle
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.15 2002-01-02 23:47:01 vtt Exp $
+ * @version $Id: ServoView.java,v 1.16 2002-01-03 00:39:55 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -378,7 +378,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
             transitionNoneBox.setEnabled(enabled);
             transitionCrawlBox.setEnabled(enabled);
-            transitionLinearBox.setEnabled(enabled);
+            //transitionLinearBox.setEnabled(enabled);
 
             normalBox.setEnabled(enabled);
             reverseBox.setEnabled(enabled);

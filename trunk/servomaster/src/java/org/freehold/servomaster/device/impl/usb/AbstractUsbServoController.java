@@ -634,11 +634,18 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         
         if ( protocolHandler != null ) {
         
-            protocolHandler.reset();
+            try {
+            
+                protocolHandler.reset();
+                
+            } catch ( UsbException usbex ) {
+            
+                throw (IOException)(new IOException("Failed to reset USB device").initCause(usbex));
+            }
         }
     }
     
-    public Servo synchronized getServo(String id) throws IOException {
+    public synchronized Servo getServo(String id) throws IOException {
     
         checkInit();
         
@@ -732,6 +739,16 @@ abstract public class AbstractUsbServoController extends AbstractServoController
                 // become null
                 
                 theServoController = arrival;
+                UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                
+                if ( iface.isClaimed() ) {
+                
+                    throw new IOException("Can't claim interface - already claimed");
+                }
+                
+                iface.claim();
+                
                 
                 // A protocol handler is basically a singleton in this
                 // context, let's override it just in case
@@ -866,7 +883,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         /**
          * Reset the controller.
          */
-        abstract public void reset() throws IOException;
+        abstract public void reset() throws UsbException;
     
         /**
          * @return the number of servos the controller supports.
@@ -890,8 +907,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
          * @param id Servo number.
          *
          * @param position Desired position.
+         *
+         * @exception UsbException if there was a problem sending data to
+         * the USB device.
          */
-        abstract public void setPosition(int id, double position) throws IOException;
+        abstract public void setPosition(int id, double position) throws UsbException;
         
         /**
          * Silence the controller.
@@ -899,7 +919,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
          * VT: FIXME: This better be deprecated - each servo can be silenced
          * on its own
          */
-        abstract public void silence() throws IOException;
+        abstract public void silence() throws UsbException;
         
         abstract public Servo createServo(ServoController sc, int id) throws IOException;
 
@@ -953,7 +973,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
                     this.actualPosition = position;
                     actualPositionChanged();
                     
-                } catch ( IOException usbex ) {
+                } catch ( UsbException usbex ) {
                 
                     connected = false;
                     theServoController = null;

@@ -46,7 +46,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.31 2004-10-13 06:28:07 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.32 2004-10-13 06:58:53 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
@@ -95,9 +95,9 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 protocolHandler.silence();
                 _silentStatusChanged(false);
                 
-            } catch ( IOException ioex ) {
+            } catch ( UsbException usbex ) {
             
-                _exception(ioex);
+                _exception(usbex);
             }
         }
         
@@ -199,7 +199,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
         
         }
         
-        public void reset() throws IOException {
+        public void reset() throws UsbException {
         
             // In case the silent mode was set, we have to resend the positions
             
@@ -235,7 +235,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             return buffer;
         }
         
-        public void setPosition(int id, double position) throws IOException {
+        public void setPosition(int id, double position) throws UsbException {
         
             // Tough stuff, we're dealing with timing now...
             
@@ -262,14 +262,14 @@ public class PhidgetServoController extends AbstractUsbServoController {
         /**
          * Compose the USB packet and stuff it down the USB controller.
          *
-         * @exception IOException if there was an I/O error talking to the
+         * @exception UsbException if there was an I/O error talking to the
          * controller.
          *
          * @see #servoPosition
          * @see #sent
          * @see #bufferPosition
          */
-        private synchronized void send() throws IOException {
+        private synchronized void send() throws UsbException {
         
             if ( sent ) {
             
@@ -280,70 +280,23 @@ public class PhidgetServoController extends AbstractUsbServoController {
             
             try {
             
-                if ( theServoController == null ) {
-                
-                    theServoController = findUSB(portName);
-
-                    UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
-                    UsbInterface iface = cf.getUsbInterface((byte)0x00);
-                    
-                    if ( iface.isClaimed() ) {
-                    
-                        throw new IOException("Can't claim interface - already claimed");
-                    }
-                    
-                    iface.claim();
-
-                    System.err.println("Found " + portName);
-                    connected = true;
-                    
-                    // FIXME: notify the listeners about the arrival
-                }
-                
-                // If we've found the phidget, we can get to composing the
-                // buffer, otherwise it would've been waste of time
-                
                 byte buffer[] = composeBuffer();
                 send(buffer);
                 
-                // If there was an IOException sending the message, the flag is not
-                // cleared. This is OK, since if it was a temporary condition,
-                // whoever is about to call send() now will have a shot at properly
-                // sending the data.
+                // If there was an exception sending the message, the flag
+                // is not cleared. This is OK, since if it was a temporary
+                // condition, whoever is about to call send() now will have
+                // a shot at properly sending the data.
                 
                 sent = true;
                 
-            } catch ( Throwable t ) {
-            
-                if ( connected ) {
-                
-                    exception(t);
-            
-                    // FIXME: notify the listeners about the departure
-                    
-                    connected = false;
-                }
-                
-                if ( isDisconnectAllowed() ) {
-                
-                    // We're fine, but will have to keep looking for the phidget
-                    
-                    theServoController = null;
-                    
-                    return;
-                }
-                
-                // Too bad
-                
-                throw (IOException)(new IOException("send() failed").initCause(t));
-
             } finally {
             
                 touch();
             }
         }
         
-        protected synchronized void send(byte buffer[]) throws IOException {
+        protected synchronized void send(byte buffer[]) throws UsbException {
         
             // theServoController instance can still be null if the driver
             // works in disconnected mode
@@ -364,14 +317,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             UsbControlIrp message = theServoController.createUsbControlIrp(requestType, request, value, index);
             message.setData(buffer);
             
-            try {
-            
-                theServoController.syncSubmit(message);
-                
-            } catch ( UsbException usbex ) {
-            
-                throw (IOException)(new IOException("send() failed").initCause(usbex));
-            }
+            theServoController.syncSubmit(message);
         }
 
         /**
@@ -390,7 +336,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             sent = false;
         }
         
-        public void silence() throws IOException {
+        public void silence() throws UsbException {
         
             // Send the zero microseconds pulse
             
@@ -564,7 +510,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             return 8;
         }
         
-        public synchronized void setPosition(int id, double position) throws IOException {
+        public synchronized void setPosition(int id, double position) throws UsbException {
         
             if ( servoSet[id] == null ) {
             
@@ -573,30 +519,23 @@ public class PhidgetServoController extends AbstractUsbServoController {
             
             PhidgetServo0x3B servo = (PhidgetServo0x3B)servoSet[id];
             
-            try {
-            
-                send(servo.renderPosition(position));
-                
-            } catch ( UsbException usbex ) {
-            
-                throw (IOException)(new IOException("USB communication failure").initCause(usbex));
-            }
+            send(servo.renderPosition(position));
         }
         
-        public void silence() throws IOException {
+        public void silence() throws UsbException {
         
             // VT: FIXME
             
             System.err.println("silence() is not implemented in " + getClass().getName());
         }
         
-        private void init() throws IOException, UsbException {
+        private void init() throws UsbException {
         
             if ( out == null ) {
             
                 if ( theServoController == null ) {
                 
-                    throw new IOException("Null theServoController?");
+                    throw new IllegalStateException("Null theServoController?");
                 }
             
                 UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
@@ -606,11 +545,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 
                     // VT: FIXME: Verify: with the latest changes, we should've
                     // claimed it already
-                    
-                    if ( iface.isClaimed() ) {
-                    
-                        throw new IOException("Can't claim interface - already claimed");
-                    }
                     
                     iface.claim();
                 }
@@ -631,7 +565,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 
                 if ( endpoint == null ) {
                 
-                    throw new IOException("Can't find endpoint 82");
+                    throw new UsbException("Can't find endpoint 82");
                 }
                 
                 out = endpoint.getUsbPipe();
@@ -643,7 +577,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             }
         }
         
-        protected synchronized void send(byte buffer[]) throws IOException, UsbException {
+        protected synchronized void send(byte buffer[]) throws UsbException {
         
             init();
         
@@ -652,9 +586,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
             message.setData(buffer);
             
             out.syncSubmit(message);
-
-            ///out.write(buffer);
-            ///out.flush();
         }
         
         public Servo createServo(ServoController sc, int id) throws IOException {
@@ -957,12 +888,12 @@ public class PhidgetServoController extends AbstractUsbServoController {
             throw new IllegalAccessError("Operation not supported");
         }
         
-        public synchronized void setPosition(int id, double position) throws IOException {
+        public synchronized void setPosition(int id, double position) throws UsbException {
         
             throw new IllegalAccessError("Operation not supported");
         }
         
-        public void silence() throws IOException {
+        public void silence() throws UsbException {
 
             throw new IllegalAccessError("Operation not supported");
         }

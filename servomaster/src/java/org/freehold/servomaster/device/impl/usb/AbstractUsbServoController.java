@@ -296,7 +296,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      *
      * @param found Set to put the found devices into.
      *
-     * @param boot Whether to boot the phidget if one is found.
+     * @param boot Whether to boot the device if one is found.
      */
     private void find(String portName, UsbDevice root, Set found, boolean boot) throws IOException, UsbException, BootException {
     
@@ -317,16 +317,17 @@ abstract public class AbstractUsbServoController extends AbstractServoController
 
                 } catch ( BootException bex ) {
                 
-                    // This means that SoftPhidget was found and booted, it
-                    // should appear as a device with a different product ID
-                    // by now. If it is still a SoftPhidget, we've failed.
+                    // This means that a bootable device was found and
+                    // booted, it should appear as a device with a different
+                    // product ID by now. If it is still a device with the
+                    // same signature as before, we've failed.
                     
                     // The USB device handle for the device which used to be
-                    // a SoftPhidget is now stale, so we have to reset the
-                    // enumeration to the root device. Since we're adding
-                    // the devices found to the *set*, there's nothing to
-                    // worry about - we will just lose some time, but there
-                    // will be no duplicates.
+                    // a bootable device is now stale, so we have to reset
+                    // the enumeration to the root device. Since we're
+                    // adding the devices found to the *set*, there's
+                    // nothing to worry about - we will just lose some time,
+                    // but there will be no duplicates.
                     
                     // And since we're doing the job all over again starting
                     // from this method's entry point, we'll just return
@@ -370,7 +371,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
                         throw new BootException("Second time, refusing to boot");
                     }
 
-                    boot(root);
+                    handler.boot(root);
                     
                     // The device enumeration path is broken now, since
                     // the product ID has changed after the boot.
@@ -729,15 +730,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
     }
     
     /**
-     * Boot the device.
-     *
-     * VT: FIXME: UnsupportedEncodingException looks weird here.
-     *
-     * @param target Device to boot.
-     */
-    abstract protected void boot(UsbDevice target) throws UsbException, UnsupportedEncodingException;
-
-    /**
      * This exception gets thrown whenever there was a USB device (such as a
      * SoftPhidget) that had to be booted, therefore the normal device
      * enumeration was broken.
@@ -768,6 +760,14 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         
         public UsbProtocolHandler() {
         
+            if ( isBootable() ) {
+            
+                // Skip everything
+                
+                meta = null;
+                return;
+            }
+            
             meta = createMeta();
         }
         
@@ -789,6 +789,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         public boolean isBootable() {
         
             return false;
+        }
+        
+        public void boot(UsbDevice target) throws UsbException {
+        
+            throw new IllegalAccessError("Operation not supported");
         }
         
         /**

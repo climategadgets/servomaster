@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.4 2001-09-02 06:36:07 vtt Exp $
+ * @version $Id: ServoView.java,v 1.5 2001-09-03 08:29:23 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -231,7 +231,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
             
                 // VT: FIXME: trim doesn't work
             
-                //((FT639ServoController)controller).setTrim(position);
+                servo.setTrim(position);
                 trimSlider.setValue(position);
                 trimLabel.setText("Trim: " + position);
                 

@@ -1,2 +1,7 @@
 - Figure out the trim works for FT639
 - Add more buttons on the Console ("swing" demo, "clock" demo, etc.)
+- Add the controller-specific panel on the Console
+- Remove the trim from the servo view
+- Introduce the coordinate transformer with configurable low limit, high
+  limit and center; figure out the nonlinear transfer function between the
+  0...1 transformer input and 0...255 servo input

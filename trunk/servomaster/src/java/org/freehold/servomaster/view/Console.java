@@ -60,7 +60,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.4 2001-09-02 06:13:45 vtt Exp $
+ * @version $Id: Console.java,v 1.5 2001-09-03 08:29:23 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -262,14 +262,33 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
         if ( e.getSource() == resetButton ) {
         
             try {
-            
+                
                 controller.reset();
                 
-            } catch ( IOException ioex ) {
+                for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+                
+                    ((Servo)i.next()).setPosition(0, false, 0);
+                }
+                
+                Thread.sleep(1000);
+                
+                for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+                
+                    ((Servo)i.next()).setPosition(255, false, 0);
+                }
+                
+                Thread.sleep(1000);
+                
+                for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+                
+                    ((Servo)i.next()).setPosition(128, false, 0);
+                }
+
+            } catch ( Throwable t ) {
             
                 System.err.println("Oops, couldn't reset the controller:");
                 
-                ioex.printStackTrace();
+                t.printStackTrace();
                 
                 System.err.println("Controller is considered inoperable, exiting");
                 System.exit(1);

@@ -1,3 +1,11 @@
+0.3p1	- More bugfixes
+	- Lazy mode added: the command to the controller will not be sent
+	  unless it is actually required
+	- Heartbeat: if there was no positioning commands within
+	  configurable time interval, the servo position will be set again,
+	  just in case it drifted away. Also works with controller power
+	  blackouts
+
 0.3p0	- API FREEZE
 	- More bugfixes
 	- Console improved

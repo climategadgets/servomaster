@@ -1,4 +1,4 @@
-package org.freehold.servomaster.device.impl;
+package org.freehold.servomaster.device.model;
 
 import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.AbstractServo;
@@ -18,7 +18,7 @@ import org.freehold.servomaster.device.model.ServoController;
  * target} directly.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: HardwareServo.java,v 1.2 2005-01-21 07:15:05 vtt Exp $
+ * @version $Id: HardwareServo.java,v 1.1 2005-02-03 06:52:00 vtt Exp $
  */
 abstract public class HardwareServo extends AbstractServo {
 

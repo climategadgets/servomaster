@@ -125,6 +125,7 @@ AC_DEFUN(AC_PATH_JDK,
     	do
     	    
     	    for JAVA_VERSION in \
+    	        1.4.1 \
     	        1.4.0 \
     	        1.3.1 \
     	        1.3 \

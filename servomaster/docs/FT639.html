@@ -82,6 +82,14 @@
                  
                  <p>
                  
+            <li> More about communication speed (thanks, Chester): there are
+                 actully two separate issues: latency and bandwidth. I
+                 believe in this case the latency is negligible (more
+                 numbers later), because the mechanical delays in the
+                 apparatus connected to the servo may more or less be of
+                 comparable order with the protocol latency. Bandwidth,
+                 however, <strong>is</strong> an issue here.
+            
             <li> Be careful with the header length support. The lower values
                  for the header length make the controller issue really
                  short pulses that make the servos go out of range. The

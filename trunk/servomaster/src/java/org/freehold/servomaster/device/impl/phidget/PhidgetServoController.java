@@ -11,7 +11,20 @@ import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import javax.usb.*;
+import javax.usb.UsbConfiguration;
+import javax.usb.UsbConst;
+import javax.usb.UsbControlIrp;
+import javax.usb.UsbDevice;
+import javax.usb.UsbDeviceDescriptor;
+import javax.usb.UsbEndpoint;
+import javax.usb.UsbEndpointDescriptor;
+import javax.usb.UsbException;
+import javax.usb.UsbHostManager;
+import javax.usb.UsbHub;
+import javax.usb.UsbInterface;
+import javax.usb.UsbIrp;
+import javax.usb.UsbPipe;
+import javax.usb.UsbServices;
 
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
@@ -32,7 +45,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.25 2004-10-13 01:25:00 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.26 2004-10-13 01:35:34 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 

@@ -75,7 +75,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.4 2001-09-02 06:13:45 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.5 2001-09-02 06:36:07 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -446,7 +446,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = false;
 
-        System.err.println("mode: setup");
+        //System.err.println("mode: setup");
         silentStatusChanged();
     }
 
@@ -476,7 +476,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = true;
 
-        System.err.println("mode: active");
+        //System.err.println("mode: active");
         silentStatusChanged();
     }
     
@@ -544,7 +544,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
 
         }
         
-        System.err.println("Silent timer updated");
+        //System.err.println("Silent timer updated");
     }
     
     private void send(byte b[]) throws IOException {
@@ -876,7 +876,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
                     }
                 }
                 
-                System.err.println("Transition done");
+                //System.err.println("Transition done");
                 transitionController = null;
             }
         }
@@ -903,14 +903,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
             
                 while ( waitTime() > 0 ) {
                 
-                    System.err.println("waiting for " + waitTime() + "ms...");
+                    //System.err.println("waiting for " + waitTime() + "ms...");
                     wait(waitTime());
-                    System.err.println("checking... " + waitTime() + " left");
+                    //System.err.println("checking... " + waitTime() + " left");
                 }
                 
                 synchronized ( this ) {
                 
-                    System.err.println("Sleeping now.");
+                    //System.err.println("Sleeping now.");
                     setSetupMode();
                     silencer = null;
                 }

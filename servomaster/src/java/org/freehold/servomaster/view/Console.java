@@ -13,6 +13,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -62,9 +64,9 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.14 2002-03-16 02:35:18 vtt Exp $
+ * @version $Id: Console.java,v 1.15 2002-05-02 01:26:05 vtt Exp $
  */
-public class Console implements ActionListener {
+public class Console implements ActionListener, WindowListener {
 
     /**
      * The controller to watch and control.
@@ -236,10 +238,9 @@ public class Console implements ActionListener {
             mainFrame = new JFrame("Servo Controller Console, port " + portName);
             mainFrame.setSize(new Dimension(800, 600));
             
-            // VT: FIXME: Have to terminate the application instead.
-            // Currently, you have to Ctrl-Break it.
-            
-            mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            mainFrame.addWindowListener(this);
+
             mainFrame.getContentPane().setLayout(layout);
             
 
@@ -426,6 +427,38 @@ public class Console implements ActionListener {
             demo = new Thread(new swing());
             demo.start();
         }
+    }
+    
+    // WindowListener methods
+    
+    public void windowOpened(WindowEvent e) {
+    
+    }
+
+    public void windowClosing(WindowEvent e) {
+    
+        System.exit(0);
+    }
+    
+
+    public void windowClosed(WindowEvent e) {
+    
+    }
+    
+    public void windowIconified(WindowEvent e) {
+    
+    }
+    
+    public void windowDeiconified(WindowEvent e) {
+    
+    }
+    
+    public void windowActivated(WindowEvent e) {
+    
+    }
+    
+    public void windowDeactivated(WindowEvent e) {
+    
     }
     
     abstract protected class exec implements Runnable {

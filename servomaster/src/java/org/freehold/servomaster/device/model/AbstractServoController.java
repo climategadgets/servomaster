@@ -24,7 +24,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.4 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.5 2003-06-08 01:33:23 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -95,6 +95,9 @@ abstract public class AbstractServoController implements ServoController {
         
             // They don't want to play nice, fine :(
 
+        } catch ( IllegalStateException isex ) {
+        
+            // Ditto
         }
     }
     

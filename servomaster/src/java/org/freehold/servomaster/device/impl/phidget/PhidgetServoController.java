@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.16 2003-01-14 17:21:25 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.17 2003-06-08 01:30:49 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -266,6 +266,11 @@ public class PhidgetServoController extends AbstractServoController {
     
         checkInit();
     
+        if ( protocolHandler == null ) {
+        
+            throw new IllegalStateException("Hardware not yet connected, try later");
+        }
+        
         return protocolHandler.getMeta();
     }
 
@@ -273,28 +278,64 @@ public class PhidgetServoController extends AbstractServoController {
     
         checkInit();
         
+        // VT: FIXME: When TUSB hack will be implemented, portName will have
+        // no right to be null at this point
+        
         return portName;
     }
     
     protected void checkInit() {
     
-        // VT: FIXME: AdvancedServo hack. Under normal circumstances, if the
-        // portName is null, the controller is not considered initialized. 
-        // However, in this case the portName is not easily available, so
-        // we'll settle for protocolHandler, until Chester fixes the serial
-        // number or I get time to extract it from the microcontroller.
-    
-        if ( protocolHandler == null ) {
+        // VT: NOTE: Checking for initialization is quite complicated in
+        // this case. Here are following scenarios:
+        //
+        // 1. Port name was given, device was not present at instantiation
+        // time.
+        //
+        // 2. Port name was not given, device was present and the only at
+        // instantiation time.
+        //
+        // In both cases, the portName is known either way. We don't handle
+        // the case when the portName is not known, and there were no
+        // devices detected at instantiation time.
+        //
+        // Now, the complications.
+        //
+        // This class, so far the only one, supports multiple hardware
+        // products with different capabilities. The only known feature of
+        // them is that they're all Phidgets. Therefore, the capabilities of
+        // the particular controller will not be known until the device is
+        // actually connected and recognized. Consequently, the protocol
+        // handler (and hence the metadata) will be created at that time,
+        // and the metadata will be available from that point on.
+        //
+        // Additional complication is that there is a possible case of a
+        // serial number clash between different kinds of Phidgets, but
+        // let's discount this case for a while - it seems unlikely. In
+        // other words, as soon as the Phidget is recognized for the first
+        // time, the protocol handler will be created, portName remembered,
+        // and the capabilities will be known from that point on.
+        
+        // VT: FIXME: PhidgetAdvancedServo doesn't return serial number -
+        // TUSB hack pending
+        
+        if ( protocolHandler == null && portName == null ) {
+        
+            // VT: FIXME: It might be a good idea to try to reinit the
+            // controller if portName is not null
         
             throw new IllegalStateException("Not initialized");
         }
     }
     
-    public void reset() throws IOException {
+    public synchronized void reset() throws IOException {
     
         checkInit();
         
-        protocolHandler.reset();
+        if ( protocolHandler != null ) {
+        
+            protocolHandler.reset();
+        }
     }
     
     public Servo getServo(String id) throws IOException {
@@ -856,6 +897,8 @@ public class PhidgetServoController extends AbstractServoController {
                 properties.put("manufacturer/URL", "http://www.phidgets.com/");
                 properties.put("manufacturer/model", getModelName());
                 properties.put("controller/maxservos", Integer.toString(getServoCount()));
+
+                features.put("controller/allow_disconnect", new Boolean(true));
             }
         }
 
@@ -902,10 +945,47 @@ public class PhidgetServoController extends AbstractServoController {
                 checkInit();
                 checkPosition(position);
                 
-                protocolHandler.setPosition(id, position);
+                try {
                 
-                this.actualPosition = position;
-                actualPositionChanged();
+                    protocolHandler.setPosition(id, position);
+                    
+                    this.actualPosition = position;
+                    actualPositionChanged();
+                    
+                } catch ( USBException usbex ) {
+                
+                    connected = false;
+                
+                    if ( !isDisconnectAllowed() ) {
+                    
+                        // Too bad
+                        
+                        throw (IOException)usbex;
+                    }
+                
+                    // VT: NOTE: This block is dependent on jUSB error message
+                    // text
+                    
+                    String xmessage = usbex.getMessage();
+                    
+                    if ( xmessage == null ) {
+                    
+                        // Can't determine what kind of problem it is
+                        
+                        throw (IOException)usbex;
+                    }
+                    
+                    if (    xmessage.indexOf("Bad file descriptor") != -1
+                         || xmessage.indexOf("USB device has been removed") != -1 ) {
+                    
+                        // This probably means that the controller was
+                        // disconnected
+                        
+                        System.err.println("Assumed disconnect, reason: " + xmessage);
+                        
+                        thePhidgetServo = null;
+                    }
+                }
             }
             
             protected class PhidgetServoMeta extends AbstractMeta {
@@ -1069,11 +1149,14 @@ public class PhidgetServoController extends AbstractServoController {
                 
             } catch ( IOException ioex ) {
             
-                exception(ioex);
+                if ( connected ) {
+                
+                    exception(ioex);
             
-                // FIXME: notify the listeners about the departure
+                    // FIXME: notify the listeners about the departure
                     
-                connected = false;
+                    connected = false;
+                }
                 
                 if ( isDisconnectAllowed() ) {
                 

@@ -21,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
 import org.freehold.servomaster.device.model.Servo;
@@ -64,7 +65,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.18 2003-01-07 04:35:02 vtt Exp $
+ * @version $Id: Console.java,v 1.19 2003-06-08 01:33:23 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 
@@ -220,6 +221,14 @@ public class Console implements ActionListener, WindowListener {
             
                 System.err.println("Controller doesn't support metadata");
                 ex.printStackTrace();
+
+            } catch ( IllegalStateException isex ) {
+            
+                System.err.println("Controller is not yet connected?");
+                isex.printStackTrace();
+                System.err.println("");
+                
+                throw new IllegalStateException("Can't get controller metadata, can't build the console, good bye");
             }
             
             // Figure out how many servos does the controller currently have
@@ -247,8 +256,13 @@ public class Console implements ActionListener, WindowListener {
             
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             mainFrame.addWindowListener(this);
+            
+            JPanel console = new JPanel();
+            JScrollPane scroller = new JScrollPane(console);
+            
+            mainFrame.setContentPane(scroller);
 
-            mainFrame.getContentPane().setLayout(layout);
+            console.setLayout(layout);
             
 
             cs.fill = GridBagConstraints.BOTH;
@@ -267,7 +281,7 @@ public class Console implements ActionListener, WindowListener {
                 
                 layout.setConstraints(servoPanel[idx], cs);
                 
-                mainFrame.getContentPane().add(servoPanel[idx]);
+                console.add(servoPanel[idx]);
             }
             
             cs.gridx = 0;
@@ -306,7 +320,7 @@ public class Console implements ActionListener, WindowListener {
                 ((ServoControllerView)controllerPanel).init(controller);
                 
                 layout.setConstraints(controllerPanel, cs);
-                mainFrame.getContentPane().add(controllerPanel);
+                console.add(controllerPanel);
                 
                 cs.gridy++;
                 
@@ -333,7 +347,7 @@ public class Console implements ActionListener, WindowListener {
                 cs.weighty = 0;
 
                 layout.setConstraints(silencerPanel, cs);
-                mainFrame.getContentPane().add(silencerPanel);
+                console.add(silencerPanel);
                 
                 cs.gridy++;
             }
@@ -386,9 +400,9 @@ public class Console implements ActionListener, WindowListener {
             waveDemoButton.setEnabled(false);
             
             layout.setConstraints(buttonContainer, cs);
-            mainFrame.getContentPane().add(buttonContainer);
+            console.add(buttonContainer);
             
-            //mainFrame.getContentPane().invalidate();
+            //console.invalidate();
             mainFrame.pack();
             
             mainFrame.setVisible(true);

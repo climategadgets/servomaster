@@ -28,100 +28,220 @@
             <a href="../index.html">ServoMaster</a>: Metadata
         </h1>
         
-            <hr>
+        <hr>
+        <table border=0>
+            <tr>
+                <td valign=top>
+                    <strong>
+                        Introduction
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="../docs/index.html">Documentation</a>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <li> <strong>Platform Neutral</strong>
+                            
+                            <ul>
+                            
+                                <li> <a
+                                     href="../docs/ideal_controller.html">A
+                                     Dream About Ideal Servo Controller</a>
+                                     
+                                <li> <a
+                                     href="../docs/smooth_transformer.html">Mixing
+                                     up transition controllers and
+                                     coordinate transformers</a>
+                                     
+                                <li> <a href="../docs/future.html">Future
+                                     Plans & Crazy Ideas</a>
+                                
+                            </ul>
+                        
+                            <li> <strong>Metadata</strong>
+                            
+                                 <ul>
+                                 
+                                     <li> <strong>Manufacturer</strong>
+                                     
+                                     <br> <a href=manufacturer/name/index.html><code>name</code></a>
+                                     <br> <a href=manufacturer/URL/index.html><code>URL</code></a>
+                                     <br> <a href=manufacturer/model/index.html><code>model</code></a>
+                                     
+                                     <li> <strong>Controller</strong>
+                                     
+                                     <br> <a href=controller/maxservos/index.html><code>maxservos</code></a>
+                                     <br> <a href=controller/bandwidth/index.html><code>bandwidth</code></a>
+                                     <br> <a href=controller/precision/index.html><code>precision</code></a>
+                                     <br> <a href=controller/silent/index.html><code>silent</code></a>
+                                     <br> <a href=controller/protocol/USB/index.html><code>protocol/USB</code></a>
+                                     <br> <a href=controller/protocol/serial/index.html><code>protocol/serial</code></a>
+                                     <br> <a href=controller/transition/index.html><code>transition</code></a>
+                                     <br> <a href=controller/firmware/revision/index.html><code>firmware/revision</code></a>
+                                     
+                                     <li> <strong>Servo</strong>
+                                     
+                                     <br> <a href=servo/precision/index.html><code>precision</code></a>
+                                     <br> <a href=servo/range/units/index.html><code>range/units</code></a>
+                                     <br> <a href=servo/range/min/index.html><code>range/min</code></a>
+                                     <br> <a href=servo/range/max/index.html><code>range/max</code></a>
+                                 
+                                 </ul>
+                                 
+                            <li> <strong>Driver Release Notes</strong>
 
-            The metadata is a way to obtain the information about the servo
-            controller (or a servo), and, sometimes, adjust its behavior.
-            
-            <p>
-            
-            Two flavors of metadata are supported: feature and property.
-            
-            <p>
-            
-            The feature is something that is either present or absent. If it
-            is supported, it can be switched on or off.
-            
-            <p>
-            
-            The property is something that can be measured, described and
-            possibly changed.
-            
-            <p>
-            
-            An example of a feature: whether the controller is able to
-            support the silent mode.
-            
-            An example of a property: how long the controller will stay
-            inactive before going into silent mode.
-            
-            <p>
-            
-            If the feature is not supported or the property is not present,
-            the attempt to get or set it will result in
-            <code>UnsupportedOperationException</code>. If the feature or
-            property value can't be changed because it's read-only, the
-            attempt to set it will result in
-            <code>IllegalAccessError</code>. For hardware related problems,
-            <code>IOException</code> will be thrown.
-            
-            <p>
-            
-            The feature or property identifier is normally a full or partial
-            URL. The full URL points to the page containing the support
-            documentation for this feature or property, for example, <a
-            href="http://servomaster.sourceforge.net/meta/controller/precision">http://servomaster.sourceforge.net/meta/controller/precision</a>. 
-            Since this is quite cumbersome, partial URLs will be accepted as
-            well by the API calls.  For this particular example, the
-            identifier will look like <code>controller/precision</code>.
-            
-            <p>
-            
-            The full list of the metadata features and properties follows:
-            
-            <dl>
-            
-                <dt> <strong>Manufacturer Properties</strong>
-                
-                <dd>
-            
-                <br> <a href=manufacturer/name/index.html><code>manufacturer/name</code></a>
-                <br> <a href=manufacturer/URL/index.html><code>manufacturer/URL</code></a>
-                <br> <a href=manufacturer/model/index.html><code>manufacturer/model</code></a>
-                
-                <p>
-                
-                <dt> <strong>Controller</strong>
-                
-                <dd>
-                
-                <br> <a href=controller/maxservos/index.html><code>controller/maxservos</code></a>
-                <br> <a href=controller/bandwidth/index.html><code>controller/bandwidth</code></a>
-                <br> <a href=controller/precision/index.html><code>controller/precision</code></a>
-                <br> <a href=controller/silent/index.html><code>controller/silent</code></a>
-                <br> <a href=controller/protocol/USB/index.html><code>controller/protocol/USB</code></a>
-                <br> <a href=controller/protocol/serial/index.html><code>controller/protocol/serial</code></a>
-                <br> <a href=controller/transition/index.html><code>controller/transition</code></a>
-                <br> <a href=controller/firmware/revision/index.html><code>controller/firmware/revision</code></a>
-                
-                <p>
-                
-                <dt> <strong>Servo</strong>
-                
-                <dd>
-                
-                <br> <a href=servo/precision/index.html><code>servo/precision</code></a>
-                <br> <a href=servo/range/units/index.html><code>servo/range/units</code></a>
-                <br> <a href=servo/range/min/index.html><code>servo/range/min</code></a>
-                <br> <a href=servo/range/max/index.html><code>servo/range/max</code></a>
-            
-            </dl>
-            
-            <h2>Code examples</h2>
-            
-            This is how you get the set of available features and
-            properties:
-            
+                            <ul>
+                            
+                                <li> <a href="../docs/FT639.html">FT639</a>
+                                
+                                <li> <a href="../docs/USB_Phidget.html">PhidgetServo v3.0</a>
+                                
+                                <li> <a href="../docs/USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                    </font>
+                    
+                    <strong>
+                        <a href="../docs/getinvolved.html">Get Involved</a>
+                    </strong>
+
+                    <p>
+
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="../docs/apidocs/index.html">Javadocs</a>
+                            
+                        </ul>
+                        
+                    </font>
+                    
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net/">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left><font color="#ffffff">Metadata</font></th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+
+                                The metadata is a way to obtain the
+                                information about the servo controller (or a
+                                servo), and, sometimes, adjust its behavior. 
+                                The reason for existence of the metadata, as
+                                opposed to the API, is that it is not
+                                possible to foresee what features and/or
+                                properties may appear in the hardware of
+                                tomorrow, and this project's life is planned
+                                to be quite long.
+                                
+                                <p>
+                                
+                                Two flavors of metadata are supported: feature and property.
+                                
+                                <p>
+                                
+                                The feature is something that is either present or absent. If it
+                                is supported, it can be switched on or off.
+                                
+                                <p>
+                                
+                                The property is something that can be measured, described and
+                                possibly changed.
+                                
+                                <p>
+                                
+                                An example of a feature: whether the controller is able to
+                                support the silent mode.
+                                
+                                An example of a property: how long the controller will stay
+                                inactive before going into silent mode.
+                                
+                                <p>
+                                
+                                If the feature is not supported or the property is not present,
+                                the attempt to get or set it will result in
+                                <code>UnsupportedOperationException</code>. If the feature or
+                                property value can't be changed because it's read-only, the
+                                attempt to set it will result in
+                                <code>IllegalAccessError</code>. For hardware related problems,
+                                <code>IOException</code> will be thrown.
+                                
+                                <p>
+                                
+                                The feature or property identifier is normally a full or partial
+                                URL. The full URL points to the page containing the support
+                                documentation for this feature or property, for example, <a
+                                href="http://servomaster.sourceforge.net/meta/controller/precision">http://servomaster.sourceforge.net/meta/controller/precision</a>. 
+                                Since this is quite cumbersome, partial URLs will be accepted as
+                                well by the API calls.  For this particular example, the
+                                identifier will look like <code>controller/precision</code>.
+                                
+                                <p>
+                                
+                                The full list of the metadata features and
+                                properties can be found on the navigation
+                                bar on the left.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="history">
+                                <font color="#ffffff">Examples</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                                
+                                This is how you get the set of available
+                                features and properties:
+                                
 <pre>
 ServoController sc = getController();
 
@@ -135,20 +255,21 @@ for ( Iterator i = sc.getMeta().getProperties(); i.hasNext(); ) {
     System.out.println("Property: " + i.next());
 }
 </pre>
-            
-            This is how you set the servo range:
-            
+                                
+                                This is how you set the servo range:
+                                
 <pre>
 Servo s = getServo();
 
 s.getMeta().setProperty("servo/range/min", "890");
 s.getMeta().setProperty("servo/range/max", "2100");
 </pre>
-            
+                                
 
-            This is how you make the controller go into the silent mode
-            without having to perform an extra check:
-            
+                                This is how you make the controller go into
+                                the silent mode without having to perform an
+                                extra check:
+                                
 <pre>
 ServoController sc = getController();
 
@@ -163,11 +284,21 @@ try {
 }
 </pre>
 
-            Note that in this case the <i>feature</i> and the
-            <i>property</i> name are the same, however, the meaning is
-            different: the feature allows to enable or disable itself, while
-            the property changes the operating parameters.
+                                Note that in this case the <i>feature</i>
+                                and the <i>property</i> names are the same,
+                                however, the meaning is different: the
+                                feature allows to enable or disable itself,
+                                while the property changes the operating
+                                parameters.
             
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>

@@ -1,4 +1,5 @@
 version=@VERSION@
 prefix=@prefix@
 JUSB.jar=@JUSB_CLASSES@
+ft639.enabled=@FT_ENABLED@
 phidget.enabled=@PHIDGET_ENABLED@

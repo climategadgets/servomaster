@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.12 2002-09-14 01:34:03 vtt Exp $)dnl
+AC_REVISION($Id: configure.in,v 1.13 2002-10-01 21:53:59 vtt Exp $)dnl
 
 dnl I'd like it to read the configure-options to allow both the global set
 dnl of options, as well as the local set.
@@ -75,12 +75,29 @@ AC_PATH_JAVACLASS(ANT,jakarta,org.apache.tools.ant.Main,[     Where to find the 
 AC_PATH_JAVACLASS(JAVA_COMPILER,jakarta,sun.tools.javac.Main,[     Where to find the Jakarta javac jar file (http://jakarta.apache.org/)])
 AC_PATH_JAVACLASS(XERCES,jakarta,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
 
+FT_ENABLED=false
+
+AC_MSG_CHECKING(if FT639 is enabled)
+
+AC_ARG_ENABLE(ft639,
+[  --enable-ft639          Enable support for FT639 controller],
+[
+    AC_MSG_RESULT(yes)
+    FT_ENABLED=true
+    
+],
+[
+    AC_MSG_RESULT(no)
+])
+
+AC_SUBST(FT_ENABLED)
+
 PHIDGET_ENABLED=false
 
 AC_MSG_CHECKING(if phidget is enabled)
 
-AC_ARG_WITH(phidget,
-[  --with-phidget          Add support for Phidget controller],
+AC_ARG_ENABLE(phidget,
+[  --enable-phidget        Enable support for Phidget controller family],
 [
     AC_MSG_RESULT(yes)
 
@@ -113,6 +130,16 @@ AC_ARG_WITH(phidget,
 ])
 
 AC_SUBST(PHIDGET_ENABLED)
+
+if ${TEST} "${FT_ENABLED}" = "false" && ${TEST} "${PHIDGET_ENABLED}" = "false" ; then
+
+    AC_MSG_RESULT()
+    AC_MSG_RESULT([In order to build the project, at least one of --enable-ft639 and --enable-phidget])
+    AC_MSG_RESULT([options have to be specified])
+    AC_MSG_RESULT()
+    
+    AC_MSG_ERROR([Please specify --enable-ft639, --enable-phidget or both])
+fi
 
 TARGET_CLASSPATH=`cd ${srcdir} && pwd`/src/java
 

@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.5 2003-09-03 06:19:36 vtt Exp $
+# $Id: Makefile.am,v 1.6 2003-09-03 06:39:22 vtt Exp $
 
 MODEL_SOURCE = Object.cpp \
                Servo.cpp \
@@ -28,7 +28,18 @@ servomaster_console_SOURCES = servomaster_console.cpp
 servomaster_console_LDADD = libservomaster.la
 servomaster_console_DEPENDENCIES = libservomaster.la
 
-CXXFLAGS = -I../include -fexceptions -Wall -W -Wundef -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wconversion
+CXXFLAGS = -I../include -fexceptions \
+                        -Wall \
+                        -W \
+                        -Wundef \
+                        -Wshadow \
+                        -Wpointer-arith \
+                        -Wcast-qual \
+                        -Wcast-align \
+                        -Wconversion \
+                        -Wstrict-prototypes \
+                        -Wredundant-decls \
+                        -Wunreachable-code
 
 clean-generic:
 

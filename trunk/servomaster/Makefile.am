@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.8 2004-02-04 06:11:37 vtt Exp $
+## $Id: Makefile.am,v 1.9 2004-05-25 05:46:15 vtt Exp $
 
 SUBDIRS = src build
 RPMMACROS = ${HOME}/.rpmmacros
@@ -70,7 +70,7 @@ rpm: dist
 	    exit 1; \
 	fi
 	
-	if @TEST@ ! -f ${RPMMACROS} ; then \
+	if @TEST@ ! -f "${RPMMACROS}" ; then \
 	    @ECHO@ "%_topdir ${RPMDIR}" > ${RPMMACROS}; \
 	    mkdir -p ${RPMDIR}/SOURCES \
 	             ${RPMDIR}/SPECS \

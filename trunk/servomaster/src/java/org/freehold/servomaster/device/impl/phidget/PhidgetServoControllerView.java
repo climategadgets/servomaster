@@ -42,7 +42,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: PhidgetServoControllerView.java,v 1.2 2002-03-09 05:23:15 vtt Exp $
+ * @version $Id: PhidgetServoControllerView.java,v 1.3 2002-03-12 07:07:00 vtt Exp $
  */
 public class PhidgetServoControllerView extends JPanel implements ServoControllerListener, ServoControllerView {
 
@@ -241,5 +241,14 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
     public void deviceDeparted(ServoController device) {
     
         System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+    }
+
+    public void exception(Object source, Throwable t) {
+    
+        synchronized ( System.err ) {
+        
+            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
+            t.printStackTrace();
+        }
     }
 }

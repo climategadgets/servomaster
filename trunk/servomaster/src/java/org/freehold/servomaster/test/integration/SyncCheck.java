@@ -26,7 +26,7 @@ import org.freehold.servomaster.device.model.ServoControllerMetaData;
  * This <strong>is</strong> the stress test.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001,2002
- * @version $Id: SyncCheck.java,v 1.3 2002-03-09 05:23:16 vtt Exp $
+ * @version $Id: SyncCheck.java,v 1.4 2002-03-12 07:07:00 vtt Exp $
  */
 public class SyncCheck implements ServoListener, ServoControllerListener {
 
@@ -230,6 +230,15 @@ public class SyncCheck implements ServoListener, ServoControllerListener {
     public void deviceDeparted(ServoController device) {
     
         System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+    }
+
+    public void exception(Object source, Throwable t) {
+    
+        synchronized ( System.err ) {
+        
+            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
+            t.printStackTrace();
+        }
     }
 
     protected class Stresser implements Runnable {

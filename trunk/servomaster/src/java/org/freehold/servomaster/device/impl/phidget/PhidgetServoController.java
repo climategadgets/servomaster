@@ -30,7 +30,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.2 2002-03-09 05:23:15 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.3 2002-03-12 07:07:00 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -107,6 +107,8 @@ public class PhidgetServoController extends AbstractServoController {
             
                 // Uh oh, I don't think so
                 
+                System.err.println("isConnected:");
+                ioex.printStackTrace();
                 return false;
             }
         }
@@ -162,6 +164,9 @@ public class PhidgetServoController extends AbstractServoController {
             connected = true;
         
         } catch ( IOException ioex ) {
+        
+            System.err.println("init:");
+            ioex.printStackTrace();
         
             if ( isDisconnectAllowed() && (portName != null) ) {
                 
@@ -556,6 +561,9 @@ public class PhidgetServoController extends AbstractServoController {
             
         } catch ( IOException ioex ) {
         
+            System.err.println("send:");
+            ioex.printStackTrace();
+        
             // FIXME: notify the listeners about the departure
                 
             connected = false;
@@ -582,9 +590,11 @@ public class PhidgetServoController extends AbstractServoController {
     private synchronized void send(byte buffer[]) throws IOException {
     
         ControlMessage message = new ControlMessage();
-        
-        message.setRequestType((byte)0x21);
-        message.setRequest((byte)0x09);
+
+        message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
+                                     |ControlMessage.TYPE_CLASS
+                                     |ControlMessage.RECIPIENT_INTERFACE));
+        message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
         message.setValue((short)0x0200);
         message.setIndex((byte)0);
         message.setLength(buffer.length);

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.20 2002-10-01 21:53:59 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.21 2002-10-02 01:33:48 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -184,7 +184,7 @@
 
     </target>
     
-    <target name="JavaCOMM_check" unless="JavaCOMM.present">
+    <target name="JavaCOMM_check" if="ft639.enabled.true" unless="JavaCOMM.present">
     
         <fail message="JavaCOMM extension is not present"/>
         

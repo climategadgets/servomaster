@@ -33,7 +33,7 @@ import org.freehold.servomaster.device.model.transform.Reverser;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.11 2002-01-01 01:45:06 vtt Exp $
+ * @version $Id: ServoView.java,v 1.12 2002-01-01 22:34:34 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -80,6 +80,11 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      * Button group for the mapper selection.
      */
     private ButtonGroup mapperGroup = new ButtonGroup();
+    
+    /**
+     * Panel containing the mapper selection radio buttons.
+     */
+    private JPanel mapperPanel;
     
     /**
      * Radio button for selecting the normal mapper (default).
@@ -214,7 +219,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         
         cs.gridy++;
         
-        JPanel mapperPanel = new JPanel();
+        mapperPanel = new JPanel();
         
         mapperPanel.setLayout(new GridLayout(3, 1));
         mapperPanel.setToolTipText("Select the servo mapping");
@@ -335,6 +340,9 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
             
             controlSlider.setEnabled(enabled);
             smoothBox.setEnabled(enabled);
+            normalBox.setEnabled(enabled);
+            reverseBox.setEnabled(enabled);
+            linearBox.setEnabled(enabled);
         }
     }
     

@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.4 2002-01-05 04:05:23 vtt Exp $
+ * @version $Id: ServoController.java,v 1.5 2002-01-10 02:19:48 vtt Exp $
  */
 public interface ServoController {
 
@@ -168,4 +168,14 @@ public interface ServoController {
      * implementation doesn't support the capabilities discovery.
      */
     public ServoControllerMetaData getMetaData();
+    
+    /**
+     * Get the port name.
+     *
+     * @return the port name.
+     *
+     * @exception IllegalStateException if the controller hasn't been {@link
+     * #init initialized} yet.
+     */
+    public String getPort();
 }

@@ -1,3 +1,7 @@
+0.6p1	- Firmware update for AdvancedServo, fixed the USB timeout problem
+
+0.6p0	- 'Disconnected mode' properly supported for QuadServo
+
 0.5p0	- Added support for autoconf 2.53 and automake 1.6
 	- Removed support for autoconf 2.13 - it was not possible to keep
 	  both 2.13 and 2.53 code together without running into

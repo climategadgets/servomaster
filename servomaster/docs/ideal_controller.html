@@ -66,22 +66,22 @@
                  center and right border, like it is possible to do with the
                  slider controls?
                  
-            <li> Provide the coordinate transformation between the physical
-                 servo position and input value. Useful for compensating the
-                 rotational servo movement to linear controlled body
-                 movement, as well as applications where the natural input
-                 value range differs from 0...1 (for example, steering
-                 wheels and rudders). This abstraction shouldn't be really a
-                 part of the servo abstraction, but rather a module you can
-                 plug the servo into.
+            <li> <font color="blue">Provide the coordinate transformation
+                 between the physical servo position and input value. Useful
+                 for compensating the rotational servo movement to linear
+                 controlled body movement, as well as applications where the
+                 natural input value range differs from 0...1 (for example,
+                 steering wheels and rudders). This abstraction shouldn't be
+                 really a part of the servo abstraction, but rather a module
+                 you can plug the servo into.</font>
             
-            <li> Inverting the coordinate polarity to reverse the servo is
+            <li> <font color="blue">Inverting the coordinate polarity to reverse the servo is
                  not exactly a life saver, but can be useful and is really
                  simple. It can be a part of the coordinate transformation
-                 module as well.
+                 module as well.</font>
                  
-            <li> Implication: the coordinate transformation module interface
-                 should be stackable.
+            <li> <font color="blue">Implication: the coordinate
+                 transformation module interface should be stackable.</font>
                  
             <li> Provide the means to incorporate the closed loop feedback
                  signal and mapping between the feedback and control.

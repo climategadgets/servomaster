@@ -82,7 +82,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.26 2002-03-13 04:54:58 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.27 2002-03-14 17:33:47 vtt Exp $
  */
 public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
@@ -131,11 +131,6 @@ public class FT639ServoController extends AbstractServoController implements FT6
      * @see #setRange
      */
     protected boolean range = false;
-    
-    /**
-     * The lazy status.
-     */
-    private boolean lazy = true;
     
     /**
      * True if the heartbeat thread is repositioning the servos now.
@@ -393,11 +388,12 @@ public class FT639ServoController extends AbstractServoController implements FT6
         activeMode = false;
         
         //System.err.println("mode: setup");
+        //new Exception("setup").printStackTrace();
 
         // VT: FIXME: Do I have a right to do this every time or I have to
-        // rely on the silencer? I guess the latter
+        // rely on the silencer?
 
-        //silentStatusChanged();
+        silentStatusChanged(false);
     }
 
     /**
@@ -423,12 +419,13 @@ public class FT639ServoController extends AbstractServoController implements FT6
 
         touch();
         
-        System.err.println("mode: active");
+        //System.err.println("mode: active");
+        //new Exception("active").printStackTrace();
 
         // VT: FIXME: Do I have a right to do this every time or I have to
-        // rely on the silencer? I guess the latter
+        // rely on the silencer?
 
-        //silentStatusChanged();
+        silentStatusChanged(true);
     }
     
     /**
@@ -455,16 +452,6 @@ public class FT639ServoController extends AbstractServoController implements FT6
         byte result[] = { lower, upper };
         
         return result;
-    }
-    
-    public boolean isLazy() {
-    
-        return lazy;
-    }
-    
-    public void setLazyMode(boolean enable) {
-    
-        lazy = enable;
     }
     
     /**
@@ -544,21 +531,9 @@ public class FT639ServoController extends AbstractServoController implements FT6
         // the activeMode declaration)
         
         activeMode = true;
-        setSetupMode();
+        //setSetupMode(); implied by setRange
         setRange(range);
     }
-    
-    /*
-    private void silentStatusChanged() {
-    
-        if ( !silent ) {
-        
-            return;
-        }
-    
-        silentStatusChanged(activeMode);
-    }
-    */
     
     public ServoControllerMetaData getMetaData() {
     
@@ -677,7 +652,7 @@ public class FT639ServoController extends AbstractServoController implements FT6
             
             int requestedPosition = double2int(position);
             
-            if ( lazy && !repositioningNow ) {
+            if ( isLazy() && !repositioningNow ) {
 
                 // Let's see if we really have to do it
                 
@@ -752,11 +727,20 @@ public class FT639ServoController extends AbstractServoController implements FT6
         // Now that we've taken care of the range, let's reset the servo
         // position
         
-        for ( Iterator i = getServos(); i.hasNext(); ) {
+        repositioningNow = true;
         
-            FT639Servo s = (FT639Servo)i.next();
+        try {
+        
+            for ( Iterator i = getServos(); i.hasNext(); ) {
             
-            s.setActualPosition(s.getPosition());
+                FT639Servo s = (FT639Servo)i.next();
+                
+                s.setActualPosition(s.getPosition());
+            }
+
+        } finally {
+        
+            repositioningNow = false;
         }
     }
     
@@ -782,6 +766,7 @@ public class FT639ServoController extends AbstractServoController implements FT6
     
         exception(t);
     }
+    
     protected class FT639SilentProxy implements SilentProxy {
     
         public synchronized void sleep() {
@@ -801,8 +786,11 @@ public class FT639ServoController extends AbstractServoController implements FT6
         
             try {
             
-                reset();
-                _silentStatusChanged(true);
+                if ( !activeMode ) {
+                
+                    reset();
+                    _silentStatusChanged(true);
+                }
                 
             } catch ( IOException ioex ) {
             

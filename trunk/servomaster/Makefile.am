@@ -1,26 +1,27 @@
-## $Id: Makefile.am,v 1.6 2002-09-30 01:08:25 vtt Exp $
+## $Id: Makefile.am,v 1.7 2003-01-14 18:08:15 vtt Exp $
 
 SUBDIRS = src build
 
 EXTRA_DIST = INSTALL-configure \
              INSTALL-Ant \
              index.html \
+             docs/.cvsignore \
              docs/FAQ.html \
              docs/FT639.html \
+             docs/USB_Phidget.html \
+             docs/USB_Phidget4.html \
+             docs/build.html \
+             docs/credits.html \
+             docs/getinvolved.html \
              docs/future.html \
              docs/ideal_controller.html \
              docs/index.html \
+             docs/legal.html \
              docs/links.html \
-             docs/quickstart.html \
-             docs/smooth_transformer.html \
-             docs/USB_Phidget.html \
-             docs/credits.html \
-             docs/quickstart_jar.html \
-             docs/USB_Phidget4.html \
-             docs/getinvolved.html \
              docs/news.html \
              docs/references.html \
-             docs/legal.html \
+             docs/slls466.pdf \
+             docs/smooth_transformer.html \
              docs/images/advanced_phidget_console.png \
              docs/images/advanced_phidget_console.small.png \
              docs/images/servomaster_console.png \

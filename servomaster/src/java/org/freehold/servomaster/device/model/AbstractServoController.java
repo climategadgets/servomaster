@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.10 2005-01-21 06:43:38 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.11 2005-03-30 22:18:40 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -137,7 +137,7 @@ abstract public class AbstractServoController implements ServoController {
     
     public void setLazyMode(boolean lazy) {
     
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Lazy mode is not supported");
     }
 
     public boolean isLazy() {
@@ -200,7 +200,7 @@ abstract public class AbstractServoController implements ServoController {
     
         if ( silencer == null ) {
         
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Silent operation is not supported");
         }
         
         silencer.setSilentTimeout(timeout, heartbeat);
@@ -212,7 +212,7 @@ abstract public class AbstractServoController implements ServoController {
     
         if ( silencer == null ) {
         
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException("Silent operation is not supported");
         }
         
         boolean oldMode = getSilentMode();

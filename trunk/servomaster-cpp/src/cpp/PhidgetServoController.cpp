@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.11 2003-09-03 06:23:10 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.12 2003-09-03 07:08:37 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -305,7 +305,7 @@ namespace servomaster {
         
         UsbContext::~UsbContext() {
         
-            printf("UsbContext: destroyed: %s %x #%s\n", model, (unsigned int)this, serial);
+            printf("UsbContext: destroyed: %s %8X #%s\n", model, (unsigned int)this, serial);
             
             free(serial);
         }
@@ -460,7 +460,7 @@ namespace servomaster {
             // servo right before destroying itself, so we don't do anything
             // here.
         
-            printf("PhidgetServo: destroyed #%X: %X\n", id, (unsigned int)this);
+            printf("PhidgetServo: destroyed #%X: %8X\n", id, (unsigned int)this);
         }
         
         void PhidgetServo::setActualPosition(double _position) {

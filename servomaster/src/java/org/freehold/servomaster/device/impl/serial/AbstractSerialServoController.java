@@ -18,7 +18,7 @@ import org.freehold.servomaster.device.model.Servo;
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.9 2005-01-21 05:54:25 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.10 2005-01-21 06:43:38 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -121,13 +121,6 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
         reset();
     }
 
-    public String getPort() {
-    
-        checkInit();
-        
-        return portName;
-    }
-    
     protected void checkInit() {
 
         if ( portName == null ) {

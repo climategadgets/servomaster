@@ -18,18 +18,42 @@ import org.freehold.servomaster.device.model.Servo;
  * cumbersome, plus adds unnecessary overhead, so it was decided to provide
  * a separate implementation.
  *
- * <p>
- *
- * <strong>NOTE:</strong>
- *
- * In the current form, the linear transformer supports only 0\u00B0 to
- * 180\u00B0 transformation. However, it will be fixed soon.
- *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: LinearTransformer.java,v 1.3 2002-01-03 22:10:01 vtt Exp $
+ * @version $Id: LinearTransformer.java,v 1.4 2002-01-04 03:15:57 vtt Exp $
  */
 public class LinearTransformer extends AbstractCoordinateTransformer {
 
+    /**
+     * Start angle, degrees.
+     */
+    private final double startAngle;
+    
+    /**
+     * End angle, degrees.
+     */
+    private final double endAngle;
+
+    /**
+     * Range between the start and end angles, in degrees.
+     *
+     * Used in the calculations.
+     */
+    private final double range;
+    
+    /**
+     * Start offset, equals to the cosine of the start angle.
+     *
+     * Used in the calculations.
+     */
+    private final double offset;
+    
+    /**
+     * Difference between the start and end offset.
+     *
+     * Used in the calculations.
+     */
+    private final double scale;
+    
     /**
      * Create an instance supporting 0\u00B0 to 180\u00B0 linear
      * transformation.
@@ -38,7 +62,7 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      */
     public LinearTransformer(Servo target) {
     
-        super(target);
+        this(target, 0.0, 180.0);
     }
     
     /**
@@ -51,24 +75,44 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      *
      * @param endAngle Ending rotational angled, degrees.
      *
-     * @exception IllegalArgumentException if the ending angle is less than
-     * starting angle, or either of them is outside of 0...180 range - it
-     * doesn't make sense to support that for a servo.
+     * @exception IllegalArgumentException if the ending angle is less or
+     * equal than starting angle, or either of them is outside of 0...180
+     * range - it doesn't make sense to support that for a servo.
      */
     public LinearTransformer(Servo target, double startAngle, double endAngle) {
     
         super(target);
         
-        throw new Error("Not Implemented");
+        if ( startAngle < 0 || startAngle > 180 ) {
+        
+            throw new IllegalArgumentException("Start angle is outside of 0...180 range");
+        }
+
+        if ( endAngle < 0 || endAngle > 180 ) {
+        
+            throw new IllegalArgumentException("End angle is outside of 0...180 range");
+        }
+        
+        if ( endAngle <= startAngle ) {
+        
+            throw new IllegalArgumentException("End angle is less or equal than start angle");
+        }
+        
+        this.startAngle = startAngle;
+        this.endAngle = endAngle;
+        
+        range = endAngle - startAngle;
+        offset = Math.cos(Math.toRadians(startAngle));
+        scale = -(offset - Math.cos(Math.toRadians(endAngle)));
     }
     
     protected double transform(double value) {
         
-        return Math.toDegrees(Math.acos((value * -2)  + 1))/180.0;
+        return Math.toDegrees(Math.acos((value * scale)  + offset)) / range;
     }
     
     protected double resolve(double value) {
     
-        return (Math.cos(Math.toRadians(value * 180)) - 1) / -2;
+        return (Math.cos(Math.toRadians(value * range)) - offset) / scale;
     }
 }

@@ -1,3 +1,10 @@
+0.3p0	- API FREEZE
+	- More bugfixes
+	- Console improved
+	- Documentation updated
+
+0.2p2	- Mostly bugfixes
+
 0.2p1	- Added the coordination transforation support and some transformers
         - Reflected the coordination transformation on the console
 

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.11 2002-01-05 02:16:24 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.12 2002-01-05 04:05:23 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -249,7 +249,7 @@
                  use="true"
                  author="true"
                  private="true"
-                 windowtitle="ServoMaster API">
+                 windowtitle="ServoMaster ${version} API">
                 
             <group title="Model" packages="org.freehold.servomaster.device.model*"/>
             <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>

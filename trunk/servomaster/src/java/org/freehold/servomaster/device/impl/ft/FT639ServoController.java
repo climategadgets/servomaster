@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.13 2002-01-03 05:17:39 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.14 2002-01-05 04:05:23 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -696,6 +696,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
         public int getPrecision() {
         
             return 256;
+        }
+        
+        public int getBandwidth() {
+        
+            // 2400 baud max
+            // 2 bytes per command
+            
+            return (2400 / 8) / 2;
         }
     }
     

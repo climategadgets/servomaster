@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.5 2002-01-10 02:19:48 vtt Exp $
+ * @version $Id: ServoController.java,v 1.6 2002-01-19 02:03:40 vtt Exp $
  */
 public interface ServoController {
 
@@ -120,8 +120,38 @@ public interface ServoController {
      *
      * @exception UnsupportedOperationException if the hardware controller
      * is not capable of suspending the control pulse.
+     *
+     * @deprecated Use {@link #setSilentTimeout(long, long)
+     * setSilentTimeout(timeout, heartbeat)} instead.
      */
     public void setSilentTimeout(long timeout);
+
+    /**
+     * Set the silent timeout.
+     *
+     * <p>
+     *
+     * When this timeout after the last positioning operation expires, the
+     * control pulse to the servos is stopped until next positioning
+     * operation, or next heartbeat, whichever occurs first.
+     *
+     * <p>
+     *
+     * When the heartbeat timeout expires, the controller starts sending the
+     * control signal for the next <code>timeout</code> milliseconds, then
+     * falls asleep again.
+     *
+     * @param timeout Time to hold the the servos energized after the last
+     * positioning, in milliseconds.
+     *
+     * @param heartbeat Maximum time to allow the servos to be without a
+     * control signal, in milliseconds. If this is 0, the servos will be
+     * without a signal indefinitely, or until next positioning operation.
+     *
+     * @exception UnsupportedOperationException if the hardware controller
+     * is not capable of suspending the control pulse.
+     */
+    public void setSilentTimeout(long timeout, long heartbeat);
     
     /**
      * Reset the controller.

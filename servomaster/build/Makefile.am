@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.1 2001-08-31 21:38:00 vtt Exp $
+## $Id: Makefile.am,v 1.2 2002-01-02 02:49:38 vtt Exp $
 
 AUTOCONF_FILES = build.sh
 
@@ -17,7 +17,9 @@ TEST = @TEST@
 
 .PHONY: @PACKAGE@.jar
 
-build: ${AUTOCONF_FILES}
+.servomaster.properties: .servomaster.properties.in
+
+build: ${AUTOCONF_FILES} .servomaster.properties
 
 	@ if @TEST@ ! -f @PACKAGE@.jar \
 	  || @TEST@ -n "`@FIND@ ../src/java -name "*.java" -newer @PACKAGE@.jar`" \
@@ -38,7 +40,7 @@ dist-hook:
 	
 clean-generic:
 
-	@ ${RM} -rf *~ .*~ classes src ${AUTOCONF_FILES} ${jar_DATA}
+	@ ${RM} -rf *~ .*~ classes src ${AUTOCONF_FILES} ${jar_DATA} .servomaster.properties
 
 @PACKAGE@.jar: build
 

@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.39 2005-01-21 07:15:05 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.40 2005-01-21 07:41:30 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -459,7 +459,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             // FIXME: Again, this stupid problem I forgot the solution of:
             // can't access the outer class. Oh well.
             
-            _touch();
+            FT639ServoController.this.touch();
         }
 
         public void setRange(int range) {
@@ -480,16 +480,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         }
     }
 
-    /**
-     * Wrapper for <code>touch()</code>.
-     *
-     * Required for the inner class to be able to access the outer.
-     */
-    private void _touch() {
-    
-        touch();
-    }
-    
     /**
      * Make sure that the servos are at the places they're supposed to be.
      *

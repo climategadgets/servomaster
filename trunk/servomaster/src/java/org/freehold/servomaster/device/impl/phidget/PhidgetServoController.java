@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.10 2002-09-18 06:25:10 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.11 2002-09-18 08:17:47 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -1115,6 +1115,7 @@ public class PhidgetServoController extends AbstractServoController {
     protected class ProtocolHandler0x3B extends ProtocolHandler {
     
         private ServoState servoState[] = new ServoState[8];
+        private OutputStream out;
         
         ProtocolHandler0x3B() {
         
@@ -1122,6 +1123,7 @@ public class PhidgetServoController extends AbstractServoController {
             
                 servoState[idx] = new ServoState(idx);
             }
+            
         }
     
         public void reset() {
@@ -1150,6 +1152,43 @@ public class PhidgetServoController extends AbstractServoController {
             // Not supported
         }
         
+        private void init() throws IOException {
+        
+            if ( out == null ) {
+            
+                Configuration cf = thePhidgetServo.getConfiguration();
+                Interface iface = cf.getInterface(0, 0);
+                Endpoint endpoint = null;
+                
+                for ( int idx = 0; idx < iface.getNumEndpoints(); idx++ ) {
+                
+                    Endpoint e = iface.getEndpoint(idx);
+                    
+                    System.err.println("Endpoint: " + e.getEndpoint() + ":" + Integer.toHexString(e.getEndpoint()));
+                    
+                    if ( e.getEndpoint() == 0x01 ) {
+                    
+                        endpoint = e;
+                    }
+                }
+                
+                if ( endpoint == null ) {
+                
+                    throw new IOException("Can't find endpoint 82");
+                }
+                
+                out = endpoint.getOutputStream();
+            }
+        }
+        
+        protected synchronized void send(byte buffer[]) throws IOException {
+        
+            init();
+        
+            out.write(buffer);
+            out.flush();
+        }
+
         protected class ServoState {
         
             /**
@@ -1196,7 +1235,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // VT: FIXME: Is it a little endian or big endian?
                 
-                buffer[3] = (byte)id;
+                buffer[0] = (byte)id;
                 
                 // VT: FIXME: This stuff will be properly handled when the
                 // metadata is ready
@@ -1217,7 +1256,22 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 float2byte(this.position, buffer, 4);
                 float2byte(this.velocity/50, buffer, 8);
-                float2byte(this.acceleration/50, buffer, 8);
+                float2byte(this.acceleration/50, buffer, 12);
+                
+                System.err.println("Position: " + this.position);
+                System.err.print("Buffer:");
+                
+                for ( int idx = 0; idx < buffer.length; idx++ ) {
+                
+                    if ( (idx % 4) == 0 && idx > 0 ) {
+                    
+                        System.err.print(" -");
+                    }
+                    System.err.print(" " + Integer.toHexString(buffer[idx] & 0xFF));
+                    
+                }
+                
+                System.err.println("");
                 
                 return buffer;
             }

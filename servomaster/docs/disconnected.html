@@ -1,0 +1,278 @@
+<html>
+    <head>
+        <title>
+            ServoMaster: Disconnected Operation
+        </title>
+        <meta name="description"
+              content="ServoMaster: platform independent servo controller driver">
+        <meta name="keywords"
+              content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
+    </head>
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
+                 border="0"
+                 alt="SourceForge Logo"
+                 align="right">
+        </A>
+        
+        </A>
+        
+        <h1>
+            <a href="../index.html">ServoMaster</a>: Disconnected Operation
+        </h1>
+        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                
+                    <strong>
+                        <a href="../index.html">Introduction</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <strong>Documentation</strong>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <strong>
+                                <a href="build.html">Build Process</a>
+                            </strong>
+
+                            <br>
+                            
+                            <strong>
+                                Platform Neutral
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="ideal_controller.html">A Dream
+                                     About Ideal Servo Controller</a>
+                                     
+                                <li> <a
+                                     href="smooth_transformer.html">Mixing
+                                     up transition controllers and
+                                     coordinate transformers</a>
+                                     
+                                <li> <a href="future.html">Future Plans &
+                                     Crazy Ideas</a>
+                                
+                            </ul>
+                            
+                            <strong>
+                                <a href="../meta/index.html">Metadata</a>
+                            </strong>
+                            
+                            <br>
+                            
+                            <strong>
+                                <font color="red">Disconnected Operation</font>
+                            </strong>
+                            
+                            <br>
+                        
+                            <strong>
+                                Driver Release Notes
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="FT639.html">FT639</a>
+                                
+                                <li> <a href="USB_Phidget.html">PhidgetServo v3.0</a>
+                                
+                                <li> <a href="USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                        
+                    </font>
+
+                    <p>
+                    
+                    <strong>
+                        <a href="getinvolved.html">Get Involved</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="apidocs/index.html">Javadocs</a>
+                        
+                        </ul>
+
+                    </font>
+
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Disconnected Operation</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                It is often necessary or desirable to keep
+                                the abstraction of the servo controller
+                                active even if the actual hardware
+                                controller is temporarily unavailable. One
+                                frequently encountered cause of
+                                unavailability, which is important enough by
+                                itself, is the USB device being unplugged.
+                                
+                                <p>
+                                
+                                In order to cope with this problem, the
+                                disconnected mode was introduced. If the
+                                disconnect is explicitly allowed (<a
+                                href="../meta/controller/allow_disconnect/index.html"><code>controller/allow_disconnect</code></a>
+                                feature), then an error when communicating
+                                with the hardware bumps the driver into the
+                                disconnected mode. The error is never
+                                reported to the caller, however, the
+                                notification is sent to the
+                                <code>DisconnectListener</code>s of the
+                                controller so they are aware of the
+                                disconnect and can take preventive measures.
+                                
+                                <p>
+                                
+                                The disconnectable device drivers fall into
+                                three major categories:
+                                
+                                <ol>
+                                
+                                    <li> Ones that don't care. A typical
+                                         example of such a device is <a
+                                         href="FT639.html">FT639</a> - it is
+                                         a write-only box, and you can't
+                                         detect whether it is connected or
+                                         not. Writing into the port that has
+                                         a dead controller or no controller
+                                         at all doesn't cause
+                                         <code>IOException</code>. 
+                                         Consequently, no special measures
+                                         must be taken to make this device
+                                         disconnectable. The
+                                         <code>controller/allow_disconnect</code>
+                                         feature is set to <code>true</code>
+                                         and is immutable.
+                                         
+                                         <p>
+                                         
+                                    <li> Dedicated drivers. If a driver
+                                         class knows how to detect a
+                                         specific type of hardware
+                                         controller, the metadata (or,
+                                         should I say, sufficient part of)
+                                         for that controller is known
+                                         beforehand, and it is possible to
+                                         support the disconnected operation
+                                         even if the device was never
+                                         present.
+                                         
+                                         <p>
+                                         
+                                    <li> Factory drivers. If a driver class
+                                         knows how to handle multiple types
+                                         of hardware controllers, it must
+                                         detect the required instance of a
+                                         controller on the startup,
+                                         otherwise it is not possible to do
+                                         anything other than wait for a
+                                         specific instance to arrive and
+                                         then figure out what it is, because
+                                         no information about the type of
+                                         the hardware device can be passed
+                                         to the controller factory when it
+                                         is being instantiated.
+                                
+                                </ol>
+                                
+                                Needless to say, if you are designing a
+                                fail-safe application, class 2 drivers is
+                                what you need. As of the moment of writing,
+                                ServoMaster offers none, but the class 2
+                                drivers are being worked on for the Phidgets
+                                family (currently, all the family is
+                                supported by a single class 3 driver).
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>                                       
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2003
+                    </font>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

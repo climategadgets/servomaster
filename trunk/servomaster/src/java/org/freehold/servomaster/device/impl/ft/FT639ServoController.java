@@ -82,7 +82,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.28 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.29 2003-01-06 19:32:59 vtt Exp $
  */
 public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
@@ -570,9 +570,10 @@ public class FT639ServoController extends AbstractServoController implements FT6
     
         public FT639Meta() {
         
-            features.put("manufacturer/name", "FerretTronics");
-            features.put("manufacturer/URL", "http://www.ferrettronics.com/");
-            features.put("manufacturer/model", "FT639");
+            properties.put("manufacturer/name", "FerretTronics");
+            properties.put("manufacturer/URL", "http://www.ferrettronics.com/");
+            properties.put("manufacturer/model", "FT639");
+
             features.put("controller/silent", new Boolean(true));
             features.put("controller/protocol/serial", new Boolean(true));
             

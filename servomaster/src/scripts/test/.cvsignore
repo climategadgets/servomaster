@@ -1,6 +1,4 @@
 Makefile
 Makefile.in
 .deps
-ft_clock
-ft_swing
-sync_check
+servomaster_sync_check

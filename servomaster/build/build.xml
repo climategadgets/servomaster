@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.23 2003-06-16 07:03:01 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.24 2004-02-04 06:11:37 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -107,7 +107,7 @@
         
         <copy file="../COPYING" tofile="${build.dir}/META-INF/LICENSE"/>
         
-        <jar jarfile="./${project}.jar"
+        <jar jarfile="./${project}-${version}.jar"
              basedir="${build.dir}"
              manifest="../etc/manifest"/>
         

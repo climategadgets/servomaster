@@ -1,6 +1,8 @@
-## $Id: Makefile.am,v 1.7 2003-01-14 18:08:15 vtt Exp $
+## $Id: Makefile.am,v 1.8 2004-02-04 06:11:37 vtt Exp $
 
 SUBDIRS = src build
+RPMMACROS = ${HOME}/.rpmmacros
+RPMDIR = ${HOME}/.rpm
 
 EXTRA_DIST = INSTALL-configure \
              INSTALL-Ant \
@@ -60,3 +62,24 @@ clean-generic:
 javadoc:
 
 	cd build && ${MAKE} javadoc
+
+rpm: dist
+
+	@ if @TEST@ -z "@RPMBUILD@" ; then \
+	    @ECHO@ "RPMBUILD binary not found, can't build RPM package"; \
+	    exit 1; \
+	fi
+	
+	if @TEST@ ! -f ${RPMMACROS} ; then \
+	    @ECHO@ "%_topdir ${RPMDIR}" > ${RPMMACROS}; \
+	    mkdir -p ${RPMDIR}/SOURCES \
+	             ${RPMDIR}/SPECS \
+	             ${RPMDIR}/BUILD \
+	             ${RPMDIR}/RPMS/i386 \
+	             ${RPMDIR}/SRPMS ; \
+	fi
+	
+	cd src/rpm && ${MAKE} @PACKAGE@.spec
+	@LN_S@ -f `pwd`/src/rpm/@PACKAGE@.spec ${RPMDIR}/SPECS/@PACKAGE@.spec
+	@LN_S@ -f `pwd`/@PACKAGE@-@VERSION@.tar.gz ${RPMDIR}/SOURCES/@PACKAGE@-@VERSION@.tar.gz
+	cd ${RPMDIR}/SPECS && @RPMBUILD@ -ba @PACKAGE@.spec

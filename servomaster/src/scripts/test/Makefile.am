@@ -1,13 +1,13 @@
-## $Id: Makefile.am,v 1.4 2003-01-06 05:48:02 vtt Exp $
+## $Id: Makefile.am,v 1.5 2004-02-04 06:11:38 vtt Exp $
 
-testbindir = ${prefix}/lib/test/bin
-testbin_PROGRAMS = sync_check
-sync_check_SOURCES = sync_check
+testbindir = ${prefix}/bin
+testbin_PROGRAMS = servomaster_sync_check
+servomaster_sync_check_SOURCES = servomaster_sync_check
 
 RM = @RM@
 EXEEXT = @EXEEXT@
 
-sync_check$(EXEEXT):
+servomaster_sync_check$(EXEEXT):
 
 clean:
 

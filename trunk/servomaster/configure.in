@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.9 2002-02-21 07:19:41 vtt Exp $)dnl
+AC_REVISION($Id: configure.in,v 1.10 2002-03-09 05:23:15 vtt Exp $)dnl
 
 dnl I'd like it to read the configure-options to allow both the global set
 dnl of options, as well as the local set.
@@ -28,8 +28,8 @@ dnl versions.
 AC_INIT(src/java/org/freehold/servomaster/device/model/Servo.java)
 
 VERSION_MAJOR="0"
-VERSION_MINOR="3"
-PATCHLEVEL="2"
+VERSION_MINOR="4"
+PATCHLEVEL="0"
 
 AC_SUBST(VERSION_MAJOR)dnl
 AC_SUBST(VERSION_MINOR)dnl
@@ -74,6 +74,45 @@ dnl AC_PROG_JAVATOOL(JAR,jar,[     Java Archiver])
 AC_PATH_JAVACLASS(ANT,jakarta,org.apache.tools.ant.Main,[     Where to find the Jakarta Ant jar file (http://jakarta.apache.org/ant/)])
 AC_PATH_JAVACLASS(JAVA_COMPILER,jakarta,sun.tools.javac.Main,[     Where to find the Jakarta javac jar file (http://jakarta.apache.org/)])
 AC_PATH_JAVACLASS(XERCES,jakarta,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
+
+PHIDGET_ENABLED=false
+
+AC_MSG_CHECKING(if phidget is enabled)
+
+AC_ARG_WITH(phidget,
+[  --with-phidget          Add support for Phidget controller],
+[
+    AC_MSG_RESULT(yes)
+
+    AC_ARG_WITH(jusb,
+    [  --with-jusb             Specify the root directory of jUSB (http://jusb.sourceforge.net/)],
+    [
+        dnl Verify the library location
+        
+        AC_MSG_CHECKING(libjusb.so)
+        
+        if ${TEST} ! -f $withval/libjusb.so ; then
+        
+            AC_MSG_ERROR([jUSB shared library (libjusb.so) doesn't exist at ${withval}/libjusb.so])
+        else
+            JUSB_LIB=${withval}
+            AC_SUBST(JUSB_LIB)
+            AC_MSG_RESULT(${JUSB_LIB})
+        fi
+        
+        dnl Verify the jar file location
+        
+        AC_PATH_JAVACLASS(JUSB,${withval},usb.core.Bus,[    Where to find the jUSB jar file (http://jusb.sourceforge.net/)])
+        
+    ])
+    
+    PHIDGET_ENABLED=true
+],
+[
+    AC_MSG_RESULT(no)
+])
+
+AC_SUBST(PHIDGET_ENABLED)
 
 TARGET_CLASSPATH=`cd ${srcdir} && pwd`/src/java
 

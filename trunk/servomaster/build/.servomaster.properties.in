@@ -1,2 +1,4 @@
 version=@VERSION@
 prefix=@prefix@
+JUSB.jar=@JUSB_CLASSES@
+phidget.enabled=@PHIDGET_ENABLED@

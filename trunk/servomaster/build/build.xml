@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.13 2002-02-20 08:25:12 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.14 2002-03-09 05:23:15 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -41,6 +41,8 @@
     <property name="dist.dir" value="../build/${project}-${version}"/>
     <property name="javadoc.dir" value="../docs/apidocs"/>
     
+    <property name="phidget.enabled.${phidget.enabled}" value="true"/>
+    
     <!--
     
         Build target list.
@@ -63,7 +65,10 @@
       
     <property name="model.build.src" value="../build/src/model"/>
     <property name="ft639.build.src" value="../build/src/ft639"/>
+    <property name="phidget.build.src" value="../build/src/phidget"/>
     <property name="view.build.src" value="../build/src/view"/>
+    <property name="view_ft639.build.src" value="../build/src/view_ft639"/>
+    <property name="view_phidget.build.src" value="../build/src/view_phidget"/>
     <property name="test.build.src" value="../build/src/test"/>
 
     <!--
@@ -77,7 +82,15 @@
          
       -->
     
-    <target name="servomaster" depends="prepare,model,ft639,view,test">
+    <target name="servomaster" depends="prepare,
+                                        model,
+                                        ft639,
+                                        phidget,
+                                        view,
+                                        view_ft639,
+                                        view_phidget,
+                                        test,
+                                        test_phidget">
     
         <mkdir dir="${build.dir}/META-INF"/>
         
@@ -98,6 +111,10 @@
         <!-- Check if we have JavaCOMM available -->
         
         <available classname="javax.comm.SerialPort" property="JavaCOMM.present"/>
+        
+        <!-- Check if jUSB is available -->
+        
+        <available classname="usb.core.Bus" classpath="${JUSB.jar}" property="jUSB.present"/>
     
     </target>
     
@@ -108,6 +125,7 @@
         <echo>
         
             Will be installed to: ${prefix}
+            Phidget enabled:      ${phidget.enabled}
 
         </echo>
 
@@ -126,8 +144,14 @@
                 <include name="device/model/ServoControllerMetaData.java"/>
                 <include name="device/model/ServoControllerListener.java"/>
                 <include name="device/model/AbstractServo.java"/>
+                <include name="device/model/AbstractServoController.java"/>
+                <include name="device/model/DisconnectListener.java"/>
                 <include name="device/model/TransitionController.java"/>
                 <include name="device/model/TransitionToken.java"/>
+                <include name="device/model/SilentDevice.java"/>
+
+                <include name="device/model/silencer/SilentHelper.java"/>
+                <include name="device/model/silencer/SilentProxy.java"/>
 
                 <include name="device/model/transform/AbstractCoordinateTransformer.java"/>
                 <include name="device/model/transform/Reverser.java"/>
@@ -158,6 +182,18 @@
     
     </target>
     
+    <target name="jUSB_check" unless="jUSB.present" if="phidget.enabled.true">
+    
+        <fail message="jUSB was not found in '${JUSB.jar}'"/>
+        
+    </target>
+    
+    <target name="jUSB_enable" depends="jUSB_check" if="phidget.enabled.true">
+    
+        <echo message="jUSB verified"/>
+    
+    </target>
+    
     <!--
     
         The classes pertinent to FerretTronics FT639
@@ -180,6 +216,32 @@
         <javac depend="on" deprecation="on" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
+
+    <!--
+    
+        The classes pertinent to Phidget controller
+        
+      -->
+    
+    <target name="phidget" depends="model,jUSB_enable" if="phidget.enabled.true">
+    
+        <copy todir="${phidget.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/impl/phidget/PhidgetServoController.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${phidget.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${JUSB.jar}"/>
+            </classpath>
+        </javac>
+        
+    </target>
     
     <!--
     
@@ -196,6 +258,7 @@
                 <include name="view/Console.java"/>
                 <include name="view/ServoView.java"/>
                 <include name="view/ServoControllerView.java"/>
+                <include name="view/SilencerPanel.java"/>
                 <include name="device/impl/ft/FT639ServoControllerView.java"/>
                 
             </fileset>
@@ -206,7 +269,39 @@
 
     </target>
     
-    <target name="test" depends="model,ft639">
+    <target name="view_ft639" depends="view,ft639">
+    
+        <copy todir="${view_ft639.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/impl/ft/FT639ServoControllerView.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
+
+    </target>
+
+    <target name="view_phidget" depends="view,phidget" if="phidget.enabled.true">
+    
+        <copy todir="${view_phidget.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/impl/phidget/PhidgetServoControllerView.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
+
+    </target>
+    
+    <target name="test" depends="model">
     
         <copy todir="${test.build.src}/org/freehold/servomaster">
         
@@ -218,7 +313,31 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}"/>
+        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${JUSB.jar}"/>
+            </classpath>
+        </javac>
+
+    </target>
+
+    <target name="test_phidget" depends="model,jUSB_enable" if="phidget.enabled.true">
+    
+        <copy todir="${test.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="test/USB_Map.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${JUSB.jar}"/>
+            </classpath>
+        </javac>
 
     </target>
 
@@ -270,8 +389,13 @@
                 
             <group title="Model" packages="org.freehold.servomaster.device.model*"/>
             <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>
+            <group title="PhidgetServo Driver" packages="org.freehold.servomaster.device.impl.phidget"/>
             <group title="View" packages="org.freehold.servomaster.view"/>
             <group title="Tests" packages="org.freehold.servomaster.test*"/>
+            
+            <classpath>
+                <pathelement path="${JUSB.jar}"/>
+            </classpath>
 
         </javadoc>
     

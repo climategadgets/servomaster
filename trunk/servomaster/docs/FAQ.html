@@ -24,8 +24,12 @@
             <dt> <strong>What is a project status?</strong>
             
             <dd> Architecture is clear, design is done, Java implementation
-                 for one of the controllers (<a href="FT639.html">FT639</a>)
-                 is done. Second is coming. Stay tuned.
+                 for two controllers (<a href="FT639.html">FT639</a>) and <a
+                 href="USB_Phidget.html">PhidgetServo</a>) is done, the
+                 production stability is reached (one of the controllers
+                 manages my home HVAC system - uptime is measured in weeks
+                 and the interruptions occur only when I upgrade the
+                 software for the rest of the system). More are coming.
                  
                  <p>
         
@@ -46,26 +50,25 @@
                  
                  <p>
                  
-            <dt> <strong>Why FerretTronics is the only implementation
-                 avaialable?</strong>
-                 
-            <dd> Because it was the cheapest thing available at the time,
-                 almost half as expensive as the next one. Is it the best? 
-                 No, <a href="ideal_controller.html">here's why</a>. Is it
-                 the worst? Don't think so. It allows to do things other
-                 controllers don't (header length feature). The protocol is
-                 not bad either.
-                 
-                 <p>
-                 
             <dt> <strong>Are there other hardware controller drivers
                  coming?</strong>
                  
             <dd> You bet. The next one is probably <a
-                 href="http://www.seetron.com/ssc.htm">SSC</a>, unless I get
-                 to implement my <a href="future.html">crazy ideas</a>
-                 sooner.
+                 href="http://www.ohmark.co.nz/dsc.htm">Ohmark Digital Servo
+                 Controller</a>, unless I get to implement my <a
+                 href="future.html">crazy ideas</a> sooner. Why Ohmark? It
+                 supports the transitions in hardware.
                  
+                 <p>
+             
+            <dt> <strong>How do you select the hardware controllers to
+                 implement the drivers for?</strong>
+            
+            <dd> First one I bought. The rest were donated. If you want the
+                 driver for your controller, consider donating one - by now,
+                 the implementation is pretty straightforward, it takes a
+                 day or two of straight coding.
+            
                  <p>
                  
             <dt> <strong>I've bought the FT639 and put it together, and it
@@ -101,9 +104,11 @@
                   
                   <p>
                   
-                  As a side effect, this reduces the energy consumption and
-                  servo wear. Since the servos may be working 24x7, this may
-                  be important as well.
+                  As a side effect, this reduces the energy consumption (the
+                  servo not getting the pulse goes to a powerdown and
+                  consumes about 8mA - thanks again, Chester) and servo
+                  wear. Since the servos may be working 24x7, this may be
+                  important as well.
                   
                   <p>
 

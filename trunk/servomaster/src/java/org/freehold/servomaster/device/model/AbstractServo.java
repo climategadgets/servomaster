@@ -11,7 +11,7 @@ import java.util.Set;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractServo.java,v 1.5 2002-02-21 07:19:41 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.6 2002-03-09 05:23:16 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -232,6 +232,22 @@ abstract public class AbstractServo implements Servo {
         }
         
         listenerSet.remove(listener);
+    }
+    
+    /**
+     * Check if the value is within 0...1.0 range.
+     *
+     * @param position Value to check.
+     *
+     * @exception IllegalArgumentException if the position is out of 0...1.0
+     * range.
+     */
+    protected final void checkPosition(double position) {
+    
+        if ( position < 0 || position > 1.0 ) {
+        
+            throw new IllegalArgumentException("Position out of 0...1.0 range: " + position);
+        }
     }
     
     private class TransitionDriver implements Runnable {

@@ -128,7 +128,24 @@
                   unpredictable. I've taken countermeasures against the
                   range changes, and gave up on header length changes -
                   caveat emptor.
-                 
+                  
+                  <p>
+                  
+             <li> Seems to be unreliable when a massive data transfer on the
+                  serial port is coming. When I install a crawl transition
+                  controller on a servo and set it to a different position,
+                  the controller gets flooded with data and seems to be
+                  misinterpreting the servo number once in a while. As a
+                  result, wrong servo gets positioned, and since the
+                  position of a different servo is unrelated, this wreaks
+                  havoc on the system.
+                  
+                  <p>
+                  
+                  For quite a long time I thought that this is related to
+                  the noise in the serial cable, but now I tend to think
+                  that the controller is the culprit.
+                  
         </ul>
     
         <h2>Conclusion</h2>

@@ -26,7 +26,7 @@ import org.freehold.servomaster.device.model.ServoControllerMetaData;
  * This <strong>is</strong> the stress test.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001,2002
- * @version $Id: SyncCheck.java,v 1.2 2002-02-21 07:19:41 vtt Exp $
+ * @version $Id: SyncCheck.java,v 1.3 2002-03-09 05:23:16 vtt Exp $
  */
 public class SyncCheck implements ServoListener, ServoControllerListener {
 
@@ -222,6 +222,16 @@ public class SyncCheck implements ServoListener, ServoControllerListener {
         pt.interrupt();
     }
     
+    public void deviceArrived(ServoController device) {
+    
+        System.err.println("deviceArrived is not implemented by " + getClass().getName());
+    }
+
+    public void deviceDeparted(ServoController device) {
+    
+        System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+    }
+
     protected class Stresser implements Runnable {
     
         int id;
@@ -249,7 +259,11 @@ public class SyncCheck implements ServoListener, ServoControllerListener {
                     
                 } catch ( IOException ioex ) {
                 
-                    System.out.println("E " + Integer.toHexString(id) + "/" + servo + ": " + ioex.getMessage());
+                    synchronized ( System.out ) {
+                    
+                        System.out.println("E " + Integer.toHexString(id) + "/" + servo + ":");
+                        ioex.printStackTrace();
+                    }
                 }
             }
         }

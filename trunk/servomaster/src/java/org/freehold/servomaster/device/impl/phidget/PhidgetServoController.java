@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.19 2003-07-03 07:47:33 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.20 2003-07-03 08:38:16 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -1445,7 +1445,9 @@ public class PhidgetServoController extends AbstractServoController {
         
         public void silence() throws IOException {
         
-            // Not supported
+            // VT: FIXME
+            
+            System.err.println("silence() is not implemented in " + getClass().getName());
         }
         
         private void init() throws IOException {
@@ -1621,6 +1623,13 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 buffer[0] = (byte)id;
                 
+                // VT: FIXME: This will have to change to support the
+                // 'silenced' mode. According to the specs, bit 1 should be
+                // set to 1, otherwise the servos will not get the pulse and
+                // will go to standby mode. In reality, it has to be 0xFF.
+                
+                buffer[1] = (byte)0xFF;
+                
                 // Initial values
                 
                 velocity = 360;
@@ -1736,6 +1745,7 @@ public class PhidgetServoController extends AbstractServoController {
         
             PhidgetMeta0x3B() {
             
+                features.put("controller/silent", new Boolean(true));
                 features.put("controller/protocol/USB", new Boolean(true));
                 
                 // NOTE: This controller does indeed have the 'serial' feature,
@@ -1743,6 +1753,10 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 features.put("controller/protocol/serial", new Boolean(false));
                 
+                // Silent timeout is five seconds
+
+                properties.put("controller/silent", "5000");
+
                 // VT: FIXME
                 
                 properties.put("controller/bandwidth", Integer.toString((2400 / 8) / 2));

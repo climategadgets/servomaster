@@ -1,113 +1,246 @@
 <html>
-
     <head>
-    
         <title>
-        
-            Servomaster: Mixing up transition controllers and coordinate
-            transformers
-        
+            ServoMaster: Mixing up transition controllers and coordinate transformers
         </title>
-        
         <meta name="description"
               content="ServoMaster: platform independent servo controller driver">
         <meta name="keywords"
               content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
-              
     </head>
-    
-    <body>
-    
-        <a href="http://sourceforge.net">
-            <img src="http://sourceforge.net/sflogo.php?group_id=34418&type=1"
-                 width="88"
-                 height="31"
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
                  border="0"
                  alt="SourceForge Logo"
-                 align=right>
-            </A>
-    
-        <h1>
+                 align="right">
+        </A>
         
-            <a href="../index.html">ServoMaster</a>: Mixing up transition controllers and coordinate
-            transformers
-            
+        </A>
+        
+        <h1>
+            <a href="../index.html">ServoMaster</a>: Mixing up transition controllers and coordinate transformers
         </h1>
         
-        The coordinate transformers (see the <a
-        href="apidocs/index.html">API documentation</a>) are stacked on top
-        of the servo abstraction (actually, the coordinate transformers
-        <i>extend</i> the servo interface).
-        
-        <p>
-        
-        Since the controlled transition may be supported by the controller
-        itself, it makes sense to make the transition controller abstraction
-        a part of servo abstraction, unlike coordinate transformer.
-        
-        <p>
-        
-        However, there are interesting side effects. Consider this example:
-        
-        <pre>
-            ServoController controller = new FooController();
-            Servo servo = controller.getServo("s");
-            Servo linearServo = new LinearTransformer(s);
-            
-            linearServo.setPosition(0);
-            <b>servo</b>.attach(new CrawlTransitionController());
-            linearServo.setPosition(1);
-        </pre>
-        
-        Pay attention to the fact that the transition controller is attached
-        to the servo itself.
-        
-        <p>
-        
-        This will require the servo to move as fast as it can to the linear
-        0 position, then crawl to the linear 1.0. However, in this example the
-        <i>angular</i> movement of the servo will be smooth, not
-        <i>linear</i>.
-        
-        <p>
-        
-        The more is a difference between the angular position required from
-        the servo and the position requested from the topmost transformer,
-        the more noticeable this discrepancy will become.
-        
-        <p>
-        
-        However, there are cases when this is perfectly acceptable - for
-        example, for the high latency systems where the servo controls the
-        valves, and the transition time is negligible, but the linearity of
-        the control is important.
-        
-        <p>
-        
-        Compare:
-        
-        <pre>
-            ServoController controller = new FooController();
-            Servo servo = controller.getServo("s");
-            Servo linearServo = new LinearTransformer(s);
-            
-            linearServo.setPosition(0);
-            <b>linearServo</b>.attach(new CrawlTransitionController());
-            linearServo.setPosition(1);
-        </pre>
-        
-        In this example, the transition controller is attached to the linear
-        coordinate transformer, and the <i>linear</i> movement of the servo
-        controlled object will be smooth, but not the <i>angular</i>
-        movement of the servo.
-        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                
+                    <strong>
+                        <a href="../index.html">Introduction</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="index.html">Documentation</a>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <strong>
+                                Platform Neutral
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="ideal_controller.html">A Dream
+                                     About Ideal Servo Controller</a>
+                                     
+                                <li> <strong>Mixing up transition
+                                     controllers and coordinate
+                                     transformers</strong>
+                                     
+                                <li> <a href="future.html">Future Plans &
+                                     Crazy Ideas</a>
+                                
+                            </ul>
+                        
+                            <strong>
+                                Driver Release Notes
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="FT639.html">FT639</a>
+                                
+                                <li> <a href="USB_Phidget.html">PhidgetServo v3.0</a>
+                                
+                                <li> <a href="USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                        
+                    </font>
+
+                    <p>
+                    
+                    <strong>
+                        <a href="getinvolved.html">Get Involved</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="docs/apidocs/index.html">Javadocs</a>
+                        
+                        </ul>
+
+                    </font>
+
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Mixing up transition controllers and coordinate transformers</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                The coordinate transformers (see the <a
+                                href="apidocs/index.html">API
+                                documentation</a>) are stacked on top of the
+                                servo abstraction (actually, the coordinate
+                                transformers <i>extend</i> the servo
+                                interface).
+                                
+                                <p>
+                                
+                                Since the controlled transition may be
+                                supported by the controller itself, it makes
+                                sense to make the transition controller
+                                abstraction a part of servo abstraction,
+                                unlike coordinate transformer.
+                                
+                                <p>
+                                
+                                However, there are interesting side effects.
+                                Consider this example:
+                                
+        The cable from the servo controller to the servo has to be very        The cable from the servo controller to the servo has to be very        The cable from the servo controller to the servo has to be very<pre>
+        short. The reason for this is that the signal from the controller to        short. The reason for this is that the signal from the controller to        short. The reason for this is that the signal from the controller to    ServoController controller = new FooController();
+        the servo is PWM, which makes it prone to degradation and picking up        the servo is PWM, which makes it prone to degradation and picking up        the servo is PWM, which makes it prone to degradation and picking up    Servo servo = controller.getServo("s");
+        noise. While the regular circuits react to the noise with more or        noise. While the regular circuits react to the noise with more or        noise. While the regular circuits react to the noise with more or    Servo linearServo = new LinearTransformer(s);
+        less graceful degradation, noise on PWM signal makes the servos        less graceful degradation, noise on PWM signal makes the servos        less graceful degradation, noise on PWM signal makes the servos    
+        jitter, which in some cases makes them completely unusable. The        jitter, which in some cases makes them completely unusable. The        jitter, which in some cases makes them completely unusable. The    linearServo.setPosition(0);
+        longer the cable, the higher the chance to render the servo        longer the cable, the higher the chance to render the servo        longer the cable, the higher the chance to render the servo    <b>servo</b>.attach(new CrawlTransitionController());
+        unusable.                       unusable.                       unusable.                   linearServo.setPosition(1);
+                                                                                                </pre>
+        <p>                             <p>                             <p>                                                     
+                                                                                                                                Pay attention to the fact that the
+        There are ways to fight this phenomenon: put a capacitor between the        There are ways to fight this phenomenon: put a capacitor between the        There are ways to fight this phenomenon: put a capacitor between the                                transition controller is attached to the
+        ground and V<sub>cc</sub>, put a signal amplifier (a.k.a. servo        ground and V<sub>cc</sub>, put a signal amplifier (a.k.a. servo        ground and V<sub>cc</sub>, put a signal amplifier (a.k.a. servo                                servo itself.
+        booster) next to the servo, shield the cable, make it thicker, etc.         booster) next to the servo, shield the cable, make it thicker, etc.         booster) next to the servo, shield the cable, make it thicker, etc.                                 
+        All these solutions do work to some extent. Depending on the length        All these solutions do work to some extent. Depending on the length        All these solutions do work to some extent. Depending on the length                                <p>
+        of the cable, they may or may not be sufficient. But all of them        of the cable, they may or may not be sufficient. But all of them        of the cable, they may or may not be sufficient. But all of them                                
+        have the same basic problem: they are analog, consequently, they can        have the same basic problem: they are analog, consequently, they can        have the same basic problem: they are analog, consequently, they can                                This will require the servo to move as fast
+        alleviate the problem, but not eliminate it completely. In my        alleviate the problem, but not eliminate it completely. In my        alleviate the problem, but not eliminate it completely. In my                                as it can to the linear 0 position, then
+        extreme case (a requirement to control a servo that is 100+ feet        extreme case (a requirement to control a servo that is 100+ feet        extreme case (a requirement to control a servo that is 100+ feet                                crawl to the linear 1.0. However, in this
+        from the computer), they are unlikely to work (this remains to be        from the computer), they are unlikely to work (this remains to be        from the computer), they are unlikely to work (this remains to be                                example the <i>angular</i> movement of the
+        seen, but something tells me I'm right :()        seen, but something tells me I'm right :()        seen, but something tells me I'm right :()                                servo will be smooth, not <i>linear</i>.
+                                                                                                                                
+        <p>                             <p>                             <p>                                                     <p>
+                                                                                                                                
+        So, to <i>eliminate</i> the problem, the paradigm shift is required.        So, to <i>eliminate</i> the problem, the paradigm shift is required.        So, to <i>eliminate</i> the problem, the paradigm shift is required.                                The more is a difference between the angular
+                                                                                                                                position required from the servo and the
+        <p>                             <p>                             <p>                                                     position requested from the topmost
+                                                                                                                                transformer, the more noticeable this
+        Here goes.                      Here goes.                      Here goes.                                              discrepancy will become.
+                                                                                                                                
+        <p>                             <p>                             <p>                                                     <p>
+                                                                                                                                
+        There is a solution that is known to work reliably over reasonably        There is a solution that is known to work reliably over reasonably        There is a solution that is known to work reliably over reasonably                                However, there are cases when this is
+        long connections. It is called <a        long connections. It is called <a        long connections. It is called <a                                perfectly acceptable - for example, for the
+        href="http://www.maxim-ic.com/1st_pages/tb1.htm">1-Wire&reg;        href="http://www.maxim-ic.com/1st_pages/tb1.htm">1-Wire&reg;        href="http://www.maxim-ic.com/1st_pages/tb1.htm">1-Wire&reg;                                high latency systems where the servo
+        Protocol</a>. There is a whole family of devices working using this        Protocol</a>. There is a whole family of devices working using this        Protocol</a>. There is a whole family of devices working using this                                controls the valves, and the transition time
+        protocol (<a href="http://dbserv.maxim-ic.com/1-Wire.cfm">here</a>),        protocol (<a href="http://dbserv.maxim-ic.com/1-Wire.cfm">here</a>),        protocol (<a href="http://dbserv.maxim-ic.com/1-Wire.cfm">here</a>),                                is negligible, but the linearity of the
+        and the guys did a great job on putting together the API for        and the guys did a great job on putting together the API for        and the guys did a great job on putting together the API for                                control is important.
+        communicating with those devices (<a        communicating with those devices (<a        communicating with those devices (<a                                
+        href="http://www.ibutton.com/software/index.html">here</a>). These        href="http://www.ibutton.com/software/index.html">here</a>). These        href="http://www.ibutton.com/software/index.html">here</a>). These                                <p>
+        device are controllable, and the whole concept is beautiful.        device are controllable, and the whole concept is beautiful.        device are controllable, and the whole concept is beautiful.                                
+                                                                                                                                Compare:
+        <p>                             <p>                             <p>                                                     
+                                                                                                <pre>
+        Getting to the point, I can use a 1-Wire&reg; device to control the        Getting to the point, I can use a 1-Wire&reg; device to control the        Getting to the point, I can use a 1-Wire&reg; device to control the    ServoController controller = new FooController();
+        PWM oscillator that is, in turn, controlling the servo that is right        PWM oscillator that is, in turn, controlling the servo that is right        PWM oscillator that is, in turn, controlling the servo that is right    Servo servo = controller.getServo("s");
+        next to it. The 1-Wire&reg; devices usually have a small footprint        next to it. The 1-Wire&reg; devices usually have a small footprint        next to it. The 1-Wire&reg; devices usually have a small footprint    Servo linearServo = new LinearTransformer(s);
+        and are cheap (the most expensive I've bought so far was under $5,        and are cheap (the most expensive I've bought so far was under $5,        and are cheap (the most expensive I've bought so far was under $5,    
+        not counting the controller, which is $10), so this solution is just        not counting the controller, which is $10), so this solution is just        not counting the controller, which is $10), so this solution is just    linearServo.setPosition(0);
+        about as good as any other, except one fact: it is reliable and        about as good as any other, except one fact: it is reliable and        about as good as any other, except one fact: it is reliable and    <b>linearServo</b>.attach(new CrawlTransitionController());
+        exact by definition. It is <strong>digital</strong>.        exact by definition. It is <strong>digital</strong>.        exact by definition. It is <strong>digital</strong>.    linearServo.setPosition(1);
+                                                                                                </pre>
+        <p>                             <p>                             <p>                                                     
+                                                                                                                                In this example, the transition controller
+        Too bad it is slow as hell. However, there are applications where it        Too bad it is slow as hell. However, there are applications where it        Too bad it is slow as hell. However, there are applications where it                                is attached to the linear coordinate
+        is appropriate, so not all hope is lost.        is appropriate, so not all hope is lost.        is appropriate, so not all hope is lost.                                transformer, and the <i>linear</i> movement
+                                                                                                                                of the servo controlled object will be
+        <p>                             <p>                             <p>                                                     smooth, but not the <i>angular</i> movement
+                                                                                                                                of the servo.
+        Details are to be defined. Stay tuned.        Details are to be defined. Stay tuned.        Details are to be defined. Stay tuned.                                
+                                                                                                                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>
                 <td align=left>
                     <font size=-1>
                         <a href="../index.html">ServoMaster: Home</a>
-                    </font>
+                    </font>                                       
                 </td>
                 <td align=right>
                     <font size=-1>
@@ -116,6 +249,6 @@
                 </td>
             </tr>
         </table>
+
     </body>
-    
 </html>

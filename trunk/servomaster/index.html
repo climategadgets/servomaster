@@ -1,95 +1,237 @@
 <html>
     <head>
         <title>
-            
             ServoMaster
-            
         </title>
         <meta name="description"
               content="ServoMaster: platform independent servo controller driver">
         <meta name="keywords"
               content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
     </head>
-    <body>
-    
-        <a href="http://sourceforge.net">
-            <img src="http://sourceforge.net/sflogo.php?group_id=34418&type=1"
-                 width="88"
-                 height="31"
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="docs/images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
                  border="0"
                  alt="SourceForge Logo"
-                 align=right>
-            </A>
+                 align="right">
+        </A>
+        
+        <h1>
+            <a href="http://servomaster.sourceforge.net">ServoMaster</a>
+        </h1>
+        
+        <hr>
+        <table border=0>
+            <tr>
+                <td valign=top>
+                    <strong>
+                        Introduction
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <li> <a href="docs/news.html">News & Status</a>
+                            
+                            <li> <a href="docs/FAQ.html">FAQs</a>
+                            
+                            <li> <a href="docs/references.html">Reference Library</a>
+                            
+                            <li> <a href="docs/credits.html">Credits</a>
 
-        <img src="docs/images/servos.jpg"
-             alt="Picture of servos">
-             
-            
-        <h1><a href="http://servomaster.sourceforge.net/">ServoMaster</a></h1>
-        
-        
-        There is a lot of servos used in radio controlled modeling or
-        robotics applications, and there are vendors manufacturing the
-        hardware controllers allowing to control the servos, to name a few:
-        
-        <ul>
-        
-            <li> <a
-                 href="http://www.phidgets.com/">PhidgetServo</a>
-        
-            <li> <a href="http://www.ferrettronics.com">FerretTronics</a> <a
-                 href="http://www.ferrettronics.com/product639.html">FT639</a>,
-                 <a
-                 href="http://www.ferrettronics.com/product649.html">FT649</a>
-            
-            <li> <a href="http://www.seetron.com/">Scott Edwards
-                 Electronics, Inc. (Seetron)</a> <a
-                 href="http://www.seetron.com/ssc.htm">SSC</a>
-                 
-            <li> Quite a lot of vendors providing the hardware controllers
-                 based on PIC16F84 device
-                 
-        </ul>
-        
-        However, almost all of them (with <a
-        href="docs/USB_Phidget.html">notable exceptions</a>), being in the
-        hardware manufacturing business, care little about providing a
-        consistent interface for the servos and controllers. This is
-        understandable, but disappointing, because all the servos are just
-        about the same, and the basic functionality of the controllers is
-        just about the same.
-        
-        <p>
-        
-        <i>
-        
-            <blockquote>
-            
-                <strong>ServoMaster</strong> is a project dedicated to
-                providing a consistent hardware independent way of
-                controlling the servos with the personal computer.
-                
-            </blockquote>
-            
-        </i>
-        
-        More documentation is available <a href="docs/index.html">here</a>.
-        
+                            <li> <a href="docs/legal.html">Legal</a>
+                        
+                        </ul>
+                    </font>
+                    
+                    <strong>
+                        <a href="docs/index.html">Documentation</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="docs/getinvolved.html">Get Involved</a>
+                    </strong>
+
+                    <p>
+
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="docs/apidocs/index.html">Javadocs</a>
+                            
+                        </ul>
+                        
+                    </font>
+                    
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net/">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left><font color="#ffffff">Welcome</font></th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                ServoMaster is dedicated to providing a
+                                consistent hardware independent way of
+                                controlling the servos with the personal
+                                computer.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="mission">
+                                <font color="#ffffff">The Mission</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                There is a lot of servos used in radio
+                                controlled modeling or robotics
+                                applications, and there are vendors
+                                manufacturing the hardware controllers
+                                allowing to control the servos, to name a
+                                few:
+                                
+                                <ul>
+                                
+                                    <li> <a
+                                         href="http://www.phidgets.com/">PhidgetServo</a>
+                                
+                                    <li> <a
+                                         href="http://www.ferrettronics.com">FerretTronics</a>
+                                         <a
+                                         href="http://www.ferrettronics.com/product639.html">FT639</a>,
+                                         <a
+                                         href="http://www.ferrettronics.com/product649.html">FT649</a>
+                                    
+                                    <li> <a
+                                         href="http://www.seetron.com/">Scott
+                                         Edwards Electronics, Inc.
+                                         (Seetron)</a> <a
+                                         href="http://www.seetron.com/ssc.htm">SSC</a>
+                                         
+                                    <li> Quite a lot of vendors providing
+                                         the hardware controllers based on
+                                         PIC16F84 device
+                                         
+                                </ul>
+                                
+                                However, almost all of them (with <a
+                                href="docs/USB_Phidget.html">notable
+                                exceptions</a>), being in the hardware
+                                manufacturing business, care little about
+                                providing a consistent interface for the
+                                servos and controllers. This is
+                                understandable, but disappointing, because
+                                all the servos are just about the same, and
+                                the basic functionality of the controllers
+                                is just about the same.
+                                
+                                <p>
+                                
+                                This <i>can</i> and <i>is</i> being fixed,
+                                right here.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="history">
+                                <font color="#ffffff">Brief History</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                ServoMaster was created as a complimentary
+                                project necessary to satisfy the needs of
+                                another project, <a
+                                href="http://diy-zoning.sourceforge.net/">DIY
+                                Zoning</a>. Being lazy (hate to rewrite the
+                                same code ten times), I decided to just make
+                                it generic from the very beginning. It
+                                turned out to be fun. Then, <a
+                                href="http://www.phidgets.com/">Chester</a>
+                                showed up, and it started to be
+                                <i>really</i> fun ;)
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>
                 <td align=left>
                     <font size=-1>
                         <a href="index.html">ServoMaster: Home</a>
-                    </font>
+                    </font>                                       
                 </td>
                 <td align=right>
                     <font size=-1>
-                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2002
                     </font>
                 </td>
             </tr>
         </table>
-        
+
     </body>
 </html>

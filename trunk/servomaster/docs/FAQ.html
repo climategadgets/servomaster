@@ -1,172 +1,321 @@
 <html>
     <head>
         <title>
-            
             ServoMaster: FAQ
-            
         </title>
         <meta name="description"
               content="ServoMaster: platform independent servo controller driver">
         <meta name="keywords"
               content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
     </head>
-    <body>
-    
-        <a href="http://sourceforge.net">
-            <img src="http://sourceforge.net/sflogo.php?group_id=34418&type=1"
-                 width="88"
-                 height="31"
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
                  border="0"
                  alt="SourceForge Logo"
-                 align=right>
-            </A>
-    
-        <h1><a href="../index.html">ServoMaster</a>: FAQ</h1>
+                 align="right">
+        </A>
         
-        <dl>
+        </A>
         
-            <dt> <strong>What is a project status?</strong>
-            
-            <dd> Architecture is clear, design is done, Java implementation
-                 for two controllers (<a href="FT639.html">FT639</a>) and <a
-                 href="USB_Phidget.html">PhidgetServo</a>) is done, the
-                 production stability is reached (one of the controllers
-                 manages my home HVAC system - uptime is measured in weeks
-                 and the interruptions occur only when I upgrade the
-                 software for the rest of the system). More are coming.
-                 
-                 <p>
+        <h1>
+            <a href="../index.html">ServoMaster</a>: FAQ
+        </h1>
         
-            <dt> <strong>Why Java?</strong>
-            
-            <dd> First of all, this is my current language of choice (though
-                 I'm getting back to C++, for memory footprint and
-                 performance reasons).  Second, it is the best choice for
-                 rapid prototyping. Third, and probably the most important,
-                 despite all its drawbacks, it is really platform
-                 independent. This last one matters a lot, at least to me.
-                 
-                 <p>
-            
-            <dt> <strong>What about C?</strong>
-            
-            <dd> No C, because this project is not about implementation,
-                 it's about reusable architecture. C++ port, however, is
-                 being implemented, with the same architecture (<a
-                 href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/servomaster/servomaster-cpp/">browse
-                 the CVS repository</a>). Don't ask about the timeframe. If
-                 you want to help, you're welcome.
-                 
-                 <p>
-                 
-            <dt> <strong>Are there other hardware controller drivers
-                 coming?</strong>
-                 
-            <dd> You bet. Currently, <a href="USB_Phidget4.html">USB
-                 PhidgetAdvancedServo</a> driver is in the works. The next
-                 one is probably <a
-                 href="http://www.ohmark.co.nz/dsc.php">Ohmark Digital Servo
-                 Controller</a>, unless I get to implement my <a
-                 href="future.html">crazy ideas</a> sooner. Why Ohmark? It
-                 supports the transitions in hardware.
-                 
-                 <p>
-             
-            <dt> <strong>How do you select the hardware controllers to
-                 implement the drivers for?</strong>
-            
-            <dd> First one I bought. The rest were donated. If you want the
-                 driver for your controller, consider donating one - by now,
-                 the implementation is pretty straightforward, it takes a
-                 day or two of straight coding.
-            
-                 <p>
-                 
-            <dt> <strong>I've bought the FT639 and put it together, and it
-                 doesn't work, what the hell?</strong>
-                 
-            <dd> The picture at the FerretTronics <a
-                 href="http://www.ferrettronics.com/faq.html#CircuitBoardQ4">FAQ
-                 page</a> is ambiguous. It looks like a back of DB-9 female
-                 connector, while in reality it is a <strong>male</strong>
-                 connector. The signal goes to pin 3, the ground goes to pin
-                 5.
-            
-                 <p>
-                 
-                 If this fails, check if the signal level on the chip input
-                 is high enough. I had to short the 20K resistor to make it
-                 work with my Asus P-2B onboard serial controller (well,
-                 that was before I sorted out the confusion with the pinout,
-                 I'm surprised it worked at all... Hope I didn't bust my
-                 serial port...)
-                 
-                 <p>
-                 
-             <dt> <strong>What is this "silent mode" thing?</strong>
-             
-             <dd> If you are familiar with the servos, you probably know
-                  that they can make a sound that can make you jump,
-                  especially caught off guard. The application this project
-                  is serving is intended to have the servos operate next to
-                  people whose comfort level is paramount, so they must not
-                  be scared do death periodically when the servos come to
-                  life.
-                  
-                  <p>
-                  
-                  As a side effect, this reduces the energy consumption (the
-                  servo not getting the pulse goes to a powerdown and
-                  consumes about 8mA - thanks again, Chester) and servo
-                  wear. Since the servos may be working 24x7, this may be
-                  important as well.
-                  
-                  <p>
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                
+                    <strong>
+                        <a href="../index.html">Introduction</a>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <li> <a href="news.html">News & Status</a>
+                            
+                            <li> <strong>FAQs</strong>
+                            
+                                 <ul>
+                                     
+                                     <li> <a href="#others">Are there other hardware
+                                          controller drivers coming?</a>
+                                          
+                                     <li> <a href="#select">How do you select the hardware
+                                          controllers to implement the
+                                          drivers for?</a>
+                                          
+                                     <li> <a href="#ft639">I've bought the FT639 and put it
+                                          together, and it doesn't work,
+                                          what the hell?</a>
+                                          
+                                     <li> <a href="#silent">What is this "silent mode" thing?</a>
+                                     
+                                     <li> <a href="#comm"><code>UnsupportedCommOperationException</code></a>
+                                     
+                                     <li> <a href="#usbfs">USB <code>SecurityException</code></a>
+                                         
+                                 </ul>
+                            
+                            <li> <a href="references.html">Reference Library</a>
+                            
+                            <li> <a href="credits.html">Credits</a>
 
-             <dt> <strong>Why do I keep getting <code>noClassDefFoundError:
-                  javax/comm/UnsupportedCommOperationException</code>?</strong>
-                  
-             <dd> Because you didn't install the <a
-                  href="http://java.sun.com/products/javacomm/">JavaCOMM</a>
-                  properly. If you keep getting probems even though you've
-                  followed the instructions to the letter, try to go with
-                  the JRE instead of JDK - copy the <code>comm.jar</code> to
-                  <code>${JRE_HOME}/lib/ext</code> directory.
-                  
-                  <p>
-                  
-                  As a rule of thumb, the newer the version of the JDK/JRE,
-                  the less problems you will have.
-                  
-                  <p>
-                  
-             <dt> <strong>Every time the USB device is disconnected and then
-                  reconnected again, I get the <code>SecurityException</code>.
-                  How to avoid this?</strong>
-                  
-             <dd> You have to properly mount the usbfs. It would be a good
-                  idea to add the following entry to your
-                  <code>/etc/fstab</code>:
-                  
-                  <blockquote>
-                  
-                      <code>usbdevfs /proc/bus/usb usbdevfs devmode=0666 0 0</code>
-                      
-                  </blockquote>
-                  
-                  This will enable all the users to access the usbfs.
-                  Alternatives are possible, look up the usbfs documentation
-                  for that.
-        
-        </dl>
+                            <li> <a href="legal.html">Legal</a>
+                        
+                        </ul>
+                    </font>
 
+                    <strong>
+                        <a href="index.html">Documentation</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="getinvolved.html">Get Involved</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="docs/apidocs/index.html">Javadocs</a>
+                        
+                        </ul>
+
+                    </font>
+
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="others">
+                                <font color="#ffffff">Are there other hardware controller drivers coming?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                You bet. Currently, <a
+                                href="USB_Phidget4.html">USB
+                                PhidgetAdvancedServo</a> driver is in the
+                                works. The next one is probably <a
+                                href="http://www.ohmark.co.nz/dsc.php">Ohmark
+                                Digital Servo Controller</a>, unless I get
+                                to implement my <a href="future.html">crazy
+                                ideas</a> sooner. Why Ohmark? It supports
+                                the transitions in hardware.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="select">
+                                <font color="#ffffff">How do you select the hardware controllers to implement the drivers for?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                First one I bought. The rest were donated. 
+                                If you want the driver for your controller,
+                                consider donating one <a
+                                href="credits.html">like others did</a> - by
+                                now, the implementation is pretty
+                                straightforward, it takes a day or two of
+                                straight coding.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="ft639">
+                                <font color="#ffffff">I've bought the FT639 and put it together, and it doesn't work, what the hell?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                The picture at the FerretTronics <a
+                                href="http://www.ferrettronics.com/faq.html#CircuitBoardQ4">FAQ
+                                page</a> is ambiguous. It looks like a back
+                                of DB-9 female connector, while in reality
+                                it is a <strong>male</strong> connector. The
+                                signal goes to pin 3, the ground goes to pin
+                                5.
+                                
+                                <p>
+                                
+                                If this fails, check if the signal level on
+                                the chip input is high enough. I had to
+                                short the 20K resistor to make it work with
+                                my Asus P-2B onboard serial controller
+                                (well, that was before I sorted out the
+                                confusion with the pinout, I'm surprised it
+                                worked at all... Hope I didn't bust my
+                                serial port...)
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="silent">
+                                <font color="#ffffff">What is this "silent mode" thing?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                If you are familiar with the servos, you
+                                probably know that they can make a sound
+                                that can make you jump, especially caught
+                                off guard. The application this project is
+                                serving is intended to have the servos
+                                operate next to people whose comfort level
+                                is paramount, so they must not be scared do
+                                death periodically when the servos come to
+                                life.
+                                
+                                <p>
+                                
+                                As a side effect, this reduces the energy
+                                consumption (the servo not getting the pulse
+                                goes to a powerdown and consumes about 8mA -
+                                thanks again, Chester) and servo wear. Since
+                                the servos may be working 24x7, this may be
+                                important as well.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="comm">
+                                <font color="#ffffff">Why do I keep getting <code>noClassDefFoundError: javax/comm/UnsupportedCommOperationException</code>?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Because you didn't install the <a
+                                href="http://java.sun.com/products/javacomm/">JavaCOMM</a>
+                                properly. If you keep getting probems even
+                                though you've followed the instructions to
+                                the letter, try to go with the JRE instead
+                                of JDK - copy the <code>comm.jar</code> to
+                                <code>${JRE_HOME}/lib/ext</code> directory.
+                                
+                                <p>
+                                
+                                As a rule of thumb, the newer the version of
+                                the JDK/JRE, the less problems you will
+                                have.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="usbfs">
+                                <font color="#ffffff">
+                                    
+                                    Every time the USB device is
+                                    disconnected and then reconnected again,
+                                    I get the
+                                    <code>SecurityException</code>.  How to
+                                    avoid this?
+                                
+                                </font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                You have to properly mount the usbfs. It
+                                would be a good idea to add the following
+                                entry to your <code>/etc/fstab</code>:
+                                
+                                <blockquote>
+                                
+                                    <code>usbdevfs /proc/bus/usb usbdevfs devmode=0666 0 0</code>
+                                    
+                                </blockquote>
+                                
+                                This will enable all the users to access the
+                                usbfs.  Alternatives are possible, look up
+                                the usbfs documentation for that.
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>
                 <td align=left>
                     <font size=-1>
                         <a href="../index.html">ServoMaster: Home</a>
-                    </font>
+                    </font>                                       
                 </td>
                 <td align=right>
                     <font size=-1>
@@ -175,6 +324,6 @@
                 </td>
             </tr>
         </table>
-        
+
     </body>
 </html>

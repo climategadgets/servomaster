@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdexcept>
-#include <vector>
 
 namespace servomaster {
 
@@ -14,6 +13,32 @@ namespace servomaster {
     };
 
     PhidgetServoController::PhidgetServoController() : thePhidgetServo(NULL) {
+    }
+    
+    PhidgetServoController::~PhidgetServoController() {
+    
+        // VT: FIXME: Set the servos to predefined positions and shut off
+        // the pulse
+    
+        // VT: FIXME: Close it first
+        
+        delete thePhidgetServo;
+    
+        for ( int idx = 0; idx < protocolHandler->getServoCount(); idx++ ) {
+        
+            Servo *s = servoSet[idx];
+            
+            if ( s != NULL ) {
+            
+                delete s;
+            }
+        }
+        
+        free(servoSet);
+        free(servoPosition);
+        
+        // VT: FIXME: shut it down first
+        delete protocolHandler;
     }
     
     void PhidgetServoController::init(const char *portName) {
@@ -52,8 +77,15 @@ namespace servomaster {
                 throw new runtime_error("Unknown vendor/product ID combination");
         }
         
-        servoSet = (Servo **)malloc(sizeof(Servo *) * protocolHandler->getServoCount());
-        servoPosition = (int *)malloc(sizeof(int) * protocolHandler->getServoCount());
+        int count = protocolHandler->getServoCount();
+        servoSet = (Servo **)malloc(sizeof(Servo *) * count);
+        servoPosition = (int *)malloc(sizeof(int) * count);
+        
+        for ( int idx = 0; idx < count; idx++ ) {
+        
+            servoSet[idx] = NULL;
+            servoPosition[idx] = 0;
+        }
     }
     
     phidget::UsbContext *PhidgetServoController::findUSB(const char *portName) {
@@ -61,10 +93,11 @@ namespace servomaster {
         struct usb_bus *bus;
         struct usb_device *dev;
         
-        // USB has a maximum of 256 devices, so this should be more than
+        // USB has a maximum of 128 devices, so this should be more than
         // enough
         
-        vector<phidget::UsbContext> found;
+        phidget::UsbContext *found[128];
+        int totalFound = 0;
         
         // VT: FIXME: Figure out if usb_init() is idempotent. It better
         // be...
@@ -88,7 +121,7 @@ namespace servomaster {
 
                         printf("Found %s serial #%s\n", modelTable[idx]->model, pFound->getSerial());
                         
-                        found.push_back(*pFound);
+                        found[totalFound++] = pFound;
                     }
                 }
             }
@@ -103,12 +136,12 @@ namespace servomaster {
             // If the portName parameter is null, one servo controller is
             // expected to be found. If there's none or more than one, boom.
             
-            if ( found.size() != 1 ) {
+            if ( totalFound != 1 ) {
             
                 throw runtime_error("None or more than one servo controller was found, but port name was not specified");
             }
             
-            return &found[0];
+            return found[0];
 
         } else {
         
@@ -123,14 +156,14 @@ namespace servomaster {
             
             // VT: FIXME: Handle the disconnected case as well
             
-            if ( found.empty() ) {
+            if ( totalFound == 0 ) {
             
                 throw runtime_error("No servo controllers found");
             }
             
-            for ( int idx = 0; idx < found.size(); idx++ ) {
+            for ( int idx = 0; idx < totalFound; idx++ ) {
             
-                const char *serial = found[idx].getSerial();
+                const char *serial = found[idx]->getSerial();
                 
                 if ( serial == NULL ) {
                 
@@ -141,7 +174,7 @@ namespace servomaster {
                 
                     // We've found the one they were looking for
                     
-                    theRightOne = &found[idx];
+                    theRightOne = found[idx];
                     break;
                 }
             }
@@ -151,6 +184,8 @@ namespace servomaster {
                 throw runtime_error("Servo controller with requested serial is not present");
             }
         }
+        
+        // VT: FIXME: destroy all the others
         
         return theRightOne;
     }
@@ -178,8 +213,11 @@ namespace servomaster {
         
         int idx = atoi(id);
         
+        printf("getServo: %d\n", idx);
+        
         if ( servoSet[idx] == NULL ) {
         
+            printf("Need to create servo\n");
             servoSet[idx] = createServo(idx);
         }
         
@@ -187,6 +225,8 @@ namespace servomaster {
     }
     
     void PhidgetServoController::send() {
+    
+        printf("send\n");
     
         // VT: FIXME: Get the synchronization lock
     
@@ -201,6 +241,8 @@ namespace servomaster {
     }
     
     void PhidgetServoController::send(unsigned char *buffer, int size) {
+    
+        printf("send buffer\n");
     
         int rc = usb_control_msg(thePhidgetServo->handle, 0x21, 0x09, 0x200, 0, (char *)buffer, size, 5000);
         
@@ -228,18 +270,20 @@ namespace servomaster {
             serial(NULL) {
         
             this->device = device;
-            printf("Created: %s %x\n", model, this);
+            printf("UsbContext: created: %s %x\n", model, this);
         }
         
         UsbContext::~UsbContext() {
         
-            printf("Destroyed: %s %x #%s\n", model, this, serial);
+            printf("UsbContext: destroyed: %s %x #%s\n", model, this, serial);
             
             free(serial);
         }
         
         const char *UsbContext::getSerial() {
         
+            int rc;
+            
             // VT: FIXME: Get the synchronization lock
             
             // VT: NOTE: Until the lock is not provided, it's in our best
@@ -265,11 +309,32 @@ namespace servomaster {
                 throw runtime_error("Can't open USB device");
             }
             
-            int rc = usb_control_msg(handle, 0x80, 0x06, 0x0303, 0, buffer, sizeof(buffer), 5000);
+            rc = usb_set_configuration(handle, 1);
+
+            if ( rc == -1 ) {
+            
+                throw runtime_error("usb_set_configuration");
+            }
+
+            rc = usb_claim_interface(handle, 0);
+
+            if ( rc == -1 ) {
+            
+                throw runtime_error("usb_claim_interface");
+            }
+            
+            rc = usb_set_altinterface(handle, 0);
+
+            if ( rc == -1 ) {
+            
+                throw runtime_error("usb_set_altinterface");
+            }
+            
+            rc = usb_control_msg(handle, 0x80, 0x06, 0x0303, 0, buffer, sizeof(buffer), 5000);
             
             if ( rc == -1 ) {
             
-                throw runtime_error("USB read failure");
+                throw runtime_error("usb_control_msg");
             }
             
             serial = (char *)malloc(sizeof(buffer));
@@ -352,10 +417,12 @@ namespace servomaster {
             min_pulse(1000),
             max_pulse(2000) {
             
+            printf("PhidgetServo: created #%X: %X\n", id, this);
         }
         
         PhidgetServo::~PhidgetServo() {
         
+            printf("PhidgetServo: destroyed #%X: %X\n", id, this);
         }
         
         void PhidgetServo::setActualPosition(double position) {
@@ -374,17 +441,12 @@ namespace servomaster {
             
             controller->servoPosition[id] = microseconds;
             
-            /*
+            if ( true ) {
             
-            // VT: NOTE: Hope I never have to uncomment this...
-            
-            if ( false ) {
-            
-                printf("Position:     %s\n", position);
-                printf("Microseconds: %s\n", microseconds);
-                printf("Buffer:       %s\n", servoPosition[id]);
+                printf("Position:     %f\n", position);
+                printf("Microseconds: %d\n", microseconds);
+                printf("Buffer:       %d\n", controller->servoPosition[id]);
             }
-            */
             
             controller->send();
             

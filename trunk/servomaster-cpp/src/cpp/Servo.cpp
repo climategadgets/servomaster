@@ -1,5 +1,6 @@
 #include <Servo.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdexcept>
 
 namespace servomaster {
@@ -9,7 +10,9 @@ namespace servomaster {
         actualPosition(0),
         enabled(true),
         servoController(servoController),
-        target(target) {
+        target(target),
+        transitionController(NULL),
+        transitionDriver(NULL) {
     
     }
     
@@ -82,6 +85,8 @@ namespace servomaster {
                 transitionDriver->start();
             
             } else {
+            
+                printf("setActualPosition(%3.3F)\n", position);
             
                 setActualPosition(position);
             }

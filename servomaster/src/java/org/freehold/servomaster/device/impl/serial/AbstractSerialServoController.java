@@ -18,7 +18,7 @@ import org.freehold.servomaster.device.model.Servo;
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.3 2005-01-14 03:29:24 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.4 2005-01-18 04:02:57 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -64,7 +64,7 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
         
         if ( this.portName == null ) {
         
-            throw new IllegalArgumentException("null portName is invalid: this controller doesn't support automated discovery");
+            throw new IllegalArgumentException("null portName is invalid: serial controllers don't support automated discovery");
         }
 
         try {

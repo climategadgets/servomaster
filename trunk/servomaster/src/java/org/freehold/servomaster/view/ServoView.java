@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.1 2001-09-01 06:53:31 vtt Exp $
+ * @version $Id: ServoView.java,v 1.2 2001-09-01 21:48:24 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -40,6 +40,11 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      * The servo to display the status of and control.
      */
     private Servo servo;
+    
+    /**
+     * Checkbox responsible for enabling and disabling the servo.
+     */
+    private JCheckBox enableBox;
     
     /**
      * Checkbox responsible for enabling and disabling the smooth mode.
@@ -75,6 +80,13 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      * <strong>actual</strong> if the servo is in a smooth mode.
      */
     private JSlider controlSlider;
+    
+    /**
+     * Enabled status.
+     *
+     * @see #enableBox
+     */
+    private boolean enabled = true;
     
     /**
      * Smooth mode.
@@ -123,26 +135,36 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         cs.gridwidth = 2;
         
         JLabel servoLabel = new JLabel("ID: " + index, JLabel.CENTER);
+        servoLabel.setBorder(BorderFactory.createEtchedBorder());
+        servoLabel.setForeground(Color.black);
         
         layout.setConstraints(servoLabel, cs);
         add(servoLabel);
         
+        enableBox = new JCheckBox("Enabled", true);
+        enableBox.addItemListener(this);
+        
+        cs.gridy = 1;
+        
+        layout.setConstraints(enableBox, cs);
+        add(enableBox);
+
         smoothBox = new JCheckBox("Smooth");
         smoothBox.addItemListener(this);
         
-        cs.gridy = 1;
+        cs.gridy = 2;
         
         layout.setConstraints(smoothBox, cs);
         add(smoothBox);
         
-        cs.gridy = 2;
+        cs.gridy = 3;
         
         trimLabel = new JLabel("Trim: 0", JLabel.CENTER);
         
         layout.setConstraints(trimLabel, cs);
         add(trimLabel);
         
-        cs.gridy = 3;
+        cs.gridy = 4;
         
         trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
         trimSlider.addChangeListener(this);
@@ -150,14 +172,14 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         layout.setConstraints(trimSlider, cs);
         add(trimSlider);
         
-        cs.gridy = 4;
+        cs.gridy = 5;
         
         positionLabel = new JLabel("POS: 128", JLabel.CENTER);
         
         layout.setConstraints(positionLabel, cs);
         add(positionLabel);
         
-        cs.gridy = 5;
+        cs.gridy = 6;
         cs.gridwidth = 1;
         cs.weighty = 1;
         cs.fill = GridBagConstraints.VERTICAL;
@@ -245,6 +267,14 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         if ( e.getSource() == smoothBox ) {
         
             smooth = !smooth;
+        
+        } else if ( e.getSource() == enableBox ) {
+        
+            enabled = !enabled;
+            
+            controlSlider.setEnabled(enabled);
+            trimSlider.setEnabled(enabled);
+            smoothBox.setEnabled(enabled);
         }
     }
     

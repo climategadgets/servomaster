@@ -2,13 +2,16 @@
     <head>
         <title>
             
-            ServoMaster: Quick Start
+            ServoMaster: Quick Start: Hard Way
             
         </title>
     </head>
     <body>
     
-        <h1>ServoMaster: Quick Start</h1>
+        <h1>ServoMaster: Quick Start: Hard Way</h1>
+        
+        You don't really have to go this way, unless you are a developer and
+        modifying the source code.
         
         <h2>Prerequisites</h2>
         
@@ -26,24 +29,27 @@
                  Xerces-J</a>, <code>--with-XERCES</code> configure option. 
                  Current version will suffice.
                  
-             <li> For Linux boxes, Trent Jarvi's <a
-                  href="http://www.rxtx.org/">RxTx</a> - Java Communications
-                  API implementation.
+            <li> <a href="http://java.sun.com/products/javacomm">Java
+                 Communications API</a>. For Linux boxes, Trent Jarvi's <a
+                 href="http://www.rxtx.org/">RxTx</a> - JavaCOMM
+                 implementation.
 
         </ul>
         
         <h2>Environment</h2>
         
         The ServoMaster is being developed on the Linux and Solaris boxes,
-        and I am not interested in building for Windows. However, it is
-        possible to build it on Windows using <a
+        and there are no plans to provide a Windows build process. However,
+        it is possible to build it on Windows using <a
         href="http://www.cygwin.com/">Cygwin</a>, and of course it is
-        possible to use it on Windows as soon as you get the jar file (jar
-        distribution, along with <a
-        href="http://sourceforge.net/project/showfiles.php?group_id=34418">source
-        distribution</a>, is planned).
+        possible to use it on Windows - see the <a
+        href="quickstart_jar.html">easy way</a>.
         
         <h2>Build</h2>
+        
+        Untar the source tarball, of course.
+        
+        <p>
         
         Hardcore OpenSource people will find the build process comfortable -
         it's simple <code>./configure && make all install</code>. However,
@@ -94,6 +100,62 @@
         <p>
         
         That's it, you should be seeing the console right now.
+        
+        <a name="see">
+        <h2>Making sense from what you see</h2>
+        
+        <dl>
+        
+            <dt> <b>Silent</b>
+            
+            <dd> The <b>Silent</b> checkbox, if checked (default if the
+                 controller <a
+                 href="apidocs/org/freehold/servomaster/device/model/ServoControllerMetaData.html">supports</a>
+                 it), puts the controller in a 'sleep' mode - stops the
+                 servo pulse after a timeout.
+            
+            <dt> <b>ID</b>
+            
+            <dd> is a controller-specific servo name.
+            
+            <dt> <b>Enabled</b>
+            
+            <dd> This checkbox enables (default) or disables the particular
+                 servo.
+            
+            <dt> <b>Instant/Crawl</b>
+            
+            <dd> The transition controller selection. <b>Instant</b> means
+                 that there is no transition controller attached,
+                 <b>Crawl</b> means that the crawl transition controller is
+                 attached to the servo. Read the <a
+                 href="apidocs/org/freehold/servomaster/device/model/transition/CrawlTransitionController.html">javadocs</a>
+                 on this class to find out more (you have to <code>'make
+                 javadoc'</code> to use that link, or look it up on the <a
+                 href="http://servomaster.sourceforge.net/">master
+                 site</a>).
+                 
+            <dt> <b>Direct/Reverse/Linear</b>
+            
+            <dd> The coordinate transformer selection. <b>Direct</b> means
+                 that there is no coordinate transformer, <b>Reverse</b> is
+                 self-explanatory, and <b>Linear</b> is explained in the
+                 class <a
+                 href="apidocs/org/freehold/servomaster/device/model/transform/LinearTransformer.html">documentation</a>.
+                 
+            <dt> <b>The sliders</b>
+            
+            <dd> The right one controls, the left one displays. Play with
+                 the transition controllers and coordinate transformers to
+                 see what happens. Be careful with the servos - not all of
+                 them like to be set to 180&deg; range.
+        
+        </dl>
+        
+        The stuff below pertains to the specific controller features, and is
+        usually either self-explanatory or too weird to bother. Since the
+        controller name is there, just look up the release notes on that
+        particular controller in the <a href="index.html">index</a>.
         
         <hr>
         <table border=0 width=100%>

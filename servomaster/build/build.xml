@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.25 2004-10-13 01:25:00 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.26 2004-10-13 03:00:40 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -230,6 +230,10 @@
         <copy todir="${phidget.build.src}/org/freehold/servomaster">
         
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <!-- VT: FIXME: USB classes will have to be separated into a dedicated target -->
+                
+                <include name="device/impl/usb/AbstractUsbServoController.java"/>
             
                 <include name="device/impl/phidget/Firmware.java"/>
                 <include name="device/impl/phidget/firmware/Servo8.java"/>

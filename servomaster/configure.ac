@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.4 2003-01-14 06:02:55 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.5 2003-06-08 01:26:34 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -29,7 +29,7 @@ if test -f "${LOCAL_OPTIONS}" && test -z "${LOCAL_OPTIONS_PRESENT}" ; then
 fi
 
 VERSION_MAJOR="0"
-VERSION_MINOR="5"
+VERSION_MINOR="6"
 PATCHLEVEL="0"
 
 AC_SUBST(VERSION_MAJOR)dnl

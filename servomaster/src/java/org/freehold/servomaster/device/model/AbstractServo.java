@@ -11,7 +11,7 @@ import java.util.Set;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractServo.java,v 1.2 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.3 2002-02-10 07:23:55 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -72,7 +72,9 @@ abstract public class AbstractServo implements Servo {
      *
      * @param servoController The controller this servo belongs to.
      *
-     * @param target The servo to stack on top of.
+     * @param target The servo to stack on top of. If it is
+     * <code>null</code>, the instance is at the bottom of the stack and it
+     * is the actual hardware driver object.
      */
     public AbstractServo(ServoController servoController, Servo target) {
     

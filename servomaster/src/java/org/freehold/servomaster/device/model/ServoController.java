@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.7 2002-01-20 06:32:56 vtt Exp $
+ * @version $Id: ServoController.java,v 1.8 2002-02-10 07:23:55 vtt Exp $
  */
 public interface ServoController {
 
@@ -216,4 +216,29 @@ public interface ServoController {
      * #init initialized} yet.
      */
     public String getPort();
+    
+    /**
+     * Enable or disable the lazy mode.
+     *
+     * It may or may not be a good idea to save some I/O and not send the
+     * redundant positioning commands to the hardware controller. However,
+     * this has a downside, too: it defeats the heartbeat, because the
+     * heartbeat by definition sends the command to position the servo
+     * exactly where it was before.
+     *
+     * @param enable <code>true</code> if it is OK to skip the redundant
+     * positioning commands. This will cause less I/O. If set to
+     * <code>false</code>, even redundant commands will be sent to the
+     * controller.
+     */
+    public void setLazyMode(boolean enable);
+    
+    /**
+     * Get the current lazy mode.
+     *
+     * @return <code>true</code> if the redundant positioning commands are
+     * <strong>not</strong> sent to the controller, <code>false</code>
+     * otherwise.
+     */
+    public boolean isLazy();
 }

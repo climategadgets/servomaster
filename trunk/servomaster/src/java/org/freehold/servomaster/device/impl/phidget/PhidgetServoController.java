@@ -19,6 +19,7 @@ import usb.core.Endpoint;
 import usb.core.Host;
 import usb.core.HostFactory;
 import usb.core.Interface;
+import usb.core.USBException;
 
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
@@ -39,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.14 2002-12-31 06:09:07 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.15 2003-01-14 07:56:12 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -122,6 +123,14 @@ public class PhidgetServoController extends AbstractServoController {
             
                 thePhidgetServo = findUSB(portName);
 
+                Configuration cf = thePhidgetServo.getConfiguration();
+                Interface iface = cf.getInterface(0, 0);
+                
+                if ( !iface.claim() ) {
+                
+                    throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                }
+                
                 return true;
 
             } catch ( IOException ioex ) {
@@ -157,6 +166,14 @@ public class PhidgetServoController extends AbstractServoController {
         
             thePhidgetServo = findUSB(portName);
         
+            Configuration cf = thePhidgetServo.getConfiguration();
+            Interface iface = cf.getInterface(0, 0);
+            
+            if ( !iface.claim() ) {
+            
+                throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+            }
+
             // At this point, we've either flying by on the wings of
             // IllegalArgumentException (null portName, none or more than
             // one device), or the phidget serial contains the same value as
@@ -654,7 +671,30 @@ public class PhidgetServoController extends AbstractServoController {
             byte buffer[] = fw.get();
             
             out.write(buffer);
+            out.flush();
             
+        } catch ( USBException  usbex ) {
+        
+            // Analyze the exception. It's possible that the device
+            // announced itself removed by now and we're getting an
+            // exception because of that
+            
+            // VT: FIXME: This depends heavily on jUSB code, hope it can be
+            // made more clear later
+            
+            String message = usbex.getMessage();
+            
+            if ( message != null ) {
+            
+                if ( message.equals("writeBulk -- USB device has been removed -- No such device [19]") ) {
+                
+                    // Yes, this is a classical symptom
+                    
+                    System.err.println("Boot may have failed: device prematurely departed; ignored");
+                    usbex.printStackTrace();
+                }
+            }
+        
         } catch ( Throwable t ) {
         
             System.err.println("Boot failed:");
@@ -670,7 +710,7 @@ public class PhidgetServoController extends AbstractServoController {
             // The SoftPhidget is supposed to boot in about 200ms, let's be
             // paranoid
             
-            Thread.sleep(1000);
+            Thread.sleep(5000);
             
         } catch ( InterruptedException iex ) {
         
@@ -999,6 +1039,15 @@ public class PhidgetServoController extends AbstractServoController {
                 if ( thePhidgetServo == null ) {
                 
                     thePhidgetServo = findUSB(portName);
+
+                    Configuration cf = thePhidgetServo.getConfiguration();
+                    Interface iface = cf.getInterface(0, 0);
+                    
+                    if ( !iface.claim() ) {
+                    
+                        throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                    }
+
                     System.err.println("Found " + portName);
                     connected = true;
                     
@@ -1273,9 +1322,16 @@ public class PhidgetServoController extends AbstractServoController {
                 Configuration cf = thePhidgetServo.getConfiguration();
                 Interface iface = cf.getInterface(0, 0);
                 
+                if ( false ) {
+                
+                // VT: FIXME: Verify: with the latest changes, we should've
+                // claimed it already
+                
                 if ( !iface.claim() ) {
                 
                     throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                }
+                
                 }
                 
                 Endpoint endpoint = null;
@@ -1361,6 +1417,15 @@ public class PhidgetServoController extends AbstractServoController {
              * ((float *)(buffer+4))[0] = m_ServoPosition[Index - 1];
              * ((float *)(buffer+4))[1] =  m_MaxVelocity[Index - 1] / 50;
              * ((float *)(buffer+4))[2] =  m_Acceleration[Index - 1] / 50;
+             *
+             * or
+             *
+             * buffer[0] = Index - 1;
+             *
+             * if (m_blnAssert[Index - 1] == VARIANT_TRUE) buffer[1] = 0xff;
+             * ((int *)(buffer+4))[0] = (int)((m_ServoPosition[Index - 1] + 23) * 16218);
+             * ((int *)(buffer+4))[1] = (int)((m_MaxVelocity[Index - 1] / 50) * 16218);
+             * ((int *)(buffer+4))[2] = (int)((m_Acceleration[Index - 1] / 50) * 16218);
              * </pre>
              *
              * MaxVelocity and Acceleration are measured in degrees/second. (^2)
@@ -1377,14 +1442,16 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 this.position = (float)min_offset + (float)(position * (max_offset - min_offset));
                 
+                // 16218
+                
                 float2byte(this.position, buffer, 4);
-                float2byte(this.velocity/50, buffer, 8);
-                float2byte(this.acceleration/50, buffer, 12);
+                float2byte(this.velocity / 50, buffer, 8);
+                float2byte(this.acceleration / 50, buffer, 12);
                 
-                //System.err.println("Position: " + this.position);
-                //System.err.print("Buffer:");
+                System.err.println("Position: " + this.position);
+                System.err.print("Buffer:");
                 
-                /*
+                /**/
                 for ( int idx = 0; idx < buffer.length; idx++ ) {
                 
                     if ( (idx % 4) == 0 && idx > 0 ) {
@@ -1397,7 +1464,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 System.err.println("");
                 
-                 */
+                 /**/
                 
                 return buffer;
             }

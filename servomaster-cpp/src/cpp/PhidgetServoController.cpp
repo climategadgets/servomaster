@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.6 2002-09-13 08:37:53 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.7 2002-09-14 03:32:56 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -75,7 +75,7 @@ namespace servomaster {
             default:
             
                 printf("Vendor/product ID: %8X\n", thePhidgetServo->getProtocolHandlerId());
-                throw new runtime_error("Unknown vendor/product ID combination");
+                throw runtime_error("Unknown vendor/product ID combination");
         }
         
         int count = protocolHandler->getServoCount();
@@ -91,13 +91,99 @@ namespace servomaster {
     
     phidget::UsbContext *PhidgetServoController::findUSB(const char *portName) {
     
+        phidget::UsbContext **found = findUSB();
+        
+        // Check how many servo controllers we've found.
+        
+        int totalFound = 0;
+        
+        while ( found[totalFound] != NULL ) {
+        
+            totalFound++;
+        }
+        
+        phidget::UsbContext *theRightOne = NULL;
+        
+        if ( portName == NULL ) {
+        
+            // If the portName parameter is null, one servo controller is
+            // expected to be found. If there's none or more than one, boom.
+            
+            if ( totalFound != 1 ) {
+            
+                throw runtime_error("None or more than one servo controller was found, but port name was not specified");
+            }
+            
+            // We have to free the buffer
+            
+            phidget::UsbContext *result = found[0];
+            
+            free(found);
+            
+            return result;
+
+        }
+        
+        // If the portName parameter is not null, this meanst that the
+        // caller expected to find a specific controller. In this case:
+        //
+        // - Found none: boom
+        // - Found one or more, and the serial number on one of them is
+        //   equal to portName: return it
+        // - Found one or more, no serial number matches with the
+        //   portName: boom
+        
+        // VT: FIXME: Handle the disconnected case as well
+        
+        if ( totalFound == 0 ) {
+        
+            throw runtime_error("No servo controllers found");
+        }
+        
+        for ( int idx = 0; idx < totalFound; idx++ ) {
+        
+            const char *serial = found[idx]->getSerial();
+            
+            if ( serial == NULL ) {
+            
+                // VT: FIXME: How can it be???
+                
+                continue;
+            }
+        
+            if ( strcmp(serial, portName) == 0 ) {
+            
+                // We've found the one they were looking for
+                
+                theRightOne = found[idx];
+                
+                // Let's proceed, so we can delete the rest
+                
+                continue;
+            }
+            
+            free(found[idx]);
+        }
+        
+        free(found);
+        
+        if ( theRightOne == NULL ) {
+        
+            throw runtime_error("Servo controller with requested serial is not present");
+        }
+        
+        return theRightOne;
+    }
+    
+    phidget::UsbContext **PhidgetServoController::findUSB() {
+    
         struct usb_bus *bus;
         struct usb_device *dev;
         
         // USB has a maximum of 128 devices, so this should be more than
         // enough
         
-        phidget::UsbContext *found[128];
+        phidget::UsbContext **found = (phidget::UsbContext **)malloc(sizeof(phidget::UsbContext *) * 128);
         int totalFound = 0;
         
         // VT: FIXME: Figure out if usb_init() is idempotent. It better
@@ -128,67 +214,11 @@ namespace servomaster {
             }
         }
         
-        // Check how many servo controllers we've found.
+        found[totalFound] = NULL;
         
-        phidget::UsbContext *theRightOne = NULL;
-        
-        if ( portName == NULL ) {
-        
-            // If the portName parameter is null, one servo controller is
-            // expected to be found. If there's none or more than one, boom.
-            
-            if ( totalFound != 1 ) {
-            
-                throw runtime_error("None or more than one servo controller was found, but port name was not specified");
-            }
-            
-            return found[0];
-
-        } else {
-        
-            // If the portName parameter is not null, this meanst that the
-            // caller expected to find a specific controller. In this case:
-            //
-            // - Found none: boom
-            // - Found one or more, and the serial number on one of them is
-            //   equal to portName: return it
-            // - Found one or more, no serial number matches with the
-            //   portName: boom
-            
-            // VT: FIXME: Handle the disconnected case as well
-            
-            if ( totalFound == 0 ) {
-            
-                throw runtime_error("No servo controllers found");
-            }
-            
-            for ( int idx = 0; idx < totalFound; idx++ ) {
-            
-                const char *serial = found[idx]->getSerial();
-                
-                if ( serial == NULL ) {
-                
-                    continue;
-                }
-            
-                if ( strcmp(serial, portName) == 0 ) {
-                
-                    // We've found the one they were looking for
-                    
-                    theRightOne = found[idx];
-                    break;
-                }
-            }
-            
-            if ( theRightOne == NULL ) {
-            
-                throw runtime_error("Servo controller with requested serial is not present");
-            }
-        }
-        
-        // VT: FIXME: destroy all the others
-        
-        return theRightOne;
+        // VT: FIXME: Reallocate the array to proper size
+    
+        return found;
     }
     
     void PhidgetServoController::checkInit() {
@@ -422,6 +452,12 @@ namespace servomaster {
         }
         
         PhidgetServo::~PhidgetServo() {
+        
+            // There's nothing to do with the servo when this object is
+            // being destroyed. This object's lifetime is defined by the
+            // controller lifetime, and the controller will destroy the
+            // servo right before destroying itself, so we don't do anything
+            // here.
         
             printf("PhidgetServo: destroyed #%X: %X\n", id, this);
         }

@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.h,v 1.6 2002-09-13 08:37:53 vtt Exp $
+// $Id: PhidgetServoController.h,v 1.7 2002-09-14 03:32:56 vtt Exp $
 #ifndef PHIDGETSERVOCONTROLLER_H
 #define PHIDGETSERVOCONTROLLER_H
 
@@ -60,10 +60,17 @@ namespace servomaster {
                 int id;
                 int min_pulse;
                 int max_pulse;
+                
+                /**
+                 * Create the instance.
+                 *
+                 * Nobody can create an instance of this class, except for
+                 * the PhidgetServoController.
+                 */
+                PhidgetServo(ServoController *controller, int ID);
         
             public:
             
-                PhidgetServo(ServoController *controller, int ID);
                 virtual ~PhidgetServo();
                 
                 virtual void setActualPosition(double position);
@@ -162,8 +169,19 @@ namespace servomaster {
              * Find the phidget with a given serial number.
              *
              * @param portName Serial number to look for.
+             *
+             * @return The USB context for the phidget with the given serial
+             * number.
              */
             phidget::UsbContext *findUSB(const char *portName);
+            
+            /**
+             * Find all the phidgets.
+             *
+             * @return A newly created array containing the USB contexts for
+             * all the phidgets found.
+             */
+            phidget::UsbContext **findUSB();
             
             /**
              * Create a servo instance.

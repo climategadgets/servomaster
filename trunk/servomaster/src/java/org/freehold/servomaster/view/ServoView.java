@@ -33,7 +33,7 @@ import org.freehold.servomaster.device.model.transform.Reverser;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.10 2002-01-01 00:36:26 vtt Exp $
+ * @version $Id: ServoView.java,v 1.11 2002-01-01 01:45:06 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -246,8 +246,9 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         cs.gridy++;
         
-        positionLabel = new JLabel(Integer.toString(precision/2), JLabel.CENTER);
-        positionLabel.setToolTipText("Current servo position");
+        String currentPosition = Integer.toString(precision/2);
+        positionLabel = new JLabel(currentPosition + "/" + currentPosition, JLabel.CENTER);
+        positionLabel.setToolTipText("Current servo position (actual/requested)");
         positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
         
         layout.setConstraints(positionLabel, cs);
@@ -290,7 +291,10 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         int iPosition = (int)(position * (precision - 1));
         
         viewSlider.setValue(iPosition);
-        positionLabel.setText(Integer.toString(iPosition));
+        
+        double actualPosition = target.getPosition() * (precision - 1);
+        
+        positionLabel.setText(Integer.toString(iPosition) + "/" + Math.round(actualPosition));
     }
     
     /**

@@ -17,9 +17,13 @@ if @TEST@ ! -x @JAVA@ ; then
     @ECHO@ "Possible causes:"
     @ECHO@ ""
     @ECHO@ "    - You reinstalled JDK after running configure script;"
-    @ECHO@ "    - You had to run RPM with --nodeps flag and the path is not the one expected."
+    @ECHO@ "    - You had to run RPM with --nodeps flag;"
+    @ECHO@ "    - JDK you have is not RPM was built with."
     @ECHO@ ""
-    @ECHO@ "How to fix the problem: edit the $0 script and specify the correct locations"
+    @ECHO@ "In all cases the expected path will differ from actual,"
+    @ECHO@ "and Java binary will not be found."
+    @ECHO@ ""
+    @ECHO@ "How to fix the problem: edit the $0 script and specify the correct locations."
     
     exit -1;
 fi

@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.6 2002-01-19 02:03:40 vtt Exp $
+ * @version $Id: ServoController.java,v 1.7 2002-01-20 06:32:56 vtt Exp $
  */
 public interface ServoController {
 
@@ -108,6 +108,14 @@ public interface ServoController {
      * hardware controller.
      */
     public void setSilentMode(boolean silent) throws IOException;
+    
+    /**
+     * Check whether the controller is silent now.
+     *
+     * @return <code>true</code> if the controller is active,
+     * <code>false</code> if it is silent.
+     */
+    public boolean getSilentStatus();
     
     /**
      * Set the silent timeout.

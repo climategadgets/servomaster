@@ -18,6 +18,8 @@ In both approaches, you will have to have the working copies of:
 
 	- Apache Xerces, http://xml.apache.org/xerces-j/
 	- Jakarta Ant, http://jakarta.apache.org/ant/
+	- Java Communications API, http://java.sun.com/products/javacomm/
+	- For Linux, RxTx, http://www.rxtx.org/
 
 Also recommended is Jakarta Regexp, http://jakarta.apache.org/regexp/
 

@@ -1,4 +1,9 @@
-0.3p2	- Revisited synchronization issues
+0.3p2	- Fixed a major synchronization screwup (made possible by JDK 1.4
+	  final): there were synchronization locks on both the controller
+	  instance (requested by the silencer and heartbeat threads) and
+	  servo instance (positioning requests), at the same time the servo
+	  positioning methods were using the synchronized controller
+	  methods, as a result, deadlock occured.
 	- Implemented consistent initialization check - now it is not
 	  possible for the controller implementation to pretend it's working
 	  or give the wrong problem cause if it wasn't initialized yet

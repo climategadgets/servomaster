@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.8 2002-02-20 08:25:12 vtt Exp $)dnl
+AC_REVISION($Id: configure.in,v 1.9 2002-02-21 07:19:41 vtt Exp $)dnl
 
 dnl I'd like it to read the configure-options to allow both the global set
 dnl of options, as well as the local set.
@@ -29,7 +29,7 @@ AC_INIT(src/java/org/freehold/servomaster/device/model/Servo.java)
 
 VERSION_MAJOR="0"
 VERSION_MINOR="3"
-PATCHLEVEL="1"
+PATCHLEVEL="2"
 
 AC_SUBST(VERSION_MAJOR)dnl
 AC_SUBST(VERSION_MINOR)dnl

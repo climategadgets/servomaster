@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Vector;
 
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.ServoControllerMetaData;
@@ -25,9 +26,9 @@ import org.freehold.servomaster.device.model.ServoControllerMetaData;
  * This <strong>is</strong> the stress test.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001,2002
- * @version $Id: SyncCheck.java,v 1.1 2002-02-20 08:25:12 vtt Exp $
+ * @version $Id: SyncCheck.java,v 1.2 2002-02-21 07:19:41 vtt Exp $
  */
-public class SyncCheck {
+public class SyncCheck implements ServoListener, ServoControllerListener {
 
     /**
      * The controller to watch and control.
@@ -85,6 +86,8 @@ public class SyncCheck {
                 
                 portName = args[1];
                 
+                controller.addListener(this);
+                
             } catch ( Throwable t ) {
             
                 System.err.println("Unable to initialize controller, cause:");
@@ -115,6 +118,7 @@ public class SyncCheck {
             for ( int i = 0; i < servos.size(); i++ ) {
             
                 servoSet[i] = (Servo)servos.elementAt(i);
+                servoSet[i].addListener(this);
             }
             
             // Set up the controller
@@ -122,7 +126,7 @@ public class SyncCheck {
             try {
             
                 controller.setSilentMode(true);
-                controller.setSilentTimeout(2000, 2000);
+                controller.setSilentTimeout(1000, 1000);
                 
             } catch ( UnsupportedOperationException uoex ) {
             
@@ -138,6 +142,24 @@ public class SyncCheck {
         
             t.printStackTrace();
         }
+    }
+    
+    public void silentStatusChanged(ServoController controller, boolean silent) {
+    
+        System.err.print((silent ? "W" : "S"));
+        System.err.flush();
+    }
+    
+    public void actualPositionChanged(Servo servo, double position) {
+    
+        System.err.print(".");
+        System.err.flush();
+    }
+
+    public void positionChanged(Servo servo, double position) {
+    
+        //System.err.print(",");
+        //System.err.flush();
     }
     
     private synchronized void wake() {
@@ -221,6 +243,7 @@ public class SyncCheck {
                 try {
                 
                     servoSet[servo].setPosition(position);
+                    
 //                    System.out.print(".");
 //                    System.out.println("+ " + Integer.toHexString(id) + "/" + servo + ": " + position);
                     
@@ -240,13 +263,13 @@ public class SyncCheck {
             
                 try {
 
-                    System.err.println("W");
-                    Thread.sleep((long)(Math.random() * 3000));
+                    System.err.print("w");
+                    Thread.sleep((long)(Math.random() * 1000) + 1000);
                     
                     sleeping = true;
                     
-                    System.err.println("S");
-                    Thread.sleep((long)(Math.random() * 3000));
+                    System.err.print("s");
+                    Thread.sleep((long)(Math.random() * 8000) + 1000);
                     
                     wake();
 

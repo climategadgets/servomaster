@@ -11,7 +11,7 @@ import java.util.Set;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractServo.java,v 1.4 2002-02-20 08:25:12 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.5 2002-02-21 07:19:41 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -84,6 +84,9 @@ abstract public class AbstractServo implements Servo {
 
     public final synchronized void attach(TransitionController transitionController) {
     
+        // This operation can safely be made synchronized because it doesn't
+        // use the controller's synchronized methods
+        
         Servo s = getTarget();
         
         while ( s != null ) {
@@ -114,28 +117,35 @@ abstract public class AbstractServo implements Servo {
         return servoController;
     }
     
-    public synchronized void setPosition(double position) throws IOException {
+    public void setPosition(double position) throws IOException {
     
         if ( !enabled ) {
         
             throw new IllegalStateException("Not enabled");
         }
     
-        this.position = position;
-
-        if ( transitionController != null ) {
+        // The reason it is synchronized on the controller is that the
+        // setActualPosition() calls the controller's synchronized methods
+        // and the deadlock can occur if *this* method was made synchronized
         
-            if ( transitionDriver != null ) {
+        synchronized ( servoController ) {
+        
+            this.position = position;
+
+            if ( transitionController != null ) {
             
-                transitionDriver.stop();
+                if ( transitionDriver != null ) {
+                
+                    transitionDriver.stop();
+                }
+                
+                transitionDriver = new TransitionDriver(this, position);
+                new Thread(transitionDriver).start();
+
+            } else {
+            
+                setActualPosition(position);
             }
-            
-            transitionDriver = new TransitionDriver(this, position);
-            new Thread(transitionDriver).start();
-
-        } else {
-        
-            setActualPosition(position);
         }
         
         positionChanged();
@@ -160,6 +170,9 @@ abstract public class AbstractServo implements Servo {
      */
     private final synchronized void positionChanged() {
     
+        // This operation can safely be made synchronized because it doesn't
+        // use the controller's synchronized methods
+        
         for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
         
             ((ServoListener)i.next()).positionChanged(this, position);
@@ -171,6 +184,9 @@ abstract public class AbstractServo implements Servo {
      */
     protected final synchronized void actualPositionChanged() {
     
+        // This operation can safely be made synchronized because it doesn't
+        // use the controller's synchronized methods
+        
         // VT: FIXME: it may make sense to make this private and change the logic
         
         for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
@@ -196,11 +212,17 @@ abstract public class AbstractServo implements Servo {
     
     public synchronized void addListener(ServoListener listener) {
     
+        // This operation can safely be made synchronized because it doesn't
+        // use the controller's synchronized methods
+        
         listenerSet.add(listener);
     }
     
     public synchronized void removeListener(ServoListener listener) {
     
+        // This operation can safely be made synchronized because it doesn't
+        // use the controller's synchronized methods
+        
         if ( !listenerSet.contains(listener) ) {
         
             throw new IllegalArgumentException("Not a registered listener: "

@@ -1,3 +1,6 @@
+0.2p1	- Added the coordination transforation support and some transformers
+        - Reflected the coordination transformation on the console
+
 0.2p0	- API changed to accept double 0...1 instead of int 0...255
         - controller and servo metadata added
         - major bugfixes related to the above changes - one bug still

@@ -110,6 +110,23 @@
                  
             <li> Smooth transition done in hardware is a desirable feature.
             
+            <li> Actually, it goes beyond just the smooth transition. It is
+                 better described as a controlled transition. The transition
+                 pattern can be specified, for example, just a simple linear
+                 transition in a given time, or a constant and/or limited
+                 acceleration transition (good with moving heavy controlled
+                 bodies), or approximation transition (good when the
+                 exactness of approach to the specified position is
+                 required), or any sort of special effect ("drunken
+                 master").
+                 
+            <li> Transition controller isn't really stackable, so it is
+                 enough to "attach" one to the servo abstraction.
+            
+            <li> Transition controller may interfere with the coordination
+                 transformers, so there should be a possibility to attach it
+                 at any level of the coordination transformer stack.
+            
         </ul>
         
         <hr>

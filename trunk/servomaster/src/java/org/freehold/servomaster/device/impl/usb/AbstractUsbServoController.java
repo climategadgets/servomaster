@@ -798,11 +798,23 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         }
     }
 
-    public final void usbDeviceDetached(UsbServicesEvent e) {
+    public synchronized final void usbDeviceDetached(UsbServicesEvent e) {
     
         try {
         
             System.out.println("*** USB device detached: " + e.getUsbDevice().getProductString());
+            
+            UsbDevice departure = e.getUsbDevice();
+            
+            if ( departure == theServoController ) {
+            
+                // Ouch! It's ours!
+                
+                connected = false;
+                theServoController = null;
+                
+                // VT: FIXME: Notify listeners
+            }
             
         } catch ( Throwable t ) {
         
@@ -817,8 +829,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      */
     private void tooManyDevices(Set found) throws IOException, UsbException {
     
-        // VT: FIXME: Chester & Kevin, verify this
-        
         String message = "No port name specified, multiple PhidgetServo devices found:";
         
         for ( Iterator i = found.iterator(); i.hasNext(); ) {

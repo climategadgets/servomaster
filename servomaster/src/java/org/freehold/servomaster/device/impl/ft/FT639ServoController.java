@@ -55,6 +55,8 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  *
  * <li> Pretty simple to implement and to work with.
  *
+ * <li> Allows to adjust the initial servo positions
+ *
  * </ul>
  *
  * <h3>Implementation note</h3>
@@ -75,7 +77,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.6 2001-09-03 08:29:23 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.7 2001-09-05 05:29:22 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -160,6 +162,13 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * The listener set.
      */
     private Set listenerSet = new HashSet();
+    
+    /**
+     * The current range value.
+     *
+     * @see #setRange
+     */
+    protected boolean range = false;
     
     /**
      * Create the controller instance.
@@ -270,6 +279,29 @@ public class FT639ServoController implements ServoController, FT639Constants {
     }
 
     /**
+     * Enable the long throw for the servos.
+     *
+     * Default is 90 degree range.
+     *
+     * <p>
+     *
+     * Be careful with the long throw, not all servos support it.
+     *
+     * @param range <code>false</code> for 90 degree range,
+     * <code>true</code> for 180 degree range.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     */
+    public synchronized void setRange(boolean range) throws IOException {
+    
+        setSetupMode();
+        this.range = range;
+
+        send(range ? PULSE_LONG : PULSE_LONG);
+    }
+     
+    /**
      * Get the servo instance.
      *
      * @param id The servo ID. A valid ID is a <strong>decimal</strong>
@@ -346,66 +378,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
         return new FT639Servo(id);
     }
 
-    /**
-     * Set the individual servo position.
-     *
-     * <p>
-     *
-     * <strong>WARNING:</strong> Even though the operation is performed, the
-     * status of individual {@link #servoSet servo object} is left
-     * unchanged. The reason for this is that this is a
-     * <strong>slave</strong>, and the servo objects are the
-     * <strong>masters</strong>, not the other way around.
-     *
-     * @param id Servo ID to set position of.
-     *
-     * @param position Position to set.
-     *
-     * @exception IllegalArgumentException if the position is out of 0...255
-     * range.
-     *
-     * @exception IOException if there was a problem with getting access to
-     * the port.
-     */
-    protected synchronized void setPosition(int id, int position) throws IOException {
-    
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
-    
-        checkPosition(position);
-        setActiveMode();
-    
-        throw new Error("Not Implemented");
-    }
-    
-    /**
-     * Set the individual servo initial position.
-     *
-     * <p>
-     *
-     * Same warning as for {@link #setPosition setPosition()}.
-     *
-     * @param id Servo ID to adjust the initial position of.
-     *
-     * @param trim Initial position of the servo.
-     *
-     * @exception IOException if there was a problem with getting access to
-     * the port.
-     */
-    protected synchronized void setTrim(int id, int trim) throws IOException {
-    
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
-    
-        // setSetupMode(); ?
-    
-        throw new Error("Not Implemented");
-    }
-    
     /**
      * Check if the value is within 0...255 range.
      *
@@ -506,6 +478,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
         this.silent = silent;
         
+        if ( !silent ) {
+        
+            for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
+            
+                ((ServoControllerListener)i.next()).silentStatusChanged(this, true);
+            }
+        }
+        
         startTimeout();
     }
     
@@ -547,6 +527,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
         //System.err.println("Silent timer updated");
     }
     
+    /**
+     * Send the byte array down the {@link #serialOut serial port stream}.
+     *
+     * @param b Byte array to send.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     */
     private void send(byte b[]) throws IOException {
     
         // VT: FIXME: Can be optimized
@@ -559,6 +547,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
         serialOut.flush();
     }
     
+    /**
+     * Send the byte down the {@link #serialOut serial port stream}.
+     *
+     * @param b Byte to send.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     */
     private void send(byte b) throws IOException {
     
         serialOut.write(b);
@@ -567,28 +563,36 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     /**
      * Adjust the initial position.
+     *
+     * <p>
+     *
+     * This operation is speficic to FT639, and has to be executed with
+     * care. See the <a href="../../../../../../docs/FT639.html"
+     * target="_top">implementation notes</a>.
+     *
+     * @param headerLength A value indicating the initial servo position.
      */
-    public synchronized void setHeader(int trim) throws IOException {
+    public synchronized void setHeaderLength(int headerLength) throws IOException {
     
         if ( portName == null ) {
         
             throw new IllegalStateException("Not initialized");
         }
     
-        if ( trim < 0 || trim > 15 ) {
+        if ( headerLength < 0 || headerLength > 15 ) {
         
-            throw new IllegalArgumentException("Trim outside of 0...15 range: " + trim);
+            throw new IllegalArgumentException("Header length outside of 0...15 range: " + headerLength);
         }
         
         setSetupMode();
         
         // VT: FIXME: account for the pulse length?
         
-        trim |= 0x60;
+        headerLength |= 0x60;
         
-        System.err.println("Trim: " + trim + ": 0x" + Integer.toHexString(trim));
+        System.err.println("Trim: " + headerLength + ": 0x" + Integer.toHexString(headerLength));
         
-        send((byte)trim);
+        send((byte)headerLength);
     }
     
     public void reset() throws IOException {
@@ -605,7 +609,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = true;
         setSetupMode();
-        send(PULSE_SHORT);
+        setRange(range);
     }
     
     public synchronized void addListener(ServoControllerListener listener) {
@@ -764,6 +768,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
          */
         private synchronized void setActualPosition(int position) throws IOException {
         
+            checkPosition(position);
             setActiveMode();
             send(renderPositionCommand(id, position));
             this.actualPosition = position;
@@ -796,26 +801,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         public void setRange(int range) {
         
-            if ( !enabled ) {
-            
-                throw new IllegalStateException("Not enabled");
-            }
-        
-            throw new Error("Not Implemented");
-        }
-        
-        public void setTrim(int trim) throws IOException {
-        
-            if ( !enabled ) {
-            
-                throw new IllegalStateException("Not enabled");
-            }
-        
-            int position = getActualPosition();
-            setHeader(trim);
-            setActualPosition(position);
-            
-            //System.err.println("Trim: " + trim + ": ignored");
+            throw new UnsupportedOperationException("This operation is controller-specific for FT639, you have to invoke it on the controller");
         }
         
         public int getPosition() {

@@ -5,3 +5,4 @@
 - Introduce the coordinate transformer with configurable low limit, high
   limit and center; figure out the nonlinear transfer function between the
   0...1 transformer input and 0...255 servo input
+- Analyze http://www.havingasoftware.nl/robots/servo/servo.htm

@@ -60,7 +60,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.8 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: Console.java,v 1.9 2002-01-02 03:51:13 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -350,23 +350,26 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 
                 controller.reset();
                 
+                // VT: FIXME: Remove the transition controller, if any, and
+                // reattach it later
+                
                 for ( Iterator i = controller.getServos(); i.hasNext(); ) {
                 
-                    ((Servo)i.next()).setPosition(0, false, 0);
+                    ((Servo)i.next()).setPosition(0);
                 }
                 
                 Thread.sleep(1000);
                 
                 for ( Iterator i = controller.getServos(); i.hasNext(); ) {
                 
-                    ((Servo)i.next()).setPosition(1, false, 0);
+                    ((Servo)i.next()).setPosition(1);
                 }
                 
                 Thread.sleep(1000);
                 
                 for ( Iterator i = controller.getServos(); i.hasNext(); ) {
                 
-                    ((Servo)i.next()).setPosition(0.5, false, 0);
+                    ((Servo)i.next()).setPosition(0.5);
                 }
                 
                 for ( int idx = 0; servoPanel[idx] != null; idx++ ) {

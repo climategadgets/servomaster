@@ -41,13 +41,14 @@ import java.util.Iterator;
  * The feature or property identifier is normally a full or partial URL. The
  * full URL points to the page containing the support documentation for this
  * feature or property, for example, <a
- * href="http://servomaster.sourceforge.net/meta/controller/precision">http://servomaster.sourceforge.net/meta/controller/precision</a>.
- * Since this is quite cumbersome, partial URLs will be accepted as well.
+ * href="http://servomaster.sourceforge.net/meta/controller/precision"
+ * target="_top">http://servomaster.sourceforge.net/meta/controller/precision</a>. 
+ * Since this is quite cumbersome, partial URLs will be accepted as well. 
  * For this particular example, the identifier will look like
  * <code>controller/precision</code>.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: Meta.java,v 1.2 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: Meta.java,v 1.3 2003-01-06 20:14:31 vtt Exp $
  */
 public interface Meta {
 

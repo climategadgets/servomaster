@@ -18,7 +18,7 @@ import org.freehold.servomaster.device.model.Servo;
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.5 2005-01-18 04:59:46 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.6 2005-01-21 05:40:52 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -115,10 +115,7 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
 
         } catch ( UnsupportedCommOperationException ucoex ) {
         
-            // VT: FIXME: Bastards, there's no nested exception until JDK
-            // 1.4...
-        
-            throw new IOException("Unsupported comm operation: " + ucoex.toString());
+            throw (IOException)(new IOException("Unsupported comm operation").initCause(ucoex));
         }
         
         reset();

@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.10 2004-06-28 21:17:14 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.11 2004-10-12 00:31:41 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -165,7 +165,6 @@ fi
 
 TARGET_CLASSPATH=`cd ${srcdir} && pwd`/src/java
 
-AC_PATH_EXTRA(ANT)
 AC_PATH_EXTRA(JAVA_COMPILER)
 AC_PATH_EXTRA(XERCES)
 

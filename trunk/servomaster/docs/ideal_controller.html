@@ -28,18 +28,42 @@
                  should be configurable).
             
             <li> It should be possible to preset the minimum and maximum
-                 angle for the servo. Implied: the pulse length. The limits
-                 may be defined by the servo construction and/or mechanical
-                 layout of the apparatus in which the servo is used.
+                 angle for the servo. And not only 90&deg; vs. 180&deg;, but
+                 arbitrary angle.  Implied: the pulse length range. The
+                 limits may be defined by the servo construction and/or
+                 mechanical layout of the apparatus in which the servo is
+                 used. Implied: range should be included into capabilities
+                 discovery.
                  
             <li> It should be possible to preset the servo center. The
                  actual implementation center may be different from position
                  128 due to the limits described above.
                  
+            <li> The servo interface shouldn't realy accept the values from
+                 0 to 255 for the servo position, but rather 0.0 to 1.0
+                 (extreme left to extreme right). The reason is, different
+                 controllers have different value ranges - some operate from
+                 0 to 255, some from 0 to 254, some use the high bit as the
+                 direction indicator and the rest as position. Implied:
+                 precision is different. Implied: controller precision
+                 should be included into capabilities discovery.
+                 
             <li> Provide the coordinate transformation between the physical
                  servo position and input value. Useful for compensating the
                  rotational servo movement to linear controlled body
-                 movement.
+                 movement, as well as applications where the natural input
+                 value range differs from 0...1 (for example, steering
+                 wheels and rudders). This abstraction shouldn't be really a
+                 part of the servo astraction, but rather a module you can
+                 plug the servo into.
+            
+            <li> Inverting the coordinate polarity to reverse the servo is
+                 not exactly a life saver, but can be useful and is really
+                 simple. It can be a part of the coordinate transformation
+                 module as well.
+                 
+            <li> Implication: the coordinate transformation module interface
+                 should be stackable.
                  
             <li> Provide the means to incorporate the closed loop feedback
                  signal and mapping between the feedback and control.
@@ -47,11 +71,16 @@
             <li> The ideal servo controller doesn't necessarily have to be
                  integrated - there are cases when the servos are located in
                  remote locations. The surface mount design can possibly fit
-                 on the back of the servo.
-                 
+                 on the back of the servo.                 
+
             <li> Implication: it's not that the abstraction of the
                  <strong>servo controller</strong> that is important, it is the
                  abstraction of the <strong>servo</strong>.
+                 
+            <li> However, the abstraction of the servo controller is
+                 important as well: even though the actual servo drivers may
+                 be physically and logically separated, they are accessed in
+                 the same uniform manner.
                  
             <li> From the practical standpoint: how do I care if the
                  controller is one piece or distributed, as long as the cost is

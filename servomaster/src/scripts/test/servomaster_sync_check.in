@@ -6,6 +6,28 @@
 
 TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
 @prefix@/share/java/@PACKAGE@-@VERSION@.jar:\
-@JUSB_CLASSES@
+@prefix@/share/java/jsr80.jar:\
+@prefix@/share/java/jsr80_ri.jar:\
+@prefix@/share/java/jsr80_linux.jar:\
+@prefix@/share/java
 
-LD_LIBRARY_PATH=@JUSB_LIB@:$LD_LIBRARY_PATH @JAVAX@ org.freehold.servomaster.test.integration.SyncCheck $*
+# Let's see if Java binary is available
+
+if @TEST@ ! -x @JAVA@ ; then
+    @ECHO@ "Java binary not found (expected to be at @JAVA@)."
+    @ECHO@ ""
+    @ECHO@ "Possible causes:"
+    @ECHO@ ""
+    @ECHO@ "    - You reinstalled JDK after running configure script;"
+    @ECHO@ "    - You had to run RPM with --nodeps flag;"
+    @ECHO@ "    - JDK you have is not RPM was built with."
+    @ECHO@ ""
+    @ECHO@ "In all cases the expected path will differ from actual,"
+    @ECHO@ "and Java binary will not be found."
+    @ECHO@ ""
+    @ECHO@ "How to fix the problem: edit the $0 script and specify the correct locations."
+    
+    exit -1;
+fi
+
+LD_LIBRARY_PATH=@prefix@/lib:$LD_LIBRARY_PATH @JAVAX@ org.freehold.servomaster.test.integration.SyncCheck $*

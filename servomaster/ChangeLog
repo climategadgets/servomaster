@@ -1,3 +1,7 @@
+0.6p3dev1 Replaced jUSB (http://jusb.sf.net) with javax.usb
+          (http://javax-usb.sf.net), to get a feeling for it. Seems to work
+          fine so far.
+
 0.6p2-3 - Changed Ant invocation from "Ant as Java class" to "Ant as a shell
 	  script" - allows to work with Ant 1.6.1, which is not yet packaged
 	  as RPM.

@@ -5,16 +5,15 @@
 
 Name: servomaster
 Version: @VERSION@
-Release: 3
+Release: 1
 Summary: ServoMaster: uniform Java servo controller driver
 Source: %{name}-%{version}.tar.gz
 Copyright: GPL
-Group: Utilities/System
+Group: System/Libraries
 URL: http://servomaster.sourceforge.net/
 Buildroot: %{_tmppath}/%{name}-root
 Prefix: /usr
 Packager: Vadim Tkachenko <vt@freehold.crocodile.org>
-#Requires: jusb >= 0.4p5 - this will have to wait
 Requires: j2sdk >= 1.4.0
 %description
 
@@ -60,8 +59,16 @@ make install \
 %{prefix}/bin/servomaster_console
 %{prefix}/bin/servomaster_sync_check
 %{prefix}/share/java/servomaster-@VERSION@.jar
-
+%{prefix}/share/java/javax.usb.properties
+%{prefix}/share/java/jsr80.jar
+%{prefix}/share/java/jsr80_linux.jar
+%{prefix}/share/java/jsr80_ri.jar
+%{prefix}/lib/libJavaxUsb.so
+            
 %changelog
+
+* Tue Oct 12 2004 Vadim Tkachenko <vt@freehold.crocodile.org>
+- Replaced jUSB with javax.usb
 
 * Tue Feb 03 2003 Vadim Tkachenko <vt@freehold.crocodile.org>
 - Initial take at RPM build

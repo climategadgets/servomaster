@@ -2,24 +2,16 @@ package org.freehold.servomaster.device.impl.phidget;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import usb.core.Bus;
-import usb.core.Configuration;
-import usb.core.ControlMessage;
-import usb.core.Descriptor;
-import usb.core.Device;
-import usb.core.DeviceDescriptor;
-import usb.core.Endpoint;
-import usb.core.Host;
-import usb.core.HostFactory;
-import usb.core.Interface;
-import usb.core.USBException;
+import javax.usb.*;
 
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
@@ -40,7 +32,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.24 2004-02-04 00:33:51 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.25 2004-10-13 01:25:00 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -68,7 +60,7 @@ public class PhidgetServoController extends AbstractServoController {
     /**
      * The USB device object corresponding to the servo controller.
      */
-    private Device thePhidgetServo;
+    private UsbDevice thePhidgetServo;
     
     /**
      * The protocol handler taking care of this specific instance.
@@ -164,21 +156,23 @@ public class PhidgetServoController extends AbstractServoController {
             
                 thePhidgetServo = findUSB(portName);
 
-                Configuration cf = thePhidgetServo.getConfiguration();
-                Interface iface = cf.getInterface(0, 0);
+                UsbConfiguration cf = thePhidgetServo.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
                 
-                if ( !iface.claim() ) {
+                if ( iface.isClaimed() ) {
                 
-                    throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                    throw new IOException("Can't claim interface - already claimed");
                 }
+                
+                iface.claim();
                 
                 return true;
 
-            } catch ( IOException ioex ) {
+            } catch ( Throwable t ) {
             
                 // Uh oh, I don't think so
                 
-                exception(ioex);
+                exception(t);
                 return false;
             }
         }
@@ -207,13 +201,15 @@ public class PhidgetServoController extends AbstractServoController {
         
             thePhidgetServo = findUSB(portName);
         
-            Configuration cf = thePhidgetServo.getConfiguration();
-            Interface iface = cf.getInterface(0, 0);
+            UsbConfiguration cf = thePhidgetServo.getActiveUsbConfiguration();
+            UsbInterface iface = cf.getUsbInterface((byte)0x00);
             
-            if ( !iface.claim() ) {
+            if ( iface.isClaimed() ) {
             
-                throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                throw new IOException("Can't claim interface - already claimed");
             }
+            
+            iface.claim();
 
             // At this point, we've either flying by on the wings of
             // IllegalArgumentException (null portName, none or more than
@@ -223,17 +219,9 @@ public class PhidgetServoController extends AbstractServoController {
             // from the caller, and just assign it - we don't care if they
             // made a typo
             
-            int languageSet[] = ControlMessage.getLanguages(thePhidgetServo);
-            int defaultLanguage = 0;
-            
-            if ( languageSet != null && languageSet.length != 0 ) {
-            
-                defaultLanguage = languageSet[0];
-            }
-            
-            DeviceDescriptor dd = thePhidgetServo.getDeviceDescriptor();
-            String serial = dd.getSerial(defaultLanguage);
-            String product = Integer.toHexString(dd.getProductId());
+            UsbDeviceDescriptor dd = thePhidgetServo.getUsbDeviceDescriptor();
+            String serial = thePhidgetServo.getSerialNumberString();
+            String product = Integer.toHexString(dd.idProduct());
             
             // VT: NOTE: Serial number can be null. At least it
             // is with the current firmware release for
@@ -260,9 +248,9 @@ public class PhidgetServoController extends AbstractServoController {
             this.portName = serial;
             connected = true;
         
-        } catch ( IOException ioex ) {
+        } catch ( Throwable t ) {
         
-            exception(ioex);
+            exception(t);
         
             if ( isDisconnectAllowed() && (portName != null) ) {
                 
@@ -275,7 +263,7 @@ public class PhidgetServoController extends AbstractServoController {
                     synchronized ( System.err ) {
                     
                         System.err.println("Working in the disconnected mode, cause:");
-                        ioex.printStackTrace();
+                        t.printStackTrace();
                     }
                     
                     return;
@@ -283,7 +271,12 @@ public class PhidgetServoController extends AbstractServoController {
             
             // Too bad, we're not in the disconnected mode
             
-            throw ioex;
+            if ( t instanceof IOException ) {
+            
+                throw (IOException)t;
+            }
+            
+            throw (IOException)(new IOException().initCause(t));
         }
         
         // VT: FIXME: Since right now the controller is write-only box and
@@ -444,7 +437,7 @@ public class PhidgetServoController extends AbstractServoController {
     
     private long lastDetect = 0;
     
-    private Device findUSB(String portName) throws IOException {
+    private UsbDevice findUSB(String portName) throws IOException {
 
         // VT: There are multiple ways to handle this:
 
@@ -476,37 +469,20 @@ public class PhidgetServoController extends AbstractServoController {
         
             // VT: FIXME: What if there's more than one host? Bummer...
             
-            Host usbHost = HostFactory.getHost();
-            
-            // VT: FIXME: This has to be handled inside getHost(), but since the
-            // jUSB code sucks, it might have not been
-            
-            if ( usbHost == null ) {
-            
-                throw new IOException("No USB hosts found");
-            }
-            
-            Bus busSet[] = usbHost.getBusses();
+            UsbServices usbServices = UsbHostManager.getUsbServices();
+            UsbHub virtualRootHub = usbServices.getRootUsbHub();
             
             Set found = new HashSet();
             
-            for ( int idx = 0; idx < busSet.length; idx++ ) {
+            try {
             
-                Bus bus = busSet[idx];
-                Device rootHub = bus.getRootHub();
+                find(portName, virtualRootHub, found, true);
+            
+            } catch ( BootException bex ) {
+            
+                bex.printStackTrace();
                 
-                // Let's start walking down
-                
-                try {
-                
-                    find(portName, rootHub, found, true);
-                
-                } catch ( BootException bex ) {
-                
-                    bex.printStackTrace();
-                    
-                    throw new IllegalStateException("BootException shouldn't have propagated here");
-                }
+                throw new IllegalStateException("BootException shouldn't have propagated here");
             }
             
             if ( found.size() == 1 ) {
@@ -514,7 +490,7 @@ public class PhidgetServoController extends AbstractServoController {
                 // If there's just one object in the set, that's what we wanted in
                 // any case
 
-                return (Device)(found.toArray()[0]);
+                return (UsbDevice)(found.toArray()[0]);
             }
                 
             // Now, let's figure out what the caller wanted.
@@ -554,6 +530,10 @@ public class PhidgetServoController extends AbstractServoController {
             System.err.println("\nMake sure you have the directory containing libjusb.so to your LD_LIBRARY_PATH\n");
             
             throw ule;
+
+        } catch ( UsbException usbex ) {
+        
+            throw (IOException)(new IOException().initCause(usbex));
         }
     }
     
@@ -562,7 +542,7 @@ public class PhidgetServoController extends AbstractServoController {
      *
      * @exception IOException with the list of device serial numbers found.
      */
-    private void tooManyDevices(Set found) throws IOException {
+    private void tooManyDevices(Set found) throws IOException, UsbException {
     
         // VT: FIXME: Chester & Kevin, verify this
         
@@ -570,17 +550,8 @@ public class PhidgetServoController extends AbstractServoController {
         
         for ( Iterator i = found.iterator(); i.hasNext(); ) {
         
-            Device next = (Device)i.next();
-            DeviceDescriptor dd = next.getDeviceDescriptor();
-            int languageSet[] = ControlMessage.getLanguages(next);
-            int defaultLanguage = 0;
-            
-            if ( languageSet != null && languageSet.length != 0 ) {
-            
-                defaultLanguage = languageSet[0];
-            }
-            
-            String serial = dd.getSerial(defaultLanguage);
+            UsbDevice next = (UsbDevice)i.next();
+            String serial = next.getSerialNumberString();
             message += " " + serial;
         }
         
@@ -599,27 +570,23 @@ public class PhidgetServoController extends AbstractServoController {
      *
      * @param boot Whether to boot the phidget if one is found.
      */
-    private void find(String portName, Device root, Set found, boolean boot) throws IOException, BootException {
+    private void find(String portName, UsbDevice root, Set found, boolean boot) throws IOException, UsbException, BootException {
     
         if ( root == null ) {
         
             return;
         }
         
-        DeviceDescriptor dd = root.getDeviceDescriptor();
+        if ( root.isUsbHub() ) {
         
-        if ( dd.getDeviceClass() == Descriptor.CLASS_HUB ) {
-        
-            for ( int port = 0; port < root.getNumPorts(); port++ ) {
+            List devices = ((UsbHub)root).getAttachedUsbDevices();
             
-                System.err.println("Hub " + dd.getSerial(0) + ": port " + (port + 1));
+            for ( Iterator i = devices.iterator(); i.hasNext(); ) {
             
-                Device child = root.getChild(port + 1);
-                
                 try {
                 
-                    find(portName, child, found, true);
-                    
+                    find(portName, (UsbDevice)i.next(), found, true);
+
                 } catch ( BootException bex ) {
                 
                     // This means that SoftPhidget was found and booted, it
@@ -644,7 +611,7 @@ public class PhidgetServoController extends AbstractServoController {
 
                     } catch ( BootException bex2 ) {
                     
-                        System.err.println("Failed to boot SoftPhidget at hub " + dd.getSerial(0) + ": port " + (port + 1));
+                        System.err.println("Failed to boot SoftPhidget at hub FIXME");
                     }
                 }
             }
@@ -653,16 +620,18 @@ public class PhidgetServoController extends AbstractServoController {
         
             // This may be our chance
             
+            UsbDeviceDescriptor dd = root.getUsbDeviceDescriptor();
+        
             // Check the vendor/product ID first in case the device
             // is not very smart and doesn't support control messages
             
-            if ( dd.getVendorId() == 0x6c2 ) {
+            if ( dd.idVendor() == 0x6c2 ) {
             
-                System.err.println("Phidget: " + Integer.toHexString(dd.getProductId()));
+                System.err.println("Phidget: " + Integer.toHexString(dd.idProduct()));
             
                 // 0x6c2 is a Phidget
                 
-                switch ( dd.getProductId() ) {
+                switch ( dd.idProduct() ) {
                 
                     case 0x0038:
                     
@@ -688,15 +657,7 @@ public class PhidgetServoController extends AbstractServoController {
                         // Port name was specified, so we have to retrieve
                         // it
                         
-                        int languageSet[] = ControlMessage.getLanguages(root);
-                        int defaultLanguage = 0;
-                        
-                        if ( languageSet != null && languageSet.length != 0 ) {
-                        
-                            defaultLanguage = languageSet[0];
-                        }
-                        
-                        String serial = dd.getSerial(defaultLanguage);
+                        String serial = root.getSerialNumberString();
                         
                         System.err.println("Serial found: " + serial);
                         
@@ -746,7 +707,7 @@ public class PhidgetServoController extends AbstractServoController {
                         
                     default:
                     
-                        System.err.println("Phidget: unknown: " + Integer.toHexString(dd.getProductId()));
+                        System.err.println("Phidget: unknown: " + Integer.toHexString(dd.idProduct()));
                 }
             }
         }
@@ -757,16 +718,16 @@ public class PhidgetServoController extends AbstractServoController {
      *
      * @param target Device to boot.
      */
-    private void boot(Device target) {
+    private void boot(UsbDevice target) throws UsbException, UnsupportedEncodingException {
     
-        System.err.println("Booting " + target.getDeviceDescriptor().getSerial(0));
+        System.err.println("Booting " + target.getSerialNumberString());
         
         try {
         
-            Configuration cf = target.getConfiguration();
-            Interface iface = cf.getInterface(0, 0);
-            Endpoint endpoint = iface.getEndpoint(0);
-            OutputStream out = endpoint.getOutputStream();
+            UsbConfiguration cf = target.getActiveUsbConfiguration();
+            UsbInterface iface = cf.getUsbInterface((byte)0x00);
+            UsbEndpoint endpoint = iface.getUsbEndpoint((byte)0x01);
+            
             Firmware fw = new Servo8();
             byte buffer[] = fw.get();
             
@@ -788,10 +749,18 @@ public class PhidgetServoController extends AbstractServoController {
             
             System.err.println("");
 
-            out.write(buffer);
-            out.flush();
+            UsbPipe pipe = endpoint.getUsbPipe();
+            UsbIrp message = pipe.createUsbIrp();
             
-        } catch ( USBException  usbex ) {
+            message.setData(buffer);
+            
+            iface.claim();
+            pipe.open();
+            pipe.syncSubmit(message);
+            pipe.close();
+            iface.release();
+            
+        } catch ( UsbException  usbex ) {
         
             // Analyze the exception. It's possible that the device
             // announced itself removed by now and we're getting an
@@ -812,7 +781,7 @@ public class PhidgetServoController extends AbstractServoController {
                     usbex.printStackTrace();
                 }
             }
-        
+
         } catch ( Throwable t ) {
         
             System.err.println("Boot failed:");
@@ -1029,7 +998,9 @@ public class PhidgetServoController extends AbstractServoController {
                     this.actualPosition = position;
                     actualPositionChanged();
                     
-                } catch ( USBException usbex ) {
+                } catch ( IOException usbex ) {
+                
+                    /// VT: FIXME
                 
                     connected = false;
                 
@@ -1037,7 +1008,7 @@ public class PhidgetServoController extends AbstractServoController {
                     
                         // Too bad
                         
-                        throw (IOException)usbex;
+                        throw (IOException)(new IOException("Disconnect not allowed").initCause(usbex));
                     }
                 
                     // VT: NOTE: This block is dependent on jUSB error message
@@ -1049,7 +1020,7 @@ public class PhidgetServoController extends AbstractServoController {
                     
                         // Can't determine what kind of problem it is
                         
-                        throw (IOException)usbex;
+                        throw (IOException)(new IOException("Unknown problem").initCause(usbex));
                     }
                     
                     if (    xmessage.indexOf("Bad file descriptor") != -1
@@ -1197,13 +1168,15 @@ public class PhidgetServoController extends AbstractServoController {
                 
                     thePhidgetServo = findUSB(portName);
 
-                    Configuration cf = thePhidgetServo.getConfiguration();
-                    Interface iface = cf.getInterface(0, 0);
+                    UsbConfiguration cf = thePhidgetServo.getActiveUsbConfiguration();
+                    UsbInterface iface = cf.getUsbInterface((byte)0x00);
                     
-                    if ( !iface.claim() ) {
+                    if ( iface.isClaimed() ) {
                     
-                        throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                        throw new IOException("Can't claim interface - already claimed");
                     }
+                    
+                    iface.claim();
 
                     System.err.println("Found " + portName);
                     connected = true;
@@ -1224,11 +1197,11 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 sent = true;
                 
-            } catch ( IOException ioex ) {
+            } catch ( Throwable t ) {
             
                 if ( connected ) {
                 
-                    exception(ioex);
+                    exception(t);
             
                     // FIXME: notify the listeners about the departure
                     
@@ -1246,7 +1219,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // Too bad
                 
-                throw ioex;
+                throw (IOException)(new IOException("send() failed").initCause(t));
 
             } finally {
             
@@ -1264,18 +1237,25 @@ public class PhidgetServoController extends AbstractServoController {
                 return;
             }
             
-            ControlMessage message = new ControlMessage();
-
-            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
-                                         |ControlMessage.TYPE_CLASS
-                                         |ControlMessage.RECIPIENT_INTERFACE));
-            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
-            message.setValue((short)0x0200);
-            message.setIndex((byte)0);
-            message.setLength(buffer.length);
-            message.setBuffer(buffer);
+            byte requestType = (byte)(UsbConst.REQUESTTYPE_DIRECTION_OUT
+                                     |UsbConst.REQUESTTYPE_TYPE_CLASS
+                                     |UsbConst.REQUESTTYPE_RECIPIENT_INTERFACE);
+            byte request = (byte)UsbConst.REQUEST_SET_CONFIGURATION;
+            short value = (short)0x0200;
+            short index = (short)0x00;
             
-            thePhidgetServo.control(message);
+            
+            UsbControlIrp message = thePhidgetServo.createUsbControlIrp(requestType, request, value, index);
+            message.setData(buffer);
+            
+            try {
+            
+                thePhidgetServo.syncSubmit(message);
+                
+            } catch ( UsbException usbex ) {
+            
+                throw (IOException)(new IOException("send() failed").initCause(usbex));
+            }
         }
 
         /**
@@ -1442,7 +1422,7 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler0x3B extends ProtocolHandler {
     
-        private OutputStream out;
+        private UsbPipe out;
         
         ProtocolHandler0x3B() {
         
@@ -1471,8 +1451,15 @@ public class PhidgetServoController extends AbstractServoController {
             }
             
             PhidgetServo0x3B servo = (PhidgetServo0x3B)servoSet[id];
-        
-            send(servo.renderPosition(position));
+            
+            try {
+            
+                send(servo.renderPosition(position));
+                
+            } catch ( UsbException usbex ) {
+            
+                throw (IOException)(new IOException().initCause(usbex));
+            }
         }
         
         public void silence() throws IOException {
@@ -1482,34 +1469,35 @@ public class PhidgetServoController extends AbstractServoController {
             System.err.println("silence() is not implemented in " + getClass().getName());
         }
         
-        private void init() throws IOException {
+        private void init() throws IOException, UsbException {
         
             if ( out == null ) {
             
-                Configuration cf = thePhidgetServo.getConfiguration();
-                Interface iface = cf.getInterface(0, 0);
+                UsbConfiguration cf = thePhidgetServo.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
                 
                 if ( false ) {
                 
-                // VT: FIXME: Verify: with the latest changes, we should've
-                // claimed it already
-                
-                if ( !iface.claim() ) {
-                
-                    throw new IOException("Can't claim interface - already claimed by " + iface.getClaimer());
+                    // VT: FIXME: Verify: with the latest changes, we should've
+                    // claimed it already
+                    
+                    if ( iface.isClaimed() ) {
+                    
+                        throw new IOException("Can't claim interface - already claimed");
+                    }
+                    
+                    iface.claim();
                 }
                 
-                }
+                UsbEndpoint endpoint = null;
                 
-                Endpoint endpoint = null;
+                for ( Iterator i = iface.getUsbEndpoints().iterator(); i.hasNext(); ) {
                 
-                for ( int idx = 0; idx < iface.getNumEndpoints(); idx++ ) {
-                
-                    Endpoint e = iface.getEndpoint(idx);
+                    UsbEndpoint e = (UsbEndpoint)i.next();
+                    UsbEndpointDescriptor ed = e.getUsbEndpointDescriptor();
+                    System.err.println("Endpoint: " + Integer.toHexString(ed.bEndpointAddress()));
                     
-                    System.err.println("Endpoint: " + e.getEndpoint() + ":" + Integer.toHexString(e.getEndpoint()));
-                    
-                    if ( e.getEndpoint() == 0x01 ) {
+                    if ( ed.bEndpointAddress() == 0x01 ) {
                     
                         endpoint = e;
                     }
@@ -1520,16 +1508,23 @@ public class PhidgetServoController extends AbstractServoController {
                     throw new IOException("Can't find endpoint 82");
                 }
                 
-                out = endpoint.getOutputStream();
+                out = endpoint.getUsbPipe();
+                out.open();
             }
         }
         
-        protected synchronized void send(byte buffer[]) throws IOException {
+        protected synchronized void send(byte buffer[]) throws IOException, UsbException {
         
             init();
         
-            out.write(buffer);
-            out.flush();
+            UsbIrp message = out.createUsbIrp();
+            
+            message.setData(buffer);
+            
+            out.syncSubmit(message);
+
+            ///out.write(buffer);
+            ///out.flush();
         }
         
         public Servo createServo(ServoController sc, int id) throws IOException {

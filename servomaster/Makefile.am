@@ -1,6 +1,6 @@
-## $Id: Makefile.am,v 1.9 2004-05-25 05:46:15 vtt Exp $
+## $Id: Makefile.am,v 1.10 2004-10-13 01:25:00 vtt Exp $
 
-SUBDIRS = src build
+SUBDIRS = src build lib
 RPMMACROS = ${HOME}/.rpmmacros
 RPMDIR = ${HOME}/.rpm
 

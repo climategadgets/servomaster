@@ -3,6 +3,8 @@
 	  both 2.13 and 2.53 code together without running into
 	  complications
 	- Updated the firmware code for PhidgetAdvancedServo
+	- Run script name changed from 'ft_view' (which was originally
+	  created for FT639) to more proper 'console'
 
 0.4p2   - Added support for PhidgetAdvancedServo
 	- Support for different Phidgets made generic, the only part that

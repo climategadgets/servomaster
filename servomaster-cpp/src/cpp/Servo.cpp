@@ -1,4 +1,4 @@
-// $Id: Servo.cpp,v 1.7 2003-09-03 05:35:32 vtt Exp $
+// $Id: Servo.cpp,v 1.8 2003-09-03 06:06:48 vtt Exp $
 #include <Servo.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -6,11 +6,11 @@
 
 namespace servomaster {
 
-    Servo::Servo(ServoController *servoController, Servo *target) :
+    Servo::Servo(ServoController *_servoController, Servo *_target) :
         position(0),
         enabled(true),
-        servoController(servoController),
-        target(target),
+        servoController(_servoController),
+        target(_target),
         transitionController(NULL),
         transitionDriver(NULL),
         actualPosition(0) {
@@ -36,7 +36,7 @@ namespace servomaster {
         return servoController;
     }
     
-    TransitionController *Servo::attach(TransitionController *transitionController) {
+    TransitionController *Servo::attach(TransitionController *_transitionController) {
     
         // VT: FIXME: Get the synchronization lock
         
@@ -54,7 +54,7 @@ namespace servomaster {
         
         TransitionController *old = this->transitionController;
         
-        this->transitionController = transitionController;
+        this->transitionController = _transitionController;
         
         return old;
     }
@@ -69,7 +69,7 @@ namespace servomaster {
         return target;
     }
     
-    void Servo::setPosition(double position) {
+    void Servo::setPosition(double _position) {
     
         // VT: FIXME: Check if it is enabled and if not, throw an exception
         
@@ -77,7 +77,7 @@ namespace servomaster {
         
         {
         
-            this->position = position;
+            this->position = _position;
             
             if ( transitionController != NULL ) {
             
@@ -86,21 +86,21 @@ namespace servomaster {
                     transitionDriver->stop();
                 }
                 
-                transitionDriver = new servo::TransitionDriver(this, position);
+                transitionDriver = new servo::TransitionDriver(this, _position);
                 transitionDriver->start();
             
             } else {
             
-                printf("setActualPosition(%3.3F)\n", position);
+                printf("setActualPosition(%3.3F)\n", _position);
             
-                setActualPosition(position);
+                setActualPosition(_position);
             }
         }
     }
     
-    void Servo::checkPosition(double position) {
+    void Servo::checkPosition(double _position) {
     
-        if ( position < 0 || position > 1.0 ) {
+        if ( _position < 0 || _position > 1.0 ) {
         
             throw std::runtime_error("Requested position outside of 0...1 range");
         }
@@ -108,7 +108,9 @@ namespace servomaster {
     
     namespace servo {
     
-        TransitionDriver::TransitionDriver(Servo *target, double position) : target(target), position(position) {
+        TransitionDriver::TransitionDriver(Servo *_target, double _position) :
+            target(_target),
+            position(_position) {
         }
         
         void TransitionDriver::start() {

@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.usb.AbstractUsbServoController;
  * USB 16-Servo Controller</a> controller.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: USB16ServoController.java,v 1.1 2005-01-12 22:14:37 vtt Exp $
+ * @version $Id: USB16ServoController.java,v 1.2 2005-01-13 06:34:53 vtt Exp $
  */
 public class USB16ServoController extends AbstractUsbServoController {
 
@@ -113,6 +113,8 @@ public class USB16ServoController extends AbstractUsbServoController {
      * Pololu USB 16-Servo controller protocol handler.
      */
     protected class PololuProtocolHandler extends UsbProtocolHandler {
+    
+        private UsbPipe out;
     
         public Servo createServo(ServoController sc, int id) throws IOException {
         
@@ -322,9 +324,92 @@ public class USB16ServoController extends AbstractUsbServoController {
             
             // One unit is 1/2 of a microsecond
             
-            int units = (int)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
+            short units = (short)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
             
-            //setAbsolutePosition(id, units);
+            setAbsolutePosition((byte)id, units);
+        }
+        
+        private void init() throws UsbException {
+        
+            if ( out == null ) {
+            
+                if ( theServoController == null ) {
+                
+                    // There's nothing we can do at this point
+                
+                    return;
+                }
+            
+                UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                
+                if ( false ) {
+                
+                    // VT: FIXME: Verify: with the latest changes, we should've
+                    // claimed it already
+                    
+                    iface.claim();
+                }
+                
+                UsbEndpoint endpoint = null;
+                
+                for ( Iterator i = iface.getUsbEndpoints().iterator(); i.hasNext(); ) {
+                
+                    UsbEndpoint e = (UsbEndpoint)i.next();
+                    UsbEndpointDescriptor ed = e.getUsbEndpointDescriptor();
+                    System.err.println("Endpoint: " + Integer.toHexString(ed.bEndpointAddress() & 0xFF));
+                    
+                    if ( ed.bEndpointAddress() == 0x03 ) {
+                    
+                        endpoint = e;
+                        break;
+                    }
+                }
+                
+                if ( endpoint == null ) {
+                
+                    throw new UsbException("Can't find endpoint 03");
+                }
+                
+                out = endpoint.getUsbPipe();
+                
+                if ( !out.isOpen() ) {
+                
+                    out.open();
+                }
+            }
+        }
+
+        private synchronized void setAbsolutePosition(byte servoId, short units) throws UsbException {
+        
+            init();
+            
+            if ( out == null ) {
+            
+                return;
+            }
+            
+            byte buffer[] = PacketBuilder.setAbsolutePosition(servoId, units);
+            
+            System.err.println("setAbsolutePosition(" + Integer.toString(servoId) + ", " + units + ")");
+            
+            UsbIrp message = out.createUsbIrp();
+            
+            message.setData(buffer);
+            
+            try {
+            
+                out.syncSubmit(message);
+                
+            } catch ( UsbException usbex ) {
+            
+                // Ouch! The pipe is most probably not valid anymore
+                
+                out = null;
+                throw usbex;
+            }
+            
+            System.err.println("setAbsolutePosition: done");
         }
 
         public void reset() throws UsbException {
@@ -336,34 +421,4 @@ public class USB16ServoController extends AbstractUsbServoController {
             //send();
         }
     }
-    
-/*        public byte[] composeBuffer() {
-        
-            // Start byte
-            buffer[0]  = (byte)0x80;
-            
-            // Device ID - 0x01 for USB 16-Servo
-            buffer[1]  = (byte)0x01;
-            
-            // Command
-            // VT: FIXME
-            
-            // Bit 7: === 0
-            // Bit 6: == 1 servo on
-            // Bit 5: == 1 direction forward
-            // Bits 0-4 set range, default 15
-            
-            buffer[2]  = (byte)(0x00);
-            
-            // Servo number
-            
-            buffer[3] = (byte)(0x00);
-            
-            // Data
-            buffer[4]  = (byte)(0x00);
-            buffer[5]  = (byte)(0x00);
-            
-            return buffer;
-        }
- */
 }

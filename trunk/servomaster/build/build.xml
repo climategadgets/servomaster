@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.28 2005-01-13 03:01:53 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.29 2005-01-13 06:34:53 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -291,6 +291,7 @@
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
             
                 <include name="device/impl/pololu/USB16ServoController.java"/>
+                <include name="device/impl/pololu/PacketBuilder.java"/>
                 
             </fileset>
             

@@ -46,39 +46,10 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.27 2004-10-13 03:00:40 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.28 2004-10-13 04:11:17 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
-    /**
-     * The revision to protocol handler map.
-     *
-     * <p>
-     *
-     * The key is the revision, the value is the protocol handler. This is a
-     * little bit of overhead, but adds flexibility.
-     *
-     * <p>
-     *
-     * At the instantiation time, the protocol handlers for all known
-     * hardware revisions are instantiated and put into this map.
-     *
-     * <p>
-     *
-     * At the {@link #init init()} time, the hardware revision is looked up,
-     * the proper protocol handler resolved and assigned to the {@link
-     * #protocolHandler instance protocol handler}.
-     */
-    protected Map protocolHandlerMap = new HashMap();
-     
-    /**
-     * The protocol handler taking care of this specific instance.
-     *
-     * @see #init
-     *
-     */
-    private ProtocolHandler protocolHandler;
-    
     /**
      * Default constructor.
      *
@@ -93,7 +64,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             // OK, we've been subclassed to support just one specific kind
             // of a device. Good.
             
-            protocolHandler = (ProtocolHandler)protocolHandlerMap.values().toArray()[0];
+            protocolHandler = (UsbProtocolHandler)protocolHandlerMap.values().toArray()[0];
             servoSet = new Servo[protocolHandler.getServoCount()];
         }
     }
@@ -240,7 +211,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 serial = "null";
             }
             
-            protocolHandler = (ProtocolHandler)protocolHandlerMap.get(product);
+            protocolHandler = (UsbProtocolHandler)protocolHandlerMap.get(product);
             
             if ( protocolHandler == null ) {
             
@@ -589,75 +560,8 @@ public class PhidgetServoController extends AbstractUsbServoController {
      * For every hardware revision, there will be a separate protocol
      * handler.
      */
-    protected abstract class ProtocolHandler {
+    protected abstract class PhidgetProtocolHandler extends UsbProtocolHandler {
     
-        /**
-         * Controller metadata.
-         */
-        private final Meta meta;
-        
-        ProtocolHandler() {
-        
-            meta = createMeta();
-        }
-        
-        abstract protected Meta createMeta();
-        
-        Meta getMeta() {
-        
-            return meta;
-        }
-        
-        /**
-         * Get the device model name.
-         *
-         * This method is here because the protocol handlers are create
-         * before the actual devices are found. Ideally, the model name
-         * should be retrieved from the USB device (and possibly, it will be
-         * done so later), but so far this will do.
-         */
-        abstract protected String getModelName();
-        
-        /**
-         * Reset the controller.
-         */
-        abstract public void reset() throws IOException;
-    
-        /**
-         * @return the number of servos the controller supports.
-         */
-        abstract public int getServoCount();
-        
-        /**
-         * Set the servo position.
-         *
-         * <p>
-         *
-         * <strong>NOTE:</strong> originally this method was named
-         * <code>setActualPosition()</code>. This worked all right with JDK
-         * 1.4.1, however, later it turned out that JDK 1.3.1 was not able
-         * to properly resolve the names and thought that this method
-         * belongs to <code>PhidgetServo</code>, though the signature was
-         * different. The name was changed to satisfy JDK 1.3.1, but this
-         * points out JDK 1.3.1's deficiency in handling the inner classes. 
-         * Caveat emptor. You better upgrade.
-         *
-         * @param id Servo number.
-         *
-         * @param position Desired position.
-         */
-        abstract public void setPosition(int id, double position) throws IOException;
-        
-        /**
-         * Silence the controller.
-         *
-         * VT: FIXME: This better be deprecated - each servo can be silenced
-         * on its own
-         */
-        abstract public void silence() throws IOException;
-        
-        abstract public Servo createServo(ServoController sc, int id) throws IOException;
-        
         /**
          * Base class representing all the common (or default) features and
          * properties of the Phidgets family of servo controllers.
@@ -675,91 +579,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
             }
         }
 
-        abstract public class PhidgetServo extends AbstractServo {
+        abstract public class PhidgetServo extends UsbServo {
         
-            /**
-             * Servo number.
-             */
-            protected int id;
-            
-            /**
-             * Servo metadata.
-             */
-            private Meta meta;
-            
             protected PhidgetServo(ServoController sc, int id) throws IOException {
             
-                super(sc, null);
-                
-                this.id = id;
-                this.meta = createServoMeta();
-            }
-            
-            public Meta getMeta() {
-            
-                return meta;
-            }
-            
-            /**
-             * Template method to create the instance of the metadata for
-             * the servo.
-             *
-             * @return Class specific metadata instance.
-             */
-            abstract protected Meta createServoMeta();
-
-            public String getName() {
-            
-                return Integer.toString(id);
-            }
-            
-            protected void setActualPosition(double position) throws IOException {
-            
-                checkInit();
-                checkPosition(position);
-                
-                try {
-                
-                    protocolHandler.setPosition(id, position);
-                    
-                    this.actualPosition = position;
-                    actualPositionChanged();
-                    
-                } catch ( IOException usbex ) {
-                
-                    /// VT: FIXME
-                
-                    connected = false;
-                
-                    if ( !isDisconnectAllowed() ) {
-                    
-                        // Too bad
-                        
-                        throw (IOException)(new IOException("Disconnect not allowed").initCause(usbex));
-                    }
-                
-                    // VT: NOTE: This block is dependent on jUSB error message
-                    // text
-                    
-                    String xmessage = usbex.getMessage();
-                    
-                    if ( xmessage == null ) {
-                    
-                        // Can't determine what kind of problem it is
-                        
-                        throw (IOException)(new IOException("Unknown problem").initCause(usbex));
-                    }
-                    
-                    if ( "USB communication failure".equals(xmessage) ) {
-                    
-                        // This probably means that the controller was
-                        // disconnected
-                        
-                        System.err.println("Assumed disconnect, reason: " + xmessage);
-                        
-                        theServoController = null;
-                    }
-                }
+                super(sc, id);
             }
             
             protected class PhidgetServoMeta extends AbstractMeta {
@@ -777,7 +601,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
     /**
      * Protocol handler for PhidgetServo 3.0 protocol.
      */
-    abstract protected class ProtocolHandler003 extends ProtocolHandler {
+    abstract protected class ProtocolHandler003 extends PhidgetProtocolHandler {
     
         /**
          * Current servo position in device coordinates.
@@ -1146,7 +970,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
     /**
      * Protocol handler for AdvancedServo.
      */
-    protected class ProtocolHandler0x3B extends ProtocolHandler {
+    protected class ProtocolHandler0x3B extends PhidgetProtocolHandler {
     
         private UsbPipe out;
         

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.8 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: Servo.java,v 1.9 2002-09-13 20:03:51 vtt Exp $
  */
 public interface Servo {
 
@@ -121,6 +121,9 @@ public interface Servo {
      *
      * @exception UnsupportedOperationException if the particular
      * implementation doesn't support the capabilities discovery.
+     *
+     * @deprecated Use {@link Meta Meta} methods to obtain and change the
+     * metadata instead.
      */
     public ServoMetaData[] getMetaData();
     

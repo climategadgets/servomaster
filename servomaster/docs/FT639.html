@@ -78,25 +78,23 @@
                  
                  <p>
                  
-            <li> This one drives me nuts. The "header length" command. With
-                 the header length set less than 9-10, the servo (your
-                 typical one, <a
+            <li> Be careful with the header length support. The lower values
+                 for the header length make the controller issue really
+                 short pulses that make the servos go out of range. The
+                 indication of that (at least for <a
                  href="http://www.servocity.com/Products/Futaba_Servos_/S3003_Standard/s3003_standard.html">Futaba
-                 S3003</a>) starts behaving funny, doesn't want to move when
-                 the position gets in the lower half, and starts emitting
-                 the disturbing high-pitch noise (ever been to the dentist?
-                 The kind of noise their tools have). I don't think this is
-                 normal. Plus, this feature is not documented clearly. Plus,
-                 the reasonable default value should be 0, or it has to be
-                 documented, and the default value for the header length
-                 doesn't seem to be neither 0 nor 15 (the maximum value).
+                 S3003</a>) is a high-pitch noise (ever been to the dentist? 
+                 The kind of noise their tools have, but higher). I don't
+                 think it is very good for the servo, and it definitely
+                 makes the servo uncontrollable.
                  
                  <p>
                  
-                 I'll just leave this feature disabled, to prevent damage to
-                 the servo. If someone can enlighten me on what's going on,
-                 I would definitely appreciate that. Too bad I don't have
-                 an oscilloscope to take look at the signal.
+                 The default value for the header length (doesn't seem to be
+                 0, doesn't seem to be 15 (maximum), doesn't seem to be 7)
+                 works just fine. Use this feature only if everything else
+                 fails. Keep in mind that this is a controller-wide feature,
+                 not servo specific.
                  
         </ul>
     

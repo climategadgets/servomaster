@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.5 2002-09-14 01:34:28 vtt Exp $
+## $Id: Makefile.am,v 1.6 2002-09-30 01:08:25 vtt Exp $
 
 SUBDIRS = src build
 
@@ -21,14 +21,32 @@ EXTRA_DIST = INSTALL-configure \
              docs/news.html \
              docs/references.html \
              docs/legal.html \
+             docs/images/advanced_phidget_console.png \
+             docs/images/advanced_phidget_console.small.png \
              docs/images/servomaster_console.png \
              docs/images/servos.jpg \
              docs/images/phidget_console.png \
              docs/images/phidget_console.small.png \
              docs/images/ft639_console.small.png \
              docs/images/PhidgetServo_v4.0.jpg \
-             etc/manifest
-
+             etc/manifest \
+             meta/controller/bandwidth/index.html \
+             meta/controller/firmware/revision/index.html \
+             meta/controller/maxservos/index.html \
+             meta/controller/precision/index.html \
+             meta/controller/protocol/serial/index.html \
+             meta/controller/protocol/USB/index.html \
+             meta/controller/silent/index.html \
+             meta/controller/transition/index.html \
+             meta/index.html \
+             meta/manufacturer/model/index.html \
+             meta/manufacturer/name/index.html \
+             meta/manufacturer/URL/index.html \
+             meta/servo/precision/index.html \
+             meta/servo/range/max/index.html \
+             meta/servo/range/min/index.html \
+             meta/servo/range/units/index.html
+             
 CP = @CP@
 RM = @RM@
 FIND = @FIND@

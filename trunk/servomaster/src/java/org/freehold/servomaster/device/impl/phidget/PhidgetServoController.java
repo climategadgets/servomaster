@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.15 2003-01-14 07:56:12 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.16 2003-01-14 17:21:25 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -1444,14 +1444,14 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // 16218
                 
-                float2byte(this.position, buffer, 4);
-                float2byte(this.velocity / 50, buffer, 8);
-                float2byte(this.acceleration / 50, buffer, 12);
+                float2byte((this.position + 23) * 16218, buffer, 4);
+                float2byte((this.velocity / 50) * 16218, buffer, 8);
+                float2byte((this.acceleration / 50) * 16218, buffer, 12);
                 
-                System.err.println("Position: " + this.position);
-                System.err.print("Buffer:");
+                //System.err.println("Position: " + this.position);
+                //System.err.print("Buffer:");
                 
-                /**/
+                /*
                 for ( int idx = 0; idx < buffer.length; idx++ ) {
                 
                     if ( (idx % 4) == 0 && idx > 0 ) {
@@ -1464,14 +1464,15 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 System.err.println("");
                 
-                 /**/
+                 */
                 
                 return buffer;
             }
             
             private void float2byte(float value, byte buffer[], int offset) {
             
-                int bits = Float.floatToIntBits(value);
+                //int bits = Float.floatToIntBits(value);
+                int bits = (int)value;
                 
                 buffer[offset + 0] = (byte)(bits & 0xFF);
                 buffer[offset + 1] = (byte)((bits >> 8) & 0xFF);

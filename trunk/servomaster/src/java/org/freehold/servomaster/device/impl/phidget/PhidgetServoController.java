@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.8 2002-09-17 23:26:57 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.9 2002-09-18 05:36:48 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -79,28 +79,8 @@ public class PhidgetServoController extends AbstractServoController {
     
     /**
      * Physical servo representation.
-     *
-     * There is just up to 4 servos that can be connected to this device.
      */
-    private Servo servoSet[] = new Servo[4];
-    
-    /**
-     * Current servo position in device coordinates.
-     */
-    private int servoPosition[] = new int[4];
-    
-    /**
-     * 'sent' flag.
-     *
-     * This is an optimization measure - since the positions for all the
-     * servos are transmitted at once, it would make a lot of sense to
-     * ensure that if there was more than one coordinate assignment at about
-     * the same time, they all get sent together.
-     *
-     * @see #bufferPosition
-     * @see #send
-     */
-    private boolean sent = false;
+    private Servo servoSet[];
     
     /**
      * Default constructor.
@@ -109,7 +89,9 @@ public class PhidgetServoController extends AbstractServoController {
      */
     public PhidgetServoController() {
     
-        protocolHandlerMap.put("0.03", new ProtocolHandler003());
+        protocolHandlerMap.put("38", new ProtocolHandler0x38());
+        protocolHandlerMap.put("39", new ProtocolHandler0x39());
+        protocolHandlerMap.put("3b", new ProtocolHandler0x3B());
     }
     
     /**
@@ -198,14 +180,16 @@ public class PhidgetServoController extends AbstractServoController {
             
             DeviceDescriptor dd = thePhidgetServo.getDeviceDescriptor();
             String serial = dd.getSerial(defaultLanguage);
-            String revision = dd.getDeviceId();
+            String product = Integer.toHexString(dd.getProductId());
             
-            protocolHandler = (ProtocolHandler)protocolHandlerMap.get(revision);
+            protocolHandler = (ProtocolHandler)protocolHandlerMap.get(product);
             
             if ( protocolHandler == null ) {
             
-                throw new UnsupportedOperationException("Revision '" + revision + "' is not supported");
+                throw new UnsupportedOperationException("ProductID '" + product + "' is not supported");
             }
+            
+            servoSet = new Servo[protocolHandler.getServoCount()];
             
             this.portName = serial;
             connected = true;
@@ -277,11 +261,8 @@ public class PhidgetServoController extends AbstractServoController {
     
         checkInit();
         
-        // In case the silent mode was set, we have to resend the positions
+        protocolHandler.reset();
         
-        sent = false;
-        
-        send();
     }
     
     public Servo getServo(String id) throws IOException {
@@ -292,9 +273,9 @@ public class PhidgetServoController extends AbstractServoController {
         
             int iID = Integer.parseInt(id);
             
-            if ( iID < 0 || iID > 3 ) {
+            if ( iID < 0 || iID > protocolHandler.getServoCount() ) {
             
-                throw new IllegalArgumentException("ID out of 0...3 range: '" + id + "'");
+                throw new IllegalArgumentException("ID out of 0..." + protocolHandler.getServoCount() + " range: '" + id + "'");
             }
             
             if ( servoSet[iID] == null ) {
@@ -339,7 +320,7 @@ public class PhidgetServoController extends AbstractServoController {
     
         LinkedList servos = new LinkedList();
         
-        for ( int idx = 0; idx < 4; idx++ ) {
+        for ( int idx = 0; idx < protocolHandler.getServoCount(); idx++ ) {
         
             servos.add(getServo(Integer.toString(idx)));
         }
@@ -543,6 +524,14 @@ public class PhidgetServoController extends AbstractServoController {
                     
                         // QuadServo
                         
+                    case 0x0039:
+                    
+                        // UniServo
+                        
+                    case 0x003b:
+                    
+                        // AdvancedServo
+                        
                         if ( portName == null ) {
                         
                             // We don't even have to see the serial number
@@ -563,18 +552,20 @@ public class PhidgetServoController extends AbstractServoController {
                             defaultLanguage = languageSet[0];
                         }
                         
-                        String product = dd.getProduct(defaultLanguage);
-                        
-                        if ( !"PhidgetServo".equals(product) ) {
-                        
-                            throw new IllegalStateException("Vendor/Product ID match (0x6c2/0x0038), but the name doesn't (" + product + "???");
-                        }
-                        
                         String serial = dd.getSerial(defaultLanguage);
                         
                         System.err.println("Serial found: " + serial);
                         
-                        // Bold assumption: serial is not null
+                        // VT: NOTE: Serial number can be null. At least it
+                        // is with the current firmware release for
+                        // AdvancedServo
+                        
+                        if ( serial == null ) {
+                        
+                            // FIXME: this is a hack, but unavoidable one
+                            
+                            serial = "null";
+                        }
                             
                         if ( serial.equals(portName) ) {
                             
@@ -634,23 +625,6 @@ public class PhidgetServoController extends AbstractServoController {
             byte buffer[] = fw.get();
             
             out.write(buffer);
-        
-            
-            
-            /*
-            ControlMessage message = new ControlMessage();
-
-            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
-                                         |ControlMessage.TYPE_CLASS
-                                         |ControlMessage.RECIPIENT_ENDPOINT));
-            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
-            message.setValue((short)0x01);
-            message.setIndex((byte)0);
-            message.setLength(buffer.length);
-            message.setBuffer(buffer);
-            
-            target.control(message);
-            */
             
         } catch ( Throwable t ) {
         
@@ -674,111 +648,6 @@ public class PhidgetServoController extends AbstractServoController {
         }
     }
     
-    /**
-     * Remember the servo timing and clear the "sent" flag.
-     *
-     * @param id Servo number
-     *
-     * @param position The servo position, in microseconds.
-     *
-     * @see #sent
-     * @see #send
-     */
-    private synchronized void bufferPosition(int id, int position) {
-    
-        servoPosition[id] = position;
-        sent = false;
-    }
-    
-    /**
-     * Compose the USB packet and stuff it down the USB controller.
-     *
-     * @exception IOException if there was an I/O error talking to the
-     * controller.
-     *
-     * @see #servoPosition
-     * @see #sent
-     * @see #bufferPosition
-     */
-    private synchronized void send() throws IOException {
-    
-        if ( sent ) {
-        
-            // They have already sent the positions, relax
-
-            return;
-        }
-        
-        try {
-        
-            if ( thePhidgetServo == null ) {
-            
-                thePhidgetServo = findUSB(portName);
-                System.err.println("Found " + portName);
-                connected = true;
-                
-                // FIXME: notify the listeners about the arrival
-            }
-            
-            // If we've found the phidget, we can get to composing the
-            // buffer, otherwise it would've been waste of time
-            
-            byte buffer[] = protocolHandler.composeBuffer();
-            send(buffer);
-            
-            // If there was an IOException sending the message, the flag is not
-            // cleared. This is OK, since if it was a temporary condition,
-            // whoever is about to call send() now will have a shot at properly
-            // sending the data.
-            
-            sent = true;
-            
-        } catch ( IOException ioex ) {
-        
-            exception(ioex);
-        
-            // FIXME: notify the listeners about the departure
-                
-            connected = false;
-            
-            if ( isDisconnectAllowed() ) {
-            
-                // We're fine, but will have to keep looking for the phidget
-                
-                thePhidgetServo = null;
-                
-                return;
-            }
-            
-            // Too bad
-            
-            throw ioex;
-
-        } finally {
-        
-            touch();
-        }
-    }
-    
-    private synchronized void send(byte buffer[]) throws IOException {
-    
-        ControlMessage message = new ControlMessage();
-
-        message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
-                                     |ControlMessage.TYPE_CLASS
-                                     |ControlMessage.RECIPIENT_INTERFACE));
-        message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
-        message.setValue((short)0x0200);
-        message.setIndex((byte)0);
-        message.setLength(buffer.length);
-        message.setBuffer(buffer);
-        
-        // The instance has to be non-null at this point, or the
-        // IOException was already thrown
-        
-        thePhidgetServo.control(message);
-    }
-    
     protected class PhidgetServoControllerMetaData implements ServoControllerMetaData {
     
         public String getManufacturerURL() {
@@ -788,23 +657,27 @@ public class PhidgetServoController extends AbstractServoController {
         
         public String getManufacturerName() {
         
-            // FIXME: Get the manufacturer from the USB device?
+            // VT: FIXME: Get the manufacturer from the USB device?
             
             return "GLAB Chester";
         }
         
         public String getModelName() {
         
+            // VT: FIXME: it may be UniServo, QuadServo, AdvancedServo
+            
             return "PhidgetServo";
         }
         
         public int getMaxServos() {
         
-            return 4;
+            return protocolHandler.getServoCount();
         }
         
         public boolean supportsSilentMode() {
         
+            // VT: FIXME: Verify if AdvancedServo supports this
+            
             return true;
         }
         
@@ -829,8 +702,6 @@ public class PhidgetServoController extends AbstractServoController {
     public class PhidgetServo extends AbstractServo {
     
         private int id;
-        private int min_pulse = 1000;
-        private int max_pulse = 2000;
         
         protected PhidgetServo(ServoController sc, int id) throws IOException {
         
@@ -855,24 +726,7 @@ public class PhidgetServoController extends AbstractServoController {
             checkInit();
             checkPosition(position);
             
-            // Tough stuff, we're dealing with timing now...
-            
-            int microseconds = (int)(min_pulse + (position * (max_pulse - min_pulse)));
-            
-            // VT: NOTE: We need to know all the servo's positions because
-            // they get transmitted in one packet
-            
-            bufferPosition(id, microseconds);
-            
-            if ( false ) {
-            
-                System.err.println("Position:     " + position);
-                System.err.println("Microseconds: " + microseconds);
-                System.err.println("Buffer:       " + servoPosition[id]);
-                System.err.println("");
-            }
-            
-            send();
+            protocolHandler.setActualPosition(id, position);
             
             this.actualPosition = position;
             actualPositionChanged();
@@ -904,8 +758,7 @@ public class PhidgetServoController extends AbstractServoController {
                 throw new IllegalArgumentException("Unreasonably long max_pulse: " + max_pulse + ", 2500 recommended");
             }
             
-            this.min_pulse = min_pulse;
-            this.max_pulse = max_pulse;
+            protocolHandler.setRange(id, min_pulse, max_pulse);
             
             setActualPosition(actualPosition);
         }
@@ -935,7 +788,7 @@ public class PhidgetServoController extends AbstractServoController {
         
             try {
             
-                send(new byte[6]);
+                protocolHandler.silence();
                 _silentStatusChanged(false);
                 
             } catch ( IOException ioex ) {
@@ -972,19 +825,79 @@ public class PhidgetServoController extends AbstractServoController {
     protected abstract class ProtocolHandler {
     
         /**
+         * Reset the controller.
+         */
+        abstract public void reset() throws IOException;
+    
+        /**
          * Compose the USB packet.
          *
          * @return A buffer that represents the positioning command for the
          * hardware.
          */
         abstract public byte[] composeBuffer();
+        
+        /**
+         * @return the number of servos the controller supports.
+         */
+        abstract public int getServoCount();
+        
+        /**
+         * Set the servo position.
+         *
+         * @param id Servo number.
+         *
+         * @param position Desired position.
+         */
+        abstract public void setActualPosition(int id, double position) throws IOException;
+        
+        /**
+         * Silence the controller.
+         *
+         * VT: FIXME: This better be deprecated - each servo can be silenced
+         * on its own
+         */
+        abstract public void silence() throws IOException;
+        
+        /**
+         * Set the pulse range.
+         */
+        abstract public void setRange(int id, int min_pulse, int max_pulse);
     }
     
     /**
-     * Protocol handler for PhidgetServo revision 0.03.
+     * Protocol handler for PhidgetServo 3.0 protocol.
      */
-    protected class ProtocolHandler003 extends ProtocolHandler {
+    abstract protected class ProtocolHandler003 extends ProtocolHandler {
     
+        /**
+         * Current servo position in device coordinates.
+         */
+        protected int servoPosition[] = new int[4];
+        
+        /**
+         * Minimum pulse lengths for the servos.
+         */
+        protected int min_pulse[] = new int[4];
+         
+        /**
+         * Maximum pulse lenghts for the servos.
+         */
+        protected int max_pulse[] = new int[4];
+        
+        /**
+         * 'sent' flag.
+         *
+         * This is an optimization measure - since the positions for all the
+         * servos are transmitted at once, it would make a lot of sense to
+         * ensure that if there was more than one coordinate assignment at about
+         * the same time, they all get sent together.
+         *
+         * @see #bufferPosition
+         * @see #send
+         */
+        private boolean sent = false;
+        
         /**
          * Byte buffer to compose the packet into.
          *
@@ -992,8 +905,26 @@ public class PhidgetServoController extends AbstractServoController {
          * PhidgetServoController#send invocation context} makes sure it
          * never gets corrupted.
          */
-        byte buffer[] = new byte[6];
-
+        protected byte buffer[] = new byte[6];
+        
+        ProtocolHandler003() {
+        
+            for ( int id = 0; id < 4; id++ ) {
+            
+                min_pulse[id] = 1000;
+                max_pulse[id] = 2000;
+            }
+        }
+        
+        public void reset() throws IOException {
+        
+            // In case the silent mode was set, we have to resend the positions
+            
+            sent = false;
+            
+            send();
+        }
+        
         /**
          * Compose the USB packet.
          *
@@ -1019,6 +950,240 @@ public class PhidgetServoController extends AbstractServoController {
             buffer[4] |= (byte)((servoPosition[3] / 256) * 16);
             
             return buffer;
+        }
+        
+        public void setActualPosition(int id, double position) throws IOException {
+        
+            // Tough stuff, we're dealing with timing now...
+            
+            int microseconds = (int)(min_pulse[id] + (position * (max_pulse[id] - min_pulse[id])));
+            
+            // VT: NOTE: We need to know all the servo's positions because
+            // they get transmitted in one packet
+            
+            bufferPosition(id, microseconds);
+            
+            if ( false ) {
+            
+                System.err.println("Position:     " + position);
+                System.err.println("Microseconds: " + microseconds);
+                System.err.println("Buffer:       " + servoPosition[id]);
+                System.err.println("");
+            }
+            
+            send();
+        }
+
+        /**
+         * Compose the USB packet and stuff it down the USB controller.
+         *
+         * @exception IOException if there was an I/O error talking to the
+         * controller.
+         *
+         * @see #servoPosition
+         * @see #sent
+         * @see #bufferPosition
+         */
+        private synchronized void send() throws IOException {
+        
+            if ( sent ) {
+            
+                // They have already sent the positions, relax
+
+                return;
+            }
+            
+            try {
+            
+                if ( thePhidgetServo == null ) {
+                
+                    thePhidgetServo = findUSB(portName);
+                    System.err.println("Found " + portName);
+                    connected = true;
+                    
+                    // FIXME: notify the listeners about the arrival
+                }
+                
+                // If we've found the phidget, we can get to composing the
+                // buffer, otherwise it would've been waste of time
+                
+                byte buffer[] = composeBuffer();
+                send(buffer);
+                
+                // If there was an IOException sending the message, the flag is not
+                // cleared. This is OK, since if it was a temporary condition,
+                // whoever is about to call send() now will have a shot at properly
+                // sending the data.
+                
+                sent = true;
+                
+            } catch ( IOException ioex ) {
+            
+                exception(ioex);
+            
+                // FIXME: notify the listeners about the departure
+                    
+                connected = false;
+                
+                if ( isDisconnectAllowed() ) {
+                
+                    // We're fine, but will have to keep looking for the phidget
+                    
+                    thePhidgetServo = null;
+                    
+                    return;
+                }
+                
+                // Too bad
+                
+                throw ioex;
+
+            } finally {
+            
+                touch();
+            }
+        }
+        
+        private synchronized void send(byte buffer[]) throws IOException {
+        
+            ControlMessage message = new ControlMessage();
+
+            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
+                                         |ControlMessage.TYPE_CLASS
+                                         |ControlMessage.RECIPIENT_INTERFACE));
+            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
+            message.setValue((short)0x0200);
+            message.setIndex((byte)0);
+            message.setLength(buffer.length);
+            message.setBuffer(buffer);
+            
+            // The instance has to be non-null at this point, or the
+            // IOException was already thrown
+            
+            thePhidgetServo.control(message);
+        }
+
+        /**
+         * Remember the servo timing and clear the "sent" flag.
+         *
+         * @param id Servo number
+         *
+         * @param position The servo position, in microseconds.
+         *
+         * @see #sent
+         * @see #send
+         */
+        private synchronized void bufferPosition(int id, int position) {
+        
+            servoPosition[id] = position;
+            sent = false;
+        }
+        
+        public void silence() throws IOException {
+        
+            // Send the zero microseconds pulse
+            
+            send(new byte[6]);
+        }
+        
+        public void setRange(int id, int min_pulse, int max_pulse) {
+        
+            this.min_pulse[id] = min_pulse;
+            this.max_pulse[id] = max_pulse;
+        }
+    }
+    
+    /**
+     * Protocol handler for QuadServo.
+     */
+    protected class ProtocolHandler0x38 extends ProtocolHandler003 {
+    
+        public int getServoCount() {
+        
+            return 4;
+        }
+    }
+    
+    /**
+     * Protocol handler for UniServo.
+     *
+     * VT: FIXME: This has to be tested!
+     */
+    protected class ProtocolHandler0x39 extends ProtocolHandler003 {
+    
+        public int getServoCount() {
+        
+            return 1;
+        }
+    }
+
+    /**
+     * Protocol handler for AdvancedServo.
+     */
+    protected class ProtocolHandler0x3B extends ProtocolHandler {
+    
+        public void reset() {
+        
+            // FIXME
+        }
+    
+        /**
+         * Byte buffer to compose the packet into.
+         *
+         * This buffer is not thread safe, but the {@link
+         * PhidgetServoController#send invocation context} makes sure it
+         * never gets corrupted.
+         *
+         * <p>
+         *
+         * Output protocol for PhidgetAdvancedServo
+         *
+         * <pre>
+         * buffer[0] = Index - 1;
+         *
+         * ((float *)(buffer+4))[0] = m_ServoPosition[Index - 1];
+         * ((float *)(buffer+4))[1] =  m_MaxVelocity[Index - 1] / 50;
+         * ((float *)(buffer+4))[2] =  m_Acceleration[Index - 1] / 50;
+         * </pre>
+         *
+         * MaxVelocity and Acceleration are measured in degrees/second. (^2)
+         */
+        byte buffer[] = new byte[4 * 4 * 8];
+
+        /**
+         * Compose the USB packet.
+         *
+         * @return A buffer that represents the positioning command for the
+         * hardware.
+         */
+        public byte[] composeBuffer() {
+        
+            for ( int servoIdx = 0; servoIdx < 8; servoIdx++ ) {
+            
+            }
+            
+            return buffer;
+        }
+        
+        public int getServoCount() {
+        
+            return 8;
+        }
+        
+        public void setActualPosition(int id, double position) throws IOException {
+        
+            // FIXME
+        }
+        
+        public void silence() throws IOException {
+        
+            // Not supported
+        }
+        
+        public void setRange(int id, int min_pulse, int max_pulse) {
+        
+        
+            // Not supported
         }
     }
     

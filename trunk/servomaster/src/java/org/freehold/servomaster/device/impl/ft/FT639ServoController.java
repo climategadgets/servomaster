@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.15 2002-01-10 02:29:10 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.16 2002-01-19 02:04:08 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -150,12 +150,28 @@ public class FT639ServoController implements ServoController, FT639Constants {
     private long silentTimeout = 10000;
     
     /**
+     * Silent heartbeat, in milliseconds.
+     *
+     * Defines how long the servos stay unenergized after the silent timeout
+     * expires.
+     *
+     * <p>
+     *
+     * Default is 5 minutes.
+     */
+    private long silentHeartbeat = 1000 * 60 * 5;
+    
+    /**
      * Silent timeout watcher.
      *
      * Watches the timeout expiration.
      */
      private Silencer silencer = null;
      
+     /**
+      * Silent heartbeat watcher.
+      */
+     private Heartbeat heartbeat = null;
      /**
       * Last time when the positioning operation was performed.
       */
@@ -497,6 +513,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public void setSilentTimeout(long timeout) {
     
+        setSilentTimeout(timeout, silentHeartbeat);
+    }
+    
+    public void setSilentTimeout(long timeout, long heartbeat) {
+    
         if ( portName == null ) {
         
             throw new IllegalStateException("Not initialized");
@@ -506,8 +527,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             throw new IllegalArgumentException("Timeout must be positive");
         }
+        
+        if ( heartbeat < 0 ) {
+        
+            throw new IllegalArgumentException("Heartbeat must be positive");
+        }
     
         silentTimeout = timeout;
+        silentHeartbeat = heartbeat;
+        
         startTimeout();
     }
     
@@ -527,7 +555,27 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             silencer = new Silencer();
             silencer.start();
+        }
+        
+        //System.err.println("Silent timer updated");
+    }
 
+    private synchronized void startHeartbeat() {
+    
+        // VT: NOTE: This is a little bit inefficient when not in silent
+        // mode, but with 2400 baud... the hell with it
+        
+        lastOperation = System.currentTimeMillis();
+        
+        if ( !silent ) {
+        
+            return;
+        }
+        
+        if ( heartbeat == null ) {
+        
+            heartbeat = new Heartbeat();
+            heartbeat.start();
         }
         
         //System.err.println("Silent timer updated");
@@ -781,10 +829,17 @@ public class FT639ServoController implements ServoController, FT639Constants {
     /**
      * Time left to wait before going into the silent mode.
      */
-     
-    protected long waitTime() {
+    protected long timeUntilSilent() {
     
         return (lastOperation + silentTimeout) - System.currentTimeMillis();
+    }
+
+    /**
+     * Time left to wait before heartbeat.
+     */
+    protected long timeUntilHeartbeat() {
+    
+        return (lastOperation + silentTimeout + silentHeartbeat) - System.currentTimeMillis();
     }
     
     protected class Silencer extends Thread {
@@ -797,18 +852,20 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             try {
             
-                while ( waitTime() > 0 ) {
+                while ( timeUntilSilent() > 0 ) {
                 
-                    //System.err.println("waiting for " + waitTime() + "ms...");
-                    wait(waitTime());
-                    //System.err.println("checking... " + waitTime() + " left");
+                    //System.err.println("waiting for " + timeUntilSilent() + "ms...");
+                    wait(timeUntilSilent());
+                    //System.err.println("checking... " + timeUntilSilent() + " left");
                 }
                 
                 synchronized ( this ) {
                 
                     //System.err.println("Sleeping now.");
+
                     setSetupMode();
                     silencer = null;
+                    startHeartbeat();
                 }
             
             } catch ( Throwable t ) {
@@ -818,6 +875,46 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 System.err.println("Silencer:");
                 t.printStackTrace();
                 
+                silencer = null;
+                return;
+            }
+        }
+    }
+    
+    protected class Heartbeat extends Thread {
+    
+        /**
+         * Wait until timeout expiresm then reposition the servos and die.
+         *
+         * The {@link #silencer silencer} will take care of the rest.
+         */
+         public synchronized void run() {
+         
+             try {
+         
+                while ( timeUntilHeartbeat() > 0 ) {
+                
+                    //System.err.println("waiting for " + timeUntilHeartbeat() + "ms...");
+                    wait(timeUntilHeartbeat());
+                    //System.err.println("checking... " + timeUntilHeartbeat() + " left");
+                }
+                
+                synchronized ( this ) {
+                
+                    //System.err.println("Repositioning now.");
+                    
+                    repositionServos();
+                    heartbeat = null;
+                }
+            
+            } catch ( Throwable t ) {
+            
+                // Oh shit... Okay. Let's get out of here.
+
+                System.err.println("Heartbeat:");
+                t.printStackTrace();
+                
+                heartbeat = null;
                 return;
             }
         }
@@ -841,9 +938,9 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         for ( Iterator i = getServos(); i.hasNext(); ) {
         
-            Servo s = (Servo)i.next();
+            FT639Servo s = (FT639Servo)i.next();
             
-            s.setPosition(s.getPosition());
+            s.setActualPosition(s.getPosition());
         }
     }
     

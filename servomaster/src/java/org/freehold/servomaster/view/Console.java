@@ -23,6 +23,7 @@ import javax.swing.WindowConstants;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerListener;
+import org.freehold.servomaster.device.model.ServoControllerMetaData;
 
 /**
  * The console.
@@ -60,7 +61,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.10 2002-01-04 01:19:26 vtt Exp $
+ * @version $Id: Console.java,v 1.11 2002-01-05 04:05:23 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -148,9 +149,43 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 System.exit(1);
             }
             
-            // VT: FIXME: Make this dependent on the controller metadata.
+            // Let's see if they support metadata
             
-            controller.setSilentMode(true);
+            ServoControllerMetaData scmeta = null;
+            
+            try {
+            
+                scmeta = controller.getMetaData();
+                
+                System.out.println("=== META: "
+                                   + scmeta.getModelName()
+                                   + " manufactured by "
+                                   + scmeta.getManufacturerName()
+                                   + " ("
+                                   + scmeta.getManufacturerURL()
+                                   + ")");
+                                   
+                System.out.println("=== META: supports up to "
+                                   + scmeta.getMaxServos()
+                                   + " servos, "
+                                   + scmeta.getPrecision()
+                                   + " steps, up to "
+                                   + scmeta.getBandwidth()
+                                   + " commands per second");
+                                   
+                if ( scmeta.supportsSilentMode() ) {
+                
+                    System.out.println("=== META: supports silent mode");
+                    
+                    controller.setSilentMode(true);
+                }
+                
+            
+            } catch ( UnsupportedOperationException ex ) {
+            
+                System.err.println("Controller doesn't support metadata");
+                ex.printStackTrace();
+            }
             
             // Figure out how many servos does the controller currently have
             
@@ -187,26 +222,42 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             cs.gridwidth = servoCount;
             cs.weightx = 1;
             
+            // VT: NOTE: This actually depends on whether the controller
+            // supports the silent mode. Let's just create the box to avoid
+            // any NullPointerExceptions down the road, and then try to add
+            // the box to the console *only if the controller does support
+            // the silent mode, and supports metadata*.
             
             silentBox = new JCheckBox("Silent", true);
             silentBox.setToolTipText("Silent mode: stop the servo control pulse after period of inactivity");
             silentBox.addItemListener(this);
             
-            layout.setConstraints(silentBox, cs);
-            mainFrame.getContentPane().add(silentBox);
-            
             silentLabel = new JLabel("Controller mode: SETUP");
             silentLabel.setToolTipText("Current status of the controller in regard to silent mode");
             
-            cs.gridy++;
+            try {
             
-            layout.setConstraints(silentLabel, cs);
-            mainFrame.getContentPane().add(silentLabel);
+                if ( controller.getMetaData().supportsSilentMode() ) {
+                
+                    layout.setConstraints(silentBox, cs);
+                    mainFrame.getContentPane().add(silentBox);
+                    
+                    cs.gridy++;
+                    
+                    layout.setConstraints(silentLabel, cs);
+                    mainFrame.getContentPane().add(silentLabel);
+                    
+                    cs.gridy++;
+                }
+                
+            } catch ( Throwable t ) {
+            
+                // Just ignore it
+            }
             
             controller.addListener(this);
             
             cs.fill = GridBagConstraints.BOTH;
-            cs.gridy++;
             cs.gridwidth = 1;
             cs.gridheight = servoCount;
             cs.weighty = 1;

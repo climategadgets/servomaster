@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.3 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: ServoController.java,v 1.4 2002-01-05 04:05:23 vtt Exp $
  */
 public interface ServoController {
 
@@ -53,7 +53,9 @@ public interface ServoController {
      * @return A servo abstraction instance.
      *
      * @exception IllegalArgumentException if the ID supplied doesn't map to
-     * a physical device.
+     * a physical device. In particular, this exception should be thrown if
+     * the controller is able to determine whether the servo is connected,
+     * and it is not.
      *
      * @exception IOException if there was a problem communicating to the
      * hardware controller.
@@ -66,7 +68,9 @@ public interface ServoController {
      * <p>
      *
      * The servos will be included in the iterator regardless of whether
-     * they are enabled or disabled.
+     * they are enabled or disabled. However, if the controller is able to
+     * determine whether the servo is connected, and it is not, it must not
+     * be included in the iterator.
      *
      * @return An iterator on all the servos physically present on the
      * controller.

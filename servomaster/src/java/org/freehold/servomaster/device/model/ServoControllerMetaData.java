@@ -3,8 +3,15 @@ package org.freehold.servomaster.device.model;
 /**
  * Provides the information about the servo controller.
  *
+ * <p>
+ *
+ * Any method is allowed to throw the
+ * <code>UnsupportedOperationException</code> if the hardware controller
+ * doesn't support the corresponding feature, or the information doesn't
+ * make sense in the context.
+ *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoControllerMetaData.java,v 1.2 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: ServoControllerMetaData.java,v 1.3 2002-01-05 04:05:23 vtt Exp $
  */
 public interface ServoControllerMetaData {
 
@@ -54,5 +61,14 @@ public interface ServoControllerMetaData {
      */
     public int getPrecision();
     
-    // VT: FIXME: think about latency and bandwidth
+    // VT: FIXME: think about latency
+    
+    /**
+     * Get the information about the controller bandwidth.
+     *
+     * Note that this is different from the port speed.
+     *
+     * @return Maximum commands per seconds.
+     */
+    public int getBandwidth();
 }

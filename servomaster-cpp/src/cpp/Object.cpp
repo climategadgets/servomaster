@@ -1,4 +1,4 @@
-// $Id: Object.cpp,v 1.3 2002-09-13 08:37:53 vtt Exp $
+// $Id: Object.cpp,v 1.4 2003-08-30 00:04:09 vtt Exp $
 #include <Object.h>
 #include <stdio.h>
 #include <stdexcept>
@@ -25,7 +25,7 @@ namespace servomaster {
     
         if ( !initialized ) {
         
-            throw runtime_error("Not initialized");
+            throw std::runtime_error("Not initialized");
         }
     }
 }

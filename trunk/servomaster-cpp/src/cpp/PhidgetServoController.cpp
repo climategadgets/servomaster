@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.10 2003-09-03 06:20:01 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.11 2003-09-03 06:23:10 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -481,7 +481,7 @@ namespace servomaster {
             
             if ( true ) {
             
-                printf("Position:     %f\n", position);
+                printf("Position:     %f\n", _position);
                 printf("Microseconds: %d\n", microseconds);
                 printf("Buffer:       %d\n", controller->servoPosition[id]);
             }

@@ -6,10 +6,10 @@ import java.util.Iterator;
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
 import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.Meta;
-import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
+import org.freehold.servomaster.device.impl.HardwareServo;
 
 /**
  * <a href="http://pololu.com/products/pololu/0240/" target="_top">Pololu
@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.5 2005-01-18 04:59:45 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.6 2005-01-21 06:35:43 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -109,7 +109,7 @@ public class Serial16ServoController extends AbstractSerialServoController {
         }
     }
     
-    protected class PololuServo extends AbstractServo {
+    protected class PololuServo extends HardwareServo {
     
         /**
          * Minimal allowed absolute position for this device.
@@ -131,14 +131,12 @@ public class Serial16ServoController extends AbstractSerialServoController {
         // VT: FIXME: Hmm... UsbServo does the same thing... Remove
         // redundancies?
     
-        protected final int id;
         private final Meta meta;
     
         PololuServo(ServoController sc, int id) {
         
-            super(sc, null);
+            super(sc, id);
             
-            this.id = id;
             this.meta = new PololuServoMeta();
         }
         
@@ -147,11 +145,6 @@ public class Serial16ServoController extends AbstractSerialServoController {
             return meta;
         }
 
-        public String getName() {
-        
-            return Integer.toString(id);
-        }
-        
         protected void setActualPosition(double position) throws IOException {
         
             checkInit();

@@ -9,13 +9,13 @@ import java.util.Set;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.Servo;
-import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
+import org.freehold.servomaster.device.impl.HardwareServo;
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
 
 /**
@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.37 2005-01-21 05:51:52 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.38 2005-01-21 06:35:43 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -391,13 +391,8 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * There is no need to check whether the controller has been initialized
      * - this check is done before the servo instance can be obtained.
      */
-    public class FT639Servo extends AbstractServo {
+    public class FT639Servo extends HardwareServo {
     
-        /**
-         * The servo id, 0 to 4.
-         */
-        private int id;
-        
         /**
          * Create an instance.
          *
@@ -410,19 +405,10 @@ public class FT639ServoController extends AbstractSerialServoController implemen
          */
         protected FT639Servo(ServoController sc, int id) throws IOException {
         
-            super(sc, null);
+            super(sc, id);
         
-            // Sanity checking is performed by the controller class
-            
-            this.id = id;
-            
             // Reset the servo position
             setPosition((255 >> 1)/255.0);
-        }
-        
-        public String getName() {
-        
-            return Integer.toString(id);
         }
         
         protected void setActualPosition(double position) throws IOException {

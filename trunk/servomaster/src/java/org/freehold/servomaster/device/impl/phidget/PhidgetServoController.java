@@ -46,7 +46,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.29 2004-10-13 04:42:33 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.30 2004-10-13 05:16:29 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
@@ -64,98 +64,9 @@ public class PhidgetServoController extends AbstractUsbServoController {
         protocolHandlerMap.put("6c2:38", new ProtocolHandler0x38());
         protocolHandlerMap.put("6c2:39", new ProtocolHandler0x39());
         protocolHandlerMap.put("6c2:3b", new ProtocolHandler0x3B());
+        protocolHandlerMap.put("6c2:60", new ProtocolHandler0x60());
     }
     
-    /**
-     * Boot the SoftPhidget.
-     *
-     * @param target Device to boot.
-     */
-    protected void boot(UsbDevice target) throws UsbException, UnsupportedEncodingException {
-    
-        System.err.println("Booting " + target.getSerialNumberString());
-        
-        try {
-        
-            UsbConfiguration cf = target.getActiveUsbConfiguration();
-            UsbInterface iface = cf.getUsbInterface((byte)0x00);
-            UsbEndpoint endpoint = iface.getUsbEndpoint((byte)0x01);
-            
-            Firmware fw = new Servo8();
-            byte buffer[] = fw.get();
-            
-            System.err.print("Firmware size " + buffer.length + ", header");
-            
-            for ( int offset = 0; offset < 4; offset++ ) {
-            
-                System.err.print(" 0x");
-                
-                String hex = Integer.toHexString(buffer[offset]&0xFF);
-                
-                if ( hex.length() == 1 ) {
-                
-                    hex = "0" + hex;
-                }
-                
-                System.err.print(hex.toUpperCase());
-            }
-            
-            System.err.println("");
-
-            UsbPipe pipe = endpoint.getUsbPipe();
-            UsbIrp message = pipe.createUsbIrp();
-            
-            message.setData(buffer);
-            
-            iface.claim();
-            pipe.open();
-            pipe.syncSubmit(message);
-            pipe.close();
-            iface.release();
-            
-        } catch ( UsbException  usbex ) {
-        
-            // Analyze the exception. It's possible that the device
-            // announced itself removed by now and we're getting an
-            // exception because of that
-            
-            // VT: FIXME: This depends heavily on jUSB code, hope it can be
-            // made more clear later
-            
-            String message = usbex.getMessage();
-            
-            if ( message != null ) {
-            
-                if ( message.equals("writeBulk -- USB device has been removed -- No such device [19]") ) {
-                
-                    // Yes, this is a classical symptom
-                    
-                    System.err.println("Boot may have failed: device prematurely departed; ignored");
-                    usbex.printStackTrace();
-                }
-            }
-
-        } catch ( Throwable t ) {
-        
-            System.err.println("Boot failed:");
-            t.printStackTrace();
-            
-            // Since there's nothing we can do about it, we'll just proceed
-            // as usual. The device either will not be found at all, or will
-            // be found as SoftPhidget again, which is taken care of.
-        }
-        
-        try {
-        
-            // The SoftPhidget is supposed to boot in about 200ms, let's be
-            // paranoid
-            
-            Thread.sleep(5000);
-            
-        } catch ( InterruptedException iex ) {
-        
-        }
-    }
 
     protected SilentProxy createSilentProxy() {
     
@@ -623,7 +534,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
     }
 
     /**
-     * Protocol handler for AdvancedServo.
+     * Protocol handler for initialized AdvancedServo.
      */
     protected class ProtocolHandler0x3B extends PhidgetProtocolHandler {
     
@@ -999,6 +910,157 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 
                 properties.put("servo/velocity", "400");
                 properties.put("servo/acceleration", "2000");
+            }
+        }
+    }
+
+    /**
+     * Protocol handler for AdvancedServo SoftPhidget.
+     */
+    protected class ProtocolHandler0x60 extends PhidgetProtocolHandler {
+    
+        ProtocolHandler0x60() {
+        
+        }
+        
+        public boolean isBootable() {
+        
+            return true;
+        }
+    
+        protected String getModelName() {
+        
+            return "SoftPhidget";
+        }
+        
+        public void reset() {
+
+            throw new IllegalAccessError("Operation not supported");
+        }
+    
+        public int getServoCount() {
+        
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        public synchronized void setPosition(int id, double position) throws IOException {
+        
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        public void silence() throws IOException {
+
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        private void init() throws IOException, UsbException {
+        
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        protected synchronized void send(byte buffer[]) throws IOException, UsbException {
+
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        public Servo createServo(ServoController sc, int id) throws IOException {
+        
+            throw new IllegalAccessError("Operation not supported");
+        }
+
+        protected Meta createMeta() {
+        
+            throw new IllegalAccessError("Operation not supported");
+        }
+        
+        /**
+         * Boot the SoftPhidget.
+         *
+         * @param target Device to boot.
+         */
+        public void boot(UsbDevice target) throws UsbException {
+        
+            System.err.println("Booting SoftPhidget");
+            
+            try {
+            
+                UsbConfiguration cf = target.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                UsbEndpoint endpoint = iface.getUsbEndpoint((byte)0x01);
+                
+                Firmware fw = new Servo8();
+                byte buffer[] = fw.get();
+                
+                System.err.print("Firmware size " + buffer.length + ", header");
+                
+                for ( int offset = 0; offset < 4; offset++ ) {
+                
+                    System.err.print(" 0x");
+                    
+                    String hex = Integer.toHexString(buffer[offset]&0xFF);
+                    
+                    if ( hex.length() == 1 ) {
+                    
+                        hex = "0" + hex;
+                    }
+                    
+                    System.err.print(hex.toUpperCase());
+                }
+                
+                System.err.println("");
+
+                UsbPipe pipe = endpoint.getUsbPipe();
+                UsbIrp message = pipe.createUsbIrp();
+                
+                message.setData(buffer);
+                
+                iface.claim();
+                pipe.open();
+                pipe.syncSubmit(message);
+                pipe.close();
+                iface.release();
+                
+            } catch ( UsbException  usbex ) {
+            
+                // Analyze the exception. It's possible that the device
+                // announced itself removed by now and we're getting an
+                // exception because of that
+                
+                // VT: FIXME: This depends heavily on jUSB code, hope it can be
+                // made more clear later
+                
+                String message = usbex.getMessage();
+                
+                if ( message != null ) {
+                
+                    if ( message.equals("writeBulk -- USB device has been removed -- No such device [19]") ) {
+                    
+                        // Yes, this is a classical symptom
+                        
+                        System.err.println("Boot may have failed: device prematurely departed; ignored");
+                        usbex.printStackTrace();
+                    }
+                }
+
+            } catch ( Throwable t ) {
+            
+                System.err.println("Boot failed:");
+                t.printStackTrace();
+                
+                // Since there's nothing we can do about it, we'll just proceed
+                // as usual. The device either will not be found at all, or will
+                // be found as SoftPhidget again, which is taken care of.
+            }
+            
+            try {
+            
+                // The SoftPhidget is supposed to boot in about 200ms, let's be
+                // paranoid
+                
+                Thread.sleep(5000);
+                
+            } catch ( InterruptedException iex ) {
+            
             }
         }
     }

@@ -1,5 +1,6 @@
-// $Id: PhidgetServoController.cpp,v 1.12 2003-09-03 07:08:37 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.13 2003-09-03 08:07:08 vtt Exp $
 #include <PhidgetServoController.h>
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdexcept>
@@ -97,24 +98,33 @@ namespace servomaster {
         
         int totalFound = 0;
         
+        assert(found != NULL);
+        
         while ( found[totalFound] != NULL ) {
         
             totalFound++;
         }
         
+        printf("findUSB(%s): total found: %d\n", _portName, totalFound); 
+        
         phidget::UsbContext *theRightOne = NULL;
         
         if ( _portName == NULL ) {
+        
+            printf("findUSB(%s): portName==NULL\n");
         
             // If the portName parameter is null, one servo controller is
             // expected to be found. If there's none or more than one, boom.
             
             if ( totalFound != 1 ) {
             
+                printf("None or more than one servo controller was found, but port name was not specified\n");
                 throw std::runtime_error("None or more than one servo controller was found, but port name was not specified");
             }
             
             // We have to free the buffer
+            
+            printf("findUSB(%s): freeing the buffer\n", _portName);
             
             phidget::UsbContext *result = found[0];
             
@@ -174,6 +184,10 @@ namespace servomaster {
         return theRightOne;
     }
     
+    // This method creates a new UsbContext array 128 entries long, so it
+    // never returns NULL. Caller is assumed to have responsibility of
+    // destroying the array being returned.
+    
     phidget::UsbContext **PhidgetServoController::findUSB() {
     
         struct usb_bus *bus;
@@ -196,7 +210,7 @@ namespace servomaster {
         
             for ( dev = bus->devices; dev != NULL; dev = dev->next ) {
             
-                printf("Found %x:%x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
+                printf("findUSB(): found %x:%x\n", dev->descriptor.idVendor, dev->descriptor.idProduct);
 
                 for ( int idx = 0; modelTable[idx] != NULL; idx++ ) {
                 
@@ -212,6 +226,8 @@ namespace servomaster {
                 }
             }
         }
+        
+        printf("findUSB(): total found: %d\n", totalFound);
         
         found[totalFound] = NULL;
         

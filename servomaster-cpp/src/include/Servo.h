@@ -32,7 +32,6 @@ namespace servomaster {
         private:
         
             double position;
-            double actualPosition;
             bool enabled;
             ServoController *servoController;
             Servo *target;
@@ -41,24 +40,25 @@ namespace servomaster {
             
         protected:
         
+            double actualPosition;
             void checkPosition(double position);
     
         public:
         
-            Servo(ServoController &servoController, Servo &target);
-            ~Servo();
+            Servo(ServoController *servoController, Servo *target);
+            virtual ~Servo();
         
-            // ServoMetaData &getMetaData();
-            ServoController &getController();
-            void attach(TransitionController &transitionController);
-            TransitionController &getTransitionController();
+            // ServoMetaData *getMetaData();
+            ServoController *getController();
+            void attach(TransitionController *transitionController);
+            TransitionController *getTransitionController();
             double getPosition();
             double getActualPosition();
             const char *getName();
-            Servo &getTarget();
+            Servo *getTarget();
             void setEnabled(bool enabled);
             void setPosition(double position);
-            virtual void setActualPosition(double position) const = 0;
+            virtual void setActualPosition(double position) = 0;
             void setRange(int range);
     };
     

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdexcept>
+#include <vector>
 
 namespace servomaster {
 
@@ -12,9 +13,50 @@ namespace servomaster {
         NULL
     };
 
+    PhidgetServoController::PhidgetServoController() : thePhidgetServo(NULL) {
+    }
+    
     void PhidgetServoController::init(const char *portName) {
     
+        if ( this->portName != NULL ) {
+        
+            printf("Port name: %s\n", this->portName);
+            throw runtime_error("Already initialized");
+        }
+        
         printf("Init: port %s\n", portName);
+    
+        thePhidgetServo = findUSB(portName);
+        
+        // VT: FIXME: Handle the disconnected case
+
+        this->portName = (const char *)malloc(sizeof(char) *strlen(thePhidgetServo->getSerial()));
+        
+        strcpy((char *)this->portName, thePhidgetServo->getSerial());
+        
+        switch ( thePhidgetServo->getProtocolHandlerId() ) {
+        
+            case 0x06C20038:
+            
+                protocolHandler = new phidget::ProtocolHandler003;
+                break;
+                
+            case 0x06C2003B:
+            
+                protocolHandler = new phidget::ProtocolHandler004;
+                break;
+                
+            default:
+            
+                printf("Vendor/product ID: %8X\n", thePhidgetServo->getProtocolHandlerId());
+                throw new runtime_error("Unknown vendor/product ID combination");
+        }
+        
+        servoSet = (Servo *)malloc(sizeof(Servo *) * protocolHandler->getServoCount());
+        servoPosition = (int *)malloc(sizeof(int) * protocolHandler->getServoCount());
+    }
+    
+    phidget::UsbContext *PhidgetServoController::findUSB(const char *portName) {
     
         struct usb_bus *bus;
         struct usb_device *dev;
@@ -22,8 +64,10 @@ namespace servomaster {
         // USB has a maximum of 256 devices, so this should be more than
         // enough
         
-        phidget::UsbContext *found[256];
-        int totalFound = 0;
+        vector<phidget::UsbContext> found;
+        
+        // VT: FIXME: Figure out if usb_init() is idempotent. It better
+        // be...
         
         usb_init();
         usb_find_busses();
@@ -40,11 +84,11 @@ namespace servomaster {
                     if (    modelTable[idx]->vendorID == dev->descriptor.idVendor
                          && modelTable[idx]->productID == dev->descriptor.idProduct ) {
                          
-                        found[totalFound] = new phidget::UsbContext(dev, modelTable[idx]);
+                        phidget::UsbContext *pFound = new phidget::UsbContext(dev, modelTable[idx]);
 
-                        printf("Found %s serial #%s\n", modelTable[idx]->model, found[totalFound]->getSerial());
+                        printf("Found %s serial #%s\n", modelTable[idx]->model, pFound->getSerial());
                         
-                        totalFound++;
+                        found.push_back(*pFound);
                     }
                 }
             }
@@ -52,19 +96,19 @@ namespace servomaster {
         
         // Check how many servo controllers we've found.
         
-        int rightIndex = -1;
+        phidget::UsbContext *theRightOne = NULL;
         
         if ( portName == NULL ) {
         
             // If the portName parameter is null, one servo controller is
             // expected to be found. If there's none or more than one, boom.
             
-            if ( totalFound != 1 ) {
+            if ( found.size() != 1 ) {
             
                 throw runtime_error("None or more than one servo controller was found, but port name was not specified");
             }
             
-            rightIndex = 0;
+            return &found[0];
 
         } else {
         
@@ -77,14 +121,16 @@ namespace servomaster {
             // - Found one or more, no serial number matches with the
             //   portName: boom
             
-            if ( totalFound == 0 ) {
+            // VT: FIXME: Handle the disconnected case as well
+            
+            if ( found.empty() ) {
             
                 throw runtime_error("No servo controllers found");
             }
             
-            for ( int idx = 0; idx < totalFound; idx++ ) {
+            for ( int idx = 0; idx < found.size(); idx++ ) {
             
-                const char *serial = found[idx]->getSerial();
+                const char *serial = found[idx].getSerial();
                 
                 if ( serial == NULL ) {
                 
@@ -95,18 +141,18 @@ namespace servomaster {
                 
                     // We've found the one they were looking for
                     
-                    rightIndex = idx;
+                    theRightOne = &found[idx];
                     break;
                 }
             }
             
-            if ( rightIndex == -1 ) {
+            if ( theRightOne == NULL ) {
             
-                // VT: FIXME: Handle the disconnected case as well
-                
                 throw runtime_error("Servo controller with requested serial is not present");
             }
         }
+        
+        return theRightOne;
     }
     
     void PhidgetServoController::checkInit() {
@@ -121,6 +167,16 @@ namespace servomaster {
         return true;
     }
     
+    Servo *PhidgetServoController::createServo(int id) {
+    
+        return new phidget::PhidgetServo(this, id);
+    }
+    
+    void PhidgetServoController::send() {
+    
+        // VT: FIXME
+    }
+    
     namespace phidget {
     
         ControllerDescriptor::ControllerDescriptor(const char *model, int vendorID, int productID) :
@@ -129,11 +185,24 @@ namespace servomaster {
             productID(productID) {
         }
         
+        unsigned long ControllerDescriptor::getProtocolHandlerId() const {
+        
+            return (vendorID << 16) | productID;
+        }
+                
         UsbContext::UsbContext(struct usb_device *device, ControllerDescriptor *cd) :
             ControllerDescriptor(*cd),
             serial(NULL) {
         
             this->device = device;
+            printf("Created: %s %x\n", model, this);
+        }
+        
+        UsbContext::~UsbContext() {
+        
+            printf("Destroyed: %s %x #%s\n", model, this, serial);
+            
+            delete serial;
         }
         
         const char *UsbContext::getSerial() {
@@ -195,6 +264,89 @@ namespace servomaster {
 	    serial[current] = 0;
 	    
             return (const char *)serial;
+        }
+        
+        int ProtocolHandler003::getServoCount() {
+        
+            return 4;
+        }
+        
+        unsigned char *ProtocolHandler003::composeBuffer(int servoPosition[]) {
+        
+            // We assume that the positions array contains 4 positions
+            
+            buffer[0]  = (unsigned char)(servoPosition[0] % 256);
+            buffer[1]  = (unsigned char)(servoPosition[0] / 256);
+            
+            buffer[2]  = (unsigned char)(servoPosition[1] % 256);
+            buffer[1] |= (unsigned char)((servoPosition[1] / 256) * 16);
+            
+            buffer[3]  = (unsigned char)(servoPosition[2] % 256);
+            buffer[4]  = (unsigned char)(servoPosition[2] / 256);
+            
+            buffer[5]  = (unsigned char)(servoPosition[3] % 256);
+            buffer[4] |= (unsigned char)((servoPosition[3] / 256) * 16);
+            
+        
+            return (unsigned char *)&buffer;
+        }
+
+        int ProtocolHandler004::getServoCount() {
+        
+            return 8;
+        }
+        
+        unsigned char *ProtocolHandler004::composeBuffer(int servoPosition[]) {
+        
+            // We assume that the positions array contains 8 positions
+            
+            return NULL;
+        }
+        
+        PhidgetServo::PhidgetServo(ServoController *controller, int id) :
+            Servo(controller, NULL),
+            id(id),
+            min_pulse(1000),
+            max_pulse(2000) {
+            
+        }
+        
+        PhidgetServo::~PhidgetServo() {
+        
+        }
+        
+        void PhidgetServo::setActualPosition(double position) {
+        
+            //checkInit();
+            checkPosition(position);
+            
+            // Tough stuff, we're dealing with timing now...
+            
+            int microseconds = (int)(min_pulse + (position * (max_pulse - min_pulse)));
+            
+            // VT: NOTE: We need to know all the servo's positions because
+            // they get transmitted in one packet
+            
+            PhidgetServoController *controller = (PhidgetServoController *)getController();
+            
+            controller->servoPosition[id] = microseconds;
+            
+            /*
+            
+            // VT: NOTE: Hope I never have to uncomment this...
+            
+            if ( false ) {
+            
+                printf("Position:     %s\n", position);
+                printf("Microseconds: %s\n", microseconds);
+                printf("Buffer:       %s\n", servoPosition[id]);
+            }
+            */
+            
+            controller->send();
+            
+            this->actualPosition = position;
+            //actualPositionChanged();
         }
     }
 }

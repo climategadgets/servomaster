@@ -1,8 +1,11 @@
 package org.freehold.servomaster.view;
 
 import java.awt.Color;
+import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;     
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -10,8 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -19,15 +24,18 @@ import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 
+import org.freehold.servomaster.device.model.transform.LinearTransformer;
+import org.freehold.servomaster.device.model.transform.Reverser;
+
 /**
  * The servo view.
  *
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.8 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: ServoView.java,v 1.9 2002-01-01 00:31:53 vtt Exp $
  */
-public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
+public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
     /**
      * The servo name.
@@ -40,6 +48,23 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     private Servo servo;
     
     /**
+     * The current target (may be the {@link #servo servo} itself, or the
+     * {@link #reverse reversed mapping}, or the {@link #linear linear
+     * mapping}.
+     */
+    private Servo target;
+    
+    /**
+     * The reverse mapping of the {@link #servo servo}.
+     */
+    private Servo reverse;
+    
+    /**
+     * The linear mapping of the {@link #servo servo}.
+     */
+    private Servo linear;
+    
+    /**
      * Checkbox responsible for enabling and disabling the servo.
      */
     private JCheckBox enableBox;
@@ -50,6 +75,26 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      * @see #smooth
      */
     private JCheckBox smoothBox;
+    
+    /**
+     * Button group for the mapper selection.
+     */
+    private ButtonGroup mapperGroup = new ButtonGroup();
+    
+    /**
+     * Radio button for selecting the normal mapper (default).
+     */
+    private JRadioButton normalBox;
+    
+    /**
+     * Radio button for selecting the reverse mapper.
+     */
+    private JRadioButton reverseBox;
+    
+    /**
+     * Radio button for selecting the linear mapper.
+     */
+    private JRadioButton linearBox;
     
     /**
      * The label displaying the current position.
@@ -109,6 +154,8 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         try {
         
             this.precision = controller.getMetaData().getPrecision();
+            
+            System.out.println("Controller precision for servo #" + servoName + " is " + precision);
         
         } catch ( UnsupportedOperationException ex ) {
         
@@ -122,8 +169,12 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         } catch ( Throwable t ) {
         
             throw new Error("getServo() failed: " + t.toString());
-        } 
-    
+        }
+        
+        this.reverse = new Reverser(this.servo);
+        this.linear = new LinearTransformer(this.servo);
+        this.target = this.servo;
+        
         setBorder(BorderFactory.createEtchedBorder());
         
         GridBagLayout layout = new GridBagLayout();
@@ -158,12 +209,44 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         smoothBox.setToolTipText("Enable or disable the smooth servo movement");
         smoothBox.addItemListener(this);
         
-        cs.gridy = 2;
+        cs.gridy++;
         
         layout.setConstraints(smoothBox, cs);
         add(smoothBox);
         
-        cs.gridy = 3;
+        cs.gridy++;
+        
+        JPanel mapperPanel = new JPanel();
+        
+        mapperPanel.setLayout(new GridLayout(3, 1));
+        mapperPanel.setToolTipText("Select the servo mapping");
+        
+        normalBox = new JRadioButton("Normal", true);
+        normalBox.addActionListener(this);
+        normalBox.setToolTipText("Servo angular position reflects slider position");
+        
+        mapperGroup.add(normalBox);
+        mapperPanel.add(normalBox);
+        
+        reverseBox = new JRadioButton("Reversed");
+        reverseBox.addActionListener(this);
+        reverseBox.setToolTipText("Servo position is reversed");
+        
+        mapperGroup.add(reverseBox);
+        mapperPanel.add(reverseBox);
+
+        linearBox = new JRadioButton("Linear");
+        linearBox.addActionListener(this);
+        linearBox.setToolTipText("Servo position is linear, not angular");
+        
+        mapperGroup.add(linearBox);
+        mapperPanel.add(linearBox);
+        
+        mapperPanel.setBorder(BorderFactory.createTitledBorder("Mapping"));
+        layout.setConstraints(mapperPanel, cs);
+        add(mapperPanel);
+
+        cs.gridy++;
         
         positionLabel = new JLabel(Integer.toString(precision/2), JLabel.CENTER);
         positionLabel.setToolTipText("Current servo position");
@@ -172,7 +255,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         layout.setConstraints(positionLabel, cs);
         add(positionLabel);
         
-        cs.gridy = 4;
+        cs.gridy++;
         cs.gridwidth = 1;
         cs.weighty = 1;
         cs.fill = GridBagConstraints.VERTICAL;
@@ -218,15 +301,14 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     public void stateChanged(ChangeEvent e) {
     
         Object source = e.getSource();
-        int position;
         
         if ( source == controlSlider ) {
         
-            position = controlSlider.getValue();
+            int position = controlSlider.getValue();
             
             try {
             
-                servo.setPosition(position/255.0, smooth, 0);
+                target.setPosition((double)position/(double)(precision - 1), smooth, 0);
                 
             } catch ( Throwable t ) {
             
@@ -251,6 +333,39 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
             
             controlSlider.setEnabled(enabled);
             smoothBox.setEnabled(enabled);
+        }
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+    
+        try {
+        
+            Servo current = target;
+        
+            if ( e.getSource() == normalBox ) {
+            
+                target = servo;
+            
+            } else if ( e.getSource() == reverseBox ) {
+            
+                target = reverse;
+            
+            } else if ( e.getSource() == linearBox ) {
+            
+                target = linear;
+            }
+            
+            if ( current != target ) {
+            
+                int position = controlSlider.getValue();
+            
+                target.setPosition((double)position/(double)(precision - 1), false, 0);
+            }
+        
+        } catch ( Throwable t ) {
+        
+            System.err.println("Setting mapper:");
+            t.printStackTrace();
         }
     }
     

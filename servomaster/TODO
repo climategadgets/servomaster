@@ -1,3 +1,6 @@
+- Add ability to build the code from the same source tree on multiple hosts
+  (NFS/Coda/Samba exported filesystems)
+
 - Lazy mode is not properly supported
 
 - Disconnected mode support has to be verified

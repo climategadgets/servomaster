@@ -1,4 +1,8 @@
-0.4p3	- Added support for autoconf 2.53 and automake 1.6
+0.5p0	- Added support for autoconf 2.53 and automake 1.6
+	- Removed support for autoconf 2.13 - it was not possible to keep
+	  both 2.13 and 2.53 code together without running into
+	  complications
+	- Updated the firmware code for PhidgetAdvancedServo
 
 0.4p2   - Added support for PhidgetAdvancedServo
 	- Support for different Phidgets made generic, the only part that

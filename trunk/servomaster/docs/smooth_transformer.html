@@ -2,41 +2,58 @@
 
     <head>
     
-        <title>Notes on smooth movement with coordinate transformers</title>
+        <title>
+        
+            Servomaster: Mixing up transition controllers and coordinate
+            transformers
+        
+        </title>
         
     </head>
     
     <body>
     
-        <h1>Notes on smooth movement with coordinate transformers</h1>
+        <h1>
         
-        In the current form, the coordinate transformers (see the <a
+            Servomaster: Mixing up transition controllers and coordinate
+            transformers
+            
+        </h1>
+        
+        The coordinate transformers (see the <a
         href="apidocs/index.html">API documentation</a>) are stacked on top
         of the servo abstraction (actually, the coordinate transformers
         <i>extend</i> the servo interface).
         
         <p>
         
-        Since the smooth movement may (or may not) be supported by the
-        controller itself, and the software implementation of the smooth
-        transition is implemented at the servo abstraction level, the
-        movement will be smooth at the servo level, not at the topmost
-        coordinate system level. Consider this example:
+        Since the controlled transition may be supported by the controller
+        itself, it makes sense to make the transition controller abstraction
+        a part of servo abstraction, unlike coordinate transformer.
+        
+        <p>
+        
+        However, there are interesting side effects. Consider this example:
         
         <pre>
             ServoController controller = new FooController();
-            Servo s = controller.getServo("s");
-            Servo l = new LinearTransformer(s);
+            Servo servo = controller.getServo("s");
+            Servo linearServo = new LinearTransformer(s);
             
-            l.setPosition(0, false, 0);
-            l.setPosition(1, true, 5000);
+            linearServo.setPosition(0);
+            <b>servo</b>.attach(new CrawlTransitionController());
+            linearServo.setPosition(1);
         </pre>
         
-        This will require the servo to move to the linear 0 position, then
-        move to the linear 1.0 position in 5 seconds. However, the
+        Pay attention to the fact that the transition controller is attached
+        to the servo itself.
+        
+        <p>
+        
+        This will require the servo to move as fast as it can to the linear
+        0 position, then crawl to the linear 1.0. However, in this example the
         <i>angular</i> movement of the servo will be smooth, not
-        <i>linear</i>. Well, the linear movement will be <i>kind of</i>
-        smooth, but not <i>linearly smooth</i>.
+        <i>linear</i>.
         
         <p>
         
@@ -46,32 +63,30 @@
         
         <p>
         
-        Providing the smooth movement at the topmost coordinate system level
-        requires a paradigm shift: movement has to be controlled from within
-        the transformer, or a separate entity ("transition controller"), not
-        from within the servo [controller] abstraction. It requires a
-        complication that goes against the <a
-        href="http://skepdic.com/occam.html">Occam's Razor</a>, and today
-        there's no real need to do so. The only real justification to do
-        this will be the servo controller that allows to perform the smooth
-        transition following the specified dependency on a hardware level,
-        and this doesn't seem likely.
+        However, there are cases when this is perfectly acceptable - for
+        example, for the high latency systems where the servo controls the
+        valves, and the transition time is negligible, but the linearity of
+        the control is important.
         
         <p>
         
-        So, "Worse Is Better" principle has won again, at least temporarily.
+        Compare:
         
-        <p>
+        <pre>
+            ServoController controller = new FooController();
+            Servo servo = controller.getServo("s");
+            Servo linearServo = new LinearTransformer(s);
+            
+            linearServo.setPosition(0);
+            <b>linearServo</b>.attach(new CrawlTransitionController());
+            linearServo.setPosition(1);
+        </pre>
         
-        P.S. The other possible justification is the transition controller
-        that is not linear by itself. In the current implementation, when
-        the transition is ordered, it will just divide the time by the
-        number of steps available, and proceed. However, I can envision a
-        different type of transition - for example, the "acceleration
-        minimizer" transition (that is going to minimize the energy
-        consumption as well when moving large bodies), or all sorts of
-        special effects ("drunken master", anybody?).
-    
+        In this example, the transition controller is attached to the linear
+        coordinate transformer, and the <i>linear</i> movement of the servo
+        controlled object will be smooth, but not the <i>angular</i>
+        movement of the servo.
+        
         <hr>
         <table border=0 width=100%>
             <tr>

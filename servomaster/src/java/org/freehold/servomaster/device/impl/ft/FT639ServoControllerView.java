@@ -5,6 +5,8 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -39,17 +41,51 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoControllerView.java,v 1.1 2001-09-05 05:29:22 vtt Exp $
+ * @version $Id: FT639ServoControllerView.java,v 1.2 2001-12-14 05:08:45 vtt Exp $
  */
-public class FT639ServoControllerView extends JPanel implements ActionListener, ServoControllerListener, ServoControllerView {
+public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {
 
+    /**
+     * The controller to ahem, control ;)
+     */
     private FT639ServoController controller;
     
-    private ButtonGroup rangeGroup = new ButtonGroup();
+    /**
+     * Label displaying the current status of the controller.
+     *
+     * Two modes are possible for FT639: setup and active.
+     */
     private JLabel modeLabel;
+    
+    /**
+     * The group including two possible range selection buttons.
+     *
+     * @see #range90
+     * @see #range180
+     */
+    private ButtonGroup rangeGroup = new ButtonGroup();
+    
+    /**
+     * 90 degree range selection button.
+     */
     private JRadioButton range90;
+    
+    /**
+     * 180 degree range selection button.
+     */
     private JRadioButton range180;
     
+    /**
+     * Header length control slider.
+     */
+    JSlider trimSlider;
+    
+    /**
+     * Default constructor.
+     *
+     * Creates the panel with the proper border, title, range selection
+     * radio button group, mode display label, and header slider.
+     */
     public FT639ServoControllerView() {
     
         setBorder(BorderFactory.createTitledBorder("FT639 specific controls"));
@@ -100,9 +136,9 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         cs.gridx = 2;
         cs.weightx = 1;
         
-        JSlider trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
+        trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
         
-        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
+        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length (DON'T!)"));
         trimSlider.setMajorTickSpacing(4);
         trimSlider.setMinorTickSpacing(1);
         trimSlider.setPaintTicks(true);
@@ -112,9 +148,16 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         layout.setConstraints(trimSlider, cs);
         add(trimSlider);
         
+        trimSlider.addChangeListener(this);
+        
     }
     
     public void init(ServoController controller) {
+    
+        if ( controller == null ) {
+        
+            throw new IllegalArgumentException("Controller can't be null");
+        }
     
         this.controller = (FT639ServoController)controller;
         
@@ -154,4 +197,25 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         modeLabel.setText(mode ? "Active" : "Setup");
     }
     
+    public void stateChanged(ChangeEvent e) {
+    
+        Object source = e.getSource();
+        int header;
+        
+        if ( source == trimSlider ) {
+        
+            header = trimSlider.getValue();
+            
+            try {
+            
+                controller.setHeaderLength(header);
+                
+            } catch ( Throwable t ) {
+            
+                System.err.println("Can't set header length, cause:");
+                t.printStackTrace();
+            }
+        }
+        
+    }
 }

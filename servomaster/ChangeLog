@@ -1,3 +1,13 @@
+0.1p2
+
+	- Servos change position according to the range selection immediately after
+          the range change and don't wait until the next setPosition() is
+          issued
+	- After the controller reset, the slider is set to the proper (central)
+	  position
+	- ServoView implementation is now vendor-independent
+	- Gave up on fixing the header length behavior for FT639
+
 0.1p1
 
 	- The servo controller view is not hardware-specific anymore

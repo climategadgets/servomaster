@@ -17,7 +17,7 @@ package org.freehold.servomaster.view;
  * else would people know how smart your controller is???).
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoControllerView.java,v 1.1 2001-09-05 05:30:23 vtt Exp $
+ * @version $Id: ServoControllerView.java,v 1.2 2001-12-14 05:08:45 vtt Exp $
  */
 import org.freehold.servomaster.device.model.ServoController;
 
@@ -28,6 +28,9 @@ public interface ServoControllerView {
      *
      * @param controller The controller to control and/or display the
      * features of.
+     *
+     * @exception IllegalArgumentException if the controller passed into
+     * this method is <code>null</code>.
      */
     public void init(ServoController controller);
 }

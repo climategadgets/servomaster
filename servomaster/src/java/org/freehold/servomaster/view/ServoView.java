@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.6 2001-09-05 05:29:22 vtt Exp $
+ * @version $Id: ServoView.java,v 1.7 2001-12-14 05:08:45 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -89,8 +89,6 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     
     /**
      * Create an instance.
-     *
-     * VT: FIXME: Currently, it is FT639 dependent, it doesn't have to be.
      *
      * @param controller The controller to request the instance from.
      *
@@ -257,5 +255,15 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     public void actualPositionChanged(Servo source, int position) {
     
         setPosition(position);
+    }
+    
+    /**
+     * Hack to return the control slider to the middle position.
+     *
+     * May be just worth it according to "worse is better".
+     */
+    void reset() {
+    
+        controlSlider.setValue(128);
     }
 }

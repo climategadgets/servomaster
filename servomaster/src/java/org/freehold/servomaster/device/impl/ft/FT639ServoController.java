@@ -77,7 +77,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.7 2001-09-05 05:29:22 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.8 2001-12-14 05:08:45 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -298,7 +298,10 @@ public class FT639ServoController implements ServoController, FT639Constants {
         setSetupMode();
         this.range = range;
 
-        send(range ? PULSE_LONG : PULSE_LONG);
+        send(range ? PULSE_LONG : PULSE_SHORT);
+        
+        repositionServos();
+        
     }
      
     /**
@@ -593,6 +596,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
         System.err.println("Trim: " + headerLength + ": 0x" + Integer.toHexString(headerLength));
         
         send((byte)headerLength);
+        
+        repositionServos();
     }
     
     public void reset() throws IOException {
@@ -916,6 +921,30 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 
                 return;
             }
+        }
+    }
+    
+    /**
+     * Make sure that the servos are at the places they're supposed to be.
+     *
+     * <p>
+     *
+     * Sometimes, the actual position of the servo is not the one requested,
+     * in particular, this happens after the controller reset (software
+     * thing) and the header length change (hardware implementation). In
+     * order to make sure that the servos are where they are supposed to be,
+     * we'll just get the position and set it to the same value.
+     */
+    private void repositionServos() throws IOException {
+    
+        // Now that we've taken care of the range, let's reset the servo
+        // position
+        
+        for ( Iterator i = getServos(); i.hasNext(); ) {
+        
+            Servo s = (Servo)i.next();
+            
+            s.setPosition(s.getPosition(), false, 0);
         }
     }
 }

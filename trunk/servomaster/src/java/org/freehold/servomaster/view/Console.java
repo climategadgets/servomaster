@@ -60,7 +60,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.5 2001-09-03 08:29:23 vtt Exp $
+ * @version $Id: Console.java,v 1.6 2001-09-05 05:29:22 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -168,7 +168,7 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             GridBagConstraints cs = new GridBagConstraints();
     
             mainFrame = new JFrame("Servo Controller Console, port " + portName);
-            mainFrame.setSize(new Dimension(640, 480));
+            mainFrame.setSize(new Dimension(800, 600));
             
             // VT: FIXME: Have to terminate the application instead.
             // Currently, you have to Ctrl-Break it.
@@ -182,24 +182,18 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             cs.gridwidth = servoCount;
             cs.weightx = 1;
             
-            resetButton = new JButton("Reset Controller");
-            resetButton.addActionListener(this);
-            
-            layout.setConstraints(resetButton, cs);
-            
-            mainFrame.getContentPane().add(resetButton);
-            
-            cs.gridy = 1;
             
             silentBox = new JCheckBox("Silent", true);
+            silentBox.setToolTipText("Silent mode: stop the servo control pulse after period of inactivity");
             silentBox.addItemListener(this);
             
             layout.setConstraints(silentBox, cs);
             mainFrame.getContentPane().add(silentBox);
             
             silentLabel = new JLabel("Controller mode: SETUP");
+            silentLabel.setToolTipText("Current status of the controller in regard to silent mode");
             
-            cs.gridy = 2;
+            cs.gridy++;
             
             layout.setConstraints(silentLabel, cs);
             mainFrame.getContentPane().add(silentLabel);
@@ -207,7 +201,7 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             controller.addListener(this);
             
             cs.fill = GridBagConstraints.BOTH;
-            cs.gridy = 3;
+            cs.gridy++;
             cs.gridwidth = 1;
             cs.gridheight = servoCount;
             cs.weighty = 1;
@@ -223,10 +217,101 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 mainFrame.getContentPane().add(servoPanel[idx]);
             }
             
-            // VT: FIXME: Provide the accurate getPreferredSize() for
-            // ServoView, then we can pack
+            cs.gridx = 0;
+            cs.gridy++;
+            cs.gridy += servoCount;
+            cs.gridwidth = servoCount;
+            cs.gridheight = 1;
+            cs.weightx = 1;
+            cs.weighty = 0;
+            cs.fill = GridBagConstraints.HORIZONTAL;
             
-            // mainFrame.pack();
+            String controllerClassName = controller.getClass().getName();
+            
+            // The controller panel class name is the controller class name
+            // with "View" appended to it
+            
+            String controllerViewClassName = controllerClassName + "View";
+
+            try {
+            
+                Class controllerViewClass = Class.forName(controllerViewClassName);
+                Object controllerViewObject = controllerViewClass.newInstance();
+                
+                if ( !(controllerViewObject instanceof JPanel) ) {
+                
+                    throw new IllegalAccessException("The servo controller view class has to extend javax.swing.JPanel, it doesn't");
+                }
+                
+                if ( !(controllerViewObject instanceof ServoControllerView) ) {
+                
+                    throw new IllegalAccessException("The servo controller view class has to implement org.freehold.servomaster.view.ServoControllerView, it doesn't");
+                }
+                
+                JPanel controllerPanel = (JPanel)controllerViewObject;
+                
+                ((ServoControllerView)controllerPanel).init(controller);
+                
+                layout.setConstraints(controllerPanel, cs);
+                mainFrame.getContentPane().add(controllerPanel);
+                
+                cs.gridy++;
+                
+            } catch ( Throwable t ) {
+            
+                System.err.println("Couldn't instantiate the servo controller view ("
+                	+ controllerViewClassName
+                	+ ", so it will not be available. Cause:");
+                t.printStackTrace();
+            }
+            
+            // If the controller view has instantiated, the constraint Y
+            // coordinate has been advanced. If not, we didn't need it
+            // anyway
+            
+            JPanel buttonContainer = new JPanel();
+            
+            GridBagLayout bcLayout = new GridBagLayout();
+            GridBagConstraints bcCs = new GridBagConstraints();
+            
+            buttonContainer.setLayout(bcLayout);
+            
+            bcCs.fill = GridBagConstraints.BOTH;
+            bcCs.gridx = 0;
+            bcCs.weightx = 1.0;
+            bcCs.weighty = 1.0;
+            
+            resetButton = new JButton("Reset Controller");
+            resetButton.setToolTipText("Reset controller, swing to the left, swing to the right, center");
+            resetButton.addActionListener(this);
+            
+            bcLayout.setConstraints(resetButton, bcCs);
+            buttonContainer.add(resetButton);
+            
+            bcCs.gridx++;
+            
+            JButton swingDemoButton = new JButton("Swing Demo");
+            
+            bcLayout.setConstraints(swingDemoButton, bcCs);
+            buttonContainer.add(swingDemoButton);
+
+            bcCs.gridx++;
+            
+            JButton clockDemoButton = new JButton("Clock Demo");
+            
+            bcLayout.setConstraints(clockDemoButton, bcCs);
+            buttonContainer.add(clockDemoButton);
+            
+            // VT: FIXME: Enable them when the demo code is ready
+            
+            swingDemoButton.setEnabled(false);
+            clockDemoButton.setEnabled(false);
+            
+            layout.setConstraints(buttonContainer, cs);
+            mainFrame.getContentPane().add(buttonContainer);
+            
+            //mainFrame.getContentPane().invalidate();
+            mainFrame.pack();
             
             mainFrame.setVisible(true);
             
@@ -251,7 +336,7 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
      */
     public void silentStatusChanged(ServoController controller, boolean mode) {
     
-        silentLabel.setText("Controller mode: " + (mode ? "ACTIVE" : "SETUP"));
+        silentLabel.setText("Controller mode: " + (mode ? "ACTIVE" : "Sleeping"));
     }
     
     /**

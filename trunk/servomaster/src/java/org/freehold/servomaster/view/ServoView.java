@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.5 2001-09-03 08:29:23 vtt Exp $
+ * @version $Id: ServoView.java,v 1.6 2001-09-05 05:29:22 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -50,16 +50,6 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      * @see #smooth
      */
     private JCheckBox smoothBox;
-    
-    /**
-     * The label displaying the current trim status.
-     */
-    private JLabel trimLabel;
-    
-    /**
-     * The slider controlling the trim.
-     */
-    private JSlider trimSlider;
     
     /**
      * The label displaying the current position.
@@ -133,6 +123,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         cs.gridwidth = 2;
         
         JLabel servoLabel = new JLabel("ID: " + servoName, JLabel.CENTER);
+        servoLabel.setToolTipText("The servo name");
         servoLabel.setBorder(BorderFactory.createEtchedBorder());
         servoLabel.setForeground(Color.black);
         
@@ -140,6 +131,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         add(servoLabel);
         
         enableBox = new JCheckBox("Enabled", true);
+        enableBox.setToolTipText("Enable or disable this servo");
         enableBox.addItemListener(this);
         
         cs.gridy = 1;
@@ -148,6 +140,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         add(enableBox);
 
         smoothBox = new JCheckBox("Smooth");
+        smoothBox.setToolTipText("Enable or disable the smooth servo movement");
         smoothBox.addItemListener(this);
         
         cs.gridy = 2;
@@ -157,32 +150,20 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         
         cs.gridy = 3;
         
-        trimLabel = new JLabel("Trim: 0", JLabel.CENTER);
-        
-        layout.setConstraints(trimLabel, cs);
-        add(trimLabel);
-        
-        cs.gridy = 4;
-        
-        trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
-        trimSlider.addChangeListener(this);
-        
-        layout.setConstraints(trimSlider, cs);
-        add(trimSlider);
-        
-        cs.gridy = 5;
-        
-        positionLabel = new JLabel("POS: 128", JLabel.CENTER);
+        positionLabel = new JLabel("128", JLabel.CENTER);
+        positionLabel.setToolTipText("Current servo position");
+        positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
         
         layout.setConstraints(positionLabel, cs);
         add(positionLabel);
         
-        cs.gridy = 6;
+        cs.gridy = 4;
         cs.gridwidth = 1;
         cs.weighty = 1;
         cs.fill = GridBagConstraints.VERTICAL;
         
         viewSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
+        viewSlider.setToolTipText("The actual position of the servo");
         viewSlider.setEnabled(false);
         
         layout.setConstraints(viewSlider, cs);
@@ -191,6 +172,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         cs.gridx = 1;
         
         controlSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
+        controlSlider.setToolTipText("Move this to make the servo move");
         controlSlider.addChangeListener(this);
         controlSlider.setMajorTickSpacing(32);
         controlSlider.setMinorTickSpacing(4);
@@ -210,7 +192,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     private void setPosition(int position) {
     
         viewSlider.setValue(position);
-        positionLabel.setText("POS: " + position);
+        positionLabel.setText(Integer.toString(position));
     }
     
     /**
@@ -221,27 +203,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         Object source = e.getSource();
         int position;
         
-        if ( source == trimSlider ) {
-        
-            //System.out.println("Trim " + servoName + ": " + trimSlider.getValue());
-
-            position = trimSlider.getValue();
-            
-            try {
-            
-                // VT: FIXME: trim doesn't work
-            
-                servo.setTrim(position);
-                trimSlider.setValue(position);
-                trimLabel.setText("Trim: " + position);
-                
-            } catch ( Throwable t ) {
-            
-                System.err.println("ServoController#setTrim:");
-                t.printStackTrace();
-            }
-
-        } else if ( source == controlSlider ) {
+        if ( source == controlSlider ) {
         
             position = controlSlider.getValue();
             
@@ -271,7 +233,6 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
             enabled = !enabled;
             
             controlSlider.setEnabled(enabled);
-            trimSlider.setEnabled(enabled);
             smoothBox.setEnabled(enabled);
         }
     }

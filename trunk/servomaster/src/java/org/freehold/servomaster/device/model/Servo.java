@@ -8,22 +8,10 @@ import java.io.IOException;
  * Allows instant and smooth positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.3 2001-09-02 06:13:45 vtt Exp $
+ * @version $Id: Servo.java,v 1.4 2001-09-05 05:29:22 vtt Exp $
  */
 public interface Servo {
 
-    /**
-     * Constant responsible for the narrow angle range (90 degrees)
-     * selection.
-     */
-    public final static int RANGE_90 = 0x01;
-
-    /**
-     * Constant responsible for the wide angle range (180 degrees)
-     * selection.
-     */
-    public final static int RANGE_180 = 0x02;
-    
     /**
      * Get the name.
      *
@@ -75,13 +63,6 @@ public interface Servo {
     public void setPosition(int position, boolean smooth, long transitionTime) throws IOException;
     
     /**
-     * Adjust the initial position.
-     *
-     * @param trim Initial position of the servo.
-     */
-    public void setTrim(int trim) throws IOException;
-    
-    /**
      * Get the position.
      *
      * @return The position that has previously been {@link #setPosition
@@ -107,13 +88,14 @@ public interface Servo {
     public int getActualPosition();
     
     /**
-     * Set the operating range.
+     * Enable the long throw.
      *
-     * @param range Either {@link #RANGE_90 RANGE_90} or {@link #RANGE_180
-     * RANGE_180}.
+     * <p>
      *
-     * @exception IllegalArgumentException if the range specified is not one
-     * of allowed values.
+     * Be careful with the long throw, not all servos support it.
+     *
+     * @param range <code>false</code> for 90 degree range,
+     * <code>true</code> for 180 degree range.
      *
      * @exception UnsupportedOperationException if the hardware controller
      * doesn't support the range selection.

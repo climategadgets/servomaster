@@ -1,0 +1,15 @@
+0.1p1
+
+	- The servo controller view is not hardware-specific anymore
+	- Header length figured out for FT639
+	- Interfaces changed to accomodate the servo controller view panel
+	- Controller view implemented for FT639
+	- Removed unnecessary methods from FT639 implementation
+	- Removed ambiguous methods from the Servo interface
+	- Tuned up the Console appearance
+	- Added the demos to the Console
+	- Updated the documentation
+
+0.1p0
+
+	- Initial release. Basic functionality.

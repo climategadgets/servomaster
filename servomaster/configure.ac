@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.2 2003-01-06 03:49:54 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.3 2003-01-06 05:50:48 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -166,7 +166,7 @@ AC_CONFIG_FILES([Makefile
 	src/Makefile
 	src/scripts/Makefile
 	src/scripts/run/Makefile
-	src/scripts/run/ft_view
+	src/scripts/run/console
 	src/scripts/test/Makefile
 	src/scripts/test/sync_check
 	src/java/Makefile

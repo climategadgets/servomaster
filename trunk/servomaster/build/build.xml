@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.6 2001-12-14 22:08:09 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.7 2001-12-31 23:33:11 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -118,6 +118,13 @@
                 <include name="device/model/ServoController.java"/>
                 <include name="device/model/ServoControllerMetaData.java"/>
                 <include name="device/model/ServoControllerListener.java"/>
+
+                <include name="device/model/transform/AbstractCoordinateTransformer.java"/>
+                <include name="device/model/transform/Reverser.java"/>
+                <include name="device/model/transform/SineTransformer.java"/>
+                <include name="device/model/transform/CosineTransformer.java"/>
+                <include name="device/model/transform/ScaleTransformer.java"/>
+                <include name="device/model/transform/LinearTransformer.java"/>
                 
             </fileset>
 
@@ -233,7 +240,7 @@
                  private="true"
                  windowtitle="ServoMaster API">
                 
-            <group title="Model" packages="org.freehold.servomaster.device.model"/>
+            <group title="Model" packages="org.freehold.servomaster.device.model*"/>
             <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>
             <group title="View" packages="org.freehold.servomaster.view"/>
             <group title="Tests" packages="org.freehold.servomaster.test*"/>

@@ -1,0 +1,92 @@
+<html>
+
+    <head>
+    
+        <title>Notes on smooth movement with coordinate transformers</title>
+        
+    </head>
+    
+    <body>
+    
+        <h1>Notes on smooth movement with coordinate transformers</h1>
+        
+        In the current form, the coordinate transformers (see the <a
+        href="apidocs/index.html">API documentation</a>) are stacked on top
+        of the servo abstraction (actually, the coordinate transformers
+        <i>extend</i> the servo interface).
+        
+        <p>
+        
+        Since the smooth movement may (or may not) be supported by the
+        controller itself, and the software implementation of the smooth
+        transition is implemented at the servo abstraction level, the
+        movement will be smooth at the servo level, not at the topmost
+        coordinate system level. Consider this example:
+        
+        <pre>
+            ServoController controller = new FooController();
+            Servo s = controller.getServo("s");
+            Servo l = new LinearTransformer(s);
+            
+            l.setPosition(0, false, 0);
+            l.setPosition(1, true, 5000);
+        </pre>
+        
+        This will require the servo to move to the linear 0 position, then
+        move to the linear 1.0 position in 5 seconds. However, the
+        <i>angular</i> movement of the servo will be smooth, not
+        <i>linear</i>. Well, the linear movement will be <i>kind of</i>
+        smooth, but not <i>linearly smooth</i>.
+        
+        <p>
+        
+        The more is a difference between the angular position required from
+        the servo and the position requested from the topmost transformer,
+        the more noticeable this discrepancy will become.
+        
+        <p>
+        
+        Providing the smooth movement at the topmost coordinate system level
+        requires a paradigm shift: movement has to be controlled from within
+        the transformer, or a separate entity ("transition controller"), not
+        from within the servo [controller] abstraction. It requires a
+        complication that goes against the <a
+        href="http://skepdic.com/occam.html">Occam's Razor</a>, and today
+        there's no real need to do so. The only real justification to do
+        this will be the servo controller that allows to perform the smooth
+        transition following the specified dependency on a hardware level,
+        and this doesn't seem likely.
+        
+        <p>
+        
+        So, "Worse Is Better" principle has won again, at least temporarily.
+        
+        <p>
+        
+        P.S. The other possible justification is the transition controller
+        that is not linear by itself. In the current implementation, when
+        the transition is ordered, it will just divide the time by the
+        number of steps available, and proceed. However, I can envision a
+        different type of transition - for example, the "acceleration
+        minimizer" transition (that is going to minimize the energy
+        consumption as well when moving large bodies), or all sorts of
+        special effects ("drunken master", anybody?).
+    
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
+                    </font>
+                </td>
+            </tr>
+        </table>
+    </body>
+    
+</html>

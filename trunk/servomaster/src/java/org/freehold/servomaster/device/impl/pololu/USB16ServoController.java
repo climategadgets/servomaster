@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.usb.AbstractUsbServoController;
  * USB 16-Servo Controller</a> controller.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: USB16ServoController.java,v 1.2 2005-01-13 06:34:53 vtt Exp $
+ * @version $Id: USB16ServoController.java,v 1.3 2005-01-18 04:59:45 vtt Exp $
  */
 public class USB16ServoController extends AbstractUsbServoController {
 
@@ -149,7 +149,7 @@ public class USB16ServoController extends AbstractUsbServoController {
 
                 properties.put("controller/silent", "5000");
 
-                // Milliseconds are default servo range units for the
+                // Half milliseconds are default servo range units for the
                 // protocol
                 
                 properties.put("servo/range/units", "\u03BCs/2");

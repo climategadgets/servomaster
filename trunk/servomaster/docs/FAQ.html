@@ -41,25 +41,42 @@
                  avaialable?</strong>
                  
             <dd> Because it was the cheapest thing available at the time,
-                 almost half as expensive as the next one. Is it the best?
-                 Dunno. Doubt it.
+                 almost half as expensive as the next one. Is it the best? 
+                 No, <a href="ideal_controller.html">here's why</a>. Is it
+                 the worst? Don't think so. It allows to do things other
+                 controllers don't (header length feature). The protocol is
+                 not bad either.
                  
                  <p>
                  
             <dt> <strong>Are there other hardware controller drivers
                  coming?</strong>
                  
-            <dd> You bet. The next one is <a
-                 href="http://www.seetron.com/ssc.htm">SSC</a>.
+            <dd> You bet. The next one is probably <a
+                 href="http://www.seetron.com/ssc.htm">SSC</a>, unless I get
+                 to implement my <a href="future.html">crazy ideas</a>
+                 sooner.
                  
                  <p>
                  
             <dt> <strong>I've bought the FT639 and put it together, and it
                  doesn't work, what the hell?</strong>
                  
-            <dd> Check if the signal level on the chip input is high enough. 
-                 I had to short the 20K resistor to make it work with my
-                 Asus P-2B onboard serial controller.
+            <dd> The picture at the FerretTronics <a
+                 href="http://www.ferrettronics.com/faq.html#CircuitBoardQ4">FAQ
+                 page</a> is ambiguous. It looks like a back of DB-9 female
+                 connector, while in reality it is a <strong>male</strong>
+                 connector. The signal goes to pin 3, the ground goes to pin
+                 5.
+            
+                 <p>
+                 
+                 If this fails, check if the signal level on the chip input
+                 is high enough. I had to short the 20K resistor to make it
+                 work with my Asus P-2B onboard serial controller (well,
+                 that was before I sorted out the confusion with the pinout,
+                 I'm surprised it worked at all... Hope I didn't bust my
+                 serial port...)
                  
                  <p>
                  

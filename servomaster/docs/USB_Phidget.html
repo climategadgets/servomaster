@@ -1,26 +1,31 @@
 <html>
     <head>
         <title>
-            
             ServoMaster: Observations on USB PhidgetServo v3.0
-            
         </title>
         <meta name="description"
               content="ServoMaster: platform independent servo controller driver">
         <meta name="keywords"
               content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
     </head>
-    <body>
-    
-        <a href="http://sourceforge.net">
-            <img src="http://sourceforge.net/sflogo.php?group_id=34418&type=1"
-                 width="88"
-                 height="31"
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
                  border="0"
                  alt="SourceForge Logo"
-                 align=right>
-            </A>
-    
+                 align="right">
+        </A>
+        
+        </A>
+        
         <h1>
         
             <a href="../index.html">ServoMaster</a>: Observations on <a
@@ -29,111 +34,314 @@
             
         </h1>
         
-        <img src="images/phidget_console.png" alt="PhidgetServo console" align="right">
-        
-        Keep in mind that the hardware version for which this driver is
-        provided is different (later) from the one described on the <a
-        href="http://www.phidgets.com/phidget-servo/phidget-servo.html">site</a>. 
-        Since the Phidgets are evolving rather rapidly, the versioning,
-        capabilities discovery, and support are expected to be a standard
-        part of this driver. This document describes the hardware and the
-        driver for USB PhidgetServo v3.0, for information on upcoming v4.0
-        look <a href="USB_Phidget4.html">here</a>.
-        
-        <h2>Good things</h2>
-        
-        <ul>
-        
-            <li> <strong>Reliable as hell.</strong> The manufacturer wants
-                 me to make it fail, I couldn't.
-                 
-            <li> <strong>Simple to use.</strong> Plug in the USB, plug in
-                 the servos, go.
-            
-            <li> <strong>Versatile.</strong> One of the servos is powered by
-                 the USB bus, so it is possible to start playing with it
-                 right away even without external power supply.
-                 
-            <li> <strong>Precise.</strong> The actual controller is
-                 controlled by the pulse timings it has to provide to the
-                 servos. Usable range for the servos is somewhere from 200us
-                 to 2100us, which makes the resolution of 1900 steps. If
-                 your servo is capable of working in a wider pulse range,
-                 you get more steps available.
-                 
-            <li> <strong>Generic.</strong> It is a USB HID device, enough
-                 said.
-            
-            <li> <strong>Fast.</strong> The bandwidth is limited by the
-                 servo inertia, not by the protocol or interface.
-                 
-            <li> <strong>Flexible.</strong> You can control properties on
-                 per-servo basis.
-                 
-            <li> <strong>Customizable</strong>. To the best of my
-                 understanding, the manufacturer will provide custom
-                 solutions - different number of servo outputs per board,
-                 different protocol support and basically whatever you need.
-        
-        </ul>
-        
-        <h2>Bad things</h2>
-        
-        <ul>
-        
-            <li> As of now, it's still a write-only device. I don't think
-                 it's such a big deal for <strong>this</strong> device -
-                 otherwise, it's near perfect. The only extra ability that I
-                 would like to see is the hardware level transition support,
-                 but admittedly, that's a lot to ask ;)
-        
-        </ul>
-        
-        <h2>Making it work</h2>
-        
-        You have to get the suitable Java USB support. Currently, the code
-        is based on <a href="http://jusb.sourceforge.net/">jUSB</a>, which
-        makes it available only on Linux. Cross-platform solution is being
-        developed.
-        
-        <p>
-        
-        You have to use <code>--with-phidget</code> configure option to
-        enable the Phidget support (it is disabled by default), and
-        <code>--with-jusb=&lt;DIR&gt;</code> option to specify the root
-        directory of jUSB.
-        
-        <p>
-        
-        When you are ready to use it, don't forget to put
-        <code>jusb.jar</code> in your <code>CLASSPATH</code> and add the
-        directory where <code>libjusb.so</code> resides to your
-        <code>LD_LIBRARY_PATH</code>. If you are using the scripts supplied
-        with the source tarball (look into
-        <code>${install_prefix}/bin</code>, it's already taken care of.
-        
-        <p>
-        
-        Another thing to take care of is <code>/proc/bus/usb</code>
-        permissions. You probably don't want to run this code as root, so
-        either you have to manually modify the device permissions so you
-        have read/write access (you have to do it every time after the
-        device is plugged in or the system is rebooted), or use the <a
-        href="http://www.xena.uklinux.net/Linux/usb_perms.html">USB
-        Permissions Daemon</a> to maintain them for you. I haven't checked
-        the status of this with 2.4 kernel, though, it may be fixed already.
-        
-        <h2>Conclusion</h2>
-        
-        Beauty incarnated ;)
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                
+                    <strong>
+                        <a href="../index.html">Introduction</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="index.html">Documentation</a>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <strong>
+                                Platform Neutral
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="ideal_controller.html">A Dream
+                                     About Ideal Servo Controller</a>
+                                     
+                                <li> <a
+                                     href="smooth_transformer.html">Mixing
+                                     up transition controllers and
+                                     coordinate transformers</a>
+                                     
+                                <li> <a href="future.html">Future Plans &
+                                     Crazy Ideas</a>
+                                
+                            </ul>
+                        
+                            <strong>
+                                Driver Release Notes
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="FT639.html">FT639</a>
+                                
+                                <li> <strong>PhidgetServo v3.0</strong>
+                                
+                                <li> <a href="USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                        
+                    </font>
 
+                    <p>
+                    
+                    <strong>
+                        <a href="getinvolved.html">Get Involved</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="docs/apidocs/index.html">Javadocs</a>
+                        
+                        </ul>
+
+                    </font>
+
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Note</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                <a href="images/phidget_console.png"><img
+                                src="images/phidget_console.small.png"
+                                alt="PhidgetServo console"
+                                align="right"></a>
+                            
+                                Keep in mind that the hardware version for
+                                which this driver is provided is different
+                                (later) from the one described on the <a
+                                href="http://www.phidgets.com/phidget-servo/phidget-servo.html">site</a>. 
+                                Since the Phidgets are evolving rather
+                                rapidly, the versioning, capabilities
+                                discovery, and support are expected to be a
+                                standard part of this driver. This document
+                                describes the hardware and the driver for
+                                USB PhidgetServo v3.0, for information on
+                                upcoming v4.0 look <a
+                                href="USB_Phidget4.html">here</a>.
+
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Good Things</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                <ul>
+                            
+                                    <li> <strong>Reliable as hell.</strong>
+                                         The manufacturer wants me to make
+                                         it fail, I couldn't.
+                                         
+                                    <li> <strong>Simple to use.</strong>
+                                         Plug in the USB, plug in the
+                                         servos, go.
+                                    
+                                    <li> <strong>Versatile.</strong> One of
+                                         the servos is powered by the USB
+                                         bus, so it is possible to start
+                                         playing with it right away even
+                                         without external power supply.
+                                         
+                                    <li> <strong>Precise.</strong> The
+                                         actual controller is controlled by
+                                         the pulse timings it has to provide
+                                         to the servos. Usable range for the
+                                         servos is somewhere from 200us to
+                                         2100us, which makes the resolution
+                                         of 1900 steps. If your servo is
+                                         capable of working in a wider pulse
+                                         range, you get more steps
+                                         available.
+                                         
+                                    <li> <strong>Generic.</strong> It is a
+                                         USB HID device, enough said.
+                                    
+                                    <li> <strong>Fast.</strong> The
+                                         bandwidth is limited by the servo
+                                         inertia, not by the protocol or
+                                         interface.
+                                         
+                                    <li> <strong>Flexible.</strong> You can
+                                         control properties on per-servo
+                                         basis.
+                                         
+                                    <li> <strong>Customizable</strong>. To
+                                         the best of my understanding, the
+                                         manufacturer will provide custom
+                                         solutions - different number of
+                                         servo outputs per board, different
+                                         protocol support and basically
+                                         whatever you need.
+                                
+                                </ul>
+
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Bad Things</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                <ul>
+                                
+                                    <li> As of now, it's still a write-only
+                                         device. I don't think it's such a
+                                         big deal for <strong>this</strong>
+                                         device - otherwise, it's near
+                                         perfect. The only extra ability
+                                         that I would like to see is the
+                                         hardware level transition support,
+                                         but admittedly, that's a lot to ask
+                                         ;)
+                                
+                                </ul>
+    
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Making it Work</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                You have to get the suitable Java USB
+                                support. Currently, the code is based on <a
+                                href="http://jusb.sourceforge.net/">jUSB</a>,
+                                which makes it available only on Linux.  <a
+                                href="http://oss.software.ibm.com/javaxusb/"><code>javax.usb</code></a>
+                                will probably be used later.
+                                
+                                <p>
+                                
+                                You have to use <code>--with-phidget</code>
+                                configure option to enable the Phidget
+                                support (it is disabled by default), and
+                                <code>--with-jusb=&lt;DIR&gt;</code> option
+                                to specify the root directory of jUSB.
+                                
+                                <p>
+                                
+                                When you are ready to use it, don't forget
+                                to put <code>jusb.jar</code> in your
+                                <code>CLASSPATH</code> and add the directory
+                                where <code>libjusb.so</code> resides to
+                                your <code>LD_LIBRARY_PATH</code>. If you
+                                are using the scripts supplied with the
+                                source tarball (look into
+                                <code>${install_prefix}/bin</code>, it's
+                                already taken care of.
+                                
+                                <p>
+                                
+                                Another thing to take care of is
+                                <code>/proc/bus/usb</code> permissions. You
+                                probably don't want to run this code as
+                                root, so either you have to manually modify
+                                the device permissions so you have
+                                read/write access (you have to do it every
+                                time after the device is plugged in or the
+                                system is rebooted), or use the <a
+                                href="http://www.xena.uklinux.net/Linux/usb_perms.html">USB
+                                Permissions Daemon</a> to maintain them for
+                                you. I haven't checked the status of this
+                                with 2.4 kernel, though, it may be fixed
+                                already. Also, see the <a
+                                href="FAQ.html">FAQ</a> for a possible
+                                solution.
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Conclusion</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Beauty incarnated ;)
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>
                 <td align=left>
                     <font size=-1>
                         <a href="../index.html">ServoMaster: Home</a>
-                    </font>
+                    </font>                                       
                 </td>
                 <td align=right>
                     <font size=-1>
@@ -142,6 +350,6 @@
                 </td>
             </tr>
         </table>
-        
+
     </body>
 </html>

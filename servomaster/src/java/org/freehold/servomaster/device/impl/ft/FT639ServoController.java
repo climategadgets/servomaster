@@ -81,7 +81,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.23 2002-02-20 06:52:07 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.24 2002-02-21 07:19:41 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -607,7 +607,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         if ( silencer == null ) {
         
-            silencer = new Silencer();
+            silencer = new Silencer(this);
             silencer.start();
         }
         
@@ -628,7 +628,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         if ( heartbeat == null ) {
         
-            heartbeat = new Heartbeat();
+            heartbeat = new Heartbeat(this);
             heartbeat.start();
         }
         
@@ -773,7 +773,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * @exception IllegalStateException if the controller is not yet
      * initialized.
      */
-    protected synchronized void checkInit() {
+    protected void checkInit() {
 
         if ( portName == null ) {
         
@@ -864,7 +864,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             return Integer.toString(id);
         }
         
-        protected synchronized void setActualPosition(double position) throws IOException {
+        protected void setActualPosition(double position) throws IOException {
         
             checkInit();
             checkPosition(position);
@@ -888,9 +888,17 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 }
             }
             
-            setActiveMode();
-            send(renderPositionCommand(id, requestedPosition));
-            this.actualPosition = position;
+            synchronized ( getController() ) {
+
+                // The reason it is synchronized on the controller is that the
+                // setActualPosition() calls the controller's synchronized methods
+                // and the deadlock can occur if *this* method was made synchronized
+                
+                setActiveMode();
+                send(renderPositionCommand(id, requestedPosition));
+                this.actualPosition = position;
+            }
+            
             actualPositionChanged();
             
             startTimeout();
@@ -927,26 +935,36 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     protected class Silencer extends Thread {
     
+        private ServoController controller;
+        
+        Silencer(ServoController controller) {
+        
+            this.controller = controller;
+        }
+    
         /**
          * Wait until timeout expires, then put the controller into a setup
          * mode.
          */
-        public synchronized void run() {
+        public void run() {
         
             try {
             
                 while ( timeUntilSilent() > 0 ) {
                 
                     //System.err.println("waiting for " + timeUntilSilent() + "ms...");
-                    wait(timeUntilSilent());
+                    Thread.sleep(timeUntilSilent());
                     //System.err.println("checking... " + timeUntilSilent() + " left");
                 }
                 
                 //System.err.println("Sleeping now.");
 
-                setSetupMode();
-                silencer = null;
-                startHeartbeat();
+                synchronized ( controller ) {
+                
+                    setSetupMode();
+                    silencer = null;
+                    startHeartbeat();
+                }
             
             } catch ( Throwable t ) {
             
@@ -963,19 +981,26 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     protected class Heartbeat extends Thread {
     
+        private ServoController controller;
+        
+        Heartbeat(ServoController controller) {
+        
+            this.controller = controller;
+        }
+    
         /**
          * Wait until timeout expiresm then reposition the servos and die.
          *
          * The {@link #silencer silencer} will take care of the rest.
          */
-         public synchronized void run() {
+         public void run() {
          
              try {
          
                 while ( timeUntilHeartbeat() > 0 ) {
                 
                     //System.err.println("waiting for " + timeUntilHeartbeat() + "ms...");
-                    wait(timeUntilHeartbeat());
+                    Thread.sleep(timeUntilHeartbeat());
                     //System.err.println("checking... " + timeUntilHeartbeat() + " left");
                 }
                 
@@ -993,7 +1018,10 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 // had a power blackout (which reset the range to
                 // default 90 degrees), I'll just set the range ;)
                 
-                setRange(range);
+                synchronized ( controller ) {
+                
+                    setRange(range);
+                }
                 
                 //System.err.println("Finished repositioning");
             
@@ -1011,7 +1039,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             } finally {
             
                 heartbeat = null;
-                repositioningNow = false;;
+                repositioningNow = false;
                 startTimeout();
             }
         }

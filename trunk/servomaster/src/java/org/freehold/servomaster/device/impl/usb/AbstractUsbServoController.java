@@ -728,40 +728,68 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             
             // All right, it may be ours.
             
+            // If it is a bootable device, let's try to boot it - it may be
+            // something like AdvancedServo after power loss
+            
+            if ( handler.isBootable() ) {
+            
+                handler.boot(arrival);
+                
+                // We'll get another notification shortly
+                
+                return;
+            }
+            
             String arrivalSerial = arrival.getSerialNumberString();
             
-            if ( portName != null && portName.equals(arrivalSerial) ) {
+            if ( portName != null ) {
             
-                // Damn! This is our runaway device - we've slept through
-                // departure somehow...
+                if ( portName.equals(arrivalSerial) ) {
+            
+                    // Damn! This *is* our runaway device...
+                    
+                    // VT: NOTE: upon departure, theServoController should have
+                    // become null
+                    
+                    theServoController = arrival;
+                    UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
+                    UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                    
+                    if ( iface.isClaimed() ) {
+                    
+                        throw new IOException("Can't claim interface - already claimed");
+                    }
+                    
+                    iface.claim();
+                    
+                    
+                    // A protocol handler is basically a singleton in this
+                    // context, let's override it just in case
+                    
+                    protocolHandler = handler;
+                    
+                    // Protocol handler may be stateful, need to reset it
+                    
+                    handler.reset();
+                    
+                    // VT: FIXME: Broadcast arrival notification
+                    
+                    System.err.println("*** Restored device");
+                    
+                    return;
                 
-                // VT: NOTE: upon departure, theServoController should have
-                // become null
+                } else {
                 
-                theServoController = arrival;
-                UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
-                UsbInterface iface = cf.getUsbInterface((byte)0x00);
-                
-                if ( iface.isClaimed() ) {
-                
-                    throw new IOException("Can't claim interface - already claimed");
+                    // Nope, it's not ours
+                    
+                    return;
                 }
+            
+            } else {
+            
+                // portName is null, let's see what we have
                 
-                iface.claim();
-                
-                
-                // A protocol handler is basically a singleton in this
-                // context, let's override it just in case
-                
-                protocolHandler = handler;
-                
-                // Protocol handler may be stateful, need to reset it
-                
-                handler.reset();
-                
-                // VT: FIXME: Broadcast arrival notification
-                
-                System.err.println("*** Restored device");
+                throw new Error("Not Implemented: restoring a device with null serial number");
             }
             
         } catch ( Throwable t ) {

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and smooth positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.4 2001-09-05 05:29:22 vtt Exp $
+ * @version $Id: Servo.java,v 1.5 2001-12-14 21:58:12 vtt Exp $
  */
 public interface Servo {
 
@@ -136,4 +136,14 @@ public interface Servo {
      * hardware controller.
      */
     public void setEnabled(boolean enabled) throws IOException;
+    
+    /**
+     * Get the servo metadata.
+     *
+     * @return Servo metadata.
+     *
+     * @exception UnsupportedOperationException if the particular
+     * implementation doesn't support the capabilities discovery.
+     */
+    public ServoMetaData[] getMetaData();
 }

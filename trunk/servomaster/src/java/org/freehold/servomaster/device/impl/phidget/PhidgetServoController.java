@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.18 2003-06-16 07:03:01 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.19 2003-07-03 07:47:33 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -743,6 +743,24 @@ public class PhidgetServoController extends AbstractServoController {
             Firmware fw = new Servo8();
             byte buffer[] = fw.get();
             
+            System.err.print("Firmware size " + buffer.length + ", header");
+            
+            for ( int offset = 0; offset < 4; offset++ ) {
+            
+                System.err.print(" 0x");
+                
+                String hex = Integer.toHexString(buffer[offset]&0xFF);
+                
+                if ( hex.length() == 1 ) {
+                
+                    hex = "0" + hex;
+                }
+                
+                System.err.print(hex.toUpperCase());
+            }
+            
+            System.err.println("");
+
             out.write(buffer);
             out.flush();
             

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.5 2001-12-14 21:58:12 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.6 2001-12-14 22:08:09 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -116,6 +116,7 @@
                 <include name="device/model/ServoMetaData.java"/>
                 <include name="device/model/ServoListener.java"/>
                 <include name="device/model/ServoController.java"/>
+                <include name="device/model/ServoControllerMetaData.java"/>
                 <include name="device/model/ServoControllerListener.java"/>
                 
             </fileset>

@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.32 2005-01-13 23:14:26 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.33 2005-01-14 01:07:28 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -231,21 +231,11 @@ public class FT639ServoController extends AbstractSerialServoController implemen
     }
     
     /**
-     * @exception IllegalStateException if the controller wasn't previously
-     * initialized.
+     * {@inheritDoc}
      */
-    public Iterator getServos() throws IOException {
+    public int getServoCount() {
     
-        checkInit();
-    
-        LinkedList servos = new LinkedList();
-        
-        for ( int idx = 0; idx < 5; idx++ ) {
-        
-            servos.add(getServo(Integer.toString(idx)));
-        }
-        
-        return servos.iterator();
+        return 5;
     }
     
     /**
@@ -446,13 +436,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         return meta;
     }
     
-    public boolean isConnected() {
-    
-        // FIXME
-        
-        return true;
-    }
-
     protected class FT639Meta extends AbstractMeta {
     
         public FT639Meta() {

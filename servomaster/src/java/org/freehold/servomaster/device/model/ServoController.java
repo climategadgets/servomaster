@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.11 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: ServoController.java,v 1.12 2005-01-14 01:07:29 vtt Exp $
  */
 public interface ServoController extends SilentDevice {
 
@@ -61,6 +61,18 @@ public interface ServoController extends SilentDevice {
      * hardware controller.
      */
     public Servo getServo(String id) throws IOException;
+    
+    /**
+     * Get the number of servos this controller supports.
+     *
+     * NOTE: This method was introduced as a part of refactoring with the
+     * goal being to remove redundant code. It is quite possible that it
+     * will be deprecated in favor of using
+     * <code>controller/maxservos</code> meta property.
+     *
+     * @return Number of servos supported by this controller.
+     */
+    public int getServoCount();
     
     /**
      * Get all the servos that this controller supports.

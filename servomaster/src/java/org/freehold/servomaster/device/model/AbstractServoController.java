@@ -3,6 +3,7 @@ package org.freehold.servomaster.device.model;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.freehold.servomaster.device.model.silencer.SilentHelper;
@@ -24,7 +25,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.5 2003-06-08 01:33:23 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.6 2005-01-14 01:07:29 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -292,4 +293,23 @@ abstract public class AbstractServoController implements ServoController {
      * the sleep mode are controller-specific.
      */
     abstract protected SilentProxy createSilentProxy();
+
+    /**
+     * @exception IllegalStateException if the controller wasn't previously
+     * initialized.
+     */
+    public final Iterator getServos() throws IOException {
+    
+        checkInit();
+    
+        LinkedList servos = new LinkedList();
+        
+        for ( int idx = 0; idx < getServoCount(); idx++ ) {
+        
+            servos.add(getServo(Integer.toString(idx)));
+        }
+        
+        return servos.iterator();
+    }
+    
 }

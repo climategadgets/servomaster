@@ -17,7 +17,7 @@ import org.freehold.servomaster.device.model.AbstractServoController;
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.1 2005-01-13 23:14:27 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.2 2005-01-14 01:07:28 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -126,5 +126,19 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
         
             throw new IllegalStateException("Not initialized");
         }
+    }
+
+    /**
+     * Find out whether the controller is connected.
+     *
+     * So far, I haven't seen a single serial controller that can return
+     * some status. Therefore, for the time being this method will always
+     * return true, until a reliable way to deal with it will be found.
+     *
+     * @return Unconditional true.
+     */
+    public final boolean isConnected() {
+    
+        return true;
     }
 }

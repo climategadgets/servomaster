@@ -645,6 +645,13 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         }
     }
     
+    public int getServoCount() {
+    
+        checkInit();
+        
+        return protocolHandler.getServoCount();
+    }
+    
     public synchronized Servo getServo(String id) throws IOException {
     
         checkInit();
@@ -690,24 +697,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         return protocolHandler.createServo(this, id);
     }
 
-    /**
-     * @exception IllegalStateException if the controller wasn't previously
-     * initialized.
-     */
-    public Iterator getServos() throws IOException {
-    
-        checkInit();
-    
-        LinkedList servos = new LinkedList();
-        
-        for ( int idx = 0; idx < protocolHandler.getServoCount(); idx++ ) {
-        
-            servos.add(getServo(Integer.toString(idx)));
-        }
-        
-        return servos.iterator();
-    }
-    
     public synchronized final void usbDeviceAttached(UsbServicesEvent e) {
     
         try {

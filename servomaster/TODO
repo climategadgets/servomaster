@@ -1,4 +1,8 @@
+- Change the servo interface for setPosition() from 0...255 to 0.0...1.0
+
 - Introduce the coordinate transformer with configurable low limit, high
   limit and center; figure out the nonlinear transfer function between the
   0...1 transformer input and 0...255 servo input
-- Analyze http://www.havingasoftware.nl/robots/servo/servo.htm
+
+- Implement the transition end notification for smooth movement (notifies
+  immediately when not in smooth mode)

@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.16 2002-01-19 02:04:08 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.17 2002-01-20 06:33:44 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -539,6 +539,23 @@ public class FT639ServoController implements ServoController, FT639Constants {
         startTimeout();
     }
     
+    public boolean getSilentStatus() {
+    
+        if ( !silent ) {
+        
+            return true;
+        }
+        
+        if ( silencer != null ) {
+        
+            return true;
+
+        } else {
+        
+            return false;
+        }
+    }
+    
     private synchronized void startTimeout() {
     
         // VT: NOTE: This is a little bit inefficient when not in silent
@@ -549,6 +566,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
         if ( !silent ) {
         
             return;
+        }
+        
+        if ( heartbeat != null ) {
+        
+            heartbeat.interrupt();
         }
         
         if ( silencer == null ) {
@@ -904,8 +926,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
                     //System.err.println("Repositioning now.");
                     
                     repositionServos();
+                    
+                    // By now, we've probably been killed by the silencer,
+                    // but let's just do it anyway
+                    
                     heartbeat = null;
                 }
+            
+            } catch ( InterruptedException iex ) {
+            
+                // This is probably silencer thread stopping us, it's OK
+                
+                heartbeat = null;
             
             } catch ( Throwable t ) {
             

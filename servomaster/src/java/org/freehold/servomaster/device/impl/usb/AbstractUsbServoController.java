@@ -437,7 +437,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      */
     protected final String getSignature(UsbDeviceDescriptor dd) {
     
-        return Integer.toHexString(dd.idVendor()) + ":" + Integer.toHexString(dd.idProduct());
+        return Integer.toHexString(dd.idVendor() & 0xFFFF) + ":" + Integer.toHexString(dd.idProduct() & 0xFFFF);
     }
     
     /**

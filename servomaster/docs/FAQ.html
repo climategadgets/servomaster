@@ -95,6 +95,23 @@
                   As a side effect, this reduces the energy consumption and
                   servo wear. Since the servos may be working 24x7, this may
                   be important as well.
+                  
+                  <p>
+
+             <dt> <strong>Why do I keep getting <code>noClassDefFoundError:
+                  javax/comm/UnsupportedCommOperationException</code>?
+                  
+             <dd> Because you didn't install the <a
+                  href="http://java.sun.com/products/javacomm/">JavaCOMM</a>
+                  properly. If you keep getting probems even though you've
+                  followed the instructions to the letter, try to go with
+                  the JRE instead of JDK - copy the <code>comm.jar</code> to
+                  <code>${JRE_HOME}/lib/ext</code> directory.
+                  
+                  <p>
+                  
+                  As a rule of thumb, the newer the version of the JDK/JRE,
+                  the less problems you will have.
         
         </dl>
 

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.9 2002-01-02 09:11:18 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.10 2002-01-04 01:19:26 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -77,8 +77,10 @@
       -->
     
     <target name="servomaster" depends="prepare,model,ft639,view">
-
-        <jar jarfile="./${project}.jar" basedir="${build.dir}"/>
+    
+        <jar jarfile="./${project}.jar"
+             basedir="${build.dir}"
+             manifest="../etc/manifest"/>
         
     </target>
     

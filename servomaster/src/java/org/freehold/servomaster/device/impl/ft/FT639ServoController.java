@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.12 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.13 2002-01-03 05:17:39 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -753,71 +753,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
         }
         
         private static final double step = 1.0 / 255.0;
-        
-        /*
-        protected class TransitionController implements Runnable {
-        
-            public void run() {
-            
-                // VT: NOTE: Since the input is in doubles, and the actual
-                // control values are integers, we need some slack so
-                // there's no jitter on the software level (which does
-                // happen if I just compare the position and the actual
-                // position). The slack is equal to 1 divided by the
-                // controller precision. Since we know for sure that it is
-                // 255, we can skip the calculation and declare it final
-                // (above).
-                
-                while ( true ) {
-                
-                    double diff = position - actualPosition;
-                    
-                    if ( diff < 0 ) {
-                    
-                        diff = -diff;
-                    }
-                    
-                    if ( diff <= step ) {
-                    
-                        break;
-                    }
-                    
-                    try {
-                    
-                        // VT: NOTE: Remember not to interfere with the
-                        // position variables!
-                    
-                        synchronized ( this ) {
-                        
-                            if ( actualPosition > position ) {
-                            
-                                setActualPosition(actualPosition - step);
-                                
-                            } else if ( actualPosition < position ) {
-                            
-                                setActualPosition(actualPosition + step);
-                            }
-                        }
-                    
-                    } catch ( Throwable t ) {
-                    
-                        // VT: FIXME: Have to process this smarter. I guess
-                        // I'll attempt to reset the controller first, and
-                        // if that fails, I have to have the error flag in
-                        // the controller itself that will cause it to stop
-                        // operating.
-                        
-                        System.err.println("Transition problem:");
-                        t.printStackTrace();
-                    }
-                }
-                
-                //System.err.println("Transition done");
-                transitionController = null;
-            }
-        }
-        
-        */
         
         public ServoMetaData[] getMetaData() {
         

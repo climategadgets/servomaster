@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.impl.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.7 2005-01-21 07:15:06 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.8 2005-01-26 01:07:46 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -84,7 +84,10 @@ public class Serial16ServoController extends AbstractSerialServoController {
 
             features.put("controller/allow_disconnect", new Boolean(true));
             
-            features.put("controller/silent", new Boolean(true));
+            // VT: FIXME: Line below is temporarily commented out until the
+            // functionality is in place
+            
+            //features.put("controller/silent", new Boolean(true));
             features.put("controller/protocol/serial", new Boolean(true));
             
             // VT: FIXME

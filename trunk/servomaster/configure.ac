@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.11 2004-10-12 00:31:41 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.12 2004-10-13 01:25:00 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -30,7 +30,7 @@ fi
 
 VERSION_MAJOR="0"
 VERSION_MINOR="6"
-PATCHLEVEL="2"
+PATCHLEVEL="3dev1"
 
 AC_SUBST(VERSION_MAJOR)dnl
 AC_SUBST(VERSION_MINOR)dnl
@@ -116,35 +116,6 @@ AC_ARG_ENABLE(phidget,
 [
     AC_MSG_RESULT(yes)
 
-    AC_ARG_WITH(jusb,
-    [  --with-jusb             Specify the root directory of jUSB (http://jusb.sourceforge.net/)],
-    [
-        dnl Verify the library location
-        
-        AC_MSG_CHECKING(libjusb.so)
-        
-        if ${TEST} ! -f $withval/libjusb.so ; then
-        
-            AC_MSG_ERROR([jUSB shared library (libjusb.so) doesn't exist at ${withval}/libjusb.so])
-        else
-            JUSB_LIB=${withval}
-            AC_SUBST(JUSB_LIB)
-            AC_MSG_RESULT(${JUSB_LIB})
-        fi
-        
-        dnl Verify the jar file location
-        
-        AC_PATH_JAVACLASS(JUSB_CORE,${withval},usb.core.Bus,[    Where to find the jUSB core jar file (http://jusb.sourceforge.net/)])
-        AC_PATH_JAVACLASS(JUSB_PLATFORM,${withval},usb.${PLATFORM}.DeviceImpl,[    Where to find the jUSB platform jar file (http://jusb.sourceforge.net/)])
-        
-    ],
-    [
-        JUSB_LIB=/usr/lib
-        AC_SUBST(JUSB_LIB)
-        AC_PATH_JAVACLASS(JUSB_CORE,/usr/share/java,usb.core.Bus,[    Where to find the jUSB core jar file (http://jusb.sourceforge.net/)])
-        AC_PATH_JAVACLASS(JUSB_PLATFORM,/usr/share/java,usb.${PLATFORM}.DeviceImpl,[    Where to find the jUSB platform jar file (http://jusb.sourceforge.net/)])
-    ])
-    
     PHIDGET_ENABLED=true
 ],
 [
@@ -177,6 +148,7 @@ AC_SUBST(OBJEXT)
 AC_CONFIG_FILES([Makefile
 	build/Makefile
 	build/.servomaster.properties
+	lib/Makefile
 	src/Makefile
 	src/rpm/Makefile
 	src/rpm/servomaster.spec

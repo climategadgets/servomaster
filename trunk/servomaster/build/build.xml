@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.24 2004-02-04 06:11:37 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.25 2004-10-13 01:25:00 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -50,6 +50,8 @@
     <property name="src.java.dir" value="../src/java"/>
     <property name="dist.dir" value="../build/${project}-${version}"/>
     <property name="javadoc.dir" value="../docs/apidocs"/>
+    
+    <property name="javax-usb.jar" value="../lib/jsr80.jar"/>
     
     <property name="ft639.enabled.${ft639.enabled}" value="true"/>
     <property name="phidget.enabled.${phidget.enabled}" value="true"/>
@@ -122,10 +124,6 @@
         <!-- Check if we have JavaCOMM available -->
         
         <available classname="javax.comm.SerialPort" property="JavaCOMM.present"/>
-        
-        <!-- Check if jUSB is available -->
-        
-        <available classname="usb.core.Bus" classpath="${JUSB.jar}" property="jUSB.present"/>
     
     </target>
     
@@ -198,18 +196,6 @@
     
     </target>
     
-    <target name="jUSB_check" unless="jUSB.present" if="phidget.enabled.true">
-    
-        <fail message="jUSB was not found in '${JUSB.jar}'"/>
-        
-    </target>
-    
-    <target name="jUSB_enable" depends="jUSB_check" if="phidget.enabled.true">
-    
-        <echo message="jUSB verified"/>
-    
-    </target>
-    
     <!--
     
         The classes pertinent to FerretTronics FT639
@@ -239,7 +225,7 @@
         
       -->
     
-    <target name="phidget" depends="model,jUSB_enable" if="phidget.enabled.true">
+    <target name="phidget" depends="model" if="phidget.enabled.true">
     
         <copy todir="${phidget.build.src}/org/freehold/servomaster">
         
@@ -256,7 +242,7 @@
     
         <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
             <classpath>
-                <pathelement path="${JUSB.jar}"/>
+                <pathelement path="${javax-usb.jar}"/>
             </classpath>
         </javac>
         
@@ -334,13 +320,15 @@
     
         <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
-                <pathelement path="${JUSB.jar}"/>
+                <pathelement path="${javax-usb.jar}"/>
             </classpath>
         </javac>
 
     </target>
 
-    <target name="test_phidget" depends="model,jUSB_enable" if="phidget.enabled.true">
+    <target name="test_phidget" depends="model" if="phidget.enabled.true">
+    
+        <!--
     
         <copy todir="${test.build.src}/org/freehold/servomaster">
         
@@ -354,9 +342,10 @@
     
         <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
-                <pathelement path="${JUSB.jar}"/>
+                <pathelement path="${javax-usb.jar}"/>
             </classpath>
         </javac>
+          -->
 
     </target>
 
@@ -413,7 +402,7 @@
             <group title="Tests" packages="org.freehold.servomaster.test*"/>
             
             <classpath>
-                <pathelement path="${JUSB.jar}"/>
+                <pathelement path="${javax-usb.jar}"/>
             </classpath>
 
         </javadoc>

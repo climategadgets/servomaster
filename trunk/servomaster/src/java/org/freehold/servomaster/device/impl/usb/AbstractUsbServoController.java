@@ -2,13 +2,18 @@ package org.freehold.servomaster.device.impl.usb;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
+import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoController;
 
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
@@ -24,6 +29,34 @@ abstract public class AbstractUsbServoController extends AbstractServoController
     private UsbServices usbServices;
     private UsbHub virtualRootHub;
 
+    /**
+     * The revision to protocol handler map.
+     *
+     * <p>
+     *
+     * The key is the revision, the value is the protocol handler. This is a
+     * little bit of overhead, but adds flexibility.
+     *
+     * <p>
+     *
+     * At the instantiation time, the protocol handlers for all known
+     * hardware revisions are instantiated and put into this map.
+     *
+     * <p>
+     *
+     * At the {@link #init init()} time, the hardware revision is looked up,
+     * the proper protocol handler resolved and assigned to the {@link
+     * #protocolHandler instance protocol handler}.
+     */
+    protected Map protocolHandlerMap = new HashMap();
+     
+    /**
+     * The protocol handler taking care of this specific instance.
+     *
+     * @see #init
+     */
+    protected UsbProtocolHandler protocolHandler;
+    
     /**
      * Used to prevent polling too fast.
      *
@@ -376,6 +409,173 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         public BootException(String message) {
         
             super(message);
+        }
+    }
+
+    /**
+     * An abstraction for the object handling the communications with the
+     * arbitrary hardware revision of the PhidgetServo controller.
+     *
+     * <p>
+     *
+     * For every hardware revision, there will be a separate protocol
+     * handler.
+     */
+    protected abstract class UsbProtocolHandler {
+    
+        /**
+         * Controller metadata.
+         */
+        private final Meta meta;
+        
+        public UsbProtocolHandler() {
+        
+            meta = createMeta();
+        }
+        
+        abstract protected Meta createMeta();
+        
+        public final Meta getMeta() {
+        
+            return meta;
+        }
+        
+        /**
+         * Get the device model name.
+         *
+         * This method is here because the protocol handlers are create
+         * before the actual devices are found. Ideally, the model name
+         * should be retrieved from the USB device (and possibly, it will be
+         * done so later), but so far this will do.
+         */
+        abstract protected String getModelName();
+        
+        /**
+         * Reset the controller.
+         */
+        abstract public void reset() throws IOException;
+    
+        /**
+         * @return the number of servos the controller supports.
+         */
+        abstract public int getServoCount();
+        
+        /**
+         * Set the servo position.
+         *
+         * <p>
+         *
+         * <strong>NOTE:</strong> originally this method was named
+         * <code>setActualPosition()</code>. This worked all right with JDK
+         * 1.4.1, however, later it turned out that JDK 1.3.1 was not able
+         * to properly resolve the names and thought that this method
+         * belongs to <code>PhidgetServo</code>, though the signature was
+         * different. The name was changed to satisfy JDK 1.3.1, but this
+         * points out JDK 1.3.1's deficiency in handling the inner classes. 
+         * Caveat emptor. You better upgrade.
+         *
+         * @param id Servo number.
+         *
+         * @param position Desired position.
+         */
+        abstract public void setPosition(int id, double position) throws IOException;
+        
+        /**
+         * Silence the controller.
+         *
+         * VT: FIXME: This better be deprecated - each servo can be silenced
+         * on its own
+         */
+        abstract public void silence() throws IOException;
+        
+        abstract public Servo createServo(ServoController sc, int id) throws IOException;
+
+        abstract public class UsbServo extends AbstractServo {
+        
+            /**
+             * Servo number.
+             */
+            protected final int id;
+            
+            /**
+             * Servo metadata.
+             */
+            private final Meta meta;
+            
+            protected UsbServo(ServoController sc, int id) throws IOException {
+            
+                super(sc, null);
+                
+                this.id = id;
+                this.meta = createServoMeta();
+            }
+            
+            public Meta getMeta() {
+            
+                return meta;
+            }
+            
+            /**
+             * Template method to create the instance of the metadata for
+             * the servo.
+             *
+             * @return Class specific metadata instance.
+             */
+            abstract protected Meta createServoMeta();
+
+            public final String getName() {
+            
+                return Integer.toString(id);
+            }
+            
+            protected final void setActualPosition(double position) throws IOException {
+            
+                checkInit();
+                checkPosition(position);
+                
+                try {
+                
+                    protocolHandler.setPosition(id, position);
+                    
+                    this.actualPosition = position;
+                    actualPositionChanged();
+                    
+                } catch ( IOException usbex ) {
+                
+                    /// VT: FIXME
+                
+                    connected = false;
+                
+                    if ( !isDisconnectAllowed() ) {
+                    
+                        // Too bad
+                        
+                        throw (IOException)(new IOException("Disconnect not allowed").initCause(usbex));
+                    }
+                
+                    // VT: NOTE: This block is dependent on jUSB error message
+                    // text
+                    
+                    String xmessage = usbex.getMessage();
+                    
+                    if ( xmessage == null ) {
+                    
+                        // Can't determine what kind of problem it is
+                        
+                        throw (IOException)(new IOException("Unknown problem").initCause(usbex));
+                    }
+                    
+                    if ( "USB communication failure".equals(xmessage) ) {
+                    
+                        // This probably means that the controller was
+                        // disconnected
+                        
+                        System.err.println("Assumed disconnect, reason: " + xmessage);
+                        
+                        theServoController = null;
+                    }
+                }
+            }
         }
     }
 }

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.21 2002-10-02 01:33:48 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.22 2003-01-14 06:10:04 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -44,6 +44,7 @@
     <property name="build.compiler" value="modern"/>
     <property name="javac.depend" value="false"/>
     <property name="javac.deprecation" value="true"/>
+    <property name="javac.debug" value="true"/>
     
     <property name="build.dir" value="../build/classes"/>
     <property name="src.java.dir" value="../src/java"/>
@@ -180,7 +181,7 @@
 
         </copy>
 
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${model.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${model.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -227,7 +228,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
 
@@ -251,7 +252,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>
@@ -280,7 +281,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -296,7 +297,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
 
@@ -312,7 +313,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -328,7 +329,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>
@@ -348,7 +349,7 @@
             
         </copy>
     
-        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>

@@ -24,6 +24,7 @@ import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 
+import org.freehold.servomaster.device.model.transform.LimitTransformer;
 import org.freehold.servomaster.device.model.transform.LinearTransformer;
 import org.freehold.servomaster.device.model.transform.Reverser;
 
@@ -35,7 +36,7 @@ import org.freehold.servomaster.device.model.transition.CrawlTransitionControlle
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.20 2002-09-30 00:31:41 vtt Exp $
+ * @version $Id: ServoView.java,v 1.21 2005-03-25 21:49:23 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -60,6 +61,11 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      * The reverse mapping of the {@link #servo servo}.
      */
     private Servo reverse;
+    
+    /**
+     * The limit 0.25..0.75 mapping of the {@link #servo servo}.
+     */
+    private Servo limit;
     
     /**
      * The linear 0\u00B0-180\u00B0 mapping of the {@link #servo servo}.
@@ -162,6 +168,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         }
         
         this.reverse = new Reverser(this.servo);
+        this.limit = new LimitTransformer(this.servo, 0.25, 0.75);
         this.linear180 = new LinearTransformer(this.servo, 0, 180);
         this.linear90 = new LinearTransformer(this.servo, 0, 90);
         this.target = this.servo;
@@ -219,7 +226,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         
         mapperPanel = new JPanel();
         
-        String mapping[] = { "Direct", "Reverse", "Linear 180\u00B0", "Linear 90\u00B0" };
+        String mapping[] = { "Direct", "Reverse", "Limit", "Linear 180\u00B0", "Linear 90\u00B0" };
         
         mapperComboBox = new JComboBox(mapping);
         mapperComboBox.setToolTipText("Select the coordinate transformer");
@@ -382,12 +389,19 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
                         
                     case 2:
                     
+                        // Limit 0.25..0.75
+                        
+                        target = limit;
+                        break;
+
+                    case 3:
+                    
                         // Linear 0-180
                         
                         target = linear180;
                         break;
                         
-                    case 3:
+                    case 4:
                     
                         // Linear 0-90
                         

@@ -29,7 +29,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  *
  * <ul>
  *
- * <li> Selecting the 90 degree vs. 180 degree pulse length on the
+ * <li> Selecting the 90\u00B0 vs. 180\u00B0 pulse length on the
  *      controller level (vs. servo level)
  *
  * <li> Selecting the header length on the controller level (vs. servo
@@ -41,7 +41,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoControllerView.java,v 1.2 2001-12-14 05:08:45 vtt Exp $
+ * @version $Id: FT639ServoControllerView.java,v 1.3 2001-12-29 06:33:19 vtt Exp $
  */
 public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {
 
@@ -66,12 +66,12 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
     private ButtonGroup rangeGroup = new ButtonGroup();
     
     /**
-     * 90 degree range selection button.
+     * 90\u00B0 range selection button.
      */
     private JRadioButton range90;
     
     /**
-     * 180 degree range selection button.
+     * 180\u00B0 range selection button.
      */
     private JRadioButton range180;
     
@@ -106,15 +106,18 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         JPanel rangePanel = new JPanel();
         
         rangePanel.setLayout(new GridLayout(2,1));
+        rangePanel.setToolTipText("Select the servo range");
 
         range90 = new JRadioButton("90\u00B0", true);
         range90.addActionListener(this);
+        range90.setToolTipText("Select the servo range");
         
         rangeGroup.add(range90);
         rangePanel.add(range90);
         
         range180 = new JRadioButton("180\u00B0");
         range180.addActionListener(this);
+        range180.setToolTipText("Select the servo range");
         
         rangeGroup.add(range180);
         rangePanel.add(range180);
@@ -129,7 +132,8 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         
         modeLabel = new JLabel("SETUP", JLabel.CENTER);
         modeLabel.setBorder(BorderFactory.createTitledBorder("Mode"));
-
+        modeLabel.setToolTipText("FT639 controller mode");
+        
         layout.setConstraints(modeLabel, cs);
         add(modeLabel);
         
@@ -137,8 +141,9 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         cs.weightx = 1;
         
         trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
+        trimSlider.setToolTipText("Change the FT639 header length (UNDOCUMENTED, be careful)");
         
-        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length (DON'T!)"));
+        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
         trimSlider.setMajorTickSpacing(4);
         trimSlider.setMinorTickSpacing(1);
         trimSlider.setPaintTicks(true);

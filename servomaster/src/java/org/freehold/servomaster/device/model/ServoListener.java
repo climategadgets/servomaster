@@ -9,7 +9,7 @@ package org.freehold.servomaster.device.model;
  * sending notifications asynchronous from the servo operation itself.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoListener.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: ServoListener.java,v 1.2 2001-12-29 06:33:19 vtt Exp $
  */
 public interface ServoListener {
 
@@ -25,7 +25,7 @@ public interface ServoListener {
      *
      * @param position New position.
      */
-    public void positionChanged(Servo source, int position);
+    public void positionChanged(Servo source, double position);
     
     /**
      * Accept the actual servo position change notification.
@@ -34,5 +34,5 @@ public interface ServoListener {
      *
      * @param position New position.
      */
-    public void actualPositionChanged(Servo source, int position);
+    public void actualPositionChanged(Servo source, double position);
 }

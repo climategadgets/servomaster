@@ -11,12 +11,12 @@ package org.freehold.servomaster.device.model;
  *
  * <p>
  *
- * The existence class is necessitated by the fact that the coordinates
- * produced by the transition controller may depend on the system timing and
- * delays.
+ * The existence of this class is necessitated by the fact that the
+ * coordinates produced by the transition controller may depend on the
+ * system timing and delays.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: TransitionToken.java,v 1.1 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: TransitionToken.java,v 1.2 2002-01-02 09:18:52 vtt Exp $
  */
 public class TransitionToken {
 

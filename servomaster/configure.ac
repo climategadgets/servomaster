@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.9 2004-05-25 06:07:17 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.10 2004-06-28 21:17:14 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -56,6 +56,7 @@ AC_PROG_FIND
 AC_PROG_LN_S
 AC_PATH_PROG_VERIFY(RM,rm,$PATH)dnl
 AC_PATH_PROG_VERIFY(DIRNAME,dirname,$PATH)dnl
+AC_PATH_PROG_VERIFY(ANT,ant,$PATH)
 AC_PATH_PROG(RPM,rpm,,$PATH)dnl
 AC_PATH_PROG(RPMBUILD,rpmbuild,,$PATH)dnl
 
@@ -86,7 +87,6 @@ AC_PROG_JAVATOOL(JAVADOC,javadoc,[ Java documentation compiler])
 dnl [You will not be able to create the Javadoc documentation])
 dnl AC_PROG_JAVATOOL(JAR,jar,[     Java Archiver])
 
-AC_PATH_JAVACLASS(ANT,/usr/share/java,org.apache.tools.ant.Main,[     Where to find the Jakarta Ant jar file (http://jakarta.apache.org/ant/)])
 AC_PATH_JAVACLASS(JAVA_COMPILER,${JDK_HOME}/lib,sun.tools.javac.Main,[     Where to find the Jakarta javac jar file (http://jakarta.apache.org/)])
 AC_PATH_JAVACLASS(XERCES,/usr/share/java,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
 
@@ -177,7 +177,6 @@ AC_SUBST(OBJEXT)
 
 AC_CONFIG_FILES([Makefile
 	build/Makefile
-	build/build.sh
 	build/.servomaster.properties
 	src/Makefile
 	src/rpm/Makefile

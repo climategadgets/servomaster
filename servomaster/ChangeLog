@@ -1,3 +1,7 @@
+0.6p2-3 - Changed Ant invocation from "Ant as Java class" to "Ant as a shell
+	  script" - allows to work with Ant 1.6.1, which is not yet packaged
+	  as RPM.
+
 0.6p2-2 - Fixed a silly requirement to have a specific JDK installed;
 	- Added a warning if the Java binary wasn't found at runtime.
 
@@ -21,6 +25,7 @@
 	- Updated the firmware code for PhidgetAdvancedServo
 	- Run script name changed from 'ft_view' (which was originally
 	  created for FT639) to more proper 'console'
+	- Multiple FT639 metadata bugfixes
 
 0.4p2   - Added support for PhidgetAdvancedServo
 	- Support for different Phidgets made generic, the only part that

@@ -5,7 +5,7 @@
 
 Name: servomaster
 Version: @VERSION@
-Release: 2
+Release: 3
 Summary: ServoMaster: uniform Java servo controller driver
 Source: %{name}-%{version}.tar.gz
 Copyright: GPL

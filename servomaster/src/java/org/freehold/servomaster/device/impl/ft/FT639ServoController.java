@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.19 2002-02-10 07:23:55 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.20 2002-02-13 04:08:53 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -969,7 +969,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
                     //System.err.println("Repositioning now.");
                     
                     repositioningNow = true;
-                    repositionServos();
+
+                    // Nobody knows what had been happening since last
+                    // action.
+                    
+                    // Let's play a trick. A complete resetup includes
+                    // header length (which I don't want to touch (FIXME))
+                    // and throw range. Since setRange() includes
+                    // repositioning the servos, and in case the controller
+                    // had a power blackout (which reset the range to
+                    // default 90 degrees), I'll just set the range ;)
+                    
+                    setRange(range);
                     
                     //System.err.println("Finished repositioning");
                 }

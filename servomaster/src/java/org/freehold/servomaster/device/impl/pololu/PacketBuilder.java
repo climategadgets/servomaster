@@ -24,9 +24,12 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.1 2005-01-13 06:34:53 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.2 2005-01-13 22:49:58 vtt Exp $
  */
 public class PacketBuilder {
+
+    private static int rq = 0;
+    private static int size = 0;
 
     /**
      * Build a byte buffer for "set parameters" command (0x00).
@@ -55,6 +58,8 @@ public class PacketBuilder {
         byte enabledMask = (byte)(enabled ? 0x4000 : 0x0000);
         buffer[4] = (byte)(0xFF | enabledMask);
         
+        complain(buffer);
+        
         return buffer;
     }
 
@@ -77,6 +82,8 @@ public class PacketBuilder {
         buffer[2] = (byte)0x01; // command
         buffer[3] = servoId;
         buffer[4] = speed;
+        
+        complain(buffer);
         
         return buffer;
     }
@@ -106,6 +113,8 @@ public class PacketBuilder {
         buffer[4] = (byte)(position & 0x00FF);
         buffer[5] = (byte)((position & 0xFF00) >> 8);
         
+        complain(buffer);
+        
         return buffer;
     }
     
@@ -123,6 +132,14 @@ public class PacketBuilder {
         
             throw new IllegalArgumentException("Invalid value (" + Integer.toHexString(value) + ") - high bit must be off");
         }
+    }
+    
+    private static void complain(byte buffer[]) {
+    
+        rq++;
+        size += buffer.length;
+        
+        System.err.println("" + rq + " requests, " + size + " bytes");
     }
 
 }

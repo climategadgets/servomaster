@@ -1,0 +1,597 @@
+<html>
+    <head>
+        <title>
+            ServoMaster: Building
+        </title>
+        <meta name="description"
+              content="ServoMaster: platform independent servo controller driver">
+        <meta name="keywords"
+              content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
+    </head>
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
+                 border="0"
+                 alt="SourceForge Logo"
+                 align="right">
+        </A>
+        
+        </A>
+        
+        <h1>
+            <a href="../index.html">ServoMaster</a>: Build Process
+        </h1>
+        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                
+                    <strong>
+                        <a href="../index.html">Introduction</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <strong>Documentation</strong>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <strong>
+                                Build Process
+                            </strong>
+                        
+                            <ul>
+                            
+                                <li> <a href="#prereqs">Prerequisites</a>
+                                     
+                                <li> <a href="#easy">Easy Way</a>
+                                     
+                                <li> <a href="#hard">Hard Way</a>
+                                
+                                <li> <a href="#console">What Is What On The Console</a>
+                                
+                            </ul>
+                            
+                            <strong>
+                                Platform Neutral
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="ideal_controller.html">A Dream
+                                     About Ideal Servo Controller</a>
+                                     
+                                <li> <a
+                                     href="smooth_transformer.html">Mixing
+                                     up transition controllers and
+                                     coordinate transformers</a>
+                                     
+                                <li> <a href="future.html">Future Plans &
+                                     Crazy Ideas</a>
+                                
+                            </ul>
+                            
+                            <strong>
+                                <a href="../meta/index.html">Metadata</a>
+                            </strong>
+                            
+                            <br>
+                        
+                            <strong>
+                                Driver Release Notes
+                            </strong>
+                            
+                            <ul>
+                            
+                                <li> <a href="FT639.html">FT639</a>
+                                
+                                <li> <a href="USB_Phidget.html">PhidgetServo v3.0</a>
+                                
+                                <li> <a href="USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                        
+                    </font>
+
+                    <p>
+                    
+                    <strong>
+                        <a href="getinvolved.html">Get Involved</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="apidocs/index.html">Javadocs</a>
+                        
+                        </ul>
+
+                    </font>
+
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Introduction</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                ServoMaster can be built and used in
+                                different ways, depending on required driver
+                                set and platform. The unified build process
+                                runs natively on Linux. There shouldn't be a
+                                problem to run it on other Unices, provided
+                                the native library support exists, for USB
+                                in particular. Mac OS X should be supported
+                                in the same way, though no volunteers were
+                                encountered so far ;)
+                                
+                                <p>
+                                
+                                However, the result can run on any platform,
+                                provided the following conditions are met:
+                                
+                                <ul>
+                                
+                                    <li> Driver code is 100% pure Java and
+                                    doesn't depend on the native libraries
+                                    to run.
+                                
+                                </ul>
+                                
+                                Basically, <i>any</i> serial only driver
+                                will work on any platform, but since my
+                                hardware resources are limited, at the
+                                moment of writing there's the only driver
+                                that satisfies this condition, and it is <a
+                                href="FT639.html">FT639</a>.
+                                
+                                <p>
+                                
+                                Again, at the moment of writing, USB devices
+                                are supported only on Linux (because <a
+                                href="http://jusb.sourceforge.net/">jUSB</a>
+                                is used), however, there is work in progress
+                                to port the USB support to use <a
+                                href="http://javax-usb.org/">javax.usb</a>.
+                                Hopefully, this will allow to make the
+                                result portable.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="prereqs">
+                                <font color="#ffffff">Prerequisites</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Absolutely necessary:
+                            
+                                <ul>
+                                
+                                    <li> <a href="http://java.sun.com/">Java
+                                         Virtual Machine</a>. Preferred
+                                         version is the latest one (JDK
+                                         1.4.1_01), though older ones are
+                                         probably supported as well. If you
+                                         try to use the older JDK and the
+                                         build process or the result fails
+                                         with a mysterious message, you've
+                                         probably stepped on a feature which
+                                         is not backward compatible. In this
+                                         case, submit a bug report, and they
+                                         are usually honored.
+                                         
+                                         <p>
+                                         
+                                         Word of warning, though: later
+                                         versions of JDK are much more
+                                         advanced than the earlier ones, so
+                                         it would be a good idea to upgrade
+                                         anyway. There are several known
+                                         problems related to inner classes,
+                                         synchronization semaphore lockups
+                                         and other things (just don't
+                                         remember what exactly right now),
+                                         even with JDK 1.3. Beware.
+                                         
+                                </ul>
+                                
+                                Required for <a href="FT639.html">FT639</a>:
+                                
+                                <ul>
+                                    
+                                    <li> <a
+                                         href="http://java.sun.com/products/javacomm/">Java
+                                         Communications API</a> properly
+                                         installed. I would recommend to go
+                                         the JRE way.
+                                         
+                                    <li> <a
+                                         href="http://www.rxtx.org/">RxTx</a>
+                                         - JavaCOMM implementation by Trent
+                                         Jarvi. This component is required
+                                         to use JavaCOMM on different Unix
+                                         flavors (check out the <a
+                                         href="http://www.frii.com/~jarvi/rxtx/porting.html">RxTx's
+                                         compatibility list</a>).
+
+                                </ul>
+                                
+                                Required for <a href="http://www.phidgets.com/">Phidgets</a>:
+                                
+                                <ul>
+                                
+                                    <li> <a
+                                         href="http://jusb.sourceforge.net/">jUSB</a>
+                                         - Java USB support for Linux.
+                                         
+                                    <li> <a
+                                         href="http://javax-usb.org">javax.usb</a>
+                                         - this will hopefully replace jUSB soon.
+                                
+                                </ul>
+                                
+                                Required for the <a href="#hard">Hard Way</a>:
+                                
+                                <ul>
+                                
+                                    <li> <a
+                                         href="http://jakarta.apache.org/ant/">Jakarta
+                                         Ant</a>, <code>--with-ANT</code>
+                                         configure option. Minimum version
+                                         required is 1.4.
+                                    
+                                    <li> Sun's <code>javac.jar</code> or
+                                         <code>tools.jar</code>,
+                                         <code>--with-JAVA_COMPILER</code>
+                                         configure option. Examine the Ant
+                                         documentation to find out where it
+                                         fits. You may be able to get away
+                                         without specifying this option at
+                                         all - latest JDKs have this jar
+                                         exactly where it's needed.
+                                    
+                                    <li> <a
+                                         href="http://xml.apache.org/xerces-j/">Apache
+                                         Xerces-J</a>,
+                                         <code>--with-XERCES</code>
+                                         configure option.  Current version
+                                         will suffice.
+                                         
+                                    <li> <a
+                                         href="http://www.gnu.org/software/autoconf/autoconf.html">GNU
+                                         autoconf</a>. Version 2.53 is
+                                         required. Version 2.13 is
+                                         guaranteed to fail.
+                                         
+                                    <li> <a
+                                         href="http://www.gnu.org/software/automake/automake.html">GNU
+                                         automake</a>. Versions 1.5 and 1.6
+                                         are known to work. Version 1.4 is
+                                         known to fail.
+                                
+                                </ul>
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="easy">
+                                <font color="#ffffff">Easy Way</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                If all you need is to take a look at what it
+                                is, or you're lucky enough to have a
+                                controller that doesn't require external
+                                dependencies (like <a
+                                href="FT639.html">FT639</a>), you can get
+                                away with the easy way.
+                                
+                                <ol>
+                                
+                                    <li> Grab the jar file from <a
+                                         href="http://sourceforge.net/project/showfiles.php?group_id=34418&release_id=89273">here</a>
+                                         (get the latest release).
+                                         
+                                    <li> Run the following command (one line):
+
+                                         <pre>
+java -jar servomaster.jar
+     org.freehold.servomaster.device.impl.ft.FT639ServoController
+     <i>&lt;port&gt</i>
+                                         </pre>
+
+                                         where <i>&lt;port&gt</i> is
+                                         <code>COM<b>X</b></code> on Windows
+                                         boxes,
+                                         <code>/dev/ttyS<b>X</b></code> on
+                                         Linux,
+                                         <code>/dev/term/<b>X</b></code> on
+                                         Solaris and so on. <b>X</b> is the
+                                         actual port number. Make sure that
+                                         port is not occupied by your modem,
+                                         Palm cradle or anything like that.
+                                         
+                                    <li> Enjoy.
+                                
+                                </ol>
+                                
+                                You don't really have to have any hardware
+                                to run the package. Right now, there is
+                                FT639 that is not returning any status, so
+                                the driver for it can be run without the
+                                hardware.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="hard">
+                                <font color="#ffffff">Hard Way</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                <ol>
+                                
+                                    <li> Untar the source tarball, of
+                                         course.
+                                    
+                                    <li> Hardcore OpenSource people will
+                                         find the build process comfortable
+                                         - it's simple <code>./configure &&
+                                         make all install</code>. However,
+                                         it is highly recommended to run
+                                         <code>./configure --help</code>
+                                         first, because even though the <a
+                                         href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>
+                                         is used to adjust the build to the
+                                         system, the tools used (Ant and
+                                         Xerces) do not have a standard
+                                         location, thus it has to be
+                                         specified.
+                                         
+                                         <p>
+                                         
+                                         To avoid specifying configure
+                                         options again and again, it is
+                                         recommended to use the
+                                         <code>./configure-options</code>
+                                         file to specify them, one item per
+                                         line. This is how mine looks:
+                                         
+                                         <pre>
+--prefix=/opt/vt/servomaster
+--enable-phidget
+--enable-ft639
+--with-jusb=/home/vt/jusb-0.4.4
+--with-ANT=/home/vt/servomaster-libs/ant.jar
+--with-XERCES=/home/vt/servomaster-libs/xerces.jar
+                                         </pre>
+
+                                    <li> There is a class that serves as a
+                                         - testbed and a demo for the
+                                         package
+                                         - <code>org.freehold.servomaster.view.Console</code>,
+                                         and
+                                         <code>$prefix/bin/console_view</code>
+                                         shell script is a wrapper for it. 
+                                         It takes two parameters: the
+                                         hardware driver class name, and the
+                                         driver-specific port name. It is
+                                         completely hardware independent.
+                                         
+                                         <p>
+                                         
+                                         There is no dummy class
+                                         implementing nonexistent controller
+                                         that doesn't require any hardware,
+                                         however, the <a
+                                         href="FT639.html">FT639</a>
+                                         controller the driver for which has
+                                         been already implemented doesn't
+                                         provide any feedback, so it can be
+                                         used as a demo. The only
+                                         requirement is that you specify a
+                                         valid unoccupied serial port ID,
+                                         like this:
+        
+                                         <pre>
+$prefix/bin/console \
+org.freehold.servomaster.device.impl.ft.FT639ServoController \
+/dev/ttyS1
+                                         </pre>
+                                         
+                                         where <code>$prefix</code> is where
+                                         you actually install the package.
+                                         
+                                         <p>
+                                         
+                                         That's it, you should be seeing the console right now.
+        
+                                    
+                                </ol>
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="console">
+                                <font color="#ffffff">What Is What On The Console</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Below is the snapshot of the simplest
+                                console possible, <a
+                                href="FT639.html">FT639</a>:
+                                
+                                <p>
+                            
+                                <img src="images/servomaster_console.png" alt="ServoMaster Console">
+                                
+                                <dl>
+                                
+                                    <dt> <b>Silent</b>
+                                    
+                                    <dd> The <b>Silent</b> checkbox, if
+                                         checked (default if the controller
+                                         <a
+                                         href="apidocs/org/freehold/servomaster/device/model/ServoControllerMetaData.html">supports</a>
+                                         it), puts the controller in a
+                                         'sleep' mode - stops the servo
+                                         pulse after a timeout.
+                                    
+                                    <dt> <b>ID</b>
+                                    
+                                    <dd> is a controller-specific servo name.
+                                    
+                                    <dt> <b>Enabled</b>
+                                    
+                                    <dd> This checkbox enables (default) or
+                                         disables the particular servo.
+                                    
+                                    <dt> <b>Instant/Crawl</b>
+                                    
+                                    <dd> The transition controller
+                                         selection. <b>Instant</b> means
+                                         that there is no transition
+                                         controller attached, <b>Crawl</b>
+                                         means that the crawl transition
+                                         controller is attached to the
+                                         servo. Read the <a
+                                         href="apidocs/org/freehold/servomaster/device/model/transition/CrawlTransitionController.html">javadocs</a>
+                                         on this class to find out more (you
+                                         have to <code>'make javadoc'</code>
+                                         to use that link, or look it up on
+                                         the <a
+                                         href="http://servomaster.sourceforge.net/">master
+                                         site</a>).
+                                         
+                                    <dt> <b>Direct/Reverse/Linear 180&deg;/Linear 90&deg;</b>
+                                    
+                                    <dd> The coordinate transformer
+                                         selection. <b>Direct</b> means that
+                                         there is no coordinate transformer,
+                                         <b>Reverse</b> is self-explanatory,
+                                         and <b>Linear</b> is explained in
+                                         the class <a
+                                         href="apidocs/org/freehold/servomaster/device/model/transform/LinearTransformer.html">documentation</a>.
+                                         
+                                    <dt> <b>The sliders</b>
+                                    
+                                    <dd> The right one controls, the left
+                                         one displays. Play with the
+                                         transition controllers and
+                                         coordinate transformers to see what
+                                         happens. Be careful with the servos
+                                         - not all of them like to be set to
+                                         180&deg; range.
+                                
+                                </dl>
+                                
+                                The stuff below pertains to the specific
+                                controller features, and is usually either
+                                self-explanatory or too weird to bother.
+                                Since the controller name is there, just
+                                look up the release notes on that particular
+                                controller in the <a
+                                href="index.html">index</a>.
+                                
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>                                       
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2003
+                    </font>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

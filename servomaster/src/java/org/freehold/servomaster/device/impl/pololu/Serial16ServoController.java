@@ -36,7 +36,7 @@ public class Serial16ServoController extends AbstractSerialServoController {
     /**
      * {@inheritDoc}
      */
-    public synchronized Servo getServo(String id) throws IOException {
+    protected synchronized Servo createServo(int id) throws IOException {
     
         throw new Error("Not Implemented");
     }

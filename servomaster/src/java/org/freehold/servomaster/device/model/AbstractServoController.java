@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.6 2005-01-14 01:07:29 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.7 2005-01-14 02:59:20 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -69,6 +69,11 @@ abstract public class AbstractServoController implements ServoController {
      * The silencer proxy.
      */
     private SilentProxy silencerProxy;
+    
+    /**
+     * Physical servo representation.
+     */
+    protected Servo servoSet[];
     
     public AbstractServoController() {
     
@@ -312,4 +317,58 @@ abstract public class AbstractServoController implements ServoController {
         return servos.iterator();
     }
     
+    /**
+     * Get the servo instance.
+     *
+     * @param id The servo ID. A valid ID is a <strong>decimal</strong>
+     * string representation of the integer in 0...4 range.
+     *
+     * @return A servo abstraction instance.
+     *
+     * @exception IllegalArgumentException if the ID supplied doesn't map to
+     * a physical device.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     *
+     * @exception IllegalStateException if the controller wasn't previously
+     * initialized.
+     */
+    public final synchronized Servo getServo(String id) throws IOException {
+    
+        checkInit();
+        
+        try {
+        
+            int iID = Integer.parseInt(id);
+            
+            if ( iID < 0 || iID > getServoCount() ) {
+            
+                throw new IllegalArgumentException("ID out of 0..." + getServoCount() + " range: '" + id + "'");
+            }
+            
+            if ( servoSet[iID] == null ) {
+            
+                servoSet[iID] = createServo(iID);
+            }
+            
+            return servoSet[iID];
+            
+        } catch ( NumberFormatException nfex ) {
+        
+            throw new IllegalArgumentException("Not a number: '" + id + "'");
+        }
+    }
+    /**
+     * Create the servo instance.
+     *
+     * This is a template method used to instantiate the proper servo
+     * implementation class.
+     *
+     * @param id Servo ID to create.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     */
+    abstract protected Servo createServo(int id) throws IOException;
 }

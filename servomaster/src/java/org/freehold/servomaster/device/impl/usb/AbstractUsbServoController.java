@@ -76,13 +76,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      */
     protected UsbDevice theServoController;
     
-    /**
-     * Physical servo representation.
-     *
-     * VT: FIXME: Must be pushed up into AbstractServoController.
-     */
-    protected Servo servoSet[];
-    
     protected AbstractUsbServoController() {
     
         fillProtocolHandlerMap();
@@ -93,7 +86,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             // of a device. Good.
             
             protocolHandler = (UsbProtocolHandler)protocolHandlerMap.values().toArray()[0];
-            servoSet = new Servo[protocolHandler.getServoCount()];
+            servoSet = new Servo[getServoCount()];
         }
 
         // VT: FIXME: This really belongs to init(), but at this point
@@ -517,7 +510,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
                 throw new UnsupportedOperationException("Vendor/product ID '" + signature + "' is not supported");
             }
             
-            servoSet = new Servo[protocolHandler.getServoCount()];
+            servoSet = new Servo[getServoCount()];
             
             this.portName = serial;
             connected = true;
@@ -652,32 +645,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         checkInit();
         
         return protocolHandler.getServoCount();
-    }
-    
-    public synchronized Servo getServo(String id) throws IOException {
-    
-        checkInit();
-        
-        try {
-        
-            int iID = Integer.parseInt(id);
-            
-            if ( iID < 0 || iID > protocolHandler.getServoCount() ) {
-            
-                throw new IllegalArgumentException("ID out of 0..." + protocolHandler.getServoCount() + " range: '" + id + "'");
-            }
-            
-            if ( servoSet[iID] == null ) {
-            
-                servoSet[iID] = createServo(iID);
-            }
-            
-            return servoSet[iID];
-            
-        } catch ( NumberFormatException nfex ) {
-        
-            throw new IllegalArgumentException("Not a number: '" + id + "'");
-        }
     }
     
     /**

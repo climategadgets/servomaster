@@ -76,17 +76,10 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.33 2005-01-14 01:07:28 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.34 2005-01-14 02:59:19 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
-    /**
-     * Physical servo representation.
-     *
-     * There is just up to 5 servos that can be connected to this device.
-     */
-    private Servo servoSet[] = new Servo[5];
-    
     /**
      * Controller mode.
      *
@@ -131,6 +124,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      */
     public FT639ServoController() {
     
+        servoSet = new Servo[getServoCount()];
     }
     
     /**
@@ -157,6 +151,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      */
     public FT639ServoController(String portName) throws IOException {
     
+        servoSet = new Servo[getServoCount()];
         init(portName);
     }
     
@@ -185,49 +180,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         send(range ? PULSE_LONG : PULSE_SHORT);
         
         repositionServos();
-    }
-     
-    /**
-     * Get the servo instance.
-     *
-     * @param id The servo ID. A valid ID is a <strong>decimal</strong>
-     * string representation of the integer in 0...4 range.
-     *
-     * @return A servo abstraction instance.
-     *
-     * @exception IllegalArgumentException if the ID supplied doesn't map to
-     * a physical device.
-     *
-     * @exception IOException if there was a problem communicating with the
-     * hardware controller.
-     *
-     * @exception IllegalStateException if the controller wasn't previously
-     * initialized.
-     */
-    public synchronized Servo getServo(String id) throws IOException {
-    
-        checkInit();
-        
-        try {
-        
-            int iID = Integer.parseInt(id);
-            
-            if ( iID < 0 || iID > 4 ) {
-            
-                throw new IllegalArgumentException("ID out of 0...4 range: '" + id + "'");
-            }
-            
-            if ( servoSet[iID] == null ) {
-            
-                servoSet[iID] = createServo(iID);
-            }
-            
-            return servoSet[iID];
-            
-        } catch ( NumberFormatException nfex ) {
-        
-            throw new IllegalArgumentException("Not a number: '" + id + "'");
-        }
     }
     
     /**

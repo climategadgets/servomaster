@@ -4,12 +4,16 @@
 
 namespace servomaster {
 
-    Servo::Servo(ServoController &servoController, Servo &target) :
+    Servo::Servo(ServoController *servoController, Servo *target) :
         position(0),
         actualPosition(0),
         enabled(true),
-        servoController(&servoController),
-        target(&target) {
+        servoController(servoController),
+        target(target) {
+    
+    }
+    
+    Servo::~Servo() {
     
     }
     
@@ -23,38 +27,38 @@ namespace servomaster {
         return actualPosition;
     }
     
-    ServoController &Servo::getController() {
+    ServoController *Servo::getController() {
     
-        return *servoController;
+        return servoController;
     }
     
-    void Servo::attach(TransitionController &_transitionController) {
+    void Servo::attach(TransitionController *transitionController) {
     
         // VT: FIXME: Get the synchronization lock
         
-        Servo &s = getTarget();
+        Servo *s = getTarget();
         
-        while ( &s != NULL ) {
+        while ( s != NULL ) {
         
-            if ( &s.getTransitionController() != NULL ) {
+            if ( s->getTransitionController() != NULL ) {
             
                 throw runtime_error("Can't attach more than one transition controller in a stack");
             }
             
-            s = s.getTarget();
+            s = s->getTarget();
         }
         
-        transitionController = &_transitionController;
+        this->transitionController = transitionController;
     }
     
-    TransitionController &Servo::getTransitionController() {
+    TransitionController *Servo::getTransitionController() {
     
-        return *transitionController;
+        return transitionController;
     }
     
-    Servo &Servo::getTarget() {
+    Servo *Servo::getTarget() {
     
-        return *target;
+        return target;
     }
     
     void Servo::setPosition(double position) {

@@ -11,7 +11,7 @@ namespace servomaster {
         
             bool connected;
             bool disconnected;
-            char *portName;
+            const char *portName;
             virtual void checkInit() = 0;
             
         public:

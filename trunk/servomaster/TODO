@@ -1,3 +1,7 @@
+- With the new Console.reset implementation, the control sliders are set to
+  0.5, but the position sliders are set (along with the servo) to where it
+  was last time before the reset button was pressed. Not good.
+
 - Setting the silent timeout brings the device back to active mode; think if
   this is something that really has to be happening
 

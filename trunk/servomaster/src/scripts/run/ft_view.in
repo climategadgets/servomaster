@@ -5,10 +5,6 @@
 # they need to
 
 TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
-@prefix@/lib/@PACKAGE@.jar:\
-@XERCES_CLASSES@:\
-@JMX_CLASSES@:\
-@JMXTOOLS_CLASSES@:\
-@REGEXP_CLASSES@
+@prefix@/lib/@PACKAGE@.jar
 
 @JAVAX@ org.freehold.servomaster.view.Console $*

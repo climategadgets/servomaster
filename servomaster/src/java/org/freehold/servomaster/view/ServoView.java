@@ -35,7 +35,7 @@ import org.freehold.servomaster.device.model.transition.CrawlTransitionControlle
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.16 2002-01-03 00:39:55 vtt Exp $
+ * @version $Id: ServoView.java,v 1.17 2002-01-03 01:52:27 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -333,13 +333,13 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      */
     private void setPosition(double position) {
     
-        int iPosition = (int)(position * (precision - 1));
+        int iPosition = (int)Math.round(position * (precision - 1));
         
         viewSlider.setValue(iPosition);
         
-        double actualPosition = target.getPosition() * (precision - 1);
+        double requestedPosition = target.getPosition() * (precision - 1);
         
-        positionLabel.setText(Integer.toString(iPosition) + "/" + Math.round(actualPosition));
+        positionLabel.setText(Integer.toString(iPosition) + "/" + Math.round(requestedPosition));
     }
     
     /**

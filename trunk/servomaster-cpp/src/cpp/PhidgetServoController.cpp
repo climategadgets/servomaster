@@ -1,3 +1,4 @@
+// $Id: PhidgetServoController.cpp,v 1.6 2002-09-13 08:37:53 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>

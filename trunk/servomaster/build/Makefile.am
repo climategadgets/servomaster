@@ -1,6 +1,6 @@
-## $Id: Makefile.am,v 1.5 2004-02-04 06:11:37 vtt Exp $
+## $Id: Makefile.am,v 1.6 2004-06-28 21:17:14 vtt Exp $
 
-AUTOCONF_FILES = build.sh
+AUTOCONF_FILES = .servomaster.properties
 
 jardir = ${prefix}/share/java
 jar_DATA = @PACKAGE@-@VERSION@.jar
@@ -24,19 +24,19 @@ build: ${AUTOCONF_FILES} .servomaster.properties
 	@ if @TEST@ ! -f @PACKAGE@.jar \
 	  || @TEST@ -n "`@FIND@ ../src/java -name "*.java" -newer @PACKAGE@.jar`" \
 	  || @TEST@ -n "`@FIND@ . -name "build.xml" -newer @PACKAGE@.jar`" ; then \
-	    sh ./build.sh ; \
+	    JAVA_HOME=@JAVA_HOME@ @ANT@ ; \
 	else \
 	    @ECHO@ "@PACKAGE@.jar is up to date." ; \
 	fi
 
-javadoc: build.xml build.sh
+javadoc: build.xml
 
 	@ if ${TEST} -z "${JAVADOC}" ; then ${ECHO} "javadoc was not found - rerun configure" ; exit 1; fi
-	@ PATH=${PATH}:`${DIRNAME} ${JAVADOC}` sh ./build.sh javadocs
+	@ PATH=${PATH}:`${DIRNAME} ${JAVADOC}` JAVA_HOME=@JAVA_HOME@ @ANT@ javadocs
 	
 dist-hook:
 
-	sh ./build.sh dist-copy-sources
+	JAVA_HOME=@JAVA_HOME@ @ANT@ dist-copy-sources
 	
 clean-generic:
 
@@ -48,4 +48,4 @@ all: build
 
 install-data-local:
 
-#	sh ./build.sh install
+#	JAVA_HOME=@JAVA_HOME@ @ANT@ install

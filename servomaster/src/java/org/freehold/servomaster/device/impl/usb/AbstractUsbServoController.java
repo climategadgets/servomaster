@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,11 +16,13 @@ import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 
+import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
 import javax.usb.UsbException;
 import javax.usb.UsbHostManager;
 import javax.usb.UsbHub;
+import javax.usb.UsbInterface;
 import javax.usb.UsbServices;
 import javax.usb.event.UsbServicesEvent;
 import javax.usb.event.UsbServicesListener;
@@ -34,8 +37,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
      *
      * <p>
      *
-     * The key is the revision, the value is the protocol handler. This is a
-     * little bit of overhead, but adds flexibility.
+     * The key is the string formed as "${vendor-id}:${product-id}" (with
+     * IDs being lowercase hex representations, no leading "0x". A
+     * convenient way to obtain a signature is to call {@link #getSignature
+     * getSignature()}), the value is the protocol handler. This is a little
+     * bit of overhead, but adds flexibility.
      *
      * <p>
      *
@@ -79,6 +85,17 @@ abstract public class AbstractUsbServoController extends AbstractServoController
     
     protected AbstractUsbServoController() {
     
+        fillProtocolHandlerMap();
+        
+        if ( isOnly() ) {
+        
+            // OK, we've been subclassed to support just one specific kind
+            // of a device. Good.
+            
+            protocolHandler = (UsbProtocolHandler)protocolHandlerMap.values().toArray()[0];
+            servoSet = new Servo[protocolHandler.getServoCount()];
+        }
+
         // VT: FIXME: This really belongs to init(), but at this point
         // things are not settled down yet
     
@@ -95,6 +112,85 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         }
     }
 
+    /**
+     * Fill the protocol handler map.
+     *
+     * This class puts all the protocol handlers known to it into the {@link
+     * #protocolHandlerMap protocol handler map}, so the devices can be
+     * recognized. However, this presents some difficulties in relation to
+     * disconnected mode if a particular, known beforehand, type of device
+     * with a known identifier must be operated, but it is not be present at
+     * the driver startup time. If this is the case, then subclasses of this
+     * class must be used that fill the protocol handler map
+     * with the only protocol handler.
+     *
+     * @see #isOnly
+     */
+    abstract protected void fillProtocolHandlerMap();
+    
+    /**
+     * Is this class handling only one type of a device?
+     *
+     * @return true if only one type of a USB controller is supported.
+     */
+    protected boolean isOnly() {
+    
+        // VT: FIXME: This may be a problem for AdvancedServo, since we have
+        // to identify two product ids - check the code
+    
+        return protocolHandlerMap.size() == 1;
+    }
+    
+    /**
+     * Is the device currently connected?
+     *
+     * <p>
+     *
+     * This method will check the presence of the device and return the
+     * status.
+     *
+     * @return true if the device seems to be connected.
+     */
+    public final synchronized boolean isConnected() {
+    
+        checkInit();
+        
+        if ( theServoController != null ) {
+        
+            // We can be reasonably sure that we're connected
+            
+            return true;
+
+        } else {
+        
+            // Let's find out
+            
+            try {
+            
+                theServoController = findUSB(portName);
+
+                UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
+                UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                
+                if ( iface.isClaimed() ) {
+                
+                    throw new IOException("Can't claim interface - already claimed");
+                }
+                
+                iface.claim();
+                
+                return true;
+
+            } catch ( Throwable t ) {
+            
+                // Uh oh, I don't think so
+                
+                exception(t);
+                return false;
+            }
+        }
+    }
+    
     protected final UsbDevice findUSB(String portName) throws IOException {
 
         // VT: There are multiple ways to handle this:
@@ -191,7 +287,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
     }
 
     /**
-     * Find the PhidgetServo.
+     * Find the controller.
      *
      * @param portName Port name.
      *
@@ -243,7 +339,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
 
                     } catch ( BootException bex2 ) {
                     
-                        System.err.println("Failed to boot SoftPhidget at hub FIXME");
+                        System.err.println("Failed to boot a bootable device");
                     }
                 }
             }
@@ -253,98 +349,340 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             // This may be our chance
             
             UsbDeviceDescriptor dd = root.getUsbDeviceDescriptor();
-        
-            // Check the vendor/product ID first in case the device
-            // is not very smart and doesn't support control messages
             
-            if ( dd.idVendor() == 0x6c2 ) {
+            String signature = getSignature(dd);
             
-                System.err.println("Phidget: " + Integer.toHexString(dd.idProduct()));
+            // See if we have a protocol handler for this device
             
-                // 0x6c2 is a Phidget
+            UsbProtocolHandler handler = (UsbProtocolHandler)protocolHandlerMap.get(signature);
+            
+            if ( handler != null ) {
+            
+                if ( handler.isBootable() ) {
                 
-                switch ( dd.idProduct() ) {
-                
-                    case 0x0038:
+                    // If it is a bootable device, it's too early to check
+                    // the rest - let's boot it first
                     
-                        // QuadServo
-                        
-                    case 0x0039:
+                    if ( !boot ) {
                     
-                        // UniServo
+                        // Oops...
                         
-                    case 0x003b:
-                    
-                        // AdvancedServo
-                        
-                        if ( portName == null ) {
-                        
-                            // We don't even have to see the serial number
-                        
-                            found.add(root);
-                            
-                            return;
-                        }
-                        
-                        // Port name was specified, so we have to retrieve
-                        // it
-                        
-                        String serial = root.getSerialNumberString();
-                        
-                        System.err.println("Serial found: " + serial);
-                        
-                        // VT: NOTE: Serial number can be null. At least it
-                        // is with the current firmware release for
-                        // AdvancedServo. The implication is that there can
-                        // be just one instance of AdvancedServo on the
-                        // system.
-                        
-                        if ( serial == null ) {
-                        
-                            // FIXME: this is a hack, but unavoidable one
-                            
-                            serial = "null";
-                        }
-                            
-                        if ( serial.equals(portName) ) {
-                            
-                            found.add(root);
-                            return;
-                        }
-                        
-                        break;
-                        
-                    case 0x0060:
-                    
-                        // SoftPhidget
-                        
-                        System.err.println("SoftPhidget found");
-                        
-                        if ( !boot ) {
-                        
-                            // Oops...
-                            
-                            throw new BootException("Second time, refusing to boot");
-                        }
+                        throw new BootException("Second time, refusing to boot");
+                    }
 
-                        boot(root);
-                        
-                        // The device enumeration path is broken now, since
-                        // the product ID has changed after the boot.
-                        // However, it is clear that the device is confined
-                        // to the same hub, so we have to just restart the
-                        // search on the same hub.
-                        
-                        throw new BootException("Need to re-read the device information");
-                        
-                    default:
+                    boot(root);
                     
-                        System.err.println("Phidget: unknown: " + Integer.toHexString(dd.idProduct()));
+                    // The device enumeration path is broken now, since
+                    // the product ID has changed after the boot.
+                    // However, it is clear that the device is confined
+                    // to the same hub, so we have to just restart the
+                    // search on the same hub.
+                    
+                    throw new BootException("Need to rescan the bus - device booted");
+                }
+            
+                if ( portName == null ) {
+                
+                    // No need to check the serial
+                    
+                    found.add(root);
+                    return;
+                }
+                
+                // Port name was specified, so we have to retrieve
+                // it
+                
+                String serial = root.getSerialNumberString();
+                
+                System.err.println("Serial found: " + serial);
+                
+                // VT: NOTE: Serial number can be null. At least it
+                // is with the current firmware release for
+                // AdvancedServo. The implication is that there can
+                // be just one instance of AdvancedServo on the
+                // system.
+                
+                if ( serial == null ) {
+                
+                    // FIXME: this is a hack, but unavoidable one
+                    
+                    serial = "null";
+                }
+                    
+                if ( serial.equals(portName) ) {
+                    
+                    found.add(root);
+                    return;
                 }
             }
+            
+            // VT: NOTE: The only case we get here is if it's not our
+            // device. Generally, this should be uncommented only if we're
+            // debugging.
+            
+            System.err.println("Unknown device: " + signature);
         }
     }
+    
+    protected final String getSignature(UsbDeviceDescriptor dd) {
+    
+        return Integer.toHexString(dd.idVendor()) + ":" + Integer.toHexString(dd.idProduct());
+    }
 
+    /**
+     * Initialize the controller.
+     *
+     * @param portName The controller board unique serial number in a string
+     * representation. If this is null, then all the PhidgetServo devices
+     * connected will be found. If the only device is found, then it is
+     * used, and its serial number will be assigned to
+     * <code>portName</code>.
+     *
+     * @exception IllegalArgumentException if the <code>portName</code> is
+     * null and none or more than one device were found, or the device
+     * corresponding to the name specified is not currently connected and
+     * {@link #allowDisconnect disconnected mode} is not enabled.
+     *
+     * @exception UnsupportedOperationException if the device revision is
+     * not supported by this driver.
+     */
+    protected void doInit(String portName) throws IOException {
+    
+        try {
+        
+            theServoController = findUSB(portName);
+        
+            UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
+            UsbInterface iface = cf.getUsbInterface((byte)0x00);
+            
+            if ( iface.isClaimed() ) {
+            
+                throw new IOException("Can't claim interface - already claimed");
+            }
+            
+            iface.claim();
+
+            // At this point, we've either flying by on the wings of
+            // IllegalArgumentException (null portName, none or more than
+            // one device), or the phidget serial contains the same value as
+            // the requested portName. However, in disconnected mode we can
+            // safely assume that the device portName is the same passed
+            // from the caller, and just assign it - we don't care if they
+            // made a typo
+            
+            UsbDeviceDescriptor dd = theServoController.getUsbDeviceDescriptor();
+            String serial = theServoController.getSerialNumberString();
+            String signature = getSignature(dd);
+            
+            // VT: NOTE: Serial number can be null. At least it
+            // is with the current firmware release for
+            // AdvancedServo. The implication is that there can
+            // be just one instance of AdvancedServo on the
+            // system.
+            
+            if ( serial == null ) {
+            
+                // FIXME: this is a hack, but unavoidable one
+                
+                serial = "null";
+            }
+            
+            protocolHandler = (UsbProtocolHandler)protocolHandlerMap.get(signature);
+            
+            if ( protocolHandler == null ) {
+            
+                throw new UnsupportedOperationException("Vendor/product ID '" + signature + "' is not supported");
+            }
+            
+            servoSet = new Servo[protocolHandler.getServoCount()];
+            
+            this.portName = serial;
+            connected = true;
+        
+        } catch ( Throwable t ) {
+        
+            exception(t);
+        
+            if ( isDisconnectAllowed() && (portName != null) ) {
+                
+                    // No big deal, let's just continue
+                    
+                    this.portName = portName;
+                    
+                    // FIXME: Think about better solution
+                    
+                    synchronized ( System.err ) {
+                    
+                        System.err.println("Working in the disconnected mode, cause:");
+                        t.printStackTrace();
+                    }
+                    
+                    return;
+            }
+            
+            // Too bad, we're not in the disconnected mode
+            
+            if ( t instanceof IOException ) {
+            
+                throw (IOException)t;
+            }
+            
+            throw (IOException)(new IOException().initCause(t));
+        }
+        
+        // VT: FIXME: Since right now the controller is write-only box and
+        // we can't get the current servo position, I'd better set them to a
+        // predefined position, otherwise they're going to stay where they
+        // were when we ordered a positioning last time, and this might
+        // wreak havoc on some calculations (in particular, timing coupled
+        // with listeners).
+        
+        // FIXME: set the servos to 0.5 now...
+        
+        for ( Iterator i = getServos(); i.hasNext(); ) {
+        
+            Servo s = (Servo)i.next();
+            
+            s.setPosition(0.5);
+        }
+    }
+    
+    public synchronized Meta getMeta() {
+    
+        checkInit();
+    
+        if ( protocolHandler == null ) {
+        
+            throw new IllegalStateException("Hardware not yet connected, try later");
+        }
+        
+        return protocolHandler.getMeta();
+    }
+
+    public String getPort() {
+    
+        checkInit();
+        
+        return portName;
+    }
+    
+    protected void checkInit() {
+    
+        // VT: NOTE: Checking for initialization is quite complicated in
+        // this case. Here are following scenarios:
+        //
+        // 1. Port name was given, device was not present at instantiation
+        // time.
+        //
+        // 2. Port name was not given, device was present and the only at
+        // instantiation time.
+        //
+        // In both cases, the portName is known either way. We don't handle
+        // the case when the portName is not known, and there were no
+        // devices detected at instantiation time.
+        //
+        // Now, the complications.
+        //
+        // This class, so far the only one, supports multiple hardware
+        // products with different capabilities. The only known feature of
+        // them is that they're all Phidgets. Therefore, the capabilities of
+        // the particular controller will not be known until the device is
+        // actually connected and recognized. Consequently, the protocol
+        // handler (and hence the metadata) will be created at that time,
+        // and the metadata will be available from that point on.
+        //
+        // Additional complication is that there is a possible case of a
+        // serial number clash between different kinds of Phidgets, but
+        // let's discount this case for a while - it seems unlikely. In
+        // other words, as soon as the Phidget is recognized for the first
+        // time, the protocol handler will be created, portName remembered,
+        // and the capabilities will be known from that point on.
+        
+        // VT: FIXME: PhidgetAdvancedServo doesn't return serial number -
+        // TUSB hack pending
+        
+        if ( protocolHandler == null && portName == null ) {
+        
+            // VT: FIXME: It might be a good idea to try to reinit the
+            // controller if portName is not null
+        
+            throw new IllegalStateException("Not initialized");
+        }
+    }
+    
+    public synchronized void reset() throws IOException {
+    
+        checkInit();
+        
+        if ( protocolHandler != null ) {
+        
+            protocolHandler.reset();
+        }
+    }
+    
+    public Servo getServo(String id) throws IOException {
+    
+        checkInit();
+        
+        try {
+        
+            int iID = Integer.parseInt(id);
+            
+            if ( iID < 0 || iID > protocolHandler.getServoCount() ) {
+            
+                throw new IllegalArgumentException("ID out of 0..." + protocolHandler.getServoCount() + " range: '" + id + "'");
+            }
+            
+            if ( servoSet[iID] == null ) {
+            
+                servoSet[iID] = createServo(iID);
+            }
+            
+            return servoSet[iID];
+            
+        } catch ( NumberFormatException nfex ) {
+        
+            throw new IllegalArgumentException("Not a number: '" + id + "'");
+        }
+    }
+    
+    /**
+     * Create the servo instance.
+     *
+     * This is a template method used to instantiate the proper servo
+     * implementation class.
+     *
+     * @param id Servo ID to create.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
+     */
+    protected Servo createServo(int id) throws IOException {
+    
+        // VT: NOTE: There is no sanity checking, I expect the author of the
+        // calling code to be sane - this is a protected method
+    
+        return protocolHandler.createServo(this, id);
+    }
+
+    /**
+     * @exception IllegalStateException if the controller wasn't previously
+     * initialized.
+     */
+    public Iterator getServos() throws IOException {
+    
+        checkInit();
+    
+        LinkedList servos = new LinkedList();
+        
+        for ( int idx = 0; idx < protocolHandler.getServoCount(); idx++ ) {
+        
+            servos.add(getServo(Integer.toString(idx)));
+        }
+        
+        return servos.iterator();
+    }
+    
     public final void usbDeviceAttached(UsbServicesEvent e) {
     
         try {
@@ -438,6 +776,19 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         public final Meta getMeta() {
         
             return meta;
+        }
+        
+        /**
+         * Whether a device is bootable.
+         *
+         * Generally, it's not the case, this is why the default
+         * implementation returning false is provided.
+         *
+         * @return true if the device is bootable.
+         */
+        public boolean isBootable() {
+        
+            return false;
         }
         
         /**

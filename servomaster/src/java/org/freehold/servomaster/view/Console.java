@@ -60,7 +60,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.9 2002-01-02 03:51:13 vtt Exp $
+ * @version $Id: Console.java,v 1.10 2002-01-04 01:19:26 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -123,7 +123,10 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
         
             if ( args.length < 2 ) {
             
-                System.err.println("Usage: ft_view <servo controller class name> <servo controller port name>");
+                System.err.println("Usage: <script> <servo controller class name> <servo controller port name>");
+                System.err.println("");
+                System.err.println("Example: ft_view org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
+                System.err.println("Example: java -jar servomaster.jar org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
                 System.exit(1);
             }
         
@@ -144,6 +147,8 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 
                 System.exit(1);
             }
+            
+            // VT: FIXME: Make this dependent on the controller metadata.
             
             controller.setSilentMode(true);
             

@@ -1,0 +1,115 @@
+<html>
+    <head>
+        <title>
+            
+            ServoMaster: Quick Start
+            
+        </title>
+    </head>
+    <body>
+    
+        <h1>ServoMaster: Quick Start</h1>
+        
+        <h2>Prerequisites</h2>
+        
+        <ul>
+        
+            <li> <a href="http://jakarta.apache.org/ant/">Jakarta Ant</a>,
+                 <code>--with-ANT</code> configure option. Minimum version
+                 required is 1.4.
+            
+            <li> Sun's <code>javac.jar</code> or <code>tools.jar</code>,
+                 <code>--with-JAVA_COMPILER</code> configure option. Examine
+                 the Ant documentation to find out where it fits.
+            
+            <li> <a href="http://xml.apache.org/xerces-j/">Apache
+                 Xerces-J</a>, <code>--with-XERCES</code> configure option. 
+                 Current version will suffice.
+                 
+             <li> For Linux boxes, Trent Jarvi's <a
+                  href="http://www.rxtx.org/">RxTx</a> - Java Communications
+                  API implementation.
+
+        </ul>
+        
+        <h2>Environment</h2>
+        
+        The ServoMaster is being developed on the Linux and Solaris boxes,
+        and I am not interested in building for Windows. However, it is
+        possible to build it on Windows using <a
+        href="http://www.cygwin.com/">Cygwin</a>, and of course it is
+        possible to use it on Windows as soon as you get the jar file (jar
+        distribution, along with <a
+        href="http://sourceforge.net/project/showfiles.php?group_id=34418">source
+        distribution</a>, is planned).
+        
+        <h2>Build</h2>
+        
+        Hardcore OpenSource people will find the build process comfortable -
+        it's simple <code>./configure && make all install</code>. However,
+        it is highly recommended to run <code>./configure --help</code>
+        first, because even though the <a
+        href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>
+        is used to adjust the build to the system, the tools used (Ant and
+        Xerces) do not have a standard location, thus it has to be
+        specified.
+        
+        <p>
+        
+        To avoid specifying configure options again and again, it is
+        recommended to use the <code>./configure-options</code> file to
+        specify them, one item per line. This is how mine looks:
+        
+        <pre>
+--with-ANT=/opt/java/jakarta/jakarta-ant-1.3/dist/lib/ant.jar
+--with-JAVA_COMPILER=/opt/java/jakarta/jakarta-tools/javac.jar
+--with-XERCES=/opt/java/jakarta/jakarta-ant/proposal/myrmidon/lib/xerces.jar
+        </pre>
+        
+        <h2>Running the result</h2>
+        
+        There is a class that serves as a testbed and a demo for the package
+        - <code>org.freehold.servomaster.view.Console</code>, and
+        <code>$prefix/bin/ft_view</code> shell script is a wrapper for it. 
+        It takes two parameters: the hardware driver class name, and the
+        driver-specific port name. It is completely hardware independent.
+        
+        <p>
+        
+        There is no dummy class implementing nonexistent controller that
+        doesn't require any hardware, however, the <a
+        href="FT639.html">FT639</a> controller the driver for which has been
+        already implemented doesn't provide any feedback, so it can be used
+        as a demo. The only requirement is that you specify a valid
+        unoccupied serial port ID, like this:
+        
+        <pre>
+        $prefix/bin/ft_view \
+                org.freehold.servomaster.device.impl.ft.FT639ServoController \
+                /dev/ttyS1
+        </pre>
+        
+        where <code>$prefix</code> is where you actually install the package.
+        
+        <p>
+        
+        That's it, you should be seeing the console right now.
+        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2002
+                    </font>
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

@@ -6,3 +6,4 @@ config.cache
 config.status
 Makefile
 configure-options
+servomaster*tar.gz

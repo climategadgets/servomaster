@@ -26,5 +26,10 @@ Also recommended is Jakarta Regexp, http://jakarta.apache.org/regexp/
 CONFIGURATION
 =============
 
-Use the Ant build properties file (${HOME}/.servomaster.properties}) to
-override the defaults.
+- Don't forget to run ./configure --help
+
+- Use the ./configure-options file to override the defaults for configure
+  script.
+
+- Use the Ant build properties file (${HOME}/.servomaster.properties}) to
+  override the defaults for Ant build.

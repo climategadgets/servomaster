@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.13 2004-10-13 07:31:02 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.14 2005-01-13 02:57:51 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -29,8 +29,8 @@ if test -f "${LOCAL_OPTIONS}" && test -z "${LOCAL_OPTIONS_PRESENT}" ; then
 fi
 
 VERSION_MAJOR="0"
-VERSION_MINOR="6"
-PATCHLEVEL="3"
+VERSION_MINOR="7"
+PATCHLEVEL="0"
 
 AC_SUBST(VERSION_MAJOR)dnl
 AC_SUBST(VERSION_MINOR)dnl
@@ -90,48 +90,48 @@ dnl AC_PROG_JAVATOOL(JAR,jar,[     Java Archiver])
 AC_PATH_JAVACLASS(JAVA_COMPILER,${JDK_HOME}/lib,sun.tools.javac.Main,[     Where to find the Jakarta javac jar file (http://jakarta.apache.org/)])
 AC_PATH_JAVACLASS(XERCES,/usr/share/java,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
 
-FT_ENABLED=false
+SERIAL_ENABLED=false
 
 AC_MSG_CHECKING(if FT639 is enabled)
 
-AC_ARG_ENABLE(ft639,
-[  --enable-ft639          Enable support for FT639 controller],
+AC_ARG_ENABLE(serial,
+[  --enable-serial         Enable support for serial controllers],
 [
     AC_MSG_RESULT(yes)
-    FT_ENABLED=true
+    SERIAL_ENABLED=true
     
 ],
 [
     AC_MSG_RESULT(no)
 ])
 
-AC_SUBST(FT_ENABLED)
+AC_SUBST(SERIAL_ENABLED)
 
-PHIDGET_ENABLED=false
+USB_ENABLED=false
 
-AC_MSG_CHECKING(if phidget is enabled)
+AC_MSG_CHECKING(if USB is enabled)
 
-AC_ARG_ENABLE(phidget,
-[  --enable-phidget        Enable support for Phidget controller family],
+AC_ARG_ENABLE(usb,
+[  --enable-usb            Enable support for USB controllers],
 [
     AC_MSG_RESULT(yes)
 
-    PHIDGET_ENABLED=true
+    USB_ENABLED=true
 ],
 [
     AC_MSG_RESULT(no)
 ])
 
-AC_SUBST(PHIDGET_ENABLED)
+AC_SUBST(USB_ENABLED)
 
-if ${TEST} "${FT_ENABLED}" = "false" && ${TEST} "${PHIDGET_ENABLED}" = "false" ; then
+if ${TEST} "${SERIAL_ENABLED}" = "false" && ${TEST} "${USB_ENABLED}" = "false" ; then
 
     AC_MSG_RESULT()
-    AC_MSG_RESULT([In order to build the project, at least one of --enable-ft639 and --enable-phidget])
+    AC_MSG_RESULT([In order to build the project, at least one of --enable-serial and --enable-usb])
     AC_MSG_RESULT([options have to be specified])
     AC_MSG_RESULT()
     
-    AC_MSG_ERROR([Please specify --enable-ft639, --enable-phidget or both])
+    AC_MSG_ERROR([Please specify --enable-serial, --enable-usb or both])
 fi
 
 TARGET_CLASSPATH=`cd ${srcdir} && pwd`/src/java

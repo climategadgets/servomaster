@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.22 2003-07-03 18:18:29 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.23 2004-02-04 00:17:35 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -91,6 +91,15 @@ public class PhidgetServoController extends AbstractServoController {
     public PhidgetServoController() {
     
         fillProtocolHandlerMap();
+        
+        if ( isOnly() ) {
+        
+            // OK, we've been subclassed to support just one specific kind
+            // of a device. Good.
+            
+            protocolHandler = (ProtocolHandler)protocolHandlerMap.values().toArray()[0];
+            servoSet = new Servo[protocolHandler.getServoCount()];
+        }
     }
     
     /**

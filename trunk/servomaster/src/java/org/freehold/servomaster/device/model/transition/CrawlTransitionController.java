@@ -10,7 +10,7 @@ import org.freehold.servomaster.device.model.TransitionToken;
  * to the timing.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: CrawlTransitionController.java,v 1.2 2002-01-03 02:56:19 vtt Exp $
+ * @version $Id: CrawlTransitionController.java,v 1.3 2002-07-09 07:39:11 vtt Exp $
  */
 public class CrawlTransitionController implements TransitionController {
 
@@ -45,19 +45,32 @@ public class CrawlTransitionController implements TransitionController {
                 
                 if ( diff <= step/2 ) {
                 
+                    // We came close enough
+                    
                     token.stop();
                     return;
                 }
                 
+                double newPosition = 0;
+                
                 if ( actualPosition > targetPosition ) {
                 
-                    token.supply(actualPosition - step);
+                    newPosition = actualPosition - step;
                     
                 } else {
                 
-                    token.supply(actualPosition + step);
+                    newPosition = actualPosition + step;
                 }
-            
+                
+                if ( newPosition < 0.0 || newPosition > 1.0 ) {
+                
+                    // We hit the limit
+                    
+                    token.stop();
+                    return;
+                }
+                
+                token.supply(newPosition);
             }
         
         } catch ( IllegalStateException isex ) {

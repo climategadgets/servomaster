@@ -125,25 +125,11 @@ AC_DEFUN(AC_PATH_JDK,
     	do
     	    
     	    for JAVA_VERSION in \
+    	        1.4.2_03 \
     	        1.4.1_01 \
     	        1.4.1 \
     	        1.4.0_01 \
-    	        1.4.0 \
-    	        1.3.1_02 \
-    	        1.3.1 \
-    	        1.3 \
-            	1.2.2 \
-            	1.2.1 \
-            	1.2 \
-                1.1.8 \
-            	1.1.7 \
-            	1.1.6 \
-            	1.1.5 \
-            	1.1.4 \
-            	1.1.3 \
-            	1.1.2 \
-            	1.1.1 \
-            	1.1
+    	        1.4.0
                 do
                     if ${TEST} -d "${JDK_PREFIX}/${VARIANT}${JAVA_VERSION}/bin" \
                     && ${TEST} -d "${JDK_PREFIX}/${VARIANT}${JAVA_VERSION}/include" ; then

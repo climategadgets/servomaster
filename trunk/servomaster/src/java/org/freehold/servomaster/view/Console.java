@@ -64,7 +64,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.16 2002-09-30 00:31:41 vtt Exp $
+ * @version $Id: Console.java,v 1.17 2003-01-06 05:25:12 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 
@@ -144,7 +144,7 @@ public class Console implements ActionListener, WindowListener {
             
                 System.err.println("Usage: <script> <servo controller class name> [<servo controller port name>]");
                 System.err.println("");
-                System.err.println("Example: ft_view org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
+                System.err.println("Example: console org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
                 System.err.println("Example: java -jar servomaster.jar org.freehold.servomaster.device.impl.phidget.PhidgetServoController");
                 System.exit(1);
             }

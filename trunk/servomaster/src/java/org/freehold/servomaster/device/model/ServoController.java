@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.9 2002-03-09 05:23:16 vtt Exp $
+ * @version $Id: ServoController.java,v 1.10 2002-09-13 20:03:51 vtt Exp $
  */
 public interface ServoController extends SilentDevice {
 
@@ -123,6 +123,9 @@ public interface ServoController extends SilentDevice {
      *
      * @exception UnsupportedOperationException if the particular
      * implementation doesn't support the capabilities discovery.
+     *
+     * @deprecated Use {@link Meta Meta} methods to obtain and change the
+     * metadata instead.
      */
     public ServoControllerMetaData getMetaData();
     

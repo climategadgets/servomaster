@@ -6,6 +6,7 @@
 
 TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
 @prefix@/share/java/@PACKAGE@-@VERSION@.jar:\
-@JUSB_CLASSES@
+@JUSB_CORE_CLASSES@:\
+@JUSB_PLATFORM_CLASSES@
 
 LD_LIBRARY_PATH=@JUSB_LIB@:$LD_LIBRARY_PATH @JAVAX@ org.freehold.servomaster.view.Console $*

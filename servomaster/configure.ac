@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.7 2004-02-04 06:11:37 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.8 2004-02-11 00:45:23 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -75,6 +75,11 @@ fi
 
 AC_SUBST(PATH_SEPARATOR)
 
+AC_MSG_CHECKING(platform)
+PLATFORM=`uname -s|tr "A-Z" "a-z"`
+AC_SUBST(PLATFORM)
+AC_MSG_RESULT(${PLATFORM})
+
 AC_PROG_JAVATOOL(JAVA,java,[    Java runtime])
 dnl AC_PROG_JAVATOOL(JAVAC,javac,[   Java compiler])
 AC_PROG_JAVATOOL(JAVADOC,javadoc,[ Java documentation compiler])
@@ -129,8 +134,15 @@ AC_ARG_ENABLE(phidget,
         
         dnl Verify the jar file location
         
-        AC_PATH_JAVACLASS(JUSB,${withval},usb.core.Bus,[    Where to find the jUSB jar file (http://jusb.sourceforge.net/)])
+        AC_PATH_JAVACLASS(JUSB_CORE,${withval},usb.core.Bus,[    Where to find the jUSB core jar file (http://jusb.sourceforge.net/)])
+        AC_PATH_JAVACLASS(JUSB_PLATFORM,${withval},usb.${PLATFORM}.DeviceImpl,[    Where to find the jUSB platform jar file (http://jusb.sourceforge.net/)])
         
+    ],
+    [
+        JUSB_LIB=/usr/lib
+        AC_SUBST(JUSB_LIB)
+        AC_PATH_JAVACLASS(JUSB_CORE,/usr/share/java,usb.core.Bus,[    Where to find the jUSB core jar file (http://jusb.sourceforge.net/)])
+        AC_PATH_JAVACLASS(JUSB_PLATFORM,/usr/share/java,usb.${PLATFORM}.DeviceImpl,[    Where to find the jUSB platform jar file (http://jusb.sourceforge.net/)])
     ])
     
     PHIDGET_ENABLED=true

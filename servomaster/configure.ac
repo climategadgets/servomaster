@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.8 2004-02-11 00:45:23 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.9 2004-05-25 06:07:17 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -45,7 +45,7 @@ AC_SUBST(VERSION)dnl
 AC_MSG_RESULT(Configuring ${PACKAGE}-${VERSION})
 
 AC_PREFIX_DEFAULT(/usr/local/servomaster)dnl
-AC_PREREQ(2.53)dnl
+AC_PREREQ(2.57)dnl
 AC_CONFIG_AUX_DIR(src/scripts/install)dnl
 
 AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})dnl

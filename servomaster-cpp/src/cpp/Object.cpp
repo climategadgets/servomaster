@@ -1,3 +1,4 @@
+// $Id: Object.cpp,v 1.3 2002-09-13 08:37:53 vtt Exp $
 #include <Object.h>
 #include <stdio.h>
 #include <stdexcept>

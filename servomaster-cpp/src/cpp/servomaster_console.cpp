@@ -1,3 +1,4 @@
+// $Id: servomaster_console.cpp,v 1.5 2002-09-13 08:37:53 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stddef.h>
 #include <stdio.h>

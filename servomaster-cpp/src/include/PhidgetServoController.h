@@ -1,3 +1,4 @@
+// $Id: PhidgetServoController.h,v 1.6 2002-09-13 08:37:53 vtt Exp $
 #ifndef PHIDGETSERVOCONTROLLER_H
 #define PHIDGETSERVOCONTROLLER_H
 

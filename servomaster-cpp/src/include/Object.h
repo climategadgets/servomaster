@@ -1,3 +1,4 @@
+// $Id: Object.h,v 1.3 2002-09-13 08:37:53 vtt Exp $
 #ifndef OBJECT_H
 #define OBJECT_H
 

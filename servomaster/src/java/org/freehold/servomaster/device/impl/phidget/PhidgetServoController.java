@@ -46,7 +46,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.30 2004-10-13 05:16:29 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.31 2004-10-13 06:28:07 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
@@ -61,10 +61,10 @@ public class PhidgetServoController extends AbstractUsbServoController {
     
     protected void fillProtocolHandlerMap() {
     
-        protocolHandlerMap.put("6c2:38", new ProtocolHandler0x38());
-        protocolHandlerMap.put("6c2:39", new ProtocolHandler0x39());
-        protocolHandlerMap.put("6c2:3b", new ProtocolHandler0x3B());
-        protocolHandlerMap.put("6c2:60", new ProtocolHandler0x60());
+        registerHandler("6c2:38", new ProtocolHandler0x38());
+        registerHandler("6c2:39", new ProtocolHandler0x39());
+        registerHandler("6c2:3b", new ProtocolHandler0x3B());
+        registerHandler("6c2:60", new ProtocolHandler0x60());
     }
     
 
@@ -551,7 +551,12 @@ public class PhidgetServoController extends AbstractUsbServoController {
         
         public void reset() {
         
-            // FIXME
+            // This will cause a reinitialization
+            
+            // VT: FIXME: Hmm... What about the interface that is already
+            // claimed?
+        
+            out = null;
         }
     
         public int getServoCount() {
@@ -589,6 +594,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
         
             if ( out == null ) {
             
+                if ( theServoController == null ) {
+                
+                    throw new IOException("Null theServoController?");
+                }
+            
                 UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
                 UsbInterface iface = cf.getUsbInterface((byte)0x00);
                 
@@ -625,7 +635,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 }
                 
                 out = endpoint.getUsbPipe();
-                out.open();
+                
+                if ( !out.isOpen() ) {
+                
+                    out.open();
+                }
             }
         }
         

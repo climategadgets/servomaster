@@ -1,4 +1,4 @@
-// $Id: Servo.cpp,v 1.6 2003-08-30 00:04:09 vtt Exp $
+// $Id: Servo.cpp,v 1.7 2003-09-03 05:35:32 vtt Exp $
 #include <Servo.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -8,12 +8,12 @@ namespace servomaster {
 
     Servo::Servo(ServoController *servoController, Servo *target) :
         position(0),
-        actualPosition(0),
         enabled(true),
         servoController(servoController),
         target(target),
         transitionController(NULL),
-        transitionDriver(NULL) {
+        transitionDriver(NULL),
+        actualPosition(0) {
     
     }
     

@@ -1,4 +1,4 @@
-// $Id: Object.cpp,v 1.4 2003-08-30 00:04:09 vtt Exp $
+// $Id: Object.cpp,v 1.5 2003-09-03 05:35:32 vtt Exp $
 #include <Object.h>
 #include <stdio.h>
 #include <stdexcept>
@@ -11,14 +11,14 @@ namespace servomaster {
     
         instanceCount++;
     
-        printf("Object: %d created %X\n", instanceCount, this);
+        printf("Object: %ld created %X\n", instanceCount, (unsigned int)this);
     }
     
     Object::~Object() {
     
         instanceCount--;
         
-        printf("Object: destroyed %X, %d left\n", this, instanceCount);
+        printf("Object: destroyed %X, %ld left\n", (unsigned int)this, instanceCount);
     }
     
     void Object::checkInit() {

@@ -62,7 +62,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.13 2002-03-09 07:05:39 vtt Exp $
+ * @version $Id: Console.java,v 1.14 2002-03-16 02:35:18 vtt Exp $
  */
 public class Console implements ActionListener {
 
@@ -630,7 +630,7 @@ public class Console implements ActionListener {
                 current = (current + 1) % max;
                 trailer = ((current - 1) + max) % max;
                 
-                Thread.sleep(500);
+                Thread.sleep(800);
             }
         }
     }

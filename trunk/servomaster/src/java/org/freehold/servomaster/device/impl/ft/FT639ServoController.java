@@ -82,7 +82,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.29 2003-01-06 19:32:59 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.30 2003-01-06 19:52:13 vtt Exp $
  */
 public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
@@ -690,9 +690,17 @@ public class FT639ServoController extends AbstractServoController implements FT6
         
         public Meta getMeta() {
         
-            // VT: FIXME
+            return new FT639ServoMeta();
+        }
+
+        protected class FT639ServoMeta extends AbstractMeta {
+        
+            public FT639ServoMeta() {
             
-            throw new UnsupportedOperationException("Capabilities discovery is not supported");
+                // VT: FIXME: Check if there are other properties
+                
+                properties.put("servo/precision", "256");
+            }
         }
     }
 

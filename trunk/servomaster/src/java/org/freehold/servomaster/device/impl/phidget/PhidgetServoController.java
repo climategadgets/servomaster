@@ -3,7 +3,9 @@ package org.freehold.servomaster.device.impl.phidget;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import usb.core.Bus;
@@ -30,14 +32,43 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.4 2002-03-13 04:51:43 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.5 2002-05-13 03:20:05 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
     /**
+     * The revision to protocol handler map.
+     *
+     * <p>
+     *
+     * The key is the revision, the value is the protocol handler. This is a
+     * little bit of overhead, but adds flexibility.
+     *
+     * <p>
+     *
+     * At the instantiation time, the protocol handlers for all known
+     * hardware revisions are instantiated and put into this map.
+     *
+     * <p>
+     *
+     * At the {@link #init init()} time, the hardware revision is looked up,
+     * the proper protocol handler resolved and assigned to the {@link
+     * #protocolHandler instance protocol handler}.
+     */
+    private Map protocolHandlerMap = new HashMap();
+     
+    /**
      * The USB device object corresponding to the servo controller.
      */
     private Device thePhidgetServo;
+    
+    /**
+     * The protocol handler taking care of this specific instance.
+     *
+     * @see #init
+     *
+     */
+    private ProtocolHandler protocolHandler;
     
     /**
      * Physical servo representation.
@@ -71,6 +102,7 @@ public class PhidgetServoController extends AbstractServoController {
      */
     public PhidgetServoController() {
     
+        protocolHandlerMap.put("0.03", new ProtocolHandler003());
     }
     
     /**
@@ -126,6 +158,9 @@ public class PhidgetServoController extends AbstractServoController {
      * null and none or more than one device were found, or the device
      * corresponding to the name specified is not currently connected and
      * {@link #allowDisconnect disconnected mode} is not enabled.
+     *
+     * @exception UnsupportedOperationException if the device revision is
+     * not supported by this driver.
      */
     public synchronized void init(String portName) throws IOException {
     
@@ -146,8 +181,6 @@ public class PhidgetServoController extends AbstractServoController {
             // from the caller, and just assign it - we don't care if they
             // made a typo
             
-            // FIXME: Get the serial out of the phidget
-            
             int languageSet[] = ControlMessage.getLanguages(thePhidgetServo);
             int defaultLanguage = 0;
             
@@ -158,6 +191,14 @@ public class PhidgetServoController extends AbstractServoController {
             
             DeviceDescriptor dd = thePhidgetServo.getDeviceDescriptor();
             String serial = dd.getSerial(defaultLanguage);
+            String revision = dd.getDeviceId();
+            
+            protocolHandler = (ProtocolHandler)protocolHandlerMap.get(revision);
+            
+            if ( protocolHandler == null ) {
+            
+                throw new UnsupportedOperationException("Revision '" + revision + "' is not supported");
+            }
             
             this.portName = serial;
             connected = true;
@@ -503,6 +544,9 @@ public class PhidgetServoController extends AbstractServoController {
     /**
      * Compose the USB packet and stuff it down the USB controller.
      *
+     * @exception IOException if there was an I/O error talking to the
+     * controller.
+     *
      * @see #servoPosition
      * @see #sent
      * @see #bufferPosition
@@ -530,24 +574,7 @@ public class PhidgetServoController extends AbstractServoController {
             // If we've found the phidget, we can get to composing the
             // buffer, otherwise it would've been waste of time
             
-            byte buffer[] = new byte[6];
-            
-            // VT: FIXME: Who knows how does the compiler implement this stuff,
-            // it might be worth it to replace the division and multiplication
-            // with the right and left shift.
-            
-            buffer[0]  = (byte)(servoPosition[0] % 256);
-            buffer[1]  = (byte)(servoPosition[0] / 256);
-            
-            buffer[2]  = (byte)(servoPosition[1] % 256);
-            buffer[1] |= (byte)((servoPosition[1] / 256) * 16);
-            
-            buffer[3]  = (byte)(servoPosition[2] % 256);
-            buffer[4]  = (byte)(servoPosition[2] / 256);
-            
-            buffer[5]  = (byte)(servoPosition[3] % 256);
-            buffer[4] |= (byte)((servoPosition[3] / 256) * 16);
-            
+            byte buffer[] = protocolHandler.composeBuffer();
             send(buffer);
             
             // If there was an IOException sending the message, the flag is not
@@ -781,6 +808,61 @@ public class PhidgetServoController extends AbstractServoController {
             
                 _exception(ioex);
             }
+        }
+    }
+    
+    /**
+     * An abstraction for the object handling the communications with the
+     * arbitrary hardware revision of the PhidgetServo controller.
+     *
+     * <p>
+     *
+     * For every hardware revision, there will be a separate protocol
+     * handler.
+     */
+    protected abstract class ProtocolHandler {
+    
+        /**
+         * Compose the USB packet.
+         *
+         * @return A buffer that represents the positioning command for the
+         * hardware.
+         */
+        abstract public byte[] composeBuffer();
+    }
+    
+    /**
+     * Protocol handler for PhidgetServo revision 0.03.
+     */
+    protected class ProtocolHandler003 extends ProtocolHandler {
+    
+        byte buffer[] = new byte[6];
+
+        /**
+         * Compose the USB packet.
+         *
+         * @return A buffer that represents the positioning command for the
+         * hardware.
+         */
+        public byte[] composeBuffer() {
+        
+            // VT: FIXME: Who knows how does the compiler implement this stuff,
+            // it might be worth it to replace the division and multiplication
+            // with the right and left shift.
+            
+            buffer[0]  = (byte)(servoPosition[0] % 256);
+            buffer[1]  = (byte)(servoPosition[0] / 256);
+            
+            buffer[2]  = (byte)(servoPosition[1] % 256);
+            buffer[1] |= (byte)((servoPosition[1] / 256) * 16);
+            
+            buffer[3]  = (byte)(servoPosition[2] % 256);
+            buffer[4]  = (byte)(servoPosition[2] / 256);
+            
+            buffer[5]  = (byte)(servoPosition[3] % 256);
+            buffer[4] |= (byte)((servoPosition[3] / 256) * 16);
+            
+            return buffer;
         }
     }
 }

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.29 2005-01-13 06:34:53 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.30 2005-01-13 23:14:25 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -77,7 +77,9 @@
       -->
       
     <property name="model.build.src" value="../build/src/model"/>
+    <property name="serial.build.src" value="../build/src/serial"/>
     <property name="ft639.build.src" value="../build/src/ft639"/>
+    <property name="seetron.build.src" value="../build/src/seetron"/>
     <property name="usb.build.src" value="../build/src/usb"/>
     <property name="phidget.build.src" value="../build/src/phidget"/>
     <property name="pololu.build.src" value="../build/src/pololu"/>
@@ -202,11 +204,33 @@
     
     <!--
     
+        Serial controller abstractions
+        
+      -->
+    
+    <target name="serial" depends="model,JavaCOMM_enable" if="serial.enabled.true">
+    
+        <copy todir="${serial.build.src}/org/freehold/servomaster/device/impl/serial">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster/device/impl/serial">
+            
+                <include name="AbstractSerialServoController.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${serial.build.src}" destdir="${build.dir}"/>
+
+    </target>
+
+    <!--
+    
         The classes pertinent to FerretTronics FT639
         
       -->
 
-    <target name="ft639" depends="model,JavaCOMM_enable" if="serial.enabled.true">
+    <target name="ft639" depends="serial,JavaCOMM_enable" if="serial.enabled.true">
     
         <copy todir="${ft639.build.src}/org/freehold/servomaster">
         

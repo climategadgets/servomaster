@@ -1,17 +1,11 @@
 package org.freehold.servomaster.device.impl.ft;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Vector;
 
-import javax.comm.CommPortIdentifier;
-import javax.comm.PortInUseException;
-import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.Servo;
@@ -19,10 +13,10 @@ import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.AbstractServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
+import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
 
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
@@ -82,35 +76,16 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.31 2003-06-08 01:25:11 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.32 2005-01-13 23:14:26 vtt Exp $
  */
-public class FT639ServoController extends AbstractServoController implements FT639Constants {
+public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
-    /**
-     * Open timeout.
-     *
-     * <p>
-     *
-     * Wait this much trying to open the serial port.
-     */
-    public static final int OPEN_TIMEOUT = 5000;
-    
     /**
      * Physical servo representation.
      *
      * There is just up to 5 servos that can be connected to this device.
      */
     private Servo servoSet[] = new Servo[5];
-    
-    /**
-     * The serial port.
-     */
-    private SerialPort port = null;
-    
-    /**
-     * The serial port output stream.
-     */
-    private OutputStream serialOut;
     
     /**
      * Controller mode.
@@ -185,79 +160,6 @@ public class FT639ServoController extends AbstractServoController implements FT6
         init(portName);
     }
     
-    /**
-     * Initialize the controller.
-     *
-     * @param portName Serial port name recognized by <a
-     * href="http://java.sun.com/products/javacomm/" target="_top">Java
-     * Communications API</a>.
-     *
-     * @exception IllegalStateException if the controller has already been initialized.
-     */
-    protected void doInit(String portName) throws IOException {
-    
-        this.portName = portName;
-        
-        if ( this.portName == null ) {
-        
-            throw new IllegalArgumentException("null portName is invalid: this controller doesn't support automated discovery");
-        }
-
-        try {
-        
-            // This is a stupid way to do it, but oh well, "release early"
-    
-            Vector portsTried = new Vector();
-            
-            for ( Enumeration ports = CommPortIdentifier.getPortIdentifiers(); ports.hasMoreElements(); ) {
-            
-                CommPortIdentifier id = (CommPortIdentifier)ports.nextElement();
-                
-                // In case we fail, we'd like to tell the caller what's
-                // available
-                
-                portsTried.addElement(id.getName());
-                
-                if ( id.getPortType() == CommPortIdentifier.PORT_SERIAL ) {
-                
-                    if ( id.getName().equals(portName) ) {
-                    
-                        try {
-                        
-                            port = (SerialPort)id.open(getClass().getName(), OPEN_TIMEOUT);
-                            
-                        } catch ( PortInUseException piuex ) {
-                        
-                            throw new IOException("Port in use: " + piuex.toString());
-                        }
-                        
-                        break;
-                    }
-                }
-            }
-            
-            if ( port == null ) {
-            
-                throw new IllegalArgumentException("No suitable port found, tried: " + portsTried);
-            }
-            
-            serialOut = port.getOutputStream();
-            port.setSerialPortParams(2400,
-                                     SerialPort.DATABITS_8,
-                                     SerialPort.STOPBITS_1,
-                                     SerialPort.PARITY_NONE);
-
-        } catch ( UnsupportedCommOperationException ucoex ) {
-        
-            // VT: FIXME: Bastards, there's no nested exception until JDK
-            // 1.4...
-        
-            throw new IOException("Unsupported comm operation: " + ucoex.toString());
-        }
-        
-        reset();
-    }
-
     /**
      * Enable the long throw for the servos.
      *
@@ -542,21 +444,6 @@ public class FT639ServoController extends AbstractServoController implements FT6
         }
         
         return meta;
-    }
-    
-    public String getPort() {
-    
-        checkInit();
-        
-        return portName;
-    }
-    
-    protected void checkInit() {
-
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
     }
     
     public boolean isConnected() {

@@ -8,3 +8,4 @@ Makefile
 configure-options
 *tar.gz
 libtool
+auto*cache

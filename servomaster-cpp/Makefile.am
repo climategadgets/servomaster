@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.2 2002-09-12 00:38:47 vtt Exp $
+## $Id: Makefile.am,v 1.3 2003-08-29 23:57:19 vtt Exp $
 
 SUBDIRS = src
 EXTRA_DIST = bootstrap indent.rules src/scripts/install/* src/include/*h
@@ -56,10 +56,9 @@ rpm: dist
 	    exit 1; \
 	fi
 	
-	# VT: FIXME: It may be a good idea to check other dependencies
-	# required for a *complete* RPM build, such as Doxygen, and refuse
-	# to build the RPM, unless something like --enable-lazy-deps is
-	# provided
+# VT: FIXME: It may be a good idea to check other dependencies required for
+# a *complete* RPM build, such as Doxygen, and refuse to build the RPM,
+# unless something like --enable-lazy-deps is provided
 	
 	cd src/rpm && ${MAKE} @PACKAGE@.spec
 	@LN_S@ -f `pwd`/src/rpm/@PACKAGE@.spec /usr/src/redhat/SPECS/@PACKAGE@.spec

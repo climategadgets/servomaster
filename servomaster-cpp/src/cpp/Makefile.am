@@ -11,7 +11,7 @@ MODEL_SOURCE = Object.cpp \
 #               ServoControllerMetaData.cpp \
 #               ServoListener.cpp \
 #               ServoMetaData.cpp \
-#               SilentDevice.cpp \
+#               SilentDevice.cpp
 
 PHIDGET_SOURCE = PhidgetServoController.cpp
 

@@ -4,10 +4,17 @@ package org.freehold.servomaster.device.model;
  * Provides the information about the servo.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoMetaData.java,v 1.1 2001-12-14 21:58:12 vtt Exp $
+ * @version $Id: ServoMetaData.java,v 1.2 2001-12-14 22:08:09 vtt Exp $
  */
 public interface ServoMetaData {
 
+    /**
+     * Get the manufacturer URL.
+     *
+     * @return The manufacturer URL as string.
+     */
+    public String getManufacturerURL();
+    
     /**
      * Get the voltage that has to be applied to the servo to provide the
      * advertised {@link #getTorque torque} and {@link #getSpeed speed}.

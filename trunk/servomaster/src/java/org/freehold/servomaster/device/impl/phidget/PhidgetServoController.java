@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.13 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.14 2002-12-31 06:09:07 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -777,11 +777,22 @@ public class PhidgetServoController extends AbstractServoController {
         /**
          * Set the servo position.
          *
+         * <p>
+         *
+         * <strong>NOTE:</strong> originally this method was named
+         * <code>setActualPosition()</code>. This worked all right with JDK
+         * 1.4.1, however, later it turned out that JDK 1.3.1 was not able
+         * to properly resolve the names and thought that this method
+         * belongs to <code>PhidgetServo</code>, though the signature was
+         * different. The name was changed to satisfy JDK 1.3.1, but this
+         * points out JDK 1.3.1's deficiency in handling the inner classes. 
+         * Caveat emptor. You better upgrade.
+         *
          * @param id Servo number.
          *
          * @param position Desired position.
          */
-        abstract public void setActualPosition(int id, double position) throws IOException;
+        abstract public void setPosition(int id, double position) throws IOException;
         
         /**
          * Silence the controller.
@@ -851,7 +862,7 @@ public class PhidgetServoController extends AbstractServoController {
                 checkInit();
                 checkPosition(position);
                 
-                protocolHandler.setActualPosition(id, position);
+                protocolHandler.setPosition(id, position);
                 
                 this.actualPosition = position;
                 actualPositionChanged();
@@ -940,7 +951,7 @@ public class PhidgetServoController extends AbstractServoController {
             return buffer;
         }
         
-        public void setActualPosition(int id, double position) throws IOException {
+        public void setPosition(int id, double position) throws IOException {
         
             // Tough stuff, we're dealing with timing now...
             
@@ -1238,7 +1249,7 @@ public class PhidgetServoController extends AbstractServoController {
             return 8;
         }
         
-        public synchronized void setActualPosition(int id, double position) throws IOException {
+        public synchronized void setPosition(int id, double position) throws IOException {
         
             if ( servoSet[id] == null ) {
             

@@ -5,6 +5,7 @@ import java.io.OutputStream;
 
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -74,7 +75,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.2 2001-09-01 03:32:44 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.3 2001-09-01 21:47:23 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -313,6 +314,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
             throw new IllegalArgumentException("Not a number: '" + id + "'");
         }
     
+    }
+    
+    public Iterator getServos() throws IOException {
+    
+        LinkedList servos = new LinkedList();
+        
+        for ( int idx = 0; idx < 5; idx++ ) {
+        
+            servos.add(getServo(Integer.toString(idx)));
+        }
+        
+        return servos.iterator();
     }
     
     /**
@@ -665,6 +678,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
         private int actualPosition;
         
         /**
+         * Enabled mode.
+         */
+        private boolean enabled = true;
+        
+        /**
          * The smoother thread.
          *
          * This thread is created when the {@link #setPosition
@@ -695,7 +713,17 @@ public class FT639ServoController implements ServoController, FT639Constants {
             setPosition(255 >> 1, false, 0);
         }
         
+        public void setEnabled(boolean enabled) {
+        
+            this.enabled = enabled;
+        }
+        
         public synchronized void setPosition(int position, boolean smooth, long interval) throws IOException {
+        
+            if ( !enabled ) {
+            
+                throw new IllegalStateException("Not enabled");
+            }
         
             this.position = position;
 
@@ -761,10 +789,20 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         public void setRange(int range) {
         
+            if ( !enabled ) {
+            
+                throw new IllegalStateException("Not enabled");
+            }
+        
             throw new Error("Not Implemented");
         }
         
         public void setTrim(int trim) {
+        
+            if ( !enabled ) {
+            
+                throw new IllegalStateException("Not enabled");
+            }
         
             throw new Error("Not Implemented");
         }

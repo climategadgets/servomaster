@@ -171,11 +171,26 @@
                                 information about the servo controller (or a
                                 servo), and, sometimes, adjust its behavior. 
                                 The reason for existence of the metadata, as
-                                opposed to the API, is that it is not
-                                possible to foresee what features and/or
-                                properties may appear in the hardware of
-                                tomorrow, and this project's life is planned
-                                to be quite long.
+                                opposed to fixed method set API, is that it
+                                is not possible to foresee what features
+                                and/or properties may appear in the hardware
+                                of tomorrow, and this project's life is
+                                planned to be quite long.
+                                
+                                <p>
+                                
+                                Apparent overhead (string manipulation vs.
+                                direct method call) is in fact irrelevant
+                                because the calls supported by the metadata
+                                access mechanism are infrequent (how many
+                                times per second do you have to find out the
+                                controller's manufacturer's URL? Or set the
+                                terminal positions for the servo?), however,
+                                this mechanism offers great flexibility
+                                keeping the implementation overhead to bare
+                                minimum (just a glimpse: dictionary lookup
+                                plus an anonymous class serving as a request
+                                handler).
                                 
                                 <p>
                                 

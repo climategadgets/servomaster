@@ -26,7 +26,7 @@ servomaster_console_SOURCES = servomaster_console.cpp
 servomaster_console_LDADD = libservomaster.la
 servomaster_console_DEPENDENCIES = libservomaster.la
 
-CXXFLAGS = -I../include
+CXXFLAGS = -I../include -fexceptions -Wall
 
 clean-generic:
 

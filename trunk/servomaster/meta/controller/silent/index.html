@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <title>
+            ServoMaster: Metadata: controller/silent
+        </title>
+        <meta name="description"
+              content="ServoMaster: platform independent servo controller driver">
+        <meta name="keywords"
+              content="ServoMaster platform independent servo controller driver FT639 Phidget Java Linux">
+    </head>
+    <body bgcolor="#ffffff" link="#334455">
+        <img src="../../../docs/images/servos.jpg"
+             alt="Picture of servos"
+             align=left
+             width=7%
+             height=7%>
+                            
+        <A href="http://sourceforge.net">
+            <IMG src="http://sourceforge.net/sflogo.php?group_id=34418&amp;type=5"
+                 width="210"
+                 height="62"
+                 border="0"
+                 alt="SourceForge Logo"
+                 align="right">
+        </A>
+        
+        <h1>
+            <a href="../index.html">ServoMaster</a>: Metadata: <code>controller/silent</code>
+        </h1>
+        
+        <hr>
+        
+        <code>controller/silent</code> <i>feature</i> is true if the
+        hardware is able to shut off the servos.
+        
+        <br>
+        
+        <code>controller/silent</code> <i>property</i> contains the
+        currently set shutoff timeout.
+        
+        <p>
+        
+        Servo shutoff is useful for applications where long periods of
+        inactivity may happen - the servo wear and energy consumption are
+        greatly reduced. An example may be found <a
+        href="http://diy-zoning.sourceforge.net">here</a>.
+        
+        <p>
+        
+        Please note that some controllers (like <a
+        href="../../../docs/FT639.html">FT639</a>) are able to support the
+        shutoff on per-controller basis (all the servos are shut off at the
+        same time), some (like <a
+        href="../../../docs/USB_Phidget.html">PhidgetServo</a>) are able to
+        support the shutoff on per-servo basis (see <a
+        href="../../servo/silent/index.html"><code>servo/silent</code></a>,
+        and some are not able to do it at all.
+        
+        <p>
+        
+        Use the <a
+        href="../../servo/silent/index.html"><code>servo/silent</code></a>
+        feature and property to set the shutoff timeout for the controllers
+        that support per-servo control. For those, the value set with
+        <code>controller/silent</code> will merely be a default.
+
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="index.html">ServoMaster: Home</a>
+                    </font>                                       
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2002
+                    </font>
+                </td>
+            </tr>
+        </table>
+
+    </body>
+</html>

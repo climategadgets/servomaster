@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.2 2001-09-01 17:59:56 vtt Exp $
+## $Id: Makefile.am,v 1.3 2001-09-03 08:24:35 vtt Exp $
 
 SUBDIRS = src build
 
@@ -8,6 +8,7 @@ EXTRA_DIST = INSTALL-configure \
              docs/FAQ.html \
              docs/FT639.html \
              docs/future.html \
+             docs/ideal_controller.html \
              docs/index.html \
              docs/SSC/ssc.pdf \
              docs/images/servos.jpg

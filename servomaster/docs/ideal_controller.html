@@ -1,0 +1,83 @@
+<html>
+    <head>
+        <title>
+            
+            ServoMaster: A Dream About the Ideal Servo Controller
+            
+        </title>
+    </head>
+    <body>
+    
+        <h1>ServoMaster: A Dream About The Ideal Servo Controller</h1>
+    
+        An ideal servo controller should be able to do at least this:
+        
+        <ul>
+            
+            <li> Report the status.
+            
+            <li> Support the capabilities discovery. Of course, on the
+                 hardware level the servo can't really tell much about
+                 itself, but the abstraction should support it.
+                 
+            <li> Implication: a database of servos in existence would not
+                 take much space, but will be very useful.
+            
+            <li> It should be possible to control the parameters for each
+                 servo separately (in other words, the servo abstraction
+                 should be configurable).
+            
+            <li> It should be possible to preset the minimum and maximum
+                 angle for the servo. Implied: the pulse length. The limits
+                 may be defined by the servo construction and/or mechanical
+                 layout of the apparatus in which the servo is used.
+                 
+            <li> It should be possible to preset the servo center. The
+                 actual implementation center may be different from position
+                 128 due to the limits described above.
+                 
+            <li> Provide the coordinate transformation between the physical
+                 servo position and input value. Useful for compensating the
+                 rotational servo movement to linear controlled body
+                 movement.
+                 
+            <li> Provide the means to incorporate the closed loop feedback
+                 signal and mapping between the feedback and control.
+                 
+            <li> The ideal servo controller doesn't necessarily have to be
+                 integrated - there are cases when the servos are located in
+                 remote locations. The surface mount design can possibly fit
+                 on the back of the servo.
+                 
+            <li> Implication: it's not that the abstraction of the
+                 <strong>servo controller</strong> that is important, it is the
+                 abstraction of the <strong>servo</strong>.
+                 
+            <li> From the practical standpoint: how do I care if the
+                 controller is one piece or distributed, as long as the cost is
+                 comparable?
+                 
+            <li> The ideal controller should not be resource hungry. The
+                 currently available solutions require a dedicated serial
+                 port to control them, why? Good candidates: USB, 1-Wire.
+            
+        </ul>
+        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
+                    </font>
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

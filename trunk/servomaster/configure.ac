@@ -1,12 +1,13 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.14 2002-12-12 01:46:51 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.1 2002-12-12 01:46:52 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
 dnl versions.
 
-AC_INIT(src/java/org/freehold/servomaster/device/model/Servo.java)
+AC_INIT
+AC_CONFIG_SRCDIR([src/java/org/freehold/servomaster/device/model/Servo.java])
 
 dnl I'd like it to read the configure-options to allow both the global set
 dnl of options, as well as the local set.
@@ -44,7 +45,7 @@ AC_SUBST(VERSION)dnl
 AC_MSG_RESULT(Configuring ${PACKAGE}-${VERSION})
 
 AC_PREFIX_DEFAULT(/usr/local/servomaster)dnl
-AC_PREREQ(2.13)dnl
+AC_PREREQ(2.53)dnl
 AC_CONFIG_AUX_DIR(src/scripts/install)dnl
 
 AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})dnl
@@ -55,7 +56,12 @@ AC_PROG_FIND
 AC_PATH_PROG_VERIFY(RM,rm,$PATH)dnl
 AC_PATH_PROG_VERIFY(DIRNAME,dirname,$PATH)dnl
 
-AC_CYGWIN()dnl
+AC_CANONICAL_HOST
+case $host_os in
+  *cygwin* ) CYGWIN=yes;;
+         * ) CYGWIN=no;;
+esac
+dnl
 
 if ${TEST} "${CYGWIN}" = "yes" ; then
     PATH_SEPARATOR="\\;"
@@ -150,11 +156,13 @@ AC_PATH_EXTRA(XERCES)
 AC_SUBST(TARGET_CLASSPATH)dnl
 AC_SUBST(JAVA_OPT)
 
-AC_OUTPUT(
-	Makefile
+AC_SUBST(EXEEXT)
+AC_SUBST(OBJEXT)
+
+AC_CONFIG_FILES([Makefile
 	build/Makefile
 	build/build.sh
-	build/.${PACKAGE}.properties
+	build/.servomaster.properties
 	src/Makefile
 	src/scripts/Makefile
 	src/scripts/run/Makefile
@@ -162,7 +170,8 @@ AC_OUTPUT(
 	src/scripts/test/Makefile
 	src/scripts/test/sync_check
 	src/java/Makefile
-)dnl
+])
+AC_OUTPUT
 
 if ${TEST} -z "$GLOBAL_OPTIONS_PRESENT" ; then
 	AC_MSG_RESULT([You may want to create the ${GLOBAL_OPTIONS} file (see documentation)])

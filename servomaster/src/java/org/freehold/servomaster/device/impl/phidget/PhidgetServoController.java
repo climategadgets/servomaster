@@ -1,6 +1,7 @@
 package org.freehold.servomaster.device.impl.phidget;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -9,12 +10,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import usb.core.Bus;
+import usb.core.Configuration;
 import usb.core.ControlMessage;
 import usb.core.Descriptor;
 import usb.core.Device;
 import usb.core.DeviceDescriptor;
+import usb.core.Endpoint;
 import usb.core.Host;
 import usb.core.HostFactory;
+import usb.core.Interface;
 
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
@@ -24,6 +28,9 @@ import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerMetaData;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
 
+import org.freehold.servomaster.device.impl.phidget.Firmware;
+import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
+
 /**
  * <a
  * href="http://www.cpsc.ucalgary.ca/grouplab/phidgets/phidget-servo/phidget-servo.html"
@@ -32,7 +39,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.7 2002-09-17 17:22:46 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.8 2002-09-17 23:26:57 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -619,10 +626,48 @@ public class PhidgetServoController extends AbstractServoController {
         
         try {
         
+            Configuration cf = target.getConfiguration();
+            Interface iface = cf.getInterface(0, 0);
+            Endpoint endpoint = iface.getEndpoint(0);
+            OutputStream out = endpoint.getOutputStream();
+            Firmware fw = new Servo8();
+            byte buffer[] = fw.get();
+            
+            out.write(buffer);
+        
+            
+            
+            /*
+            ControlMessage message = new ControlMessage();
+
+            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
+                                         |ControlMessage.TYPE_CLASS
+                                         |ControlMessage.RECIPIENT_ENDPOINT));
+            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
+            message.setValue((short)0x01);
+            message.setIndex((byte)0);
+            message.setLength(buffer.length);
+            message.setBuffer(buffer);
+            
+            target.control(message);
+            */
+            
+        } catch ( Throwable t ) {
+        
+            System.err.println("Boot failed:");
+            t.printStackTrace();
+            
+            // Since there's nothing we can do about it, we'll just proceed
+            // as usual. The device either will not be found at all, or will
+            // be found as SoftPhidget again, which is taken care of.
+        }
+        
+        try {
+        
             // The SoftPhidget is supposed to boot in about 200ms, let's be
             // paranoid
             
-            Thread.sleep(500);
+            Thread.sleep(1000);
             
         } catch ( InterruptedException iex ) {
         

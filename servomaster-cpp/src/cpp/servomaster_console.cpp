@@ -1,11 +1,21 @@
 #include <PhidgetServoController.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <stdexcept>
 
 int main() {
 
-    servomaster::PhidgetServoController c;
+    try {
     
-    c.init(NULL);
+        servomaster::PhidgetServoController c;
+        
+        c.init(NULL);
+        
+    } catch ( const exception &e ) {
+    
+        printf("Problem: %s\n", e.what());
+        return 1;
+    }
     
     return 0;
 }

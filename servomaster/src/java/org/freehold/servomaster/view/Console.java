@@ -64,7 +64,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.17 2003-01-06 05:25:12 vtt Exp $
+ * @version $Id: Console.java,v 1.18 2003-01-07 04:35:02 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 
@@ -189,7 +189,7 @@ public class Console implements ActionListener, WindowListener {
                 
                     String key = (String)cif.next();
                     
-                    System.out.println(key + ": " + controllerMeta.getFeature(key));
+                    System.out.println("    " + key + ": " + controllerMeta.getFeature(key));
                 }
 
                 System.out.println("Properties:");
@@ -198,7 +198,7 @@ public class Console implements ActionListener, WindowListener {
                 
                     String key = (String)cip.next();
                 
-                    System.out.println(key + ": " + controllerMeta.getProperty(key));
+                    System.out.println("    " + key + ": " + controllerMeta.getProperty(key));
                 }
                 
                 try {

@@ -24,7 +24,7 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.2 2005-01-13 22:49:58 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.3 2005-02-03 07:23:15 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -139,7 +139,7 @@ public class PacketBuilder {
         rq++;
         size += buffer.length;
         
-        System.err.println("" + rq + " requests, " + size + " bytes");
+        //System.err.println("" + rq + " requests, " + size + " bytes");
     }
 
 }

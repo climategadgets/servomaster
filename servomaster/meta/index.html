@@ -225,49 +225,53 @@
                                 The following exceptions are possible when trying to access the metadata:
                                 
                                 <table width=100%>
-                                
                                     <tr>
-                                    <td align=right valign=top> <code>UnsupportedOperationException</code>
-                                    </td>
-                                    <td>
-                                        If the feature not supported or the
-                                        property is not present, on both get
-                                        and set operations.
-                                    </td>
+                                        <td align=right valign=top><code>UnsupportedOperationException</code></td>
+                                        <td>
+                                            
+                                            If the feature not supported or the
+                                            property is not present, on both get
+                                            and set operations.
+                                            
+                                        </td>
                                     </tr>
                                     <tr>
-                                    <td align=right valign=top> <code>IllegalAccessError</code>
-                                    </td>
-                                    <td>
-                                        If the feature or property value
-                                        can't be changed because it's
-                                        read-only (immutable).
-                                    </td>
+                                        <td align=right valign=top><code>IllegalAccessError</code></td>
+                                        <td>
+                                        
+                                            If the feature or property value
+                                            can't be changed because it's
+                                            read-only (immutable).
+                                        
+                                        </td>
                                     </tr>
-                                    <tr>  
-                                    <td align=right valign=top> <code>IOException</code>
-                                    </td
-                                    <td>
-                                        If there is a hardware related
-                                        problem.
-                                    </td>
+                                    <tr>
+                                        <td align=right valign=top><code>IOException</code></td>
+                                        <td>
+                                        
+                                            If there is a hardware related
+                                            problem.
+                                        
+                                        </td>
                                     </tr>
-                                    <tr>  
-                                    <td align=right valign=top> <code>IllegalStateException</code>
-                                    </td>
-                                    <td>
-                                        A special case. This exception will
-                                        be thrown by some controller
-                                        drivers (<a
-                                        href="../docs/USB_Phidget.html">Phidgets</a>
-                                        in particular) if the device was
-                                        not connected during the controller
-                                        instantiation and hasn't been
-                                        connected since. As soon as the
-                                        device is detected, the metadata
-                                        for it can be created and is
-                                        accessible from that point on.
-                                    </td>
+                                    <tr>
+                                        <td align=right valign=top><code>IllegalStateException</code></td>
+                                        <td>
+                                        
+                                            A special case. This exception
+                                            will be thrown by some
+                                            controller drivers (<a
+                                            href="../docs/USB_Phidget.html">Phidgets</a>
+                                            in particular) if the device was
+                                            not connected during the
+                                            controller instantiation and
+                                            hasn't been connected since. As
+                                            soon as the device is detected,
+                                            the metadata for it can be
+                                            created and is accessible from
+                                            that point on.
+                                        
+                                        </td>
                                     </tr>
                                 </table>
                                 

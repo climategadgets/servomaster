@@ -1,0 +1,229 @@
+<project name="ServoMaster" default="servomaster" basedir=".">
+
+    <!-- $Id: build.xml,v 1.1 2001-08-31 21:38:00 vtt Exp $ -->
+
+    <property name="project" value="servomaster"/>
+
+    <!--
+    
+      Give user a chance to override without editing this file
+      (and without typing -D each time he compiles it)
+      
+      -->
+    
+    <property file=".${project}.properties"/>
+    <property file="${user.home}/.${project}.properties"/>
+    
+    <!--
+        =======================================================================
+        
+        Below is a list of properties you can safely override from the
+        property files (above)
+        
+      -->
+      
+    <!-- Do we want the debug? -->
+    <property name="DEBUG" value="true"/>
+    
+    <!--
+        =======================================================================
+        
+        Below is a stuff you don't want to be messing with. It has been left
+        undocumented on purpose: if you know what you're doing, it's
+        self-explanatory, if you don't, you don't have anything to do with
+        it anyway.
+        
+      -->
+    <property name="version" value="0.1"/>
+    <property name="build.compiler" value="classic"/>
+    <property name="build.dir" value="../build/classes"/>
+    <property name="src.java.dir" value="../src/java"/>
+    <property name="dist.dir" value="../build/${project}-${version}"/>
+    <property name="javadoc.dir" value="../docs/apidocs"/>
+    
+    <!--
+    
+        Build target list.
+        
+        For all the targets, the source files are copied to the separate
+        directory before the build commences, because it might be required
+        to modify the files to adjust for whatever reason; to name a few,
+        
+            - Target system configuration
+            - Optional packages
+            - Configure time switches
+        
+      -->
+    
+    <!--
+    
+        Targets without external dependencies.
+        
+      -->
+      
+    <property name="model.build.src" value="../build/src/model"/>
+    <property name="ft639.build.src" value="../build/src/ft639"/>
+    <property name="view.build.src" value="../build/src/view"/>
+
+    <!--
+    
+        The default target.
+         
+        Contains all other targets as dependencies.
+         
+        Please pay attention to the fact that some of the dependencies may
+        not be executed if they are conditional targets. That's intended.
+         
+      -->
+    
+    <target name="servomaster" depends="prepare,model,ft639,view">
+
+        <jar jarfile="./${project}.jar" basedir="${build.dir}"/>
+        
+    </target>
+    
+    <target name="check_modules">
+    
+        <!--
+        
+            Check if we're working with JDK 1.3
+            
+          -->
+          
+        <available classname="java.lang.StrictMath" property="jdk1.3"/>
+    
+    </target>
+    
+    <target name="prepare" depends="check_modules">
+
+        <mkdir dir="${build.dir}"/>
+        
+        <echo>
+        
+            Will be installed to: ${prefix}
+
+        </echo>
+
+    </target>
+    
+    <target name="model" depends="prepare">
+    
+        <copy todir="${model.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/model/Servo.java"/>
+                <include name="device/model/ServoListener.java"/>
+                <include name="device/model/ServoController.java"/>
+                <include name="device/model/ServoControllerListener.java"/>
+                
+            </fileset>
+
+        </copy>
+
+        <javac depend="on" deprecation="on" srcdir="${model.build.src}" destdir="${build.dir}"/>
+
+    </target>
+    
+    <!--
+    
+        The classes pertinent to FerretTronics FT639
+        
+      -->
+      
+    <target name="ft639" depends="model">
+    
+        <copy todir="${ft639.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/impl/ft/FT639Constants.java"/>
+                <include name="device/impl/ft/FT639ServoController.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
+
+    </target>
+    
+    <!--
+    
+        The view
+        
+      -->
+
+    <target name="view" depends="model,ft639">
+    
+        <copy todir="${view.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="view/Console.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac depend="on" deprecation="on" srcdir="${view.build.src}" destdir="${build.dir}"/>
+
+    </target>
+    
+    <target name="dist">
+
+        <mkdir dir="${dist.dir}"/>
+
+    </target>
+
+    <target name="clean">
+    
+        
+    </target>
+    
+    <target name="distclean" depends="clean">
+
+        <deltree dir="${dist.dir}"/> 
+
+    </target>
+    
+    <target name="dist-copy-sources">
+    
+        <copy todir="../${project}-${version}/src/java">
+        
+            <fileset dir="../src/java">
+            
+                <include name="**/*.java"/>
+                <include name="**/package.html"/>
+                <include name="**/*.properties"/>
+
+            </fileset>
+            
+        </copy>
+        
+    </target>
+    
+    <target name="javadocs">
+    
+        <mkdir dir="${javadoc.dir}"/>
+
+        <javadoc packagenames="org.freehold.*"
+                 sourcepath="${src.java.dir}"
+                 destdir="${javadoc.dir}"
+                 version="true"
+                 use="true"
+                 author="true"
+                 private="true"
+                 windowtitle="ServoMaster API">
+                
+            <group title="Model" packages="org.freehold.servomaster.device.model"/>
+            <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>
+            <group title="View" packages="org.freehold.servomaster.view"/>
+            <group title="Tests" packages="org.freehold.servomaster.test*"/>
+
+        </javadoc>
+    
+        
+    </target>
+    
+</project>

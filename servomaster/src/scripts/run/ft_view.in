@@ -1,0 +1,14 @@
+# !/bin/sh
+
+# The previous TARGET_CLASSPATH at the start and JAVA_OPT at the end ensure
+# that the users of this shell script are able to redefine the values if
+# they need to
+
+TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
+@prefix@/lib/@PACKAGE@.jar:\
+@XERCES_CLASSES@:\
+@JMX_CLASSES@:\
+@JMXTOOLS_CLASSES@:\
+@REGEXP_CLASSES@
+
+@JAVAX@ org.freehold.servomaster.view.Console $*

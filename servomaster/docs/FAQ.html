@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <title>
+            
+            ServoMaster: FAQ
+            
+        </title>
+    </head>
+    <body>
+    
+        <h1>ServoMaster: FAQ</h1>
+        
+        <dl>
+        
+            <dt> <strong>What is a project status?</strong>
+            
+            <dd> Architecture is clear, design is done, Java implementation
+                 for one of the controllers is done (except for bells and
+                 whistles like silent mode and smooth transition).
+                 
+                 <p>
+        
+            <dt> <strong>Why Java?</strong>
+            
+            <dd> First of all, this is my current language of choice. 
+                 Second, it is good for rapid prototyping. Third, and
+                 probably the most important, despite all its drawbacks, it
+                 is really platform independent. This last one matters a
+                 lot, at least to me.
+                 
+                 <p>
+            
+            <dt> <strong>What about C?</strong>
+            
+            <dd> No C. C++ port, though, is planned. Don't ask about the
+                 timeframe. If you want to help, you're welcome.
+                 
+                 <p>
+                 
+            <dt> <strong>Why FerretTronics is the only implementation
+                 avaialable?</strong>
+                 
+            <dd> Because it was the cheapest thing available at the time,
+                 almost half as expensive as the next one. Is it the best?
+                 Dunno. Doubt it.
+                 
+                 <p>
+                 
+            <dt> <strong>Are there other hardware controller drivers
+                 coming?</strong>
+                 
+            <dd> You bet. The next one is <a
+                 href="http://www.seetron.com/ssc.htm">SSC</a>.
+                 
+                 <p>
+                 
+            <dt> <strong>I've bought the FT639 and put it together, and it
+                 doesn't work, what the hell?</strong>
+                 
+            <dd> Check if the signal level on the chip input is high enough. 
+                 I had to short the 20K resistor to make it work with my
+                 Asus P-2B onboard serial controller.
+                 
+                 <p>
+                 
+             <dt> <strong>What is this "silent mode" thing?</strong>
+             
+             <dd> If you are familiar with the servos, you probably know
+                  that they can make a sound that can make you jump,
+                  especially caught off guard. The application this project
+                  is serving is intended to have the servos operate next to
+                  people whose comfort level is paramount, so they must not
+                  be scared do death periodically when the servos come to
+                  life.
+                  
+                  <p>
+                  
+                  As a side effect, this reduces the energy consumption and
+                  servo wear. Since the servos may be working 24x7, this may
+                  be important as well.
+        
+        </dl>
+
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
+                    </font>
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

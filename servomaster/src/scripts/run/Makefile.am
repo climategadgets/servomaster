@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.1 2001-08-31 21:38:00 vtt Exp $
+## $Id: Makefile.am,v 1.2 2002-12-12 01:46:52 vtt Exp $
 
 bin_PROGRAMS = ft_view
 
@@ -8,6 +8,6 @@ RM = @RM@
 
 clean:
 
-	${RM} -f *~ .*~ ft_view
+	${RM} -f *~ .*~ ${bin_PROGRAMS}
 
-ft_view:
+ft_view$(EXEEXT):

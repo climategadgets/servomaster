@@ -1,4 +1,4 @@
-## $Id: Makefile.am,v 1.3 2002-05-14 21:13:41 vtt Exp $
+## $Id: Makefile.am,v 1.4 2002-12-12 01:46:52 vtt Exp $
 
 AUTOCONF_FILES = build.sh
 
@@ -48,4 +48,4 @@ all: build
 
 install-data-local:
 
-	#sh ./build.sh install
+#	sh ./build.sh install

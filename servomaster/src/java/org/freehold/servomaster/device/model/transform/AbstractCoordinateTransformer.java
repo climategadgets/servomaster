@@ -9,7 +9,7 @@ import org.freehold.servomaster.device.model.ServoMetaData;
 
 /**
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.2 2002-01-02 03:51:13 vtt Exp $
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.3 2002-01-02 03:58:58 vtt Exp $
  */
 abstract public class AbstractCoordinateTransformer extends AbstractServo {
 
@@ -106,6 +106,12 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
     public ServoMetaData[] getMetaData() {
     
         return getTarget().getMetaData();
+    }
+    
+    protected void setActualPosition(double position) throws IOException {
+    
+        throw new Error("How come we ended up here?");
+        //getTarget().setActualPosition(position);
     }
     
     /**

@@ -1,11 +1,11 @@
-## $Id: Makefile.am,v 1.3 2003-08-29 23:57:19 vtt Exp $
+## $Id: Makefile.am,v 1.4 2003-09-03 05:11:54 vtt Exp $
 
 SUBDIRS = src
 EXTRA_DIST = bootstrap indent.rules src/scripts/install/* src/include/*h
 
 clean-generic:
 
-	@RM@ -f `@FIND@ -name "*~" -o -name ".*~"`
+	@RM@ -rf `@FIND@ -type f -name "*~" -o -name ".*~"` auto*.cache
 
 indent:
 

@@ -75,7 +75,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.3 2001-09-01 21:47:23 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.4 2001-09-02 06:13:45 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -711,6 +711,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
             
             // Reset the servo position
             setPosition(255 >> 1, false, 0);
+        }
+        
+        public String getName() {
+        
+            return Integer.toString(id);
         }
         
         public void setEnabled(boolean enabled) {

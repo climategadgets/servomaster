@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and smooth positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.2 2001-09-01 21:46:25 vtt Exp $
+ * @version $Id: Servo.java,v 1.3 2001-09-02 06:13:45 vtt Exp $
  */
 public interface Servo {
 
@@ -23,6 +23,13 @@ public interface Servo {
      * selection.
      */
     public final static int RANGE_180 = 0x02;
+    
+    /**
+     * Get the name.
+     *
+     * @return Servo name.
+     */
+    public String getName();
     
     /**
      * Set the position.

@@ -1,6 +1,8 @@
 package org.freehold.servomaster.view;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Vector;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -18,24 +20,47 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerListener;
-import org.freehold.servomaster.device.impl.ft.FT639ServoController;
 
 /**
  * The console.
  *
- * Allows to control the FT639 controller.
+ * Allows to control the servo controller.
  *
  * <p>
  *
- * VT: FIXME: Actually, this code is pretty generic, and if there's a
- * sequence that instantiates the controller and passes it down to us, this
- * doesn't have to be FT639-specific. It currently is just because the FT639
- * is the first controller in my possession.
+ * Usage:
+ *
+ * <blockquote>
+ *
+ * <code>java -classpath ${CLASSPATH} org.freehold.servomaster.view.Console <i>&lt;controller class name&gt; &lt;controller port name&gt;</i></code>
+ *
+ * </blockquote>
+ *
+ * Works like this:
+ *
+ * <ol>
+ *
+ * <li> Instantiate the controller class.
+ *
+ * <li> {@link org.freehold.servomaster.device.model.ServoController#init
+ *      Initialize} the controller with the port name.
+ *
+ * <li> {@link
+ *      org.freehold.servomaster.device.model.ServoController#getServos Get
+ *      the servos} from the controller.
+ *
+ * <li> Create the {@link ServoView servo views} and stuff them into the
+ *      console.
+ *
+ * <li> Enjoy.
+ *
+ * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.3 2001-09-01 21:48:24 vtt Exp $
+ * @version $Id: Console.java,v 1.4 2001-09-02 06:13:45 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -43,6 +68,11 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
      * The controller to watch and control.
      */
     private ServoController controller;
+    
+    /**
+     * The controller port name.
+     */
+    private String portName;
     
     /**
      * The main Swing frame.
@@ -69,8 +99,13 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     
     /**
      * Set of servos the controller offers.
+     *
+     * <p>
+     *
+     * VT: FIXME: Someday have to fix this and make it a Vector or something
+     * like that. Until I do, ArrayIndexOutOfBounds is looming.
      */
-    private ServoView servoPanel[] = new ServoView[5];
+    private ServoView servoPanel[] = new ServoView[50];
     
     public static void main(String args[]) {
     
@@ -86,13 +121,53 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     
         try {
         
-            controller = new FT639ServoController("/dev/ttyS1");
+            if ( args.length < 2 ) {
+            
+                System.err.println("Usage: ft_view <servo controller class name> <servo controller port name>");
+                System.exit(1);
+            }
+        
+            try {
+            
+                Class controllerClass = Class.forName(args[0]);
+                Object controllerObject = controllerClass.newInstance();
+                controller = (ServoController)controllerObject;
+                
+                controller.init(args[1]);
+                
+                portName = args[1];
+                
+            } catch ( Throwable t ) {
+            
+                System.err.println("Unable to initialize controller, cause:");
+                t.printStackTrace();
+                
+                System.exit(1);
+            }
+            
             controller.setSilentMode(true);
+            
+            // Figure out how many servos does the controller currently have
+            
+            Vector servoSet = new Vector();
+            
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                servoSet.add(i.next());
+            }
+            
+            int servoCount = servoSet.size();
+            
+            if ( servoCount == 0 ) {
+            
+                System.err.println("The controller doesn't seem to have any servos now");
+                System.exit(1);
+            }
             
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints cs = new GridBagConstraints();
     
-            mainFrame = new JFrame("FT639 Console");
+            mainFrame = new JFrame("Servo Controller Console, port " + portName);
             mainFrame.setSize(new Dimension(640, 480));
             
             // VT: FIXME: Have to terminate the application instead.
@@ -104,7 +179,7 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             cs.fill = GridBagConstraints.HORIZONTAL;
             cs.gridx = 0;
             cs.gridy = 0;
-            cs.gridwidth = 5;
+            cs.gridwidth = servoCount;
             cs.weightx = 1;
             
             resetButton = new JButton("Reset Controller");
@@ -134,12 +209,12 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             cs.fill = GridBagConstraints.BOTH;
             cs.gridy = 3;
             cs.gridwidth = 1;
-            cs.gridheight = 5;
+            cs.gridheight = servoCount;
             cs.weighty = 1;
             
-            for ( int idx = 0; idx < servoPanel.length; idx++ ) {
+            for ( int idx = 0; idx < servoCount; idx++ ) {
             
-                servoPanel[idx] = new ServoView(controller, idx);
+                servoPanel[idx] = new ServoView(controller, ((Servo)servoSet.elementAt(idx)).getName());
                 
                 cs.gridx = idx;
                 
@@ -148,7 +223,10 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 mainFrame.getContentPane().add(servoPanel[idx]);
             }
             
-            //mainFrame.pack();
+            // VT: FIXME: Provide the accurate getPreferredSize() for
+            // ServoView, then we can pack
+            
+            // mainFrame.pack();
             
             mainFrame.setVisible(true);
             

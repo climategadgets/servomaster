@@ -159,33 +159,23 @@
                                 align="right"></a>
                                 
                                 The driver is not finalized yet (though the
-                                generic framework requiring minimal changes
-                                was put in place), however, the feature set
-                                is more or less complete:
+                                console is already operational) - if you
+                                want to be on the bleeding edge, go get it
+                                from the <a
+                                href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>.
                                 
-                                <ul>
+                                <p>
                                 
-                                    <li> Improved resolution
-                                    
-                                    <li> Supports 8 servos
-                                    
-                                    <li> Supports transition control at
-                                         hardware level - can specify
-                                         velocity and acceleration
-                                         
-                                    <li> Supports servo position feedback -
-                                         when transition control is active,
-                                         the actual position is different
-                                         from requested position
-                                         
-                                    <li> Dual (USB/Serial) interface
-                                    
-                                    <li> USB bus powered and self powered
-                                         mode supported
-                                    
-                                </ul>
+                                This driver will not support the serial
+                                interface: it is too slow, and the serial
+                                port estate is <strong>really</strong>
+                                expensive. The user is encouraged to use the
+                                USB connection instead.
                                 
-                                Expected release date is end of September 2002.
+                                <p>
+                                
+                                Expected release date is Monday, September
+                                23 2002.
 
                             </blockquote>
                             </td>
@@ -199,7 +189,35 @@
                             <td>
                             <blockquote>
                             
-                                To be determined
+                                All the good things from the <a
+                                href="USB_Phidget.html">previous
+                                revision</a> are still in place. In addition,
+                                
+                                <ul>
+                                
+                                    <li> The number of servos supported now
+                                         is 8
+                                         
+                                    <li> Servo velocity can be controlled
+                                    
+                                    <li> Servo acceleration can be controlled
+                                    
+                                    <li> Servo position feedback is
+                                         available from the controller
+                                    
+                                    <li> Communication interface has changed
+                                         from <code>control_msg</code> to
+                                         bulk write - less overhead
+                                         
+                                    <li> The device is now bootable - if
+                                         there's a problem with the
+                                         firmware, you don't have to order a
+                                         new one, just get the fresh
+                                         firmware and reboot it
+                                         
+                                    <li> Dual (USB/Serial) interface
+                                
+                                </ul>
 
                             </blockquote>
                             </td>
@@ -213,7 +231,35 @@
                             <td>
                             <blockquote>
                             
-                                None expected ;)
+                                Current firmware revision doesn't support
+                                the servo shutoff.
+    
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <font color="#ffffff">Changes</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                The device has to be booted before it
+                                advertises itself as a servo controller -
+                                this is being handled by
+                                <code>PhidgetServoController</code> code.
+                            
+                                <p>
+                                
+                                The USB protocol has changed significantly,
+                                as well as the way the device is controlled. 
+                                In the previous revision, the servo position
+                                was controlled by setting the pulse length
+                                in microseconds, now the value is the
+                                rotation angle in degrees (as
+                                <code>float</code>).
     
                             </blockquote>
                             </td>
@@ -227,7 +273,7 @@
                             <td>
                             <blockquote>
                             
-                                Holding my breath to see it ;)
+                                It was worth the wait.
                             
                             </blockquote>
                             </td>

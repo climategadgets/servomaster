@@ -1,6 +1,13 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.in,v 1.1 2002-09-12 00:00:11 vtt Exp $)dnl
+AC_REVISION($Id: configure.in,v 1.2 2003-08-29 23:57:19 vtt Exp $)dnl
+
+dnl This file ensures our --srcdir is right. Later it's also used to verify
+dnl the acceptable version of Java compiler and the options specific to the
+dnl versions.
+
+AC_INIT
+AC_CONFIG_SRCDIR([src/include/ServoController.h])
 
 dnl I'd like it to read the configure-options to allow both the global set
 dnl of options, as well as the local set.
@@ -21,12 +28,6 @@ if test -f "${LOCAL_OPTIONS}" && test -z "${LOCAL_OPTIONS_PRESENT}" ; then
     exit $?
 fi
 
-dnl This file ensures our --srcdir is right. Later it's also used to verify
-dnl the acceptable version of Java compiler and the options specific to the
-dnl versions.
-
-AC_INIT(src/include/ServoController.h)
-
 VERSION_MAJOR="0"
 VERSION_MINOR="1"
 PATCHLEVEL="0"
@@ -44,7 +45,7 @@ AC_SUBST(VERSION)dnl
 AC_MSG_RESULT(Configuring ${PACKAGE}-${VERSION})
 
 AC_PREFIX_DEFAULT(/opt/servomaster)dnl
-AC_PREREQ(2.13)dnl
+AC_PREREQ(2.53)dnl
 AC_CONFIG_AUX_DIR(src/scripts/install)dnl
 
 AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})dnl
@@ -70,7 +71,10 @@ AC_SUBST(LIBTOOL_DEPS)
 
 AC_CHECK_LIB(usb,usb_init, ,[AC_MSG_ERROR([You have to have libusb installed first - get it from http://libusb.sourceforge.net/])])
 
-AC_CYGWIN()dnl
+case $host_os in
+  *cygwin* ) CYGWIN=yes;;
+         * ) CYGWIN=no;;
+esac
 
 if ${TEST} "${CYGWIN}" = "yes" ; then
     PATH_SEPARATOR="\\;"
@@ -83,13 +87,13 @@ AC_SUBST(PATH_SEPARATOR)
 AM_CONDITIONAL(RPM_ENABLED,${TEST} -n "${RPM}")
 AM_CONDITIONAL(DOXYGEN_ENABLED,${TEST} -n "${DOXYGEN}")
 
-AC_OUTPUT(
-	Makefile
+AC_CONFIG_FILES([Makefile
 	src/Makefile
 	src/cpp/Makefile
 	src/rpm/Makefile
 	src/rpm/servomaster.spec
-)dnl
+])
+AC_OUTPUT
 
 AC_MSG_RESULT()
 

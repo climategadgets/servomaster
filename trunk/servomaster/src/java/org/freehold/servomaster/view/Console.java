@@ -1,6 +1,8 @@
 package org.freehold.servomaster.view;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -60,7 +62,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.12 2002-03-09 05:23:16 vtt Exp $
+ * @version $Id: Console.java,v 1.13 2002-03-09 07:05:39 vtt Exp $
  */
 public class Console implements ActionListener {
 
@@ -373,7 +375,6 @@ public class Console implements ActionListener {
             
             // VT: FIXME: Enable them when the demo code is ready
             
-            clockDemoButton.setEnabled(false);
             waveDemoButton.setEnabled(false);
             
             layout.setConstraints(buttonContainer, cs);
@@ -417,7 +418,7 @@ public class Console implements ActionListener {
 
         } else if ( e.getSource() == clockDemoButton ) {
         
-            demo = new Thread(new swing());
+            demo = new Thread(new clock());
             demo.start();
 
         } else if ( e.getSource() == waveDemoButton ) {
@@ -432,6 +433,10 @@ public class Console implements ActionListener {
         public void run() {
         
             try {
+                
+                swingDemoButton.setEnabled(false);
+                clockDemoButton.setEnabled(false);
+                waveDemoButton.setEnabled(false);
                 
                 controller.reset();
                 
@@ -489,6 +494,13 @@ public class Console implements ActionListener {
                 }
                 
                 demo = null;
+
+                swingDemoButton.setEnabled(true);
+                clockDemoButton.setEnabled(true);
+                
+                // VT: FIXME
+                
+                waveDemoButton.setEnabled(false);
             }
         }
         
@@ -619,6 +631,52 @@ public class Console implements ActionListener {
                 trailer = ((current - 1) + max) % max;
                 
                 Thread.sleep(500);
+            }
+        }
+    }
+    
+    /**
+     * A clock.
+     *
+     * Servo 0 is the second hand, servo 1 is the minute hand, servo 2 is
+     * the hour in 24 hour mode.
+     */
+    protected class clock extends demo {
+    
+        protected void execute() throws Throwable {
+        
+            Vector servos = new Vector();
+            
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                Servo s = (Servo)i.next();
+                
+                servos.add(s);
+                
+                s.setPosition(0);
+            }
+            
+            // Bold assumption: the controller supports at least 3 servos
+            
+            Servo servoSecond = (Servo)servos.elementAt(0);
+            Servo servoMinute = (Servo)servos.elementAt(1);
+            Servo servoHour = (Servo)servos.elementAt(2);
+            
+            Thread.sleep(1000);
+            
+            while ( true ) {
+            
+                Calendar c = new GregorianCalendar();
+                
+                int seconds = c.get(Calendar.SECOND);
+                int minutes = c.get(Calendar.MINUTE);
+                int hours   = c.get(Calendar.HOUR_OF_DAY);
+                
+                servoSecond.setPosition((double)seconds/(double)60);
+                servoMinute.setPosition((double)minutes/(double)60);
+                servoHour.setPosition((double)hours/(double)24);
+            
+                Thread.sleep(50);
             }
         }
     }

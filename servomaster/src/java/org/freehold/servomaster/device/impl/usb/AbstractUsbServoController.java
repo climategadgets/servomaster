@@ -914,31 +914,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
 
         abstract public class UsbServo extends HardwareServo {
         
-            /**
-             * Servo metadata.
-             */
-            private final Meta meta;
-            
             protected UsbServo(ServoController sc, int id) throws IOException {
             
                 super(sc, id);
-                
-                this.meta = createServoMeta();
             }
             
-            public Meta getMeta() {
-            
-                return meta;
-            }
-            
-            /**
-             * Template method to create the instance of the metadata for
-             * the servo.
-             *
-             * @return Class specific metadata instance.
-             */
-            abstract protected Meta createServoMeta();
-
             protected final void setActualPosition(double position) throws IOException {
             
                 checkInit();

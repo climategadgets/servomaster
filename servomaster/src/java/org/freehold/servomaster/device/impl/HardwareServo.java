@@ -1,6 +1,8 @@
 package org.freehold.servomaster.device.impl;
 
+import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.AbstractServo;
+import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.ServoController;
 
 /*
@@ -16,7 +18,7 @@ import org.freehold.servomaster.device.model.ServoController;
  * target} directly.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: HardwareServo.java,v 1.1 2005-01-21 06:35:43 vtt Exp $
+ * @version $Id: HardwareServo.java,v 1.2 2005-01-21 07:15:05 vtt Exp $
  */
 abstract public class HardwareServo extends AbstractServo {
 
@@ -24,6 +26,11 @@ abstract public class HardwareServo extends AbstractServo {
      * Servo identifier.
      */
     protected final int id;
+    
+    /**
+     * Servo metadata.
+     */
+    private final Meta meta;
     
     /**
      * Create an instance.
@@ -37,6 +44,8 @@ abstract public class HardwareServo extends AbstractServo {
         super(servoController, null);
         
         this.id = id;
+        
+        meta = createMeta();
     }
     
     /**
@@ -48,4 +57,22 @@ abstract public class HardwareServo extends AbstractServo {
     
         return Integer.toString(id);
     }
+    
+    /**
+     * Create a metadata instance.
+     *
+     * @return A class specific metadata instance.
+     */
+    abstract protected Meta createMeta();
+    
+    /**
+     * Get a metadata instance.
+     *
+     * @return Servo metadata.
+     */
+    public final Meta getMeta() {
+    
+        return meta;
+    }
+    
 }

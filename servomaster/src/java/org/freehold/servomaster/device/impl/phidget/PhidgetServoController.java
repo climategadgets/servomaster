@@ -46,7 +46,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.33 2004-10-13 07:19:34 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.34 2005-01-21 07:15:05 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
@@ -391,7 +391,10 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 super(sc, id);
             }
             
-            protected Meta createServoMeta() {
+            /**
+             * {@inheritDoc}
+             */
+            protected Meta createMeta() {
             
                 return new PhidgetServoMeta003();
             }
@@ -737,7 +740,10 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 acceleration = 2000;
             }
             
-            protected Meta createServoMeta() {
+            /**
+             * {@inheritDoc}
+             */
+            protected Meta createMeta() {
             
                 return new PhidgetServoMeta0x3B();
             }

@@ -35,7 +35,7 @@ import org.freehold.servomaster.device.impl.ft.FT639ServoController;
  * is the first controller in my possession.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.2 2001-09-01 06:53:31 vtt Exp $
+ * @version $Id: Console.java,v 1.3 2001-09-01 21:48:24 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
@@ -93,7 +93,7 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             GridBagConstraints cs = new GridBagConstraints();
     
             mainFrame = new JFrame("FT639 Console");
-            mainFrame.setSize(new Dimension(800, 600));
+            mainFrame.setSize(new Dimension(640, 480));
             
             // VT: FIXME: Have to terminate the application instead.
             // Currently, you have to Ctrl-Break it.

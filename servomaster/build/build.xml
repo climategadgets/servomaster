@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.32 2005-01-14 02:58:44 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.33 2005-01-21 06:35:43 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -178,6 +178,8 @@
                 <include name="device/model/transform/LinearTransformer.java"/>
 
                 <include name="device/model/transition/CrawlTransitionController.java"/>
+                
+                <include name="device/impl/HardwareServo.java"/>
                 
                 <include name="util/ImmutableIterator.java"/>
                 <include name="util/dec2hex.java"/>

@@ -6,12 +6,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Supports the transition controller functionality.
+ * A servo abstraction.
  *
- * Allows instant and controlled positioning and feedback.
+ * Supports the transition controller functionality. Allows instant and
+ * controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractServo.java,v 1.6 2002-03-09 05:23:16 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: AbstractServo.java,v 1.7 2005-01-21 06:35:44 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 

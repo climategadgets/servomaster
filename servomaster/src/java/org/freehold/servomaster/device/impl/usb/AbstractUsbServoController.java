@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.AbstractServoController;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
+import org.freehold.servomaster.device.impl.HardwareServo;
 
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
@@ -919,13 +919,8 @@ abstract public class AbstractUsbServoController extends AbstractServoController
         
         abstract public Servo createServo(ServoController sc, int id) throws IOException;
 
-        abstract public class UsbServo extends AbstractServo {
+        abstract public class UsbServo extends HardwareServo {
         
-            /**
-             * Servo number.
-             */
-            protected final int id;
-            
             /**
              * Servo metadata.
              */
@@ -933,9 +928,8 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             
             protected UsbServo(ServoController sc, int id) throws IOException {
             
-                super(sc, null);
+                super(sc, id);
                 
-                this.id = id;
                 this.meta = createServoMeta();
             }
             
@@ -952,11 +946,6 @@ abstract public class AbstractUsbServoController extends AbstractServoController
              */
             abstract protected Meta createServoMeta();
 
-            public final String getName() {
-            
-                return Integer.toString(id);
-            }
-            
             protected final void setActualPosition(double position) throws IOException {
             
                 checkInit();

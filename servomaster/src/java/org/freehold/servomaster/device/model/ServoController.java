@@ -10,9 +10,9 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.8 2002-02-10 07:23:55 vtt Exp $
+ * @version $Id: ServoController.java,v 1.9 2002-03-09 05:23:16 vtt Exp $
  */
-public interface ServoController {
+public interface ServoController extends SilentDevice {
 
     /**
      * Initialize the controller.
@@ -79,87 +79,6 @@ public interface ServoController {
      * hardware controller.
      */
     public Iterator getServos() throws IOException;
-    
-    /**
-     * Set a silent mode.
-     *
-     * <p>
-     *
-     * Normally, even if the servo position doesn't change, the servo is
-     * still being fed the control pulse, which causes it to forcibly keep
-     * the position, but at the same time it hums quite sensibly. There are
-     * applications that don't require any significant force to be applied
-     * constantly, but they do require silent operation. For this purpose,
-     * the silent mode is introduced - after a specified timeout, the
-     * control pulse to the servos is stopped, and then it is switched on
-     * for a short period once in a while.
-     *
-     * <p>
-     *
-     * The default mode of operation is left to the implementation.
-     *
-     * @param silent <code>true</code> if silent operation is required,
-     * <code>false</code> otherwise.
-     *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
-     *
-     * @exception IOException if there was a problem communicating to the
-     * hardware controller.
-     */
-    public void setSilentMode(boolean silent) throws IOException;
-    
-    /**
-     * Check whether the controller is silent now.
-     *
-     * @return <code>true</code> if the controller is active,
-     * <code>false</code> if it is silent.
-     */
-    public boolean getSilentStatus();
-    
-    /**
-     * Set the silent timeout.
-     *
-     * When this timeout expires, the control pulse to the servos is stopped
-     * until next positioning operation.
-     *
-     * @param timeout Time to hold the the servos energized after the last
-     * positioning, in milliseconds.
-     *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
-     *
-     * @deprecated Use {@link #setSilentTimeout(long, long)
-     * setSilentTimeout(timeout, heartbeat)} instead.
-     */
-    public void setSilentTimeout(long timeout);
-
-    /**
-     * Set the silent timeout.
-     *
-     * <p>
-     *
-     * When this timeout after the last positioning operation expires, the
-     * control pulse to the servos is stopped until next positioning
-     * operation, or next heartbeat, whichever occurs first.
-     *
-     * <p>
-     *
-     * When the heartbeat timeout expires, the controller starts sending the
-     * control signal for the next <code>timeout</code> milliseconds, then
-     * falls asleep again.
-     *
-     * @param timeout Time to hold the the servos energized after the last
-     * positioning, in milliseconds.
-     *
-     * @param heartbeat Maximum time to allow the servos to be without a
-     * control signal, in milliseconds. If this is 0, the servos will be
-     * without a signal indefinitely, or until next positioning operation.
-     *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
-     */
-    public void setSilentTimeout(long timeout, long heartbeat);
     
     /**
      * Reset the controller.

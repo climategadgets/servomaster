@@ -352,6 +352,8 @@ AC_DEFUN(AC_PATH_JAVACLASS,
 [
     AC_REQUIRE([AC_PROG_TEST])
     AC_REQUIRE([AC_PROG_ECHO])
+    AC_REQUIRE([AC_PROG_CUT])
+    AC_REQUIRE([AC_PROG_GREP])
     AC_MSG_CHECKING($1)
     
     dnl Find out if we have a parameter
@@ -374,7 +376,34 @@ AC_DEFUN(AC_PATH_JAVACLASS,
         fi
     ],
     [
-        $1_CLASSES="/usr/local/$2"
+
+        dnl If the name starts with /, consider it absolute and don't touch,
+        dnl if it contains /, don't touch it either, otherwise treat it as
+        dnl /usr/local/${file}
+        
+        ABSOLUTE=`${ECHO} $2|${CUT} -c 1|${GREP} /`
+        
+        if ${TEST} -n "${ABSOLUTE}" ; then
+        
+            # It is an absolute name, don't touch it
+            
+            $1_CLASSES=$2
+            
+        else
+        
+            CONTAINS_SLASH=`${ECHO} $2|${GREP} /`
+            
+            if ${TEST} -n "${CONTAINS_SLASH}" ; then
+            
+                # If it contains /, don't touch it
+                
+                $1_CLASSES=$2
+                
+            else
+            
+                $1_CLASSES="/usr/local/$2"
+            fi
+        fi
     ])
     
     if ${TEST} "${JAVACLASS_DISABLED}" != "yes" ; then
@@ -397,13 +426,14 @@ AC_DEFUN(AC_PATH_JAVACLASS,
             
             if ${TEST} -d "${$1_CLASSES}" ; then
             
-                dnl OK, so this is a directory.
+                dnl OK, so this is a directory. Try to find the class,
+                dnl giving the preference to the jar
                 
-                AC_PATH_SEARCHCLASS($1,${$1_CLASSES},${CLASS})
+                AC_PATH_SEARCHJAR($1,${$1_CLASSES},${CLASS})
                 
                 if ${TEST} -z "${$1}" ; then
 
-                    AC_PATH_SEARCHJAR($1,${$1_CLASSES},${CLASS})
+                    AC_PATH_SEARCHCLASS($1,${$1_CLASSES},${CLASS})
                     
                     if ${TEST} -z "${$1}" ; then
                         if ${TEST} -z "$5" ; then

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
@@ -19,13 +18,15 @@ import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.ServoMetaData;
 import org.freehold.servomaster.device.model.ServoController;
+import org.freehold.servomaster.device.model.AbstractServoController;
 import org.freehold.servomaster.device.model.ServoControllerMetaData;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
+import org.freehold.servomaster.device.model.silencer.SilentProxy;
 
 /**
- * <a href="http://www.ferrettronics.com/product639.html">FerretTronics
- * FT639</a> servo controller implementation.
+ * <a href="http://www.ferrettronics.com/product639.html"
+ * target="_top">FerretTronics FT639</a> servo controller implementation.
  *
  * <p>
  *
@@ -81,15 +82,10 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.24 2002-02-21 07:19:41 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.25 2002-03-09 05:23:15 vtt Exp $
  */
-public class FT639ServoController implements ServoController, FT639Constants {
+public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
-    /**
-     * The serial port the controller is connected to.
-     */
-    private String portName;
-    
     /**
      * Open timeout.
      *
@@ -128,60 +124,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * setup mode after being instantiated.
      */
     private boolean activeMode = true;
-    
-    /**
-     * Controller silence mode.
-     *
-     * Set to <code>true</code> if the silent mode is on. Default is off.
-     */
-    private boolean silent = false;
-    
-    /**
-     * Silent timeout, in milliseconds.
-     *
-     * Defines how long the servos stay energized after the last positioning
-     * operation in the silent mode. When this time expires, the controller
-     * is set in {@link #setSetupMode setup mode}, thus stopping the control
-     * pulse.
-     *
-     * <p>
-     *
-     * Default is 10 seconds.
-     */
-    private long silentTimeout = 10000;
-    
-    /**
-     * Silent heartbeat, in milliseconds.
-     *
-     * Defines how long the servos stay unenergized after the silent timeout
-     * expires.
-     *
-     * <p>
-     *
-     * Default is 5 minutes.
-     */
-    private long silentHeartbeat = 1000 * 60 * 5;
-    
-    /**
-     * Silent timeout watcher.
-     *
-     * Watches the timeout expiration.
-     */
-     private Silencer silencer = null;
-     
-     /**
-      * Silent heartbeat watcher.
-      */
-     private Heartbeat heartbeat = null;
-     /**
-      * Last time when the positioning operation was performed.
-      */
-     private long lastOperation = System.currentTimeMillis();
-     
-    /**
-     * The listener set.
-     */
-    private Set listenerSet = new HashSet();
     
     /**
      * The current range value.
@@ -261,6 +203,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
         }
 
         this.portName = portName;
+        
+        if ( this.portName == null ) {
+        
+            throw new IllegalArgumentException("null portName is invalid: this controller doesn't support automated discovery");
+        }
 
         try {
         
@@ -393,6 +340,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
      */
     public Iterator getServos() throws IOException {
     
+        checkInit();
+    
         LinkedList servos = new LinkedList();
         
         for ( int idx = 0; idx < 5; idx++ ) {
@@ -423,22 +372,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
     }
 
     /**
-     * Check if the value is within 0...1.0 range.
-     *
-     * @param position Value to check.
-     *
-     * @exception IllegalArgumentException if the position is out of 0...1.0
-     * range.
-     */
-    protected void checkPosition(double position) {
-    
-        if ( position < 0 || position > 1.0 ) {
-        
-            throw new IllegalArgumentException("Position out of 0...1.0 range: " + position);
-        }
-    }
-    
-    /**
      * Switch the controller into setup mode.
      *
      * @exception IOException if there was a problem with getting access to
@@ -459,8 +392,12 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = false;
         
-        //System.err.println("mode: setup");
-        silentStatusChanged();
+        System.err.println("mode: setup");
+
+        // VT: FIXME: Do I have a right to do this every time or I have to
+        // rely on the silencer? I guess the latter
+
+        //silentStatusChanged();
     }
 
     /**
@@ -484,10 +421,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = true;
 
-        startTimeout();
+        touch();
         
-        //System.err.println("mode: active");
-        silentStatusChanged();
+        System.err.println("mode: active");
+
+        // VT: FIXME: Do I have a right to do this every time or I have to
+        // rely on the silencer? I guess the latter
+
+        //silentStatusChanged();
     }
     
     /**
@@ -516,65 +457,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
         return result;
     }
     
-    public synchronized void setSilentMode(boolean silent) {
-    
-        checkInit();
-    
-        this.silent = silent;
-        
-        if ( !silent ) {
-        
-            for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-            
-                ((ServoControllerListener)i.next()).silentStatusChanged(this, true);
-            }
-        }
-        
-        startTimeout();
-    }
-    
-    public void setSilentTimeout(long timeout) {
-    
-        setSilentTimeout(timeout, silentHeartbeat);
-    }
-    
-    public void setSilentTimeout(long timeout, long heartbeat) {
-    
-        checkInit();
-    
-        if ( timeout <= 0 ) {
-        
-            throw new IllegalArgumentException("Timeout must be positive");
-        }
-        
-        if ( heartbeat < 0 ) {
-        
-            throw new IllegalArgumentException("Heartbeat must be positive");
-        }
-    
-        silentTimeout = timeout;
-        silentHeartbeat = heartbeat;
-        
-        startTimeout();
-    }
-    
-    public boolean getSilentStatus() {
-    
-        if ( !silent ) {
-        
-            return true;
-        }
-        
-        if ( silencer != null ) {
-        
-            return true;
-
-        } else {
-        
-            return false;
-        }
-    }
-    
     public boolean isLazy() {
     
         return lazy;
@@ -583,56 +465,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
     public void setLazyMode(boolean enable) {
     
         lazy = enable;
-    }
-    
-    private synchronized void startTimeout() {
-    
-        // VT: NOTE: This is a little bit inefficient when not in silent
-        // mode, but with 2400 baud... the hell with it
-        
-        lastOperation = System.currentTimeMillis();
-        
-        if ( !silent || repositioningNow ) {
-        
-            return;
-        }
-        
-        if ( heartbeat != null ) {
-        
-            // If the heartbeat thread is repositioning now, we would not be
-            // here
-        
-            heartbeat.interrupt();
-        }
-        
-        if ( silencer == null ) {
-        
-            silencer = new Silencer(this);
-            silencer.start();
-        }
-        
-        //System.err.println("Silent timer updated");
-    }
-
-    private synchronized void startHeartbeat() {
-    
-        // VT: NOTE: This is a little bit inefficient when not in silent
-        // mode, but with 2400 baud... the hell with it
-        
-        lastOperation = System.currentTimeMillis();
-        
-        if ( !silent ) {
-        
-            return;
-        }
-        
-        if ( heartbeat == null ) {
-        
-            heartbeat = new Heartbeat(this);
-            heartbeat.start();
-        }
-        
-        //System.err.println("Silent timer updated");
     }
     
     /**
@@ -704,10 +536,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public void reset() throws IOException {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         // Since we don't know the controller mode (some other application
         // might have been controlling it and left it in active mode), we'll
@@ -719,13 +548,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         setRange(range);
     }
     
-    public synchronized void addListener(ServoControllerListener listener) {
-    
-        checkInit();
-    
-        listenerSet.add(listener);
-    }
-    
+    /*
     private void silentStatusChanged() {
     
         if ( !silent ) {
@@ -733,26 +556,9 @@ public class FT639ServoController implements ServoController, FT639Constants {
             return;
         }
     
-        for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-        
-            ((ServoControllerListener)i.next()).silentStatusChanged(this, activeMode);
-        }
+        silentStatusChanged(activeMode);
     }
-    
-    public synchronized void removeListener(ServoControllerListener listener) {
-    
-        checkInit();
-    
-        if ( !listenerSet.contains(listener) ) {
-        
-            throw new IllegalArgumentException("Not a registered listener: "
-                                               + listener.getClass().getName()
-                                               + "@"
-                                               + listener.hashCode());
-        }
-        
-        listenerSet.remove(listener);
-    }
+    */
     
     public ServoControllerMetaData getMetaData() {
     
@@ -761,24 +567,24 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public String getPort() {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized yet");
-        }
+        checkInit();
         
         return portName;
     }
     
-    /**
-     * @exception IllegalStateException if the controller is not yet
-     * initialized.
-     */
     protected void checkInit() {
 
         if ( portName == null ) {
         
             throw new IllegalStateException("Not initialized");
         }
+    }
+    
+    public boolean isConnected() {
+    
+        // FIXME
+        
+        return true;
     }
 
     protected class FT639MetaData implements ServoControllerMetaData {
@@ -901,7 +707,10 @@ public class FT639ServoController implements ServoController, FT639Constants {
             
             actualPositionChanged();
             
-            startTimeout();
+            // FIXME: Again, this stupid problem I forgot the solution of:
+            // can't access the outer class. Oh well.
+            
+            _touch();
         }
 
         public void setRange(int range) {
@@ -916,133 +725,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
             throw new UnsupportedOperationException("Capabilities discovery is not supported");
         }
     }
-    
-    /**
-     * Time left to wait before going into the silent mode.
-     */
-    protected long timeUntilSilent() {
-    
-        return (lastOperation + silentTimeout) - System.currentTimeMillis();
-    }
 
     /**
-     * Time left to wait before heartbeat.
+     * Wrapper for <code>touch()</code>.
+     *
+     * Required for the inner class to be able to access the outer.
      */
-    protected long timeUntilHeartbeat() {
+    private void _touch() {
     
-        return (lastOperation + silentTimeout + silentHeartbeat) - System.currentTimeMillis();
-    }
-    
-    protected class Silencer extends Thread {
-    
-        private ServoController controller;
-        
-        Silencer(ServoController controller) {
-        
-            this.controller = controller;
-        }
-    
-        /**
-         * Wait until timeout expires, then put the controller into a setup
-         * mode.
-         */
-        public void run() {
-        
-            try {
-            
-                while ( timeUntilSilent() > 0 ) {
-                
-                    //System.err.println("waiting for " + timeUntilSilent() + "ms...");
-                    Thread.sleep(timeUntilSilent());
-                    //System.err.println("checking... " + timeUntilSilent() + " left");
-                }
-                
-                //System.err.println("Sleeping now.");
-
-                synchronized ( controller ) {
-                
-                    setSetupMode();
-                    silencer = null;
-                    startHeartbeat();
-                }
-            
-            } catch ( Throwable t ) {
-            
-                // Oh shit... Okay. Let's get out of here.
-
-                System.err.println("Silencer:");
-                t.printStackTrace();
-                
-                silencer = null;
-                return;
-            }
-        }
-    }
-    
-    protected class Heartbeat extends Thread {
-    
-        private ServoController controller;
-        
-        Heartbeat(ServoController controller) {
-        
-            this.controller = controller;
-        }
-    
-        /**
-         * Wait until timeout expiresm then reposition the servos and die.
-         *
-         * The {@link #silencer silencer} will take care of the rest.
-         */
-         public void run() {
-         
-             try {
-         
-                while ( timeUntilHeartbeat() > 0 ) {
-                
-                    //System.err.println("waiting for " + timeUntilHeartbeat() + "ms...");
-                    Thread.sleep(timeUntilHeartbeat());
-                    //System.err.println("checking... " + timeUntilHeartbeat() + " left");
-                }
-                
-                //System.err.println("Repositioning now.");
-                
-                repositioningNow = true;
-
-                // Nobody knows what had been happening since last
-                // action.
-                
-                // Let's play a trick. A complete resetup includes
-                // header length (which I don't want to touch (FIXME))
-                // and throw range. Since setRange() includes
-                // repositioning the servos, and in case the controller
-                // had a power blackout (which reset the range to
-                // default 90 degrees), I'll just set the range ;)
-                
-                synchronized ( controller ) {
-                
-                    setRange(range);
-                }
-                
-                //System.err.println("Finished repositioning");
-            
-            } catch ( InterruptedException iex ) {
-            
-                // This is probably silencer thread stopping us, it's OK
-                
-            } catch ( Throwable t ) {
-            
-                // Oh shit... Okay. Let's get out of here.
-
-                System.err.println("Heartbeat:");
-                t.printStackTrace();
-
-            } finally {
-            
-                heartbeat = null;
-                repositioningNow = false;
-                startTimeout();
-            }
-        }
+        touch();
     }
     
     /**
@@ -1072,5 +763,50 @@ public class FT639ServoController implements ServoController, FT639Constants {
     private static int double2int(double value) {
     
         return (int)(value * 255);
+    }
+
+    protected SilentProxy createSilentProxy() {
+    
+        return new FT639SilentProxy();
+    }
+    
+    private void _silentStatusChanged(boolean mode) {
+    
+        silentStatusChanged(mode);
+    }
+    
+    protected class FT639SilentProxy implements SilentProxy {
+    
+        public synchronized void sleep() {
+        
+            try {
+            
+                setSetupMode();
+                _silentStatusChanged(false);
+                
+            } catch ( IOException ioex ) {
+            
+                // VT: NOTE: Not the best solution, but what can I really
+                // do?
+                
+                ioex.printStackTrace();
+            }
+        }
+        
+        public synchronized void wakeUp() {
+        
+            try {
+            
+                reset();
+                _silentStatusChanged(true);
+                
+            } catch ( IOException ioex ) {
+            
+                // VT: NOTE: Not the best solution, but what can I really
+                // do?
+                
+                ioex.printStackTrace();
+            }
+        }
     }
 }

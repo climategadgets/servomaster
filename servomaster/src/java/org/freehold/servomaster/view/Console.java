@@ -1,6 +1,7 @@
 package org.freehold.servomaster.view;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -10,8 +11,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,8 +21,8 @@ import javax.swing.WindowConstants;
 
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.ServoControllerMetaData;
+import org.freehold.servomaster.device.model.TransitionController;
 
 /**
  * The console.
@@ -61,9 +60,9 @@ import org.freehold.servomaster.device.model.ServoControllerMetaData;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.11 2002-01-05 04:05:23 vtt Exp $
+ * @version $Id: Console.java,v 1.12 2002-03-09 05:23:16 vtt Exp $
  */
-public class Console implements ServoControllerListener, ActionListener, ItemListener {
+public class Console implements ActionListener {
 
     /**
      * The controller to watch and control.
@@ -81,14 +80,9 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     private JFrame mainFrame;
     
     /**
-     * The checkbox responsible for controlling the silent mode.
+     * The controller silent status display.
      */
-    private JCheckBox silentBox;
-    
-    /**
-     * The label that shows the silence status of the controller.
-     */
-    private JLabel silentLabel;
+    private SilencerPanel silencerPanel;
     
     /**
      * Pressing this button will reset the controller.
@@ -97,6 +91,26 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
      * application will terminate.
      */
     private JButton resetButton;
+    
+    /**
+     * Pressing this button will start the swing demo.
+     */
+    private JButton swingDemoButton;
+    
+    /**
+     * Pressing this button will start the clock demo.
+     */
+    private JButton clockDemoButton;
+    
+    /**
+     * Pressing this button will start the wave demo.
+     */
+    private JButton waveDemoButton;
+    
+    /**
+     * Currently running demo thread.
+     */
+    private Thread demo;
     
     /**
      * Set of servos the controller offers.
@@ -122,12 +136,12 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     
         try {
         
-            if ( args.length < 2 ) {
+            if ( args.length < 1 ) {
             
-                System.err.println("Usage: <script> <servo controller class name> <servo controller port name>");
+                System.err.println("Usage: <script> <servo controller class name> [<servo controller port name>]");
                 System.err.println("");
                 System.err.println("Example: ft_view org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
-                System.err.println("Example: java -jar servomaster.jar org.freehold.servomaster.device.impl.ft.FT639ServoController /dev/ttyS0");
+                System.err.println("Example: java -jar servomaster.jar org.freehold.servomaster.device.impl.phidget.PhidgetServoController");
                 System.exit(1);
             }
         
@@ -137,9 +151,17 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 Object controllerObject = controllerClass.newInstance();
                 controller = (ServoController)controllerObject;
                 
-                controller.init(args[1]);
+                if ( args.length == 2 ) {
                 
-                portName = args[1];
+                    portName = args[1];
+                }
+                
+                controller.init(portName);
+                
+                // If the original port name wasn't specified, it is defined
+                // in the controller by now
+                
+                portName = controller.getPort();
                 
             } catch ( Throwable t ) {
             
@@ -178,6 +200,8 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                     System.out.println("=== META: supports silent mode");
                     
                     controller.setSilentMode(true);
+                    controller.setSilentTimeout(10000, 30000);
+                    silencerPanel = new SilencerPanel(controller);
                 }
                 
             
@@ -213,53 +237,16 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             // VT: FIXME: Have to terminate the application instead.
             // Currently, you have to Ctrl-Break it.
             
-            mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             mainFrame.getContentPane().setLayout(layout);
             
-            cs.fill = GridBagConstraints.HORIZONTAL;
+
+            cs.fill = GridBagConstraints.BOTH;
             cs.gridx = 0;
             cs.gridy = 0;
-            cs.gridwidth = servoCount;
-            cs.weightx = 1;
-            
-            // VT: NOTE: This actually depends on whether the controller
-            // supports the silent mode. Let's just create the box to avoid
-            // any NullPointerExceptions down the road, and then try to add
-            // the box to the console *only if the controller does support
-            // the silent mode, and supports metadata*.
-            
-            silentBox = new JCheckBox("Silent", true);
-            silentBox.setToolTipText("Silent mode: stop the servo control pulse after period of inactivity");
-            silentBox.addItemListener(this);
-            
-            silentLabel = new JLabel("Controller mode: SETUP");
-            silentLabel.setToolTipText("Current status of the controller in regard to silent mode");
-            
-            try {
-            
-                if ( controller.getMetaData().supportsSilentMode() ) {
-                
-                    layout.setConstraints(silentBox, cs);
-                    mainFrame.getContentPane().add(silentBox);
-                    
-                    cs.gridy++;
-                    
-                    layout.setConstraints(silentLabel, cs);
-                    mainFrame.getContentPane().add(silentLabel);
-                    
-                    cs.gridy++;
-                }
-                
-            } catch ( Throwable t ) {
-            
-                // Just ignore it
-            }
-            
-            controller.addListener(this);
-            
-            cs.fill = GridBagConstraints.BOTH;
             cs.gridwidth = 1;
             cs.gridheight = servoCount;
+            cs.weightx = 1;
             cs.weighty = 1;
             
             for ( int idx = 0; idx < servoCount; idx++ ) {
@@ -321,9 +308,25 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 t.printStackTrace();
             }
             
-            // If the controller view has instantiated, the constraint Y
-            // coordinate has been advanced. If not, we didn't need it
+            // If the controller view has been instantiated, the constraint
+            // Y coordinate has been advanced. If not, we didn't need it
             // anyway
+            
+            if ( silencerPanel != null ) {
+            
+                cs.fill = GridBagConstraints.HORIZONTAL;
+                cs.gridx = 0;
+                cs.gridy++;
+                cs.gridwidth = servoCount;
+                cs.gridheight = 1;
+                cs.weightx = 1;
+                cs.weighty = 0;
+
+                layout.setConstraints(silencerPanel, cs);
+                mainFrame.getContentPane().add(silencerPanel);
+                
+                cs.gridy++;
+            }
             
             JPanel buttonContainer = new JPanel();
             
@@ -346,22 +349,32 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             
             bcCs.gridx++;
             
-            JButton swingDemoButton = new JButton("Swing Demo");
+            swingDemoButton = new JButton("Swing Demo");
+            swingDemoButton.addActionListener(this);
             
             bcLayout.setConstraints(swingDemoButton, bcCs);
             buttonContainer.add(swingDemoButton);
 
             bcCs.gridx++;
             
-            JButton clockDemoButton = new JButton("Clock Demo");
+            clockDemoButton = new JButton("Clock Demo");
+            clockDemoButton.addActionListener(this);
             
             bcLayout.setConstraints(clockDemoButton, bcCs);
             buttonContainer.add(clockDemoButton);
             
+            bcCs.gridx++;
+            
+            waveDemoButton = new JButton("Wave Demo");
+            waveDemoButton.addActionListener(this);
+            
+            bcLayout.setConstraints(waveDemoButton, bcCs);
+            buttonContainer.add(waveDemoButton);
+            
             // VT: FIXME: Enable them when the demo code is ready
             
-            swingDemoButton.setEnabled(false);
             clockDemoButton.setEnabled(false);
+            waveDemoButton.setEnabled(false);
             
             layout.setConstraints(buttonContainer, cs);
             mainFrame.getContentPane().add(buttonContainer);
@@ -383,31 +396,115 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     }
     
     /**
-     * React to the notification from the {@link #controller controller}
-     * about the silent status change.
-     *
-     * @param controller The controller which sent the message.
-     *
-     * @param mode The silent mode if <code>true</code>.
-     */
-    public void silentStatusChanged(ServoController controller, boolean mode) {
-    
-        silentLabel.setText("Controller mode: " + (mode ? "ACTIVE" : "Sleeping"));
-    }
-    
-    /**
      * React to the button presses.
      */
     public void actionPerformed(ActionEvent e) {
     
+        if ( demo != null ) {
+        
+            demo.interrupt();
+            return;
+        }
+        
         if ( e.getSource() == resetButton ) {
+        
+            new Thread(new reset()).start();
+        
+        } else if ( e.getSource() == swingDemoButton ) {
+        
+            demo = new Thread(new swing());
+            demo.start();
+
+        } else if ( e.getSource() == clockDemoButton ) {
+        
+            demo = new Thread(new swing());
+            demo.start();
+
+        } else if ( e.getSource() == waveDemoButton ) {
+        
+            demo = new Thread(new swing());
+            demo.start();
+        }
+    }
+    
+    abstract protected class exec implements Runnable {
+    
+        public void run() {
         
             try {
                 
                 controller.reset();
                 
-                // VT: FIXME: Remove the transition controller, if any, and
-                // reattach it later
+                HashMap trans = new HashMap();
+                HashMap position = new HashMap();
+                
+                for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+                
+                    Servo s = (Servo)i.next();
+                    
+                    trans.put(s, s.getTransitionController());
+                    position.put(s, new Double(s.getPosition()));
+                    
+                    s.attach(null);
+                }
+                
+                prepare();
+                execute();
+                
+                for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+                
+                    Servo s = (Servo)i.next();
+                    
+                    s.attach((TransitionController)trans.get(s));
+                    
+                    s.setPosition(((Double)position.get(s)).doubleValue());
+                }
+
+            } catch ( Throwable t ) {
+            
+                if ( t instanceof InterruptedException ) {
+                
+                    // No big deal
+                    
+                    return;
+                }
+                
+                System.err.println("Oops, controller operation failed:");
+                
+                t.printStackTrace();
+                
+                System.err.println("Controller is considered inoperable, exiting");
+                System.exit(1);
+
+            } finally {
+            
+                try {
+                
+                    cleanup();
+                    
+                } catch ( Throwable t ) {
+                
+                    System.err.println("Problem trying to clean up:");
+                    t.printStackTrace();
+                }
+                
+                demo = null;
+            }
+        }
+        
+        abstract protected void prepare() throws Throwable;
+        abstract protected void execute() throws Throwable;
+        abstract protected void cleanup() throws Throwable;
+    }
+    
+    protected class reset extends exec {
+    
+        protected void prepare() {
+        
+            resetButton.setEnabled(false);
+        }
+        
+        protected void execute() throws Throwable {
                 
                 for ( Iterator i = controller.getServos(); i.hasNext(); ) {
                 
@@ -432,40 +529,96 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
                 
                     servoPanel[idx].reset();
                 }
-
-            } catch ( Throwable t ) {
+        }
+        
+        protected void cleanup() {
+        
+            resetButton.setEnabled(true);
+        }
+    }
+        
+    protected class demo extends exec {
+    
+        protected final void prepare() {
+        
+            resetButton.setText("Stop Demo");
+        }
+        
+        protected void execute() throws Throwable {
+                
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
             
-                System.err.println("Oops, couldn't reset the controller:");
-                
-                t.printStackTrace();
-                
-                System.err.println("Controller is considered inoperable, exiting");
-                System.exit(1);
+                ((Servo)i.next()).setPosition(0);
+            }
+            
+            Thread.sleep(1000);
+            
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                ((Servo)i.next()).setPosition(1);
+            }
+            
+            Thread.sleep(1000);
+            
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                ((Servo)i.next()).setPosition(0.5);
+            }
+            
+            for ( int idx = 0; servoPanel[idx] != null; idx++ ) {
+            
+                servoPanel[idx].reset();
+            }
+        }
+        
+        protected final void cleanup() throws Throwable {
+        
+            resetButton.setText("Reset Controller");
+            
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                ((Servo)i.next()).setPosition(0.5);
             }
         }
     }
     
-    /**
-     * React to checkbox status changes.
-     */
-    public void itemStateChanged(ItemEvent e) {
+    protected class swing extends demo {
     
-        if ( e.getSource() == silentBox ) {
+        protected void execute() throws Throwable {
         
-            boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
-        
-            try {
+            Vector servos = new Vector();
             
-                controller.setSilentMode(selected);
+            for ( Iterator i = controller.getServos(); i.hasNext(); ) {
+            
+                Servo s = (Servo)i.next();
                 
-            } catch ( IOException ioex ) {
-            
-                ioex.printStackTrace();
+                servos.add(s);
+                
+                s.setPosition(0);
             }
             
-            if ( !selected ) {
+            Thread.sleep(1000);
             
-                silentLabel.setText("Controller mode: CONTINUOUS");
+            int max = servos.size();
+            
+            // VT: NOTE: Bold assumption: controller contains more than one
+            // servo
+            
+            int current = 0;
+            int trailer = ((current - 1) + max) % max;
+            
+            while ( true ) {
+            
+                Servo currentServo = (Servo)servos.elementAt(current);
+                Servo trailerServo = (Servo)servos.elementAt(trailer);
+                
+                currentServo.setPosition(1);
+                trailerServo.setPosition(0);
+                
+                current = (current + 1) % max;
+                trailer = ((current - 1) + max) % max;
+                
+                Thread.sleep(500);
             }
         }
     }

@@ -1,3 +1,17 @@
+0.4p0	- New driver is being introduced: the PhidgetServoController. Since
+	  this is a qualitative (1 => N), not a quantitative (N => N+1)
+	  change, it can be considered a rewrite - the
+	  AbstractServoController was born implementing the features common
+	  for two so different controllers.
+	- Common parts for the existing controllers are merged into
+	  AbstractServoController
+	- New functionality added to the Servo: ability to specify the
+	  timings and per-servo silent mode support
+	- Console changed to allow the controller port automatic discovery,
+	  if it is supported by the controller driver
+	- Silent mode handler is rewritten, now it supports both the
+	  controller and the servo (and generally anything)
+
 0.3p2	- Fixed a major synchronization screwup (made possible by JDK 1.4
 	  final): there were synchronization locks on both the controller
 	  instance (requested by the silencer and heartbeat threads) and

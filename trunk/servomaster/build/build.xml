@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.22 2003-01-14 06:10:04 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.23 2003-06-16 07:03:01 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -176,6 +176,7 @@
                 <include name="device/model/transition/CrawlTransitionController.java"/>
                 
                 <include name="util/ImmutableIterator.java"/>
+                <include name="util/dec2hex.java"/>
                 
             </fileset>
 
@@ -247,6 +248,7 @@
                 <include name="device/impl/phidget/Firmware.java"/>
                 <include name="device/impl/phidget/firmware/Servo8.java"/>
                 <include name="device/impl/phidget/PhidgetServoController.java"/>
+                <include name="device/impl/phidget/QuadServoController.java"/>
                 
             </fileset>
             
@@ -308,6 +310,7 @@
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
             
                 <include name="device/impl/phidget/PhidgetServoControllerView.java"/>
+                <include name="device/impl/phidget/QuadServoControllerView.java"/>
                 
             </fileset>
             

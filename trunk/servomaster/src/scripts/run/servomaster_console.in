@@ -9,4 +9,19 @@ TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
 @JUSB_CORE_CLASSES@:\
 @JUSB_PLATFORM_CLASSES@
 
+# Let's see if Java binary is available
+
+if @TEST@ ! -x @JAVA@ ; then
+    @ECHO@ "Java binary not found (expected to be at @JAVA@)."
+    @ECHO@ ""
+    @ECHO@ "Possible causes:"
+    @ECHO@ ""
+    @ECHO@ "    - You reinstalled JDK after running configure script;"
+    @ECHO@ "    - You had to run RPM with --nodeps flag and the path is not the one expected."
+    @ECHO@ ""
+    @ECHO@ "How to fix the problem: edit the $0 script and specify the correct locations"
+    
+    exit -1;
+fi
+
 LD_LIBRARY_PATH=@JUSB_LIB@:$LD_LIBRARY_PATH @JAVAX@ org.freehold.servomaster.view.Console $*

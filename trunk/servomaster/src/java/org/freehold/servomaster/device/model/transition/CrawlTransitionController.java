@@ -10,7 +10,7 @@ import org.freehold.servomaster.device.model.TransitionToken;
  * to the timing.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: CrawlTransitionController.java,v 1.3 2002-07-09 07:39:11 vtt Exp $
+ * @version $Id: CrawlTransitionController.java,v 1.4 2002-09-30 00:31:41 vtt Exp $
  */
 public class CrawlTransitionController implements TransitionController {
 
@@ -30,7 +30,7 @@ public class CrawlTransitionController implements TransitionController {
             // Calculate the step
             // VT: FIXME: this may throw UnsupportedOperationException
             
-            final int precision = target.getController().getMetaData().getPrecision();
+            final int precision = Integer.parseInt(target.getMeta().getProperty("servo/precision").toString());
             final double step = 1/(double)(precision - 1);
         
             while ( true ) {

@@ -10,7 +10,6 @@ import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerListener;
-import org.freehold.servomaster.device.model.ServoControllerMetaData;
 
 /**
  * Synchronization check.
@@ -26,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoControllerMetaData;
  * This <strong>is</strong> the stress test.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001,2002
- * @version $Id: SyncCheck.java,v 1.4 2002-03-12 07:07:00 vtt Exp $
+ * @version $Id: SyncCheck.java,v 1.5 2002-09-30 00:31:41 vtt Exp $
  */
 public class SyncCheck implements ServoListener, ServoControllerListener {
 

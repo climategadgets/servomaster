@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.9 2002-09-13 20:03:51 vtt Exp $
+ * @version $Id: Servo.java,v 1.10 2002-09-30 00:31:40 vtt Exp $
  */
 public interface Servo {
 
@@ -61,27 +61,6 @@ public interface Servo {
     public double getActualPosition();
     
     /**
-     * Set the servo range.
-     *
-     * <p>
-     *
-     * Be careful with the range selection, especially over 90\u00B0, not
-     * all the servos support it.
-     *
-     * @param range Requested servo range, 0\u00B0 to 180\u00B0.
-     *
-     * @exception IllegalArgumentException if the servo isn't capable of
-     * supporting the requested range.
-     *
-     * @exception UnsupportedOperationException if the hardware controller
-     * doesn't support the range selection.
-     *
-     * @exception IOException if there was a problem communicating with the
-     * device, or the device was unable to complete the operation.
-     */
-    public void setRange(int range) throws IOException;
-    
-    /**
      * Add the servo listener.
      *
      * @param listener The listener to notify when the position changes.
@@ -116,16 +95,9 @@ public interface Servo {
     /**
      * Get the servo metadata.
      *
-     * @return Servo metadata array. Each array entry corresponds to the
-     * servo properties under the voltage pertinent to that entry.
-     *
-     * @exception UnsupportedOperationException if the particular
-     * implementation doesn't support the capabilities discovery.
-     *
-     * @deprecated Use {@link Meta Meta} methods to obtain and change the
-     * metadata instead.
+     * @return Servo metadata.
      */
-    public ServoMetaData[] getMetaData();
+    public Meta getMeta();
     
     /**
      * Get the reference to the controller.

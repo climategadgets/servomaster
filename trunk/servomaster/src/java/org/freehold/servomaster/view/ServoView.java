@@ -35,7 +35,7 @@ import org.freehold.servomaster.device.model.transition.CrawlTransitionControlle
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.19 2002-01-04 03:16:32 vtt Exp $
+ * @version $Id: ServoView.java,v 1.20 2002-09-30 00:31:41 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -142,7 +142,10 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         
         try {
         
-            this.precision = controller.getMetaData().getPrecision();
+            // VT: FIXME: Now, even the individual servos should support
+            // precision and this must only be a fallback
+        
+            this.precision = Integer.parseInt((String)controller.getMeta().getProperty("controller/precision"));
         
         } catch ( UnsupportedOperationException ex ) {
         

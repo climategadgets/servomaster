@@ -1,5 +1,6 @@
 package org.freehold.servomaster.device.model;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -23,7 +24,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.3 2002-03-13 04:51:43 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.4 2002-09-30 00:31:40 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -70,9 +71,20 @@ abstract public class AbstractServoController implements ServoController {
     
     public AbstractServoController() {
     
+    }
+    
+    public synchronized final void init(String portName) throws IOException {
+    
+        if ( this.portName != null ) {
+        
+            throw new IllegalStateException("Already initialized");
+        }
+        
+        doInit(portName);
+    
         try {
         
-            if ( getMetaData().supportsSilentMode() ) {
+            if ( getMeta().getFeature("controller/silent") ) {
             
                 silencerProxy = createSilentProxy();
                 silencer = new SilentHelper(silencerProxy);
@@ -82,8 +94,14 @@ abstract public class AbstractServoController implements ServoController {
         } catch ( UnsupportedOperationException uoex ) {
         
             // They don't want to play nice, fine :(
+
         }
     }
+    
+    /**
+     * Perform the actual initialization.
+     */
+    abstract protected void doInit(String portName) throws IOException;
     
     /**
      * Check if the controller is initialized.
@@ -195,7 +213,7 @@ abstract public class AbstractServoController implements ServoController {
         return (silencer == null) ? false : silencer.isSilentNow();
     }
 
-    public ServoControllerMetaData getMetaData() {
+    public Meta getMeta() {
     
         throw new UnsupportedOperationException();
     }

@@ -1,3 +1,11 @@
+0.4p2   - Added support for PhidgetAdvancedServo
+	- Support for different Phidgets made generic, the only part that
+	  needs to be changed now when new Phidget is introduced is the
+	  ProtocolHandler and meta objects
+	- Changed the metadata model. From now on, it is possible to
+	  discover the controller and servo abstraction capabilities in a
+	  generic way. Sort of like JavaBeans for the servo controllers.
+
 0.4p0	- New driver is being introduced: the PhidgetServoController. Since
 	  this is a qualitative (1 => N), not a quantitative (N => N+1)
 	  change, it can be considered a rewrite - the

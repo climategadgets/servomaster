@@ -177,17 +177,29 @@
                                 <p>
                                 
                                 In order to cope with this problem, the
-                                disconnected mode was introduced. If the
-                                disconnect is explicitly allowed (<a
+                                disconnected mode was introduced.
+                                
+                                <p>
+                                
+                                If the disconnect is explicitly allowed (<a
                                 href="../meta/controller/allow_disconnect/index.html"><code>controller/allow_disconnect</code></a>
-                                feature), then an error when communicating
-                                with the hardware bumps the driver into the
-                                disconnected mode. The error is never
-                                reported to the caller, however, the
-                                notification is sent to the
+                                feature, defaults to true), then an error
+                                when communicating with the hardware bumps
+                                the driver into the disconnected mode. The
+                                error is never reported to the caller,
+                                however, the notification is sent to the
                                 <code>DisconnectListener</code>s of the
                                 controller so they are aware of the
                                 disconnect and can take preventive measures.
+                                
+                                <p>
+                                
+                                If the disconnect is not allowed, then the
+                                problems communicating to the hardware
+                                translate into <code>IOException</code>s. 
+                                The driver will do its best to reestablish
+                                the communications with the hardware, but
+                                there are no guarantees.
                                 
                                 <p>
                                 

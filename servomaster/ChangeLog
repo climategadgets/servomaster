@@ -1,3 +1,8 @@
+0.3p2	- Revisited synchronization issues
+	- Implemented consistent initialization check - now it is not
+	  possible for the controller implementation to pretend it's working
+	  or give the wrong problem cause if it wasn't initialized yet
+
 0.3p1	- More bugfixes
 	- Lazy mode added: the command to the controller will not be sent
 	  unless it is actually required

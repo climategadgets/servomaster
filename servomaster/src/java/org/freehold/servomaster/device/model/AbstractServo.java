@@ -11,7 +11,7 @@ import java.util.Set;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractServo.java,v 1.3 2002-02-10 07:23:55 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.4 2002-02-20 08:25:12 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -149,6 +149,9 @@ abstract public class AbstractServo implements Servo {
      * This method is ultimately called by the transition controller, as
      * well as directly from {@link #setPosition setPosition()} when
      * the transition controller is not attached.
+     *
+     * @exception IOException if there was a problem communicating with the
+     * hardware controller.
      */
     abstract protected void setActualPosition(double position) throws IOException;
 

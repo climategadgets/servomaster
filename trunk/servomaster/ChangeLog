@@ -1,6 +1,7 @@
 0.7p0   - Added support for Pololu USB 16-Servo controller
         - Replaced --enable-ft639 and --enable-phidget with more generic
 	  --enable-serial and --enable-usb
+        - Added LimitTransformer
 
 0.6p3dev1 Replaced jUSB (http://jusb.sf.net) with javax.usb
           (http://javax-usb.sf.net), to get a feeling for it. Seems to work

@@ -1,5 +1,6 @@
-// $Id: servomaster_console.cpp,v 1.6 2003-09-03 06:44:23 vtt Exp $
+// $Id: servomaster_console.cpp,v 1.7 2003-09-03 08:07:08 vtt Exp $
 #include <PhidgetServoController.h>
+#include <iostream.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -27,7 +28,9 @@ int main() {
         
     } catch ( const std::exception &e ) {
     
-        printf("Problem: %s\n", e.what());
+        //printf("Problem: %s\n", e.what());
+        
+        cerr << "Exception: " << e.what() << endl;
         return 1;
     }
     

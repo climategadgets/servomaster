@@ -637,6 +637,11 @@ abstract public class AbstractUsbServoController extends AbstractServoController
     
         checkInit();
         
+        if (protocolHandler == null) {
+        
+            throw new IllegalStateException("Not Initialized (can't determine hardware type?)");
+        }
+        
         return protocolHandler.getServoCount();
     }
     

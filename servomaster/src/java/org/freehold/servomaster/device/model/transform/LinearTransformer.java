@@ -14,13 +14,12 @@ import org.freehold.servomaster.device.model.Servo;
  * <p>
  *
  * Actually, this transformation can be achieved with the stack consisting
- * of the {@link ScaleTransformer scale} and {@link CosineTransformer
- * cosine} transformers, but it is rather cumbersome, plus adds unnecessary
- * overhead, so it was decided to provide a separate implementation.
- *
+ * of the scale, cosine and arccosine transformers, but it is rather
+ * cumbersome, plus adds unnecessary overhead, so it was decided to provide
+ * a separate implementation.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: LinearTransformer.java,v 1.1 2001-12-31 23:33:12 vtt Exp $
+ * @version $Id: LinearTransformer.java,v 1.2 2002-01-01 01:42:13 vtt Exp $
  */
 public class LinearTransformer extends AbstractCoordinateTransformer {
 
@@ -30,12 +29,12 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
     }
     
     protected double transform(double value) {
-    
-        return (2 - Math.cos(value * 180)) / 2;
+        
+        return Math.toDegrees(Math.acos((value * -2)  + 1))/180.0;
     }
     
     protected double resolve(double value) {
     
-        return -(Math.acos((value * 2) - 2)/180);
+        return (Math.cos(Math.toRadians(value * 180)) - 1) / -2;
     }
 }

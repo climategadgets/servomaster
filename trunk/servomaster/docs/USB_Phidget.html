@@ -106,6 +106,17 @@
         with the source tarball (look into
         <code>${install_prefix}/bin</code>, it's already taken care of.
         
+        <p>
+        
+        Another thing to take care of is <code>/proc/bus/usb</code>
+        permissions. You probably don't want to run this code as root, so
+        either you have to manually modify the device permissions so you
+        have read/write access (you have to do it every time after the
+        device is plugged in or the system is rebooted), or use the <a
+        href="http://www.xena.uklinux.net/Linux/usb_perms.html">USB
+        Permissions Daemon</a> to maintain them for you. I haven't checked
+        the status of this with 2.4 kernel, though, it may be fixed already.
+        
         <h2>Conclusion</h2>
         
         Beauty incarnated ;)

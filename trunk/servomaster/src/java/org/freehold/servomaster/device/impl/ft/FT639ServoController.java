@@ -70,7 +70,8 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * how you deal with it. All in all, if you really want to screw up, you
  * will just start multiple JVMs or try to access the serial port from a
  * C/Perl/etc. application. In any case, making this controller a singleton
- * is not going to help at all, so I believe I did The Right Thing &tm;.
+ * is not going to help at all, so I believe I did The Right Thing
+ * <small><sup>TM</sup></small>.
  *
  * <p>
  *
@@ -80,7 +81,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.20 2002-02-13 04:08:53 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.21 2002-02-16 22:44:05 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -243,6 +244,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     }
     
+    /**
+     * Initialize the controller.
+     *
+     * @param portName Serial port name recognized by <a
+     * href="http://java.sun.com/products/javacomm/" target="_top">Java
+     * Communications API</a>.
+     *
+     * @throws IllegalStateException if the controller has already been initialized.
+     */
     public synchronized void init(String portName) throws IOException {
     
         if ( this.portName != null ) {
@@ -467,8 +477,6 @@ public class FT639ServoController implements ServoController, FT639Constants {
             throw new IllegalStateException("Not initialized");
         }
     
-        startTimeout();
-        
         if ( activeMode ) {
         
             // We're already in active mode
@@ -480,6 +488,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         activeMode = true;
 
+        startTimeout();
+        
         //System.err.println("mode: active");
         silentStatusChanged();
     }
@@ -953,7 +963,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
          *
          * The {@link #silencer silencer} will take care of the rest.
          */
-         public synchronized void run() {
+         public void run() {
          
              try {
          
@@ -964,26 +974,23 @@ public class FT639ServoController implements ServoController, FT639Constants {
                     //System.err.println("checking... " + timeUntilHeartbeat() + " left");
                 }
                 
-                synchronized ( this ) {
+                //System.err.println("Repositioning now.");
                 
-                    //System.err.println("Repositioning now.");
-                    
-                    repositioningNow = true;
+                repositioningNow = true;
 
-                    // Nobody knows what had been happening since last
-                    // action.
-                    
-                    // Let's play a trick. A complete resetup includes
-                    // header length (which I don't want to touch (FIXME))
-                    // and throw range. Since setRange() includes
-                    // repositioning the servos, and in case the controller
-                    // had a power blackout (which reset the range to
-                    // default 90 degrees), I'll just set the range ;)
-                    
-                    setRange(range);
-                    
-                    //System.err.println("Finished repositioning");
-                }
+                // Nobody knows what had been happening since last
+                // action.
+                
+                // Let's play a trick. A complete resetup includes
+                // header length (which I don't want to touch (FIXME))
+                // and throw range. Since setRange() includes
+                // repositioning the servos, and in case the controller
+                // had a power blackout (which reset the range to
+                // default 90 degrees), I'll just set the range ;)
+                
+                setRange(range);
+                
+                //System.err.println("Finished repositioning");
             
             } catch ( InterruptedException iex ) {
             

@@ -82,7 +82,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.25 2002-03-09 05:23:15 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.26 2002-03-13 04:54:58 vtt Exp $
  */
 public class FT639ServoController extends AbstractServoController implements FT639Constants {
 
@@ -392,7 +392,7 @@ public class FT639ServoController extends AbstractServoController implements FT6
         
         activeMode = false;
         
-        System.err.println("mode: setup");
+        //System.err.println("mode: setup");
 
         // VT: FIXME: Do I have a right to do this every time or I have to
         // rely on the silencer? I guess the latter
@@ -775,6 +775,13 @@ public class FT639ServoController extends AbstractServoController implements FT6
         silentStatusChanged(mode);
     }
     
+    /**
+     * Wrapper for {@link AbstractServoController#exception exception()}
+     */
+    private void _exception(Throwable t) {
+    
+        exception(t);
+    }
     protected class FT639SilentProxy implements SilentProxy {
     
         public synchronized void sleep() {
@@ -786,10 +793,7 @@ public class FT639ServoController extends AbstractServoController implements FT6
                 
             } catch ( IOException ioex ) {
             
-                // VT: NOTE: Not the best solution, but what can I really
-                // do?
-                
-                ioex.printStackTrace();
+                _exception(ioex);
             }
         }
         
@@ -802,10 +806,7 @@ public class FT639ServoController extends AbstractServoController implements FT6
                 
             } catch ( IOException ioex ) {
             
-                // VT: NOTE: Not the best solution, but what can I really
-                // do?
-                
-                ioex.printStackTrace();
+                _exception(ioex);
             }
         }
     }

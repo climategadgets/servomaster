@@ -30,7 +30,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.3 2002-03-12 07:07:00 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.4 2002-03-13 04:51:43 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -107,8 +107,7 @@ public class PhidgetServoController extends AbstractServoController {
             
                 // Uh oh, I don't think so
                 
-                System.err.println("isConnected:");
-                ioex.printStackTrace();
+                exception(ioex);
                 return false;
             }
         }
@@ -165,8 +164,7 @@ public class PhidgetServoController extends AbstractServoController {
         
         } catch ( IOException ioex ) {
         
-            System.err.println("init:");
-            ioex.printStackTrace();
+            exception(ioex);
         
             if ( isDisconnectAllowed() && (portName != null) ) {
                 
@@ -561,8 +559,7 @@ public class PhidgetServoController extends AbstractServoController {
             
         } catch ( IOException ioex ) {
         
-            System.err.println("send:");
-            ioex.printStackTrace();
+            exception(ioex);
         
             // FIXME: notify the listeners about the departure
                 
@@ -748,6 +745,14 @@ public class PhidgetServoController extends AbstractServoController {
         silentStatusChanged(mode);
     }
     
+    /**
+     * Wrapper for {@link AbstractServoController#exception exception()}
+     */
+    private void _exception(Throwable t) {
+    
+        exception(t);
+    }
+    
     protected class PhidgetSilentProxy implements SilentProxy {
     
         public synchronized void sleep() {
@@ -759,10 +764,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
             } catch ( IOException ioex ) {
             
-                // VT: NOTE: Not the best solution, but what can I really
-                // do?
-                
-                ioex.printStackTrace();
+                _exception(ioex);
             }
         }
         
@@ -777,10 +779,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
             } catch ( IOException ioex ) {
             
-                // VT: NOTE: Not the best solution, but what can I really
-                // do?
-                
-                ioex.printStackTrace();
+                _exception(ioex);
             }
         }
     }

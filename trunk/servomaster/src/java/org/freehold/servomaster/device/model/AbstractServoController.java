@@ -23,7 +23,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.2 2002-03-09 05:23:16 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.3 2002-03-13 04:51:43 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -136,6 +136,19 @@ abstract public class AbstractServoController implements ServoController {
         for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
         
             ((ServoControllerListener)i.next()).silentStatusChanged(this, mode);
+        }
+    }
+    
+    /**
+     * Notify the listeners about the problem that occured.
+     *
+     * @param t The exception to broadcast.
+     */
+    protected void exception(Throwable t) {
+    
+        for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
+        
+            ((ProblemListener)i.next()).exception(this, t);
         }
     }
     

@@ -16,6 +16,7 @@ import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.ServoMetaData;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoControllerMetaData;
@@ -79,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.10 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.11 2002-01-02 03:51:13 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -706,7 +707,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * There is no need to check whether the controller has been initialized
      * - this check is done before the servo instance can be obtained.
      */
-    public class FT639Servo implements Servo {
+    public class FT639Servo extends AbstractServo {
     
         /**
          * The servo id, 0 to 4.
@@ -761,7 +762,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             this.id = id;
             
             // Reset the servo position
-            setPosition((255 >> 1)/255.0, false, 0);
+            setPosition((255 >> 1)/255.0);
         }
         
         public String getName() {
@@ -774,7 +775,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             this.enabled = enabled;
         }
         
-        public synchronized void setPosition(double position, boolean smooth, long interval) throws IOException {
+        public synchronized void setPosition(double position) throws IOException {
         
             if ( !enabled ) {
             
@@ -783,15 +784,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             this.position = position;
 
-            if ( smooth ) {
+            if ( transitionController != null ) {
+            
+                throw new Error("Not Implemented");
                 
-                if ( transitionController == null ) {
+                //Runnable r = new TransitionController();
                 
-                    Runnable r = new TransitionController();
-                    
-                    transitionController = new Thread(r);
-                    transitionController.start();
-                }
+                //transitionController = new Thread(r);
+                //transitionController.start();
 
             } else {
             
@@ -801,17 +801,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             positionChanged();
         }
         
-        /**
-         * Set the servo position without regard to smooth mode.
-         *
-         * <p>
-         *
-         * This method is ultimately called by the entity that calculates
-         * the servo motion in the smooth mode, as well as directly from
-         * {@link #setPosition setPosition()} when smooth mode is not
-         * active.
-         */
-        private synchronized void setActualPosition(double position) throws IOException {
+        protected synchronized void setActualPosition(double position) throws IOException {
         
             checkPosition(position);
             setActiveMode();
@@ -1012,7 +1002,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             Servo s = (Servo)i.next();
             
-            s.setPosition(s.getPosition(), false, 0);
+            s.setPosition(s.getPosition());
         }
     }
     

@@ -3,33 +3,24 @@ package org.freehold.servomaster.device.model.transform;
 import java.io.IOException;
 
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoMetaData;
 
 /**
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.1 2001-12-31 23:33:12 vtt Exp $
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.2 2002-01-02 03:51:13 vtt Exp $
  */
-abstract public class AbstractCoordinateTransformer implements Servo {
+abstract public class AbstractCoordinateTransformer extends AbstractServo {
 
-    /**
-     * The servo to apply the coordinate transformations to.
-     */
-    private Servo target;
-    
     public AbstractCoordinateTransformer(Servo target) {
     
-        if ( target == null ) {
+        super(target);
+    
+        if ( getTarget() == null ) {
         
             throw new IllegalArgumentException("target can't be null");
         }
-        
-        this.target = target;
-    }
-    
-    protected Servo getTarget() {
-    
-        return target;
     }
 
     /**
@@ -39,7 +30,7 @@ abstract public class AbstractCoordinateTransformer implements Servo {
      */
     public String getName() {
     
-        return target.getName();
+        return getTarget().getName();
     }
     
     /**
@@ -48,33 +39,15 @@ abstract public class AbstractCoordinateTransformer implements Servo {
      *
      * @param position Position to set, between 0 and 1.0.
      *
-     * @param smooth True if the movement has to be smooth, false if it has
-     * to be instant.
-     *
-     * @param transitionTime Time to span the movement across. Has to be
-     * <code>0</code> if <code>smooth</code> is false.
-     *
-     * @exception IllegalArgumentException if:
-     *
-     * <ul>
-     *
-     * <li> The <code>transitionTime</code> is not <code>0</code> when
-     *      <code>smooth</code> is false;
-     *
-     * <li> The position after applying the {@link #transform coordinate
-     * transformation} is outside of <code>0...1.0</code> range.
-     *
-     * </ul>
-     *
      * @exception IOException if there was a problem communicating with the
      * device, or the device was unable to complete the operation.
      *
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
-    public void setPosition(double position, boolean smooth, long transitionTime) throws IOException {
+    public void setPosition(double position) throws IOException {
     
-        target.setPosition(transform(position), smooth, transitionTime);
+        getTarget().setPosition(transform(position));
     }
     
     /**
@@ -89,7 +62,7 @@ abstract public class AbstractCoordinateTransformer implements Servo {
      */
     public double getPosition() {
     
-        return resolve(target.getPosition());
+        return resolve(getTarget().getPosition());
     }
     
     /**
@@ -107,32 +80,32 @@ abstract public class AbstractCoordinateTransformer implements Servo {
      */
     public double getActualPosition() {
     
-        return resolve(target.getActualPosition());
+        return resolve(getTarget().getActualPosition());
     }
     
     public void setRange(int range) throws IOException {
     
-        target.setRange(range);
+        getTarget().setRange(range);
     }
     
     public void addListener(ServoListener listener) {
     
-        target.addListener(listener);
+        getTarget().addListener(listener);
     }
     
     public void removeListener(ServoListener listener) {
     
-        target.removeListener(listener);
+        getTarget().removeListener(listener);
     }
     
     public void setEnabled(boolean enabled) throws IOException {
     
-        target.setEnabled(enabled);
+        getTarget().setEnabled(enabled);
     }
     
     public ServoMetaData[] getMetaData() {
     
-        return target.getMetaData();
+        return getTarget().getMetaData();
     }
     
     /**

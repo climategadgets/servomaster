@@ -5,10 +5,10 @@ import java.io.IOException;
 /**
  * The servo abstraction.
  *
- * Allows instant and smooth positioning and feedback.
+ * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.6 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: Servo.java,v 1.7 2002-01-02 03:51:13 vtt Exp $
  */
 public interface Servo {
 
@@ -24,50 +24,20 @@ public interface Servo {
      *
      * @param position Position to set, between 0 and 1.0.
      *
-     * @param smooth True if the movement has to be smooth, false if it has
-     * to be instant.
-     *
-     * <p>
-     *
-     * <strong>NOTE:</strong> Some controllers do support the smooth
-     * movement on the hardware level, some don't. For those that don't, it
-     * is not possible to get the reliable time span, so the controller
-     * abstraction has to perform to the best of its abilities to
-     * approximate the stepping and timing. If it doesn't, oh well.
-     *
-     * <p>
-     *
-     * <strong>NOTE:</strong> It is a responsibility of the implementing
-     * class to ensure that the servos are accessed in a thread safe manner.
-     *
-     * @param transitionTime Time to span the movement across. Has to be
-     * <code>0</code> if <code>smooth</code> is false.
-     *
-     * @exception IllegalArgumentException if:
-     *
-     * <ul>
-     *
-     * <li> The <code>transitionTime</code> is not <code>0</code> when
-     *      <code>smooth</code> is false;
-     *
-     * <li> The position is outside of <code>0...1.0</code> range.
-     *
-     * </ul>
-     *
      * @exception IOException if there was a problem communicating with the
      * device, or the device was unable to complete the operation.
      *
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
-    public void setPosition(double position, boolean smooth, long transitionTime) throws IOException;
+    public void setPosition(double position) throws IOException;
     
     /**
      * Get the position.
      *
      * @return The position that has previously been {@link #setPosition
      * set}. Note that this may not be the actual position of the servo at
-     * the time, if the set operation was requested to be smooth. Use {@link
+     * the time, if the transition controller is attached. Use {@link
      * #getActualPosition getActualPosition()} to obtain the actual servo
      * position.
      */
@@ -79,9 +49,9 @@ public interface Servo {
      * <p>
      *
      * This position may be provided at software (most probably) or hardware
-     * level. Since the servo abstraction supports the smooth movement, it
-     * is possible that the actual position is different from the one {@link
-     * #setPosition requested}.
+     * level. Since the servo abstraction supports the controlled
+     * transition, it is possible that the actual position is different from
+     * the one {@link #setPosition requested}.
      *
      * @return The actual position of the servo.
      */
@@ -150,4 +120,27 @@ public interface Servo {
      * implementation doesn't support the capabilities discovery.
      */
     public ServoMetaData[] getMetaData();
+    
+    /**
+     * Attach the transition controller.
+     *
+     * @param transitionController The transition controller to use.
+     *
+     * @exception UnsupportedOperationException if the particular hardware
+     * or software implementation conflicts with the transition controller
+     * being attached. This may be the case with the servo controllers
+     * supporting the controlled transitions at the hardware level, or if
+     * the transition controller is already installed at the lower level of
+     * the coordinate transformation stack - the transition controllers are
+     * not stackable.
+     */
+    public void attach(TransitionController transitionController);
+    
+    /**
+     * Get the servo that is stacked right under this servo.
+     *
+     * @return The next servo in the stack, or <code>null</code> if this
+     * servo is at the top of the stack.
+     */
+    public Servo getTarget();
 }

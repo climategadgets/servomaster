@@ -1,5 +1,4 @@
 %define kernelversion %(uname -r)
-%define fusemoduledir /lib/modules/%{kernelversion}/kernel/fs/fuse
 
 %define kernelrel %(uname -r | sed -e s/-/_/g)
 %define real_release 6
@@ -15,7 +14,8 @@ URL: http://servomaster.sourceforge.net/
 Buildroot: %{_tmppath}/%{name}-root
 Prefix: /usr
 Packager: Vadim Tkachenko <vt@freehold.crocodile.org>
-Requires: j2sdk = 1.4.2_03-fcs, jusb >= 0.4p5
+#Requires: jusb >= 0.4p5 - this will have to wait
+Requires: j2sdk >= 1.4.0
 %description
 
 ServoMaster is a unified hardware independent servo controller driver. Servo

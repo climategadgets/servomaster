@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.34 2005-02-03 06:51:46 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.35 2005-03-25 21:29:56 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -176,6 +176,7 @@
                 <include name="device/model/transform/SineTransformer.java"/>
                 <include name="device/model/transform/CosineTransformer.java"/>
                 <include name="device/model/transform/ScaleTransformer.java"/>
+                <include name="device/model/transform/LimitTransformer.java"/>
                 <include name="device/model/transform/LinearTransformer.java"/>
 
                 <include name="device/model/transition/CrawlTransitionController.java"/>

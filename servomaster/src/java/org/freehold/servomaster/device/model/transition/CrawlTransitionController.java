@@ -10,7 +10,7 @@ import org.freehold.servomaster.device.model.TransitionToken;
  * to the timing.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: CrawlTransitionController.java,v 1.1 2002-01-02 09:11:18 vtt Exp $
+ * @version $Id: CrawlTransitionController.java,v 1.2 2002-01-03 02:56:19 vtt Exp $
  */
 public class CrawlTransitionController implements TransitionController {
 
@@ -43,15 +43,7 @@ public class CrawlTransitionController implements TransitionController {
                     diff = -diff;
                 }
                 
-                // VT: FIXME: this may be the cause for that stupid "not far
-                // enough" bug
-                
-                if ( diff <= step ) {
-                
-                    System.err.println("Actual: " + actualPosition + " / " + (actualPosition * precision));
-                    System.err.println("Target: " + targetPosition + " / " + (targetPosition * precision));
-                    System.err.println("Step:   " + step);
-                    System.err.println("Diff:   " + diff + " / " + (diff * precision) + "\n");
+                if ( diff <= step/2 ) {
                 
                     token.stop();
                     return;

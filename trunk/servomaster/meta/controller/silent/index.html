@@ -30,46 +30,198 @@
         
         <hr>
         
-        <code>controller/silent</code> <i>feature</i> is true if the
-        hardware is able to shut off the servos.
-        
-        <br>
-        
-        <code>controller/silent</code> <i>property</i> contains the
-        currently set shutoff timeout.
-        
-        <p>
-        
-        Servo shutoff is useful for applications where long periods of
-        inactivity may happen - the servo wear and energy consumption are
-        greatly reduced. An example may be found <a
-        href="http://diy-zoning.sourceforge.net">here</a>.
-        
-        <p>
-        
-        Please note that some controllers (like <a
-        href="../../../docs/FT639.html">FT639</a>) are able to support the
-        shutoff on per-controller basis (all the servos are shut off at the
-        same time), some (like <a
-        href="../../../docs/USB_Phidget.html">PhidgetServo</a>) are able to
-        support the shutoff on per-servo basis (see <a
-        href="../../servo/silent/index.html"><code>servo/silent</code></a>,
-        and some are not able to do it at all.
-        
-        <p>
-        
-        Use the <a
-        href="../../servo/silent/index.html"><code>servo/silent</code></a>
-        feature and property to set the shutoff timeout for the controllers
-        that support per-servo control. For those, the value set with
-        <code>controller/silent</code> will merely be a default.
+        <table border=0 width=100%>
+            <tr>
+                <td valign=top width=20%>
+                    <strong>
+                        <a href="../../../index.html">Introduction</a>
+                    </strong>
+                    
+                    <br>
+                    
+                    <strong>
+                        <a href="../../../docs/index.html">Documentation</a>
+                    </strong>
+                    
+                    <font size=-1>
+                        <ul>
+                        
+                            <li> <strong>Platform Neutral</strong>
+                            
+                            <ul>
+                            
+                                <li> <a
+                                     href="../../../docs/ideal_controller.html">A
+                                     Dream About Ideal Servo Controller</a>
+                                     
+                                <li> <a
+                                     href="../../../docs/smooth_transformer.html">Mixing
+                                     up transition controllers and
+                                     coordinate transformers</a>
+                                     
+                                <li> <a href="../../../docs/future.html">Future
+                                     Plans & Crazy Ideas</a>
+                                
+                            </ul>
+                        
+                            <li> <strong><a href="../../index.html">Metadata</a></strong>
+                            
+                                 <ul>
+                                 
+                                     <li> <strong>Manufacturer</strong>
+                                     
+                                     <br> <a href="../../manufacturer/name/index.html"><code>name</code></a>
+                                     <br> <a href="../../manufacturer/URL/index.html"><code>URL</code></a>
+                                     <br> <a href="../../manufacturer/model/index.html"><code>model</code></a>
+                                     
+                                     <li> <strong>Controller</strong>
+                                     
+                                     <br> <a href="../../controller/maxservos/index.html"><code>maxservos</code></a>
+                                     <br> <a href="../../controller/bandwidth/index.html"><code>bandwidth</code></a>
+                                     <br> <a href="../../controller/precision/index.html"><code>precision</code></a>
+                                     <br> <code>silent</code>
+                                     <br> <a href="../../controller/protocol/USB/index.html"><code>protocol/USB</code></a>
+                                     <br> <a href="../../controller/protocol/serial/index.html"><code>protocol/serial</code></a>
+                                     <br> <a href="../../controller/transition/index.html"><code>transition</code></a>
+                                     <br> <a href="../../controller/firmware/revision/index.html"><code>firmware/revision</code></a>
+                                     
+                                     <li> <strong>Servo</strong>
+                                     
+                                     <br> <a href="../../servo/precision/index.html"><code>precision</code></a>
+                                     <br> <a href="../../servo/range/units/index.html"><code>range/units</code></a>
+                                     <br> <a href="../../servo/range/min/index.html"><code>range/min</code></a>
+                                     <br> <a href="../../servo/range/max/index.html"><code>range/max</code></a>
+                                 
+                                 </ul>
+                                 
+                            <li> <strong>Driver Release Notes</strong>
 
+                            <ul>
+                            
+                                <li> <a href="../../../docs/FT639.html">FT639</a>
+                                
+                                <li> <a href="../../../docs/USB_Phidget.html">PhidgetServo v3.0</a>
+                                
+                                <li> <a href="../../../docs/USB_Phidget4.html">PhidgetAdvancedServo</a>
+                            </ul>
+                        
+                        </ul>
+                    </font>
+                    
+                    <strong>
+                        <a href="../../../docs/getinvolved.html">Get Involved</a>
+                    </strong>
+
+                    <p>
+
+                    <strong>
+                        SourceForge
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://sourceforge.net/projects/servomaster/">Project Page</a>
+                        
+                            <li> <a href="http://sourceforge.net/project/showfiles.php?group_id=34418">Downloads</a>
+                            
+                            <li> <a href="http://sourceforge.net/cvs/?group_id=34418">CVS</a>
+                            
+                            <li> <a href="http://sourceforge.net/mail/?group_id=34418">Mailing Lists</a>
+                            
+                            <li> <a href="http://sourceforge.net/tracker/?group_id=34418&atid=412121">Bug Reports</a>
+
+                            <li> <a href="../../../docs/apidocs/index.html">Javadocs</a>
+                            
+                        </ul>
+                        
+                    </font>
+                    
+                    <strong>
+                        Family
+                    </strong>
+                    
+                    <font size=-1>
+                    
+                        <ul>
+                        
+                            <li> <a href="http://diy-zoning.sourceforge.net/">DIY Zoning</a>
+                            
+                            <li> <a href="http://haywire.sourceforge.net/">Haywire</a>
+                            
+                            <li> <a href="http://jukebox4.sourceforge.net/">Jukebox</a>
+                        
+                            <li> <strong>ServoMaster</strong>
+                        
+                        </ul>
+
+                    </font>
+
+                </td>
+                <td valign=top>
+                    <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left><font color="#ffffff">Metadata: <code>controller/silent</code></font></th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+
+                                <code>controller/silent</code>
+                                <i>feature</i> is true if the hardware is
+                                able to shut off the servos.
+                                
+                                <br>
+                                
+                                <code>controller/silent</code>
+                                <i>property</i> contains the currently set
+                                shutoff timeout.
+                                
+                                <p>
+                                
+                                Servo shutoff is useful for applications
+                                where long periods of inactivity may happen
+                                - the servo wear and energy consumption are
+                                greatly reduced. An example may be found <a
+                                href="http://diy-zoning.sourceforge.net">here</a>.
+                                
+                                <p>
+                                
+                                Please note that some controllers (like <a
+                                href="../../../docs/FT639.html">FT639</a>)
+                                are able to support the shutoff on
+                                per-controller basis (all the servos are
+                                shut off at the same time), some (like <a
+                                href="../../../docs/USB_Phidget.html">PhidgetServo</a>)
+                                are able to support the shutoff on per-servo
+                                basis (see <a
+                                href="../../servo/silent/index.html"><code>servo/silent</code></a>,
+                                and some are not able to do it at all.
+                                
+                                <p>
+                                
+                                Use the <a
+                                href="../../servo/silent/index.html"><code>servo/silent</code></a>
+                                feature and property to set the shutoff
+                                timeout for the controllers that support
+                                per-servo control. For those, the value set
+                                with <code>controller/silent</code> will
+                                merely be a default.
+
+                            </blockquote>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
         <hr>
         <table border=0 width=100%>
             <tr>
                 <td align=left>
                     <font size=-1>
-                        <a href="index.html">ServoMaster: Home</a>
+                        <a href="../../../index.html">ServoMaster: Home</a>
                     </font>                                       
                 </td>
                 <td align=right>

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.27 2004-10-13 07:30:13 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.28 2005-01-13 03:01:53 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -53,8 +53,8 @@
     
     <property name="javax-usb.jar" value="../lib/jsr80.jar"/>
     
-    <property name="ft639.enabled.${ft639.enabled}" value="true"/>
-    <property name="phidget.enabled.${phidget.enabled}" value="true"/>
+    <property name="serial.enabled.${serial.enabled}" value="true"/>
+    <property name="usb.enabled.${usb.enabled}" value="true"/>
     
     <!--
     
@@ -78,10 +78,13 @@
       
     <property name="model.build.src" value="../build/src/model"/>
     <property name="ft639.build.src" value="../build/src/ft639"/>
+    <property name="usb.build.src" value="../build/src/usb"/>
     <property name="phidget.build.src" value="../build/src/phidget"/>
+    <property name="pololu.build.src" value="../build/src/pololu"/>
     <property name="view.build.src" value="../build/src/view"/>
     <property name="view_ft639.build.src" value="../build/src/view_ft639"/>
     <property name="view_phidget.build.src" value="../build/src/view_phidget"/>
+    <property name="view_pololu.build.src" value="../build/src/view_pololu"/>
     <property name="test.build.src" value="../build/src/test"/>
 
     <!--
@@ -99,6 +102,7 @@
                                         model,
                                         ft639,
                                         phidget,
+                                        pololu,
                                         view,
                                         view_ft639,
                                         view_phidget,
@@ -134,8 +138,8 @@
         <echo>
         
             Will be installed to: ${prefix}
-            FT639 enabled:        ${ft639.enabled}
-            Phidget enabled:      ${phidget.enabled}
+            Serial enabled:       ${serial.enabled}
+            USB enabled:          ${usb.enabled}
 
         </echo>
 
@@ -184,13 +188,13 @@
 
     </target>
     
-    <target name="JavaCOMM_check" if="ft639.enabled.true" unless="JavaCOMM.present">
+    <target name="JavaCOMM_check" if="serial.enabled.true" unless="JavaCOMM.present">
     
         <fail message="JavaCOMM extension is not present"/>
         
     </target>
     
-    <target name="JavaCOMM_enable" depends="JavaCOMM_check" if="ft639.enabled.true">
+    <target name="JavaCOMM_enable" depends="JavaCOMM_check" if="serial.enabled.true">
     
         <echo message="JavaCOMM verified"/>
     
@@ -202,7 +206,7 @@
         
       -->
 
-    <target name="ft639" depends="model,JavaCOMM_enable" if="ft639.enabled.true">
+    <target name="ft639" depends="model,JavaCOMM_enable" if="serial.enabled.true">
     
         <copy todir="${ft639.build.src}/org/freehold/servomaster">
         
@@ -218,22 +222,44 @@
         <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
+    
+    <!--
+        
+        USB abstractions
+        
+      -->
+
+    <target name="usb" depends="model" if="usb.enabled.true">
+    
+        <copy todir="${usb.build.src}/org/freehold/servomaster/device/impl/usb">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster/device/impl/usb">
+            
+                <include name="AbstractUsbServoController.java"/>
+                
+            </fileset>
+
+        </copy>
+        
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${usb.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${javax-usb.jar}"/>
+            </classpath>
+        </javac>
+
+    </target>
 
     <!--
     
-        The classes pertinent to Phidget controller
+        The classes pertinent to Phidget controllers
         
       -->
     
-    <target name="phidget" depends="model" if="phidget.enabled.true">
+    <target name="phidget" depends="model,usb" if="usb.enabled.true">
     
         <copy todir="${phidget.build.src}/org/freehold/servomaster">
         
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
-            
-                <!-- VT: FIXME: USB classes will have to be separated into a dedicated target -->
-                
-                <include name="device/impl/usb/AbstractUsbServoController.java"/>
             
                 <include name="device/impl/phidget/Firmware.java"/>
                 <include name="device/impl/phidget/firmware/Servo8.java"/>
@@ -245,6 +271,32 @@
         </copy>
     
         <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
+            <classpath>
+                <pathelement path="${javax-usb.jar}"/>
+            </classpath>
+        </javac>
+        
+    </target>
+
+    <!--
+    
+        The classes pertinent to Pololu controllers
+        
+      -->
+    
+    <target name="pololu" depends="model,usb" if="usb.enabled.true">
+    
+        <copy todir="${pololu.build.src}/org/freehold/servomaster">
+        
+            <fileset dir="${src.java.dir}/org/freehold/servomaster">
+            
+                <include name="device/impl/pololu/USB16ServoController.java"/>
+                
+            </fileset>
+            
+        </copy>
+    
+        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${pololu.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -277,7 +329,7 @@
 
     </target>
     
-    <target name="view_ft639" depends="view,ft639" if="ft639.enabled.true">
+    <target name="view_ft639" depends="view,ft639" if="serial.enabled.true">
     
         <copy todir="${view_ft639.build.src}/org/freehold/servomaster">
         
@@ -293,7 +345,7 @@
 
     </target>
 
-    <target name="view_phidget" depends="view,phidget" if="phidget.enabled.true">
+    <target name="view_phidget" depends="view,phidget" if="usb.enabled.true">
     
         <copy todir="${view_phidget.build.src}/org/freehold/servomaster">
         
@@ -333,7 +385,7 @@
 
     </target>
 
-    <target name="test_phidget" depends="model" if="phidget.enabled.true">
+    <target name="test_phidget" depends="model" if="usb.enabled.true">
     
         <!--
     

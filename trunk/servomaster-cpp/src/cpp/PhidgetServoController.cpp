@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.8 2003-08-30 00:04:09 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.9 2003-09-03 05:40:11 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -74,7 +74,7 @@ namespace servomaster {
                 
             default:
             
-                printf("Vendor/product ID: %8X\n", thePhidgetServo->getProtocolHandlerId());
+                printf("Vendor/product ID: %8lX\n", thePhidgetServo->getProtocolHandlerId());
                 throw std::runtime_error("Unknown vendor/product ID combination");
         }
         
@@ -301,12 +301,12 @@ namespace servomaster {
             serial(NULL) {
         
             this->device = device;
-            printf("UsbContext: created: %s %x\n", model, this);
+            printf("UsbContext: created: %s %x\n", model, (unsigned int)this);
         }
         
         UsbContext::~UsbContext() {
         
-            printf("UsbContext: destroyed: %s %x #%s\n", model, this, serial);
+            printf("UsbContext: destroyed: %s %x #%s\n", model, (unsigned int)this, serial);
             
             free(serial);
         }
@@ -448,7 +448,7 @@ namespace servomaster {
             min_pulse(1000),
             max_pulse(2000) {
             
-            printf("PhidgetServo: created #%X: %X\n", id, this);
+            printf("PhidgetServo: created #%X: %X\n", id, (unsigned int)this);
         }
         
         PhidgetServo::~PhidgetServo() {
@@ -459,7 +459,7 @@ namespace servomaster {
             // servo right before destroying itself, so we don't do anything
             // here.
         
-            printf("PhidgetServo: destroyed #%X: %X\n", id, this);
+            printf("PhidgetServo: destroyed #%X: %X\n", id, (unsigned int)this);
         }
         
         void PhidgetServo::setActualPosition(double position) {

@@ -1,13 +1,14 @@
-## $Id: Makefile.am,v 1.2 2002-12-12 01:46:52 vtt Exp $
+## $Id: Makefile.am,v 1.3 2003-01-06 05:48:01 vtt Exp $
 
-bin_PROGRAMS = ft_view
+bin_PROGRAMS = console
 
-ft_view_SOURCES = ft_view
+console_SOURCES = console
 
 RM = @RM@
+EXEEXT = @EXEEXT@
 
 clean:
 
 	${RM} -f *~ .*~ ${bin_PROGRAMS}
 
-ft_view$(EXEEXT):
+console$(EXEEXT):

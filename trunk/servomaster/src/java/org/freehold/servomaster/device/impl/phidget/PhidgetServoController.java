@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.21 2003-07-03 18:07:59 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.22 2003-07-03 18:18:29 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -1549,18 +1549,10 @@ public class PhidgetServoController extends AbstractServoController {
              * <pre>
              * buffer[0] = Index - 1;
              *
-             * ((float *)(buffer+4))[0] = m_ServoPosition[Index - 1];
-             * ((float *)(buffer+4))[1] =  m_MaxVelocity[Index - 1] / 50;
-             * ((float *)(buffer+4))[2] =  m_Acceleration[Index - 1] / 50;
-             *
-             * or
-             *
-             * buffer[0] = Index - 1;
-             *
              * if (m_blnAssert[Index - 1] == VARIANT_TRUE) buffer[1] = 0xff;
-             * ((int *)(buffer+4))[0] = (int)((m_ServoPosition[Index - 1] + 23) * 16218);
-             * ((int *)(buffer+4))[1] = (int)((m_MaxVelocity[Index - 1] / 50) * 16218);
-             * ((int *)(buffer+4))[2] = (int)((m_Acceleration[Index - 1] / 50) * 16218);
+             * ((int *)(buffer+4))[0] = (int)((m_ServoPosition[Index - 1] + 23) * 8109);
+             * ((int *)(buffer+4))[1] = (int)((m_MaxVelocity[Index - 1] / 50) * 8109);
+             * ((int *)(buffer+4))[2] = (int)((m_Acceleration[Index - 1] / 50) * 8109);
              * </pre>
              *
              * MaxVelocity and Acceleration are measured in degrees/second. (^2)
@@ -1577,7 +1569,7 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 this.position = (float)min_offset + (float)(position * (max_offset - min_offset));
                 
-                // 16218
+                // 8109 is firmware translation factor
                 
                 float2byte((this.position + 23) * 8109, buffer, 4);
                 float2byte((this.velocity / 50) * 8109, buffer, 8);
@@ -1632,8 +1624,8 @@ public class PhidgetServoController extends AbstractServoController {
                 
                 // Initial values
                 
-                velocity = 360;
-                acceleration = 360;
+                velocity = 400;
+                acceleration = 2000;
             }
             
             protected Meta createServoMeta() {
@@ -1726,12 +1718,11 @@ public class PhidgetServoController extends AbstractServoController {
                     propertyWriters.put("servo/velocity", pwVelocity);
                     propertyWriters.put("servo/acceleration", pwAcceleration);
 
-                    // Default velocity is 360 degrees/sec, default acceleration
-                    // is 360 dev/sec^2. Maybe it is too much, but I don't care
-                    // to find out at this time.
+                    // Default velocity is 400 degrees/sec, default
+                    // acceleration is 2000 dev/sec^2.
                     
-                    properties.put("servo/velocity", "360");
-                    properties.put("servo/acceleration", "360");
+                    properties.put("servo/velocity", "400");
+                    properties.put("servo/acceleration", "2000");
                 }
             }
         }
@@ -1771,12 +1762,11 @@ public class PhidgetServoController extends AbstractServoController {
                 properties.put("servo/range/min", "0");
                 properties.put("servo/range/max", "180");
                 
-                // Default velocity is 360 degrees/sec, default acceleration
-                // is 360 dev/sec^2. Maybe it is too much, but I don't care
-                // to find out at this time.
+                // Default velocity is 400 degrees/sec, default acceleration
+                // is 2000 dev/sec^2.
                 
-                properties.put("servo/velocity", "360");
-                properties.put("servo/acceleration", "360");
+                properties.put("servo/velocity", "400");
+                properties.put("servo/acceleration", "2000");
             }
         }
     }

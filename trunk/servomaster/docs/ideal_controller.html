@@ -25,8 +25,8 @@
             
             <li> <font color="blue">Support the capabilities
                  discovery.</font> Of course, on the hardware level the
-                 servo can't really tell much about itself, but the
-                 abstraction should support it.
+                 servo can't really tell much about itself, but <font
+                 color="blue">the abstraction should support it.</font>
                  
             <li> Implication: a database of servos in existence would not
                  take much space, but will be very useful.
@@ -41,30 +41,46 @@
             
             <li> It should be possible to preset the minimum and maximum
                  angle for the servo. And not only 90&deg; vs. 180&deg;, but
-                 arbitrary angle.  Implied: the pulse length range. The
-                 limits may be defined by the servo construction and/or
-                 mechanical layout of the apparatus in which the servo is
-                 used. Implied: range should be included into capabilities
-                 discovery.
+                 arbitrary angle.
                  
-            <li> It should be possible to preset the servo center position. 
-                 The actual implementation center may be different from
-                 position 128 (assuming the max is 255) due to the limits
-                 described above.
+            <li> Implied: the pulse length range. The limits may be defined
+                 by the servo construction and/or mechanical layout of the
+                 apparatus in which the servo is used. This is going to get
+                 really technical, but the ability to specify the minimum
+                 and maximum pulse length just has to be present.
                  
-            <li> <font color="blue">The servo interface shouldn't realy
+            <li> Implied: range should be included into capabilities
+                 discovery. Implied: the capabilities for each particular
+                 servo are different.
+                 
+            <li> Even though the actual range may be different from 90&deg;
+                 or 180&deg;, the number of steps to cover the actual range
+                 should be the same.
+                 
+            <li> Exactly as the capabilities of each physical instance of
+                 the servo are different, the capabilities of each physical
+                 instance of the controller may be different. To allow
+                 proper operation, there should be a mechanism to override
+                 default (advertised) capabilities of the servo and the
+                 controller. This can be achieved by providing
+                 "configurability".
+                 
+            <li> An entity able to instantiate the controller and configure
+                 it ("controller factory") will be useful. Implied:
+                 generalized servo controller and servo definition format.
+                 Begs for XML configuration file.
+                 
+            <li> <font color="blue">The servo interface shouldn't really
                  accept the values from 0 to 255 for the servo position, but
                  rather 0.0 to 1.0 (extreme left to extreme right). The
                  reason is, different controllers have different value
                  ranges - some operate from 0 to 255, some from 0 to 254,
-                 some use the high bit as the direction indicator and the
-                 rest as position. Implied: precision is different. Implied:
-                 controller precision should be included into capabilities
-                 discovery.</font>
-                 
-            <li> Consequence: why not allow to set the arbitrary left,
-                 center and right border, like it is possible to do with the
-                 slider controls?
+                 there is at least <a
+                 href="http://www.medonis.com/asc16.html">one</a> that
+                 accepts positions from 0 to 4000, some use the high bit as
+                 the direction indicator and the rest as position. Implied:
+                 precision is different. Implied: controller precision
+                 should be included into capabilities discovery.</font>
                  
             <li> <font color="blue">Provide the coordinate transformation
                  between the physical servo position and input value. Useful
@@ -75,10 +91,10 @@
                  really a part of the servo abstraction, but rather a module
                  you can plug the servo into.</font>
             
-            <li> <font color="blue">Inverting the coordinate polarity to reverse the servo is
-                 not exactly a life saver, but can be useful and is really
-                 simple. It can be a part of the coordinate transformation
-                 module as well.</font>
+            <li> <font color="blue">Inverting the coordinate polarity to
+                 reverse the servo is not exactly a life saver, but can be
+                 useful and is really simple. It can be a part of the
+                 coordinate transformation module as well.</font>
                  
             <li> <font color="blue">Implication: the coordinate
                  transformation module interface should be stackable.</font>
@@ -98,7 +114,7 @@
             <li> However, the abstraction of the servo controller is
                  important as well: even though the actual servo drivers may
                  be physically and logically separated, they are accessed in
-                 the same uniform manner.
+                 the same uniform manner, and share common properties.
                  
             <li> From the practical standpoint: how do I care if the
                  controller is one piece or distributed, as long as the cost is
@@ -110,22 +126,24 @@
                  
             <li> Smooth transition done in hardware is a desirable feature.
             
-            <li> Actually, it goes beyond just the smooth transition. It is
-                 better described as a controlled transition. The transition
-                 pattern can be specified, for example, just a simple linear
-                 transition in a given time, or a constant and/or limited
-                 acceleration transition (good with moving heavy controlled
-                 bodies), or approximation transition (good when the
-                 exactness of approach to the specified position is
-                 required), or any sort of special effect ("drunken
-                 master").
+            <li> <font color="blue">Actually, it goes beyond just the smooth
+                 transition. It is better described as a controlled
+                 transition. The transition pattern can be specified, for
+                 example, just a simple linear transition in a given time,
+                 or a constant and/or limited acceleration transition (good
+                 with moving heavy controlled bodies), or approximation
+                 transition (good when the exactness of approach to the
+                 specified position is required), or any sort of special
+                 effect ("drunken master").</font>
                  
-            <li> Transition controller isn't really stackable, so it is
-                 enough to "attach" one to the servo abstraction.
+            <li> <font color="blue">Transition controller isn't really
+                 stackable, so it is enough to "attach" one to the servo
+                 abstraction.</font>
             
-            <li> Transition controller may interfere with the coordination
-                 transformers, so there should be a possibility to attach it
-                 at any level of the coordination transformer stack.
+            <li> <font color="blue">Transition controller may interfere with
+                 the coordination transformers, so there should be a
+                 possibility to attach it at any level of the coordination
+                 transformer stack.</font>
             
         </ul>
         

@@ -1,4 +1,4 @@
-// $Id: PhidgetServoController.cpp,v 1.7 2002-09-14 03:32:56 vtt Exp $
+// $Id: PhidgetServoController.cpp,v 1.8 2003-08-30 00:04:09 vtt Exp $
 #include <PhidgetServoController.h>
 #include <stdio.h>
 #include <string.h>
@@ -47,7 +47,7 @@ namespace servomaster {
         if ( this->portName != NULL ) {
         
             printf("Port name: %s\n", this->portName);
-            throw runtime_error("Already initialized");
+            throw std::runtime_error("Already initialized");
         }
         
         printf("Init: port %s\n", portName);
@@ -75,7 +75,7 @@ namespace servomaster {
             default:
             
                 printf("Vendor/product ID: %8X\n", thePhidgetServo->getProtocolHandlerId());
-                throw runtime_error("Unknown vendor/product ID combination");
+                throw std::runtime_error("Unknown vendor/product ID combination");
         }
         
         int count = protocolHandler->getServoCount();
@@ -111,7 +111,7 @@ namespace servomaster {
             
             if ( totalFound != 1 ) {
             
-                throw runtime_error("None or more than one servo controller was found, but port name was not specified");
+                throw std::runtime_error("None or more than one servo controller was found, but port name was not specified");
             }
             
             // We have to free the buffer
@@ -137,7 +137,7 @@ namespace servomaster {
         
         if ( totalFound == 0 ) {
         
-            throw runtime_error("No servo controllers found");
+            throw std::runtime_error("No servo controllers found");
         }
         
         for ( int idx = 0; idx < totalFound; idx++ ) {
@@ -169,7 +169,7 @@ namespace servomaster {
         
         if ( theRightOne == NULL ) {
         
-            throw runtime_error("Servo controller with requested serial is not present");
+            throw std::runtime_error("Servo controller with requested serial is not present");
         }
         
         return theRightOne;
@@ -337,35 +337,35 @@ namespace servomaster {
             
             if ( handle == NULL ) {
             
-                throw runtime_error("Can't open USB device");
+                throw std::runtime_error("Can't open USB device");
             }
             
             rc = usb_set_configuration(handle, 1);
 
             if ( rc == -1 ) {
             
-                throw runtime_error("usb_set_configuration");
+                throw std::runtime_error("usb_set_configuration");
             }
 
             rc = usb_claim_interface(handle, 0);
 
             if ( rc == -1 ) {
             
-                throw runtime_error("usb_claim_interface");
+                throw std::runtime_error("usb_claim_interface");
             }
             
             rc = usb_set_altinterface(handle, 0);
 
             if ( rc == -1 ) {
             
-                throw runtime_error("usb_set_altinterface");
+                throw std::runtime_error("usb_set_altinterface");
             }
             
             rc = usb_control_msg(handle, 0x80, 0x06, 0x0303, 0, buffer, sizeof(buffer), 5000);
             
             if ( rc == -1 ) {
             
-                throw runtime_error("usb_control_msg");
+                throw std::runtime_error("usb_control_msg");
             }
             
             serial = (char *)malloc(sizeof(buffer));
@@ -432,7 +432,7 @@ namespace servomaster {
         
         int ProtocolHandler004::getBufferSize() {
         
-            throw runtime_error("ProtocolHandler004::getBufferSize(): Not Implemented");
+            throw std::runtime_error("ProtocolHandler004::getBufferSize(): Not Implemented");
         }
         
         unsigned char *ProtocolHandler004::composeBuffer(int servoPosition[]) {

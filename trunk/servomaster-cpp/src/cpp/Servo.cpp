@@ -1,4 +1,4 @@
-// $Id: Servo.cpp,v 1.5 2002-09-14 03:32:56 vtt Exp $
+// $Id: Servo.cpp,v 1.6 2003-08-30 00:04:09 vtt Exp $
 #include <Servo.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -46,7 +46,7 @@ namespace servomaster {
         
             if ( s->getTransitionController() != NULL ) {
             
-                throw runtime_error("Can't attach more than one transition controller in a stack");
+                throw std::runtime_error("Can't attach more than one transition controller in a stack");
             }
             
             s = s->getTarget();
@@ -102,7 +102,7 @@ namespace servomaster {
     
         if ( position < 0 || position > 1.0 ) {
         
-            throw runtime_error("Requested position outside of 0...1 range");
+            throw std::runtime_error("Requested position outside of 0...1 range");
         }
     }
     

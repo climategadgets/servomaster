@@ -2,6 +2,3 @@
 - Figure out the trim works for FT639
 - Add more buttons on the Console ("swing" demo, "clock" demo, etc.)
 - Make the Console truly controller-independent
-- Add getServos() method to the controller - not everybody has 5 of them
-- Add enable() method to the servo - equivalent to silent mode for the
-  controllers that can support that

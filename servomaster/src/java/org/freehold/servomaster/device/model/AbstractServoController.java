@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.8 2005-01-14 03:27:13 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.9 2005-01-18 04:59:46 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
 
@@ -77,6 +77,11 @@ abstract public class AbstractServoController implements ServoController {
     
     public AbstractServoController() {
     
+    }
+    
+    public AbstractServoController(String portName) throws IOException {
+    
+        init(portName);
     }
     
     public synchronized final void init(String portName) throws IOException {

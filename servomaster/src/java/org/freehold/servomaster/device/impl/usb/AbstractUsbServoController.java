@@ -249,7 +249,7 @@ abstract public class AbstractUsbServoController extends AbstractServoController
             
                 if ( found.isEmpty() ) {
                 
-                    throw new IOException("No compatible devices found");
+                    throw new IOException("No compatible devices found. Make sure you have /proc/bus/usb read/write permissions.");
 
                 } else {
                 

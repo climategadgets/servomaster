@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.35 2005-01-14 03:29:23 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.36 2005-01-21 05:45:27 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -293,26 +293,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         byte result[] = { lower, upper };
         
         return result;
-    }
-    
-    /**
-     * Send the byte array down the {@link #serialOut serial port stream}.
-     *
-     * @param b Byte array to send.
-     *
-     * @exception IOException if there was a problem communicating with the
-     * hardware controller.
-     */
-    private void send(byte b[]) throws IOException {
-    
-        // VT: FIXME: Can be optimized
-        
-        for ( int offset = 0; offset < b.length; offset++ ) {
-        
-            serialOut.write(b[offset]);
-        }
-        
-        serialOut.flush();
     }
     
     /**

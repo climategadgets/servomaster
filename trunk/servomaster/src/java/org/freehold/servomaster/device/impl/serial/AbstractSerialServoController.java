@@ -18,7 +18,7 @@ import org.freehold.servomaster.device.model.Servo;
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.6 2005-01-21 05:40:52 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.7 2005-01-21 05:45:27 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -148,5 +148,24 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
     public final boolean isConnected() {
     
         return true;
+    }
+    
+    /**
+     * Send the data buffer down the {@link #serialOut pipe}.
+     *
+     * @param buffer Buffer to send.
+     *
+     * @exception IOException if there was a problem sending the buffer.
+     */
+    protected synchronized final void send(byte[] buffer) throws IOException {
+    
+        // VT: FIXME: Can be optimized
+        
+        for ( int offset = 0; offset < buffer.length; offset++ ) {
+        
+            serialOut.write(buffer[offset]);
+        }
+        
+        serialOut.flush();
     }
 }

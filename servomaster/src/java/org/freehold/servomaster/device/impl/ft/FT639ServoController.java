@@ -16,6 +16,7 @@ import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoMetaData;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
@@ -77,7 +78,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.8 2001-12-14 05:08:45 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.9 2001-12-14 21:58:12 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -876,6 +877,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 //System.err.println("Transition done");
                 transitionController = null;
             }
+        }
+        
+        public ServoMetaData[] getMetaData() {
+        
+            throw new UnsupportedOperationException("Capabilities discovery is not supported");
         }
     }
     

@@ -2,8 +2,6 @@ package org.freehold.servomaster.view;
 
 import java.io.IOException;
 
-import java.util.Vector;
-
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,15 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.WindowConstants;
-import javax.swing.BorderFactory;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
-import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.impl.ft.FT639ServoController;
 
@@ -35,25 +27,61 @@ import org.freehold.servomaster.device.impl.ft.FT639ServoController;
  *
  * Allows to control the FT639 controller.
  *
+ * <p>
+ *
+ * VT: FIXME: Actually, this code is pretty generic, and if there's a
+ * sequence that instantiates the controller and passes it down to us, this
+ * doesn't have to be FT639-specific. It currently is just because the FT639
+ * is the first controller in my possession.
+ *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: Console.java,v 1.2 2001-09-01 06:53:31 vtt Exp $
  */
 public class Console implements ServoControllerListener, ActionListener, ItemListener {
 
+    /**
+     * The controller to watch and control.
+     */
     private ServoController controller;
-    private JFrame mainFrame;
-    private JCheckBox silentBox;
-    private JLabel silentLabel;
-    private JButton resetButton;
-    private ServoView servoPanel[] = new ServoView[5];
     
-    private Vector eventQueue = new Vector();
+    /**
+     * The main Swing frame.
+     */
+    private JFrame mainFrame;
+    
+    /**
+     * The checkbox responsible for controlling the silent mode.
+     */
+    private JCheckBox silentBox;
+    
+    /**
+     * The label that shows the silence status of the controller.
+     */
+    private JLabel silentLabel;
+    
+    /**
+     * Pressing this button will reset the controller.
+     *
+     * If the controller throws <code>IOException</code> during reset, the
+     * application will terminate.
+     */
+    private JButton resetButton;
+    
+    /**
+     * Set of servos the controller offers.
+     */
+    private ServoView servoPanel[] = new ServoView[5];
     
     public static void main(String args[]) {
     
         new Console().run(args);
     }
     
+    /**
+     * Run the view.
+     *
+     * @param args Command line arguments.
+     */
     public void run(String args[]) {
     
         try {
@@ -66,6 +94,10 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
     
             mainFrame = new JFrame("FT639 Console");
             mainFrame.setSize(new Dimension(800, 600));
+            
+            // VT: FIXME: Have to terminate the application instead.
+            // Currently, you have to Ctrl-Break it.
+            
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             mainFrame.getContentPane().setLayout(layout);
             
@@ -123,22 +155,6 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             while ( true ) {
             
                 Thread.sleep(60000);
-                
-                
-                /*
-                synchronized ( this ) {
-                
-                    wait();
-                    
-                    while ( !eventQueue.isEmpty() ) {
-                    
-                        ServoEvent e = (ServoEvent)eventQueue.elementAt(0);
-                        eventQueue.removeElementAt(0);
-                        
-                        //servoPanel[e.index].setPosition(e.position);
-                    }
-                }
-                */
             }
         
         } catch ( Throwable t ) {
@@ -147,11 +163,22 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
         }
     }
     
+    /**
+     * React to the notification from the {@link #controller controller}
+     * about the silent status change.
+     *
+     * @param controller The controller which sent the message.
+     *
+     * @param mode The silent mode if <code>true</code>.
+     */
     public void silentStatusChanged(ServoController controller, boolean mode) {
     
         silentLabel.setText("Controller mode: " + (mode ? "ACTIVE" : "SETUP"));
     }
     
+    /**
+     * React to the button presses.
+     */
     public void actionPerformed(ActionEvent e) {
     
         if ( e.getSource() == resetButton ) {
@@ -172,6 +199,9 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
         }
     }
     
+    /**
+     * React to checkbox status changes.
+     */
     public void itemStateChanged(ItemEvent e) {
     
         if ( e.getSource() == silentBox ) {
@@ -193,191 +223,4 @@ public class Console implements ServoControllerListener, ActionListener, ItemLis
             }
         }
     }
-    
-/*    protected synchronized void enqueue(int index, int position) {
-    
-        eventQueue.addElement(new ServoEvent(index, position));
-    
-        notifyAll();
-    }
- */   
-    protected class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
-    
-        private int index;
-        private Servo servo;
-        
-        private JCheckBox smoothBox;
-        private JLabel trimLabel;
-        private JSlider trimSlider;
-        private JLabel positionLabel;
-        private JSlider viewSlider;
-        private JSlider controlSlider;
-        
-        private boolean smooth = false;
-        
-        ServoView(ServoController controller, int index) {
-        
-            this.index = index;
-            
-            try {
-            
-                this.servo = controller.getServo(Integer.toString(index));
-                
-            } catch ( Throwable t ) {
-            
-                throw new Error("getServo() failed: " + t.toString());
-            } 
-        
-            setBorder(BorderFactory.createEtchedBorder());
-            
-            GridBagLayout layout = new GridBagLayout();
-            GridBagConstraints cs = new GridBagConstraints();
-            
-            setLayout(layout);
-            
-            cs.fill = GridBagConstraints.HORIZONTAL;
-            
-            cs.gridx = 0;
-            cs.gridy = 0;
-            cs.gridwidth = 2;
-            
-            JLabel servoLabel = new JLabel("#" + index, JLabel.CENTER);
-            
-            layout.setConstraints(servoLabel, cs);
-            add(servoLabel);
-            
-            smoothBox = new JCheckBox("Smooth");
-            smoothBox.addItemListener(this);
-            
-            cs.gridy = 1;
-            
-            layout.setConstraints(smoothBox, cs);
-            add(smoothBox);
-            
-            cs.gridy = 2;
-            
-            trimLabel = new JLabel("Trim: 0", JLabel.CENTER);
-            
-            layout.setConstraints(trimLabel, cs);
-            add(trimLabel);
-            
-            cs.gridy = 3;
-            
-            trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
-            trimSlider.addChangeListener(this);
-            
-            layout.setConstraints(trimSlider, cs);
-            add(trimSlider);
-            
-            cs.gridy = 4;
-            
-            positionLabel = new JLabel("POS: 128", JLabel.CENTER);
-            
-            layout.setConstraints(positionLabel, cs);
-            add(positionLabel);
-            
-            cs.gridy = 5;
-            cs.gridwidth = 1;
-            cs.weighty = 1;
-            cs.fill = GridBagConstraints.VERTICAL;
-            
-            viewSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
-            
-            layout.setConstraints(viewSlider, cs);
-            add(viewSlider);
-
-            cs.gridx = 1;
-            
-            controlSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
-            controlSlider.addChangeListener(this);
-            controlSlider.setMajorTickSpacing(32);
-            controlSlider.setMinorTickSpacing(4);
-            controlSlider.setPaintTicks(true);
-            controlSlider.setPaintLabels(true);
-            controlSlider.setSnapToTicks(false);
-            
-            layout.setConstraints(controlSlider, cs);
-            add(controlSlider);
-            
-            servo.addListener(this);
-        }
-        
-        public void setPosition(int position) {
-        
-            viewSlider.setValue(position);
-            positionLabel.setText("POS: " + position);
-        }
-        
-        public void stateChanged(ChangeEvent e) {
-        
-            Object source = e.getSource();
-            int position;
-            
-            if ( source == trimSlider ) {
-            
-                //System.out.println("Trim " + index + ": " + trimSlider.getValue());
-
-                position = trimSlider.getValue();
-                
-                try {
-                
-                    ((FT639ServoController)controller).setTrim(position);
-                    trimSlider.setValue(position);
-                    trimLabel.setText("Trim: " + position);
-                    
-                } catch ( Throwable t ) {
-                
-                    System.err.println("ServoController#setTrim:");
-                    t.printStackTrace();
-                }
-
-            } else if ( source == controlSlider ) {
-            
-                position = controlSlider.getValue();
-                
-                try {
-                
-                    servo.setPosition(position, smooth, 0);
-                    
-//                    enqueue(index, position);
-                    
-                } catch ( Throwable t ) {
-                
-                    System.err.println("Servo#setPosition:");
-                    t.printStackTrace();
-                }
-            }
-        }
-        
-        public void itemStateChanged(ItemEvent e) {
-        
-            if ( e.getSource() == smoothBox ) {
-            
-                smooth = !smooth;
-            }
-        }
-        
-        public void positionChanged(Servo source, int position) {
-        
-            System.err.println("Position requested: " + position);
-        }
-        
-        public void actualPositionChanged(Servo source, int position) {
-        
-            viewSlider.setValue(position);
-        }
-    }
-    
-/*    protected class ServoEvent {
-    
-        int index;
-        int position;
-        
-        ServoEvent(int index, int position) {
-        
-            this.index = index;
-            this.position = position;
-        }
-    }
- */
 }

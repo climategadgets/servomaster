@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.1 2001-08-31 21:38:00 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.2 2001-09-01 06:53:31 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -161,6 +161,7 @@
             <fileset dir="${src.java.dir}/org/freehold/servomaster">
             
                 <include name="view/Console.java"/>
+                <include name="view/ServoView.java"/>
                 
             </fileset>
             

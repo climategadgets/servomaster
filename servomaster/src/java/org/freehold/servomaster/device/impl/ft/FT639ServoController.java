@@ -81,7 +81,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.21 2002-02-16 22:44:05 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.22 2002-02-16 22:49:33 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -963,7 +963,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
          *
          * The {@link #silencer silencer} will take care of the rest.
          */
-         public void run() {
+         public synchronized void run() {
          
              try {
          

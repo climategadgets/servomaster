@@ -2,7 +2,6 @@
 #define PHIDGETSERVOCONTROLLER_H
 
 #include <ServoController.h>
-#include <Servo.h>
 #include <usb.h>
 
 namespace servomaster {
@@ -89,6 +88,12 @@ namespace servomaster {
                  * Get the number of servos supported by this phidget.
                  */
                 virtual int getServoCount() = 0;
+                
+                /**
+                 * Get the size of the buffer we're supposed to send when
+                 * setting the servo positions.
+                 */
+                virtual int getBufferSize() = 0;
         };
         
         class ProtocolHandler003 : public ProtocolHandler {
@@ -104,6 +109,7 @@ namespace servomaster {
             
                 virtual unsigned char *composeBuffer(int servoPosition[]);
                 virtual int getServoCount();
+                virtual int getBufferSize();
         };
         
         class ProtocolHandler004 : public ProtocolHandler {
@@ -119,6 +125,7 @@ namespace servomaster {
             
                 virtual unsigned char *composeBuffer(int servoPosition[]);
                 virtual int getServoCount();
+                virtual int getBufferSize();
         };
     }
 
@@ -143,7 +150,7 @@ namespace servomaster {
             /**
              * Physical servo representation.
              */
-            Servo *servoSet;
+            Servo **servoSet;
             
             /**
              * Current servo position in device coordinates.
@@ -169,6 +176,8 @@ namespace servomaster {
              */
             void send();
             
+            virtual void send(unsigned char *buffer, int size);
+            
         protected:
 
             virtual void checkInit();
@@ -178,6 +187,7 @@ namespace servomaster {
             PhidgetServoController();
             virtual void init(const char *portName);
             virtual bool isConnected();
+            virtual Servo *getServo(const char *id);
             
         friend class phidget::PhidgetServo;
     };

@@ -1,10 +1,12 @@
 #ifndef SERVOCONTROLLER_H
 #define SERVOCONTROLLER_H
 
-#include <Object.h>
+// Implies Object.h
+#include <Servo.h>
 
 namespace servomaster {
 
+    class Servo;
     class ServoController : protected Object {
     
         protected:
@@ -20,10 +22,12 @@ namespace servomaster {
         
             const char *getPort();
             virtual void init(const char *portName) = 0;
-            bool isLazy();
-            void reset();
-            void setLazyMode(bool lazy);
+//            bool isLazy();
+//            void reset();
+//            void setLazyMode(bool lazy);
             virtual bool isConnected() = 0;
+            
+            virtual Servo *getServo(const char *id) = 0;
     };
 }
 

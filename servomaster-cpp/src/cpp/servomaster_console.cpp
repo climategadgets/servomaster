@@ -11,6 +11,10 @@ int main() {
         
         c.init(NULL);
         
+        servomaster::Servo *s = c.getServo("0");
+        
+        s->setPosition(1.0);
+        
     } catch ( const exception &e ) {
     
         printf("Problem: %s\n", e.what());

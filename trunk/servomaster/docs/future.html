@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <title>
+            
+            ServoMaster: Future plans and crazy ideas
+            
+        </title>
+    </head>
+    <body>
+    
+        <h1>ServoMaster: Future Plans And Crazy Ideas</h1>
+    
+        <h2>Crazy idea #1, a.k.a. future plan #1</h2>
+        
+        The cable from the servo controller to the servo has to be very
+        short. The reason for this is that the signal from the controller to
+        the servo is PWM, which makes it prone to degradation and picking up
+        noise. While the regular circuits react to the noice with more or
+        less graceful degradation, noise on PWM signal makes the servos
+        jitter, which in some cases makes them completely unusable. The
+        longer the cable, the higher the chance to render the servo
+        unusable.
+        
+        <p>
+        
+        There are ways to fight this phenomenon: put a capacitor between the
+        ground and V<sub>cc</sub>, put a signal amplifier (a.k.a. servo
+        booster) next to the servo, shield the cable, make it thicker, etc. 
+        All these solutions do work to some extent. Depending on the length
+        of the cable, they may or may not be sufficient. But all of them
+        have the same basic problem: they are analog, consequently, they can
+        alleviate the problem, but not eliminate it completely. In my
+        extreme case (a requirement to control a servo that is 100+ feet
+        from the computer), they are unlikely to work (this remains to be
+        seen, but something tells me I'm right :()
+        
+        <p>
+        
+        So, to <i>eliminate</i> the problem, the paradigm shift is required.
+        
+        <p>
+        
+        Here goes.
+        
+        <p>
+        
+        There is a solution that is known to work reliably over reasonably
+        long connections. It is called <a
+        href="http://www.maxim-ic.com/1st_pages/tb1.htm">1-Wire&reg;
+        Protocol</a>. There is a whole family of devices working using this
+        protocol (<a href="http://dbserv.maxim-ic.com/1-Wire.cfm">here</a>),
+        and the guys did a great job on putting together the API for
+        communicating with those devices (<a
+        href="http://www.ibutton.com/software/index.html">here</a>). These
+        device are controllable, and the whole concept is beautiful.
+        
+        <p>
+        
+        Getting to the point, I can use a 1-Wire&reg; device to control the
+        PWM oscillator that is, in turn, controlling the servo that is right
+        next to it. The 1-Wire&reg; devices usually have a small footprint
+        and are cheap (the most expensive I've bought so far was under $5,
+        not counting the controller, which is $10), so this solution is just
+        about as good as any other, except one fact: it is reliable and
+        exact by definition. It is <strong>digital</strong>.
+        
+        <p>
+        
+        Details are to be defined. Stay tuned.
+        
+        <hr>
+        <table border=0 width=100%>
+            <tr>
+                <td align=left>
+                    <font size=-1>
+                        <a href="../index.html">ServoMaster: Home</a>
+                    </font>
+                </td>
+                <td align=right>
+                    <font size=-1>
+                        Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
+                    </font>
+                </td>
+            </tr>
+        </table>
+        
+    </body>
+</html>

@@ -1,0 +1,4 @@
+- Add the docs directory to the 'make dist' target
+- Analyze http://www.geocities.com/BourbonStreet/3220/servobasics.html
+- Analyze http://www.avtechpulse.com/papers/vres/
+- Analyze http://ham.te.hik.se/homepage/sm5bsz/linuxdsp/pulgen/pulgen.htm

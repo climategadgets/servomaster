@@ -41,7 +41,7 @@ import org.freehold.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoControllerView.java,v 1.5 2002-03-09 05:23:15 vtt Exp $
+ * @version $Id: FT639ServoControllerView.java,v 1.6 2002-03-12 07:06:59 vtt Exp $
  */
 public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {
 
@@ -232,5 +232,14 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
     public void deviceDeparted(ServoController device) {
     
         System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+    }
+
+    public void exception(Object source, Throwable t) {
+    
+        synchronized ( System.err ) {
+        
+            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
+            t.printStackTrace();
+        }
     }
 }

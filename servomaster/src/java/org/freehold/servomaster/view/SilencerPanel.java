@@ -221,4 +221,13 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         timeoutSlider.setBorder(BorderFactory.createTitledBorder("Timeout: " + timeout));
         heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat: " + heartbeat));
     }
+
+    public void exception(Object source, Throwable t) {
+    
+        synchronized ( System.err ) {
+        
+            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
+            t.printStackTrace();
+        }
+    }
 }

@@ -47,6 +47,10 @@
                             <li> <strong>FAQs</strong>
                             
                                  <ul>
+                                 
+                                     <li> <a href="#nobuild">I couldn't
+                                          build it - compile failed. What
+                                          gives?</a>
                                      
                                      <li> <a href="#others">Are there other hardware
                                           controller drivers coming?</a>
@@ -135,6 +139,32 @@
                 </td>
                 <td valign=top>
                     <table border=0 width=100%>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="nobuild">
+                                <font color="#ffffff">I couldn't build it - compile failed. What gives?</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Too many possible reasons. The best way to
+                                get the exact solution to your specific
+                                problem is to send me the compilation output. Do this:
+                                
+                                <pre>
+make distclean
+./configure > /tmp/sm.out 2>&1
+make all install >> tmp/sm.out
+                                </pre>
+
+                                and then send me the contents of
+                                <code>/tmp/sm.out</code>.
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
                         <tr>
                             <th bgcolor="#737b9c" align=left>
                                 <a name="others">

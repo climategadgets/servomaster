@@ -1,6 +1,7 @@
 package org.freehold.servomaster.device.model;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * The servo controller abstraction.
@@ -9,7 +10,7 @@ import java.io.IOException;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: ServoController.java,v 1.2 2001-09-01 21:46:03 vtt Exp $
  */
 public interface ServoController {
 
@@ -58,6 +59,22 @@ public interface ServoController {
      * hardware controller.
      */
     public Servo getServo(String id) throws IOException;
+    
+    /**
+     * Get all the servos that this controller supports.
+     *
+     * <p>
+     *
+     * The servos will be included in the iterator regardless of whether
+     * they are enabled or disabled.
+     *
+     * @return An iterator on all the servos physically present on the
+     * controller.
+     *
+     * @exception IOException if there was a problem communicating to the
+     * hardware controller.
+     */
+    public Iterator getServos() throws IOException;
     
     /**
      * Set a silent mode.

@@ -5,6 +5,10 @@ namespace servomaster {
 
     class Object {
     
+        private:
+        
+            static long instanceCount;
+    
         protected:
         
             bool initialized;
@@ -13,6 +17,7 @@ namespace servomaster {
         public:
         
             Object();
+            virtual ~Object();
     };
 }
 

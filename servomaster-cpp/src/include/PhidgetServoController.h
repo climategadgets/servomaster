@@ -185,6 +185,8 @@ namespace servomaster {
         public:
         
             PhidgetServoController();
+            ~PhidgetServoController();
+            
             virtual void init(const char *portName);
             virtual bool isConnected();
             virtual Servo *getServo(const char *id);

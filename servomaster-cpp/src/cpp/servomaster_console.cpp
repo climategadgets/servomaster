@@ -1,6 +1,7 @@
 #include <PhidgetServoController.h>
 #include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <stdexcept>
 
 int main() {
@@ -15,11 +16,21 @@ int main() {
         
         s->setPosition(1.0);
         
+        printf("Servo set to 1.0\n");
+        
+        sleep(1);
+        
+        s->setPosition(0);
+        
+        printf("Servo set to 0.0\n");
+        
     } catch ( const exception &e ) {
     
         printf("Problem: %s\n", e.what());
         return 1;
     }
+    
+    printf("Finished\n");
     
     return 0;
 }

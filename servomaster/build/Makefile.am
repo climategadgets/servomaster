@@ -1,11 +1,11 @@
-## $Id: Makefile.am,v 1.2 2002-01-02 02:49:38 vtt Exp $
+## $Id: Makefile.am,v 1.3 2002-05-14 21:13:41 vtt Exp $
 
 AUTOCONF_FILES = build.sh
 
 jardir = ${prefix}/lib
 jar_DATA = @PACKAGE@.jar
 
-# These files may be used to build the Jukebox even without
+# These files may be used to build the package even without
 # autoconf/automake present
 
 EXTRA_DIST = ${AUTOCONF_FILES} build.xml

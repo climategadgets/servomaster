@@ -52,7 +52,7 @@ namespace servomaster {
                 throw new runtime_error("Unknown vendor/product ID combination");
         }
         
-        servoSet = (Servo *)malloc(sizeof(Servo *) * protocolHandler->getServoCount());
+        servoSet = (Servo **)malloc(sizeof(Servo *) * protocolHandler->getServoCount());
         servoPosition = (int *)malloc(sizeof(int) * protocolHandler->getServoCount());
     }
     
@@ -172,9 +172,42 @@ namespace servomaster {
         return new phidget::PhidgetServo(this, id);
     }
     
+    Servo *PhidgetServoController::getServo(const char *id) {
+    
+        // VT: FIXME: Get the synchronization lock
+        
+        int idx = atoi(id);
+        
+        if ( servoSet[idx] == NULL ) {
+        
+            servoSet[idx] = createServo(idx);
+        }
+        
+        return servoSet[idx];
+    }
+    
     void PhidgetServoController::send() {
     
-        // VT: FIXME
+        // VT: FIXME: Get the synchronization lock
+    
+        if ( thePhidgetServo == NULL ) {
+        
+            thePhidgetServo = findUSB(portName);
+            connected = true;
+        }
+        
+        unsigned char *buffer = protocolHandler->composeBuffer(servoPosition);
+        send(buffer, protocolHandler->getBufferSize());
+    }
+    
+    void PhidgetServoController::send(unsigned char *buffer, int size) {
+    
+        int rc = usb_control_msg(thePhidgetServo->handle, 0x21, 0x09, 0x200, 0, (char *)buffer, size, 5000);
+        
+        if ( rc != 0 ) {
+        
+            printf("usb_control_msg: rc=%x\n", rc);
+        }
     }
     
     namespace phidget {
@@ -202,7 +235,7 @@ namespace servomaster {
         
             printf("Destroyed: %s %x #%s\n", model, this, serial);
             
-            delete serial;
+            free(serial);
         }
         
         const char *UsbContext::getSerial() {
@@ -271,6 +304,11 @@ namespace servomaster {
             return 4;
         }
         
+        int ProtocolHandler003::getBufferSize() {
+        
+            return 6;
+        }
+        
         unsigned char *ProtocolHandler003::composeBuffer(int servoPosition[]) {
         
             // We assume that the positions array contains 4 positions
@@ -294,6 +332,11 @@ namespace servomaster {
         int ProtocolHandler004::getServoCount() {
         
             return 8;
+        }
+        
+        int ProtocolHandler004::getBufferSize() {
+        
+            throw runtime_error("ProtocolHandler004::getBufferSize(): Not Implemented");
         }
         
         unsigned char *ProtocolHandler004::composeBuffer(int servoPosition[]) {

@@ -26,6 +26,7 @@ namespace servomaster {
         };
     }
 
+    class ServoController;
     class TransitionController;
     class Servo : Object {
     

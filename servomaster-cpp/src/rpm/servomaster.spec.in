@@ -20,5 +20,10 @@ make DESTDIR=$RPM_BUILD_ROOT install
 rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
-/opt/libphidget/bin/phidget_cpp
+/opt/servomaster/lib/libservomaster.so.0.0.0
+/opt/servomaster/lib/libservomaster.so.0
+/opt/servomaster/lib/libservomaster.so
+/opt/servomaster/lib/libservomaster.la
+/opt/servomaster/lib/libservomaster.a
+/opt/servomaster/bin/servomaster-console
 %doc COPYING AUTHORS README NEWS

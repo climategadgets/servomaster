@@ -1,7 +1,7 @@
-## $Id: Makefile.am,v 1.1 2002-09-12 00:00:09 vtt Exp $
+## $Id: Makefile.am,v 1.2 2002-09-12 00:38:47 vtt Exp $
 
 SUBDIRS = src
-EXTRA_DIST = bootstrap indent.rules src/scripts/install/*
+EXTRA_DIST = bootstrap indent.rules src/scripts/install/* src/include/*h
 
 clean-generic:
 

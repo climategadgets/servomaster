@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.7 2002-01-02 03:51:13 vtt Exp $
+ * @version $Id: Servo.java,v 1.8 2002-01-02 09:11:18 vtt Exp $
  */
 public interface Servo {
 
@@ -21,6 +21,9 @@ public interface Servo {
     
     /**
      * Set the position.
+     *
+     * This method returns immediately, even though the {@link
+     * TransitionController transition controller} may be attached.
      *
      * @param position Position to set, between 0 and 1.0.
      *
@@ -122,6 +125,19 @@ public interface Servo {
     public ServoMetaData[] getMetaData();
     
     /**
+     * Get the reference to the controller.
+     *
+     * The entities controlling the servos may need access to the controller
+     * metadata, but they may not have direct access to it. This is how they
+     * get it.
+     *
+     * @return The reference to the controller that controls this servo. The
+     * return value can not be <code>null</code>, if the servo instance is a
+     * wrapper, it must get the original servo controller reference.
+     */
+    public ServoController getController();
+    
+    /**
      * Attach the transition controller.
      *
      * @param transitionController The transition controller to use.
@@ -129,12 +145,21 @@ public interface Servo {
      * @exception UnsupportedOperationException if the particular hardware
      * or software implementation conflicts with the transition controller
      * being attached. This may be the case with the servo controllers
-     * supporting the controlled transitions at the hardware level, or if
-     * the transition controller is already installed at the lower level of
-     * the coordinate transformation stack - the transition controllers are
-     * not stackable.
+     * supporting the controlled transitions at the hardware level.
+     *
+     * @exception IllegalStateException if the transition controller is
+     * already installed at the lower level of the coordinate transformation
+     * stack - the transition controllers are not stackable.
      */
     public void attach(TransitionController transitionController);
+    
+    /**
+     * Get the transition controller attached to this servo.
+     *
+     * @return Transition controller reference, or <code>null</code> if
+     * there is none.
+     */
+    public TransitionController getTransitionController();
     
     /**
      * Get the servo that is stacked right under this servo.

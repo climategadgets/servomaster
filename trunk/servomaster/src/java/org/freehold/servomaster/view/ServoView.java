@@ -27,13 +27,15 @@ import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.transform.LinearTransformer;
 import org.freehold.servomaster.device.model.transform.Reverser;
 
+import org.freehold.servomaster.device.model.transition.CrawlTransitionController;
+
 /**
  * The servo view.
  *
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.13 2002-01-02 03:51:13 vtt Exp $
+ * @version $Id: ServoView.java,v 1.14 2002-01-02 09:11:18 vtt Exp $
  */
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
 
@@ -70,11 +72,29 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     private JCheckBox enableBox;
     
     /**
-     * Checkbox responsible for enabling and disabling the smooth mode.
-     *
-     * @see #smooth
+     * Button group for the transition controller selection.
      */
-    private JCheckBox smoothBox;
+    private ButtonGroup transitionGroup = new ButtonGroup();
+    
+    /**
+     * Panel containing the transition controller selection.
+     */
+    private JPanel transitionPanel;
+    
+    /**
+     * Radio button for selecting no transition controller (default).
+     */
+    private JRadioButton transitionNoneBox;
+    
+    /**
+     * Radio button for selecting the crawl transition controller.
+     */
+    private JRadioButton transitionCrawlBox;
+    
+    /**
+     * Radio button for selecting the linear transition controller.
+     */
+    private JRadioButton transitionLinearBox;
     
     /**
      * Button group for the mapper selection.
@@ -125,17 +145,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      * @see #enableBox
      */
     private boolean enabled = true;
-    
-    /**
-     * Smooth mode.
-     *
-     * <p>
-     *
-     * Enabled if this is set to <code>true</code>.
-     *
-     * @see #smoothBox
-     */
-    private boolean smooth = false;
     
     /**
      * Number of steps the controller can provide for this servo.
@@ -207,15 +216,46 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         
         layout.setConstraints(enableBox, cs);
         add(enableBox);
-
-        smoothBox = new JCheckBox("Smooth");
-        smoothBox.setToolTipText("Enable or disable the smooth servo movement");
-        smoothBox.addItemListener(this);
         
+        transitionPanel = new JPanel();
+        
+        // VT: FIXME: make it 3,1 when the linear is implemented
+        
+        transitionPanel.setLayout(new GridLayout(2, 1));
+        transitionPanel.setToolTipText("Select the transition controller");
+        
+        transitionNoneBox = new JRadioButton("Instant", true);
+        transitionNoneBox.addActionListener(this);
+        transitionNoneBox.setToolTipText("No transition controller, instant movement");
+        
+        transitionGroup.add(transitionNoneBox);
+        transitionPanel.add(transitionNoneBox);
+
+        transitionCrawlBox = new JRadioButton("Crawl", true);
+        transitionCrawlBox.addActionListener(this);
+        transitionCrawlBox.setToolTipText("Crawl as fast as I/O and controller allow");
+        
+        transitionGroup.add(transitionCrawlBox);
+        transitionPanel.add(transitionCrawlBox);
+
+        /*
+        
+        VT: FIXME: linear transition controller is not implemented yet
+        
+        transitionLinearBox = new JRadioButton("Linear", true);
+        transitionLinearBox.addActionListener(this);
+        transitionLinearBox.setToolTipText("Linearly move in 3 seconds");
+        
+        transitionGroup.add(transitionLinearBox);
+        transitionPanel.add(transitionLinearBox);
+
+         */
+         
         cs.gridy++;
         
-        layout.setConstraints(smoothBox, cs);
-        add(smoothBox);
+        transitionPanel.setBorder(BorderFactory.createTitledBorder("Transition"));
+        layout.setConstraints(transitionPanel, cs);
+        add(transitionPanel);
         
         cs.gridy++;
         
@@ -330,16 +370,16 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      */
     public void itemStateChanged(ItemEvent e) {
     
-        if ( e.getSource() == smoothBox ) {
-        
-            smooth = !smooth;
-        
-        } else if ( e.getSource() == enableBox ) {
+        if ( e.getSource() == enableBox ) {
         
             enabled = !enabled;
             
             controlSlider.setEnabled(enabled);
-            smoothBox.setEnabled(enabled);
+
+            transitionNoneBox.setEnabled(enabled);
+            transitionCrawlBox.setEnabled(enabled);
+            transitionLinearBox.setEnabled(enabled);
+
             normalBox.setEnabled(enabled);
             reverseBox.setEnabled(enabled);
             linearBox.setEnabled(enabled);
@@ -363,6 +403,14 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
             } else if ( e.getSource() == linearBox ) {
             
                 target = linear;
+            
+            } else if ( e.getSource() == transitionNoneBox ) {
+            
+                servo.attach(null);
+                
+            } else if ( e.getSource() == transitionCrawlBox ) {
+            
+                servo.attach(new CrawlTransitionController());
             }
             
             if ( current != target ) {

@@ -1,7 +1,7 @@
 package org.freehold.servomaster.device.model;
 
 /**
- * This interface allows to track the servo position changes.
+ * Allows to track the servo position changes.
  *
  * <h3>Implementation note</h3>
  *
@@ -9,7 +9,7 @@ package org.freehold.servomaster.device.model;
  * sending notifications asynchronous from the servo operation itself.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoListener.java,v 1.2 2001-12-29 06:33:19 vtt Exp $
+ * @version $Id: ServoListener.java,v 1.3 2002-01-02 09:11:18 vtt Exp $
  */
 public interface ServoListener {
 

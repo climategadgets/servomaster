@@ -2,6 +2,7 @@
 #define PHIDGETSERVOCONTROLLER_H
 
 #include <ServoController.h>
+#include <usb.h>
 
 namespace servomaster {
 
@@ -16,6 +17,18 @@ namespace servomaster {
                 int productID;
                 
                 ControllerDescriptor(const char *model, int vendorID, int productID);
+        };
+        
+        class UsbContext : public ControllerDescriptor {
+        
+            public:
+            
+                struct usb_dev_handle *handle;
+                struct usb_device *device;
+                char *serial;
+                
+                UsbContext(struct usb_device *device, ControllerDescriptor *cd);
+                const char *getSerial();
         };
     
     }

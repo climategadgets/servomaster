@@ -81,7 +81,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.22 2002-02-16 22:49:33 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.23 2002-02-20 06:52:07 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -251,7 +251,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * href="http://java.sun.com/products/javacomm/" target="_top">Java
      * Communications API</a>.
      *
-     * @throws IllegalStateException if the controller has already been initialized.
+     * @exception IllegalStateException if the controller has already been initialized.
      */
     public synchronized void init(String portName) throws IOException {
     
@@ -334,13 +334,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
      */
     public synchronized void setRange(boolean range) throws IOException {
     
+        checkInit();
+        
         setSetupMode();
         this.range = range;
 
         send(range ? PULSE_LONG : PULSE_SHORT);
         
         repositionServos();
-        
     }
      
     /**
@@ -356,14 +357,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
      *
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
+     *
+     * @exception IllegalStateException if the controller wasn't previously
+     * initialized.
      */
     public synchronized Servo getServo(String id) throws IOException {
     
-        if ( portName == null ) {
+        checkInit();
         
-            throw new IllegalStateException("Not initialized");
-        }
-    
         try {
         
             int iID = Integer.parseInt(id);
@@ -373,23 +374,23 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 throw new IllegalArgumentException("ID out of 0...4 range: '" + id + "'");
             }
             
-            synchronized ( servoSet ) {
+            if ( servoSet[iID] == null ) {
             
-                if ( servoSet[iID] == null ) {
-                
-                    servoSet[iID] = createServo(iID);
-                }
-                
-                return servoSet[iID];
+                servoSet[iID] = createServo(iID);
             }
+            
+            return servoSet[iID];
             
         } catch ( NumberFormatException nfex ) {
         
             throw new IllegalArgumentException("Not a number: '" + id + "'");
         }
-    
     }
     
+    /**
+     * @exception IllegalStateException if the controller wasn't previously
+     * initialized.
+     */
     public Iterator getServos() throws IOException {
     
         LinkedList servos = new LinkedList();
@@ -405,7 +406,8 @@ public class FT639ServoController implements ServoController, FT639Constants {
     /**
      * Create the servo instance.
      *
-     * This is a template method used to instantiate the proper servo implementation class.
+     * This is a template method used to instantiate the proper servo
+     * implementation class.
      *
      * @param id Servo ID to create.
      *
@@ -444,10 +446,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      */
     protected synchronized void setSetupMode() throws IOException {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         if ( !activeMode ) {
         
@@ -459,7 +458,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         send(MODE_SETUP);
         
         activeMode = false;
-
+        
         //System.err.println("mode: setup");
         silentStatusChanged();
     }
@@ -472,10 +471,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      */
     protected synchronized void setActiveMode() throws IOException {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         if ( activeMode ) {
         
@@ -494,6 +490,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
         silentStatusChanged();
     }
     
+    /**
+     * Render the positioning command to be sent to the hardware.
+     *
+     * @param id Servo id to render the position for.
+     *
+     * @param position Position to render.
+     *
+     * @return Two byte array representing FT639 positioning command.
+     */
     private byte[] renderPositionCommand(int id, int position) {
     
         // The sanity check was supposed to be done by now
@@ -513,10 +518,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public synchronized void setSilentMode(boolean silent) {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         this.silent = silent;
         
@@ -538,10 +540,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public void setSilentTimeout(long timeout, long heartbeat) {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         if ( timeout <= 0 ) {
         
@@ -683,10 +682,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
      */
     public synchronized void setHeaderLength(int headerLength) throws IOException {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         if ( headerLength < 0 || headerLength > 15 ) {
         
@@ -725,10 +721,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public synchronized void addListener(ServoControllerListener listener) {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         listenerSet.add(listener);
     }
@@ -748,10 +741,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     public synchronized void removeListener(ServoControllerListener listener) {
     
-        if ( portName == null ) {
-        
-            throw new IllegalStateException("Not initialized");
-        }
+        checkInit();
     
         if ( !listenerSet.contains(listener) ) {
         
@@ -777,6 +767,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
         }
         
         return portName;
+    }
+    
+    /**
+     * @exception IllegalStateException if the controller is not yet
+     * initialized.
+     */
+    protected synchronized void checkInit() {
+
+        if ( portName == null ) {
+        
+            throw new IllegalStateException("Not initialized");
+        }
     }
 
     protected class FT639MetaData implements ServoControllerMetaData {
@@ -838,7 +840,12 @@ public class FT639ServoController implements ServoController, FT639Constants {
         /**
          * Create an instance.
          *
+         * @param sc The servo controller that owns this servo.
+         *
          * @param id The servo ID.
+         *
+         * @exception IOException if there was a problem communicating to
+         * the hardware controller.
          */
         protected FT639Servo(ServoController sc, int id) throws IOException {
         
@@ -859,6 +866,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         protected synchronized void setActualPosition(double position) throws IOException {
         
+            checkInit();
             checkPosition(position);
             
             int requestedPosition = double2int(position);
@@ -934,14 +942,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
                     //System.err.println("checking... " + timeUntilSilent() + " left");
                 }
                 
-                synchronized ( this ) {
-                
-                    //System.err.println("Sleeping now.");
+                //System.err.println("Sleeping now.");
 
-                    setSetupMode();
-                    silencer = null;
-                    startHeartbeat();
-                }
+                setSetupMode();
+                silencer = null;
+                startHeartbeat();
             
             } catch ( Throwable t ) {
             

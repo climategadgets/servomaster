@@ -39,7 +39,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.9 2002-09-18 05:36:48 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.10 2002-09-18 06:25:10 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -830,14 +830,6 @@ public class PhidgetServoController extends AbstractServoController {
         abstract public void reset() throws IOException;
     
         /**
-         * Compose the USB packet.
-         *
-         * @return A buffer that represents the positioning command for the
-         * hardware.
-         */
-        abstract public byte[] composeBuffer();
-        
-        /**
          * @return the number of servos the controller supports.
          */
         abstract public int getServoCount();
@@ -863,6 +855,25 @@ public class PhidgetServoController extends AbstractServoController {
          * Set the pulse range.
          */
         abstract public void setRange(int id, int min_pulse, int max_pulse);
+
+        protected synchronized void send(byte buffer[]) throws IOException {
+        
+            ControlMessage message = new ControlMessage();
+
+            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
+                                         |ControlMessage.TYPE_CLASS
+                                         |ControlMessage.RECIPIENT_INTERFACE));
+            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
+            message.setValue((short)0x0200);
+            message.setIndex((byte)0);
+            message.setLength(buffer.length);
+            message.setBuffer(buffer);
+            
+            // The instance has to be non-null at this point, or the
+            // IOException was already thrown
+            
+            thePhidgetServo.control(message);
+        }
     }
     
     /**
@@ -1044,25 +1055,6 @@ public class PhidgetServoController extends AbstractServoController {
             }
         }
         
-        private synchronized void send(byte buffer[]) throws IOException {
-        
-            ControlMessage message = new ControlMessage();
-
-            message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
-                                         |ControlMessage.TYPE_CLASS
-                                         |ControlMessage.RECIPIENT_INTERFACE));
-            message.setRequest((byte)ControlMessage.SET_CONFIGURATION);
-            message.setValue((short)0x0200);
-            message.setIndex((byte)0);
-            message.setLength(buffer.length);
-            message.setBuffer(buffer);
-            
-            // The instance has to be non-null at this point, or the
-            // IOException was already thrown
-            
-            thePhidgetServo.control(message);
-        }
-
         /**
          * Remember the servo timing and clear the "sent" flag.
          *
@@ -1122,57 +1114,29 @@ public class PhidgetServoController extends AbstractServoController {
      */
     protected class ProtocolHandler0x3B extends ProtocolHandler {
     
+        private ServoState servoState[] = new ServoState[8];
+        
+        ProtocolHandler0x3B() {
+        
+            for ( int idx = 0; idx < 8; idx++ ) {
+            
+                servoState[idx] = new ServoState(idx);
+            }
+        }
+    
         public void reset() {
         
             // FIXME
         }
     
-        /**
-         * Byte buffer to compose the packet into.
-         *
-         * This buffer is not thread safe, but the {@link
-         * PhidgetServoController#send invocation context} makes sure it
-         * never gets corrupted.
-         *
-         * <p>
-         *
-         * Output protocol for PhidgetAdvancedServo
-         *
-         * <pre>
-         * buffer[0] = Index - 1;
-         *
-         * ((float *)(buffer+4))[0] = m_ServoPosition[Index - 1];
-         * ((float *)(buffer+4))[1] =  m_MaxVelocity[Index - 1] / 50;
-         * ((float *)(buffer+4))[2] =  m_Acceleration[Index - 1] / 50;
-         * </pre>
-         *
-         * MaxVelocity and Acceleration are measured in degrees/second. (^2)
-         */
-        byte buffer[] = new byte[4 * 4 * 8];
-
-        /**
-         * Compose the USB packet.
-         *
-         * @return A buffer that represents the positioning command for the
-         * hardware.
-         */
-        public byte[] composeBuffer() {
-        
-            for ( int servoIdx = 0; servoIdx < 8; servoIdx++ ) {
-            
-            }
-            
-            return buffer;
-        }
-        
         public int getServoCount() {
         
             return 8;
         }
         
-        public void setActualPosition(int id, double position) throws IOException {
+        public synchronized void setActualPosition(int id, double position) throws IOException {
         
-            // FIXME
+            send(servoState[id].setPosition(position));
         }
         
         public void silence() throws IOException {
@@ -1184,6 +1148,93 @@ public class PhidgetServoController extends AbstractServoController {
         
         
             // Not supported
+        }
+        
+        protected class ServoState {
+        
+            /**
+             * Servo position, degrees.
+             */
+            float position;
+            
+            /**
+             * Servo velocity, degrees per second.
+             */
+            float velocity;
+            
+            /**
+             * Servo acceleration, degrees per second per second.
+             */
+            float acceleration;
+            
+            /**
+             * Byte buffer to compose the packet into.
+             *
+             * This buffer is not thread safe, but the {@link
+             * PhidgetServoController#send invocation context} makes sure it
+             * never gets corrupted.
+             *
+             * <p>
+             *
+             * Output protocol for PhidgetAdvancedServo
+             *
+             * <pre>
+             * buffer[0] = Index - 1;
+             *
+             * ((float *)(buffer+4))[0] = m_ServoPosition[Index - 1];
+             * ((float *)(buffer+4))[1] =  m_MaxVelocity[Index - 1] / 50;
+             * ((float *)(buffer+4))[2] =  m_Acceleration[Index - 1] / 50;
+             * </pre>
+             *
+             * MaxVelocity and Acceleration are measured in degrees/second. (^2)
+             */
+            private byte[] buffer = new byte[16];
+            
+            ServoState(int id) {
+            
+                // We will never touch this again
+                
+                // VT: FIXME: Is it a little endian or big endian?
+                
+                buffer[3] = (byte)id;
+                
+                // VT: FIXME: This stuff will be properly handled when the
+                // metadata is ready
+                
+                velocity = 180;
+                acceleration = 180;
+            }
+            
+            public byte[] setPosition(double position) {
+            
+                // The requested position is 0 to 1, but the device position
+                // is 0 to 180 - have to translate
+                
+                // VT: FIXME: adjustment for terminal positions may be
+                // required
+                
+                this.position = (float)(position * 180);
+                
+                float2byte(this.position, buffer, 4);
+                float2byte(this.velocity/50, buffer, 8);
+                float2byte(this.acceleration/50, buffer, 8);
+                
+                return buffer;
+            }
+            
+            private void float2byte(float value, byte buffer[], int offset) {
+            
+                // VT: FIXME: Is it a little endian or big endian?
+                
+                int bits = Float.floatToIntBits(value);
+                
+                // This is big endian
+                
+                buffer[offset + 0] = (byte)(bits & 0xFF);
+                buffer[offset + 1] = (byte)((bits >> 8) & 0xFF);
+                buffer[offset + 2] = (byte)((bits >> 16) & 0xFF);
+                buffer[offset + 3] = (byte)((bits >> 24) & 0xFF);
+            }
         }
     }
     

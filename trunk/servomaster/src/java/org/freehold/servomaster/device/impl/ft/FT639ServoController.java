@@ -80,7 +80,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.18 2002-01-20 06:48:55 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.19 2002-02-10 07:23:55 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -188,6 +188,16 @@ public class FT639ServoController implements ServoController, FT639Constants {
      * @see #setRange
      */
     protected boolean range = false;
+    
+    /**
+     * The lazy status.
+     */
+    private boolean lazy = true;
+    
+    /**
+     * True if the heartbeat thread is repositioning the servos now.
+     */
+    private boolean repositioningNow = false;
     
     /**
      * Create the controller instance.
@@ -556,6 +566,16 @@ public class FT639ServoController implements ServoController, FT639Constants {
         }
     }
     
+    public boolean isLazy() {
+    
+        return lazy;
+    }
+    
+    public void setLazyMode(boolean enable) {
+    
+        lazy = enable;
+    }
+    
     private synchronized void startTimeout() {
     
         // VT: NOTE: This is a little bit inefficient when not in silent
@@ -563,12 +583,15 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         lastOperation = System.currentTimeMillis();
         
-        if ( !silent ) {
+        if ( !silent || repositioningNow ) {
         
             return;
         }
         
         if ( heartbeat != null ) {
+        
+            // If the heartbeat thread is repositioning now, we would not be
+            // here
         
             heartbeat.interrupt();
         }
@@ -828,20 +851,23 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
             checkPosition(position);
             
-            // Let's see if we really have to do it
-            
             int requestedPosition = double2int(position);
             
-            if ( double2int(this.actualPosition) == requestedPosition ) {
-            
-                // Nah, we don't have to bother.
+            if ( lazy && !repositioningNow ) {
+
+                // Let's see if we really have to do it
                 
-                // Chances are that if we're going to go ahead with it, the
-                // time spent on transmitting the control signal is going to
-                // be much more than spent in double2int().
+                if ( double2int(this.actualPosition) == requestedPosition ) {
                 
-                //System.err.println("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
-                return;
+                    // Nah, we don't have to bother.
+                    
+                    // Chances are that if we're going to go ahead with it, the
+                    // time spent on transmitting the control signal is going to
+                    // be much more than spent in double2int().
+                    
+                    //System.err.println("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
+                    return;
+                }
             }
             
             setActiveMode();
@@ -942,29 +968,28 @@ public class FT639ServoController implements ServoController, FT639Constants {
                 
                     //System.err.println("Repositioning now.");
                     
+                    repositioningNow = true;
                     repositionServos();
                     
-                    // By now, we've probably been killed by the silencer,
-                    // but let's just do it anyway
-                    
-                    heartbeat = null;
+                    //System.err.println("Finished repositioning");
                 }
             
             } catch ( InterruptedException iex ) {
             
                 // This is probably silencer thread stopping us, it's OK
                 
-                heartbeat = null;
-            
             } catch ( Throwable t ) {
             
                 // Oh shit... Okay. Let's get out of here.
 
                 System.err.println("Heartbeat:");
                 t.printStackTrace();
-                
+
+            } finally {
+            
                 heartbeat = null;
-                return;
+                repositioningNow = false;;
+                startTimeout();
             }
         }
     }

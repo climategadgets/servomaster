@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.33 2005-01-21 06:35:43 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.34 2005-02-03 06:51:46 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -162,6 +162,7 @@
                 <include name="device/model/AbstractServo.java"/>
                 <include name="device/model/AbstractServoController.java"/>
                 <include name="device/model/DisconnectListener.java"/>
+                <include name="device/model/HardwareServo.java"/>
                 <include name="device/model/TransitionController.java"/>
                 <include name="device/model/TransitionToken.java"/>
                 <include name="device/model/SilentDevice.java"/>
@@ -178,8 +179,6 @@
                 <include name="device/model/transform/LinearTransformer.java"/>
 
                 <include name="device/model/transition/CrawlTransitionController.java"/>
-                
-                <include name="device/impl/HardwareServo.java"/>
                 
                 <include name="util/ImmutableIterator.java"/>
                 <include name="util/dec2hex.java"/>
@@ -484,7 +483,7 @@
                 
             <group title="Model" packages="org.freehold.servomaster.device.model*"/>
             <group title="FT639 Driver" packages="org.freehold.servomaster.device.impl.ft"/>
-            <group title="PhidgetServo Driver" packages="org.freehold.servomaster.device.impl.phidget"/>
+            <group title="PhidgetServo Driver" packages="org.freehold.servomaster.device.impl.phidget*"/>
             <group title="Pololu Drivers" packages="org.freehold.servomaster.device.impl.pololu"/>
             <group title="View" packages="org.freehold.servomaster.view"/>
             <group title="Tests" packages="org.freehold.servomaster.test*"/>

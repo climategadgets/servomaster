@@ -14,7 +14,7 @@ import org.freehold.servomaster.device.model.AbstractServoController;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.impl.HardwareServo;
+import org.freehold.servomaster.device.model.HardwareServo;
 
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;

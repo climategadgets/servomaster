@@ -15,7 +15,7 @@ import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
-import org.freehold.servomaster.device.impl.HardwareServo;
+import org.freehold.servomaster.device.model.HardwareServo;
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
 
 /**
@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.40 2005-01-21 07:41:30 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.41 2005-02-03 06:51:49 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 

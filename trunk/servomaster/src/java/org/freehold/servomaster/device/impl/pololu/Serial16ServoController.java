@@ -9,7 +9,7 @@ import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
-import org.freehold.servomaster.device.impl.HardwareServo;
+import org.freehold.servomaster.device.model.HardwareServo;
 
 /**
  * <a href="http://pololu.com/products/pololu/0240/" target="_top">Pololu
@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.impl.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.9 2005-01-26 01:13:13 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.10 2005-02-03 06:51:49 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 

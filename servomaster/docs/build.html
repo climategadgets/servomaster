@@ -56,6 +56,8 @@
                             
                                 <li> <a href="#prereqs">Prerequisites</a>
                                      
+                                <li> <a href="#rpm">Easiest Way</a>
+                                     
                                 <li> <a href="#easy">Easy Way</a>
                                      
                                 <li> <a href="#hard">Hard Way</a>
@@ -202,14 +204,12 @@
                                 
                                 <p>
                                 
-                                Again, at the moment of writing, USB devices
-                                are supported only on Linux (because <a
+                                At the moment of writing, USB devices are
+                                supported on Linux, apparently on MacOSX,
+                                and possibly on Windows (it all depends on
+                                the way <a
                                 href="http://jusb.sourceforge.net/">jUSB</a>
-                                is used), however, there is work in progress
-                                to port the USB support to use <a
-                                href="http://javax-usb.org/">javax.usb</a>.
-                                Hopefully, this will allow to make the
-                                result portable.
+                                goes).
                                 
                             </blockquote>
                             </td>
@@ -231,7 +231,7 @@
                                     <li> <a href="http://java.sun.com/">Java
                                          Virtual Machine</a>. Preferred
                                          version is the latest one (JDK
-                                         1.4.1_01), though older ones are
+                                         1.4.2_03), though older ones are
                                          probably supported as well. If you
                                          try to use the older JDK and the
                                          build process or the result fails
@@ -284,10 +284,6 @@
                                     <li> <a
                                          href="http://jusb.sourceforge.net/">jUSB</a>
                                          - Java USB support for Linux.
-                                         
-                                    <li> <a
-                                         href="http://javax-usb.org">javax.usb</a>
-                                         - this will hopefully replace jUSB soon.
                                 
                                 </ul>
                                 
@@ -296,10 +292,10 @@
                                 <ul>
                                 
                                     <li> <a
-                                         href="http://jakarta.apache.org/ant/">Jakarta
+                                         href="http://ant.apache.org/">Jakarta
                                          Ant</a>, <code>--with-ANT</code>
                                          configure option. Minimum version
-                                         required is 1.4.
+                                         required is 1.5.1.
                                     
                                     <li> Sun's <code>javac.jar</code> or
                                          <code>tools.jar</code>,
@@ -320,17 +316,43 @@
                                          
                                     <li> <a
                                          href="http://www.gnu.org/software/autoconf/autoconf.html">GNU
-                                         autoconf</a>. Version 2.53 is
-                                         required. Version 2.13 is
+                                         autoconf</a>. Version 2.57 is
+                                         required. Earlier versions are
                                          guaranteed to fail.
                                          
                                     <li> <a
                                          href="http://www.gnu.org/software/automake/automake.html">GNU
-                                         automake</a>. Versions 1.5 and 1.6
-                                         are known to work. Version 1.4 is
+                                         automake</a>. Version 1.6.3 is
+                                         known to work. Earlier versions may
+                                         or may not work. Version 1.4 is
                                          known to fail.
                                 
                                 </ul>
+                                
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="rpm">
+                                <font color="#ffffff">Easiest Way</font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                Just grab the <a
+                                href="http://sourceforge.net/project/showfiles.php?group_id=34418&package_id=108815">RPM</a>
+                                and install it. Release 0.6p2 is the earlies
+                                RPM available, it may have problems
+                                detecting where RxTx and jUSB are installed,
+                                but generally should be fine. If it is not,
+                                either get the later release (supposed to be
+                                available around Feb 20 2004), or get the
+                                source and compile.
+                                
+                                <p>
                                 
                             </blockquote>
                             </td>
@@ -357,6 +379,20 @@
                                     <li> Grab the jar file from <a
                                          href="http://sourceforge.net/project/showfiles.php?group_id=34418&release_id=89273">here</a>
                                          (get the latest release).
+                                         
+                                         <p>
+                                         
+                                         A word of warning: since the
+                                         development emphasis has shifted
+                                         from FT639 to USB servo
+                                         controllers, it is necessary to
+                                         carry extra stuff around, and just
+                                         the jar won't suffice. Therefore,
+                                         there is no intent to release just
+                                         the jars anymore, and the code
+                                         contained in the jar release is
+                                         quite obsolete. Consider <a
+                                         href="#rpm">RPM</a> instead.
                                          
                                     <li> Run the following command (one line):
 
@@ -432,9 +468,6 @@ java -jar servomaster.jar
 --prefix=/opt/vt/servomaster
 --enable-phidget
 --enable-ft639
---with-jusb=/home/vt/jusb-0.4.4
---with-ANT=/home/vt/servomaster-libs/ant.jar
---with-XERCES=/home/vt/servomaster-libs/xerces.jar
                                          </pre>
 
                                     <li> There is a class that serves as a
@@ -442,7 +475,7 @@ java -jar servomaster.jar
                                          package
                                          - <code>org.freehold.servomaster.view.Console</code>,
                                          and
-                                         <code>$prefix/bin/console_view</code>
+                                         <code>$prefix/bin/servomaster_console</code>
                                          shell script is a wrapper for it. 
                                          It takes two parameters: the
                                          hardware driver class name, and the
@@ -465,7 +498,7 @@ java -jar servomaster.jar
                                          like this:
         
                                          <pre>
-$prefix/bin/console \
+$prefix/bin/servomaster_console \
 org.freehold.servomaster.device.impl.ft.FT639ServoController \
 /dev/ttyS1
                                          </pre>

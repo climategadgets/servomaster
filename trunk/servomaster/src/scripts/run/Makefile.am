@@ -1,8 +1,8 @@
-## $Id: Makefile.am,v 1.3 2003-01-06 05:48:01 vtt Exp $
+## $Id: Makefile.am,v 1.4 2004-02-04 06:11:38 vtt Exp $
 
-bin_PROGRAMS = console
+bin_PROGRAMS = servomaster_console
 
-console_SOURCES = console
+servomaster_console_SOURCES = servomaster_console
 
 RM = @RM@
 EXEEXT = @EXEEXT@
@@ -11,4 +11,4 @@ clean:
 
 	${RM} -f *~ .*~ ${bin_PROGRAMS}
 
-console$(EXEEXT):
+servomaster_console$(EXEEXT):

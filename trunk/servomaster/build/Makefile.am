@@ -1,9 +1,9 @@
-## $Id: Makefile.am,v 1.4 2002-12-12 01:46:52 vtt Exp $
+## $Id: Makefile.am,v 1.5 2004-02-04 06:11:37 vtt Exp $
 
 AUTOCONF_FILES = build.sh
 
-jardir = ${prefix}/lib
-jar_DATA = @PACKAGE@.jar
+jardir = ${prefix}/share/java
+jar_DATA = @PACKAGE@-@VERSION@.jar
 
 # These files may be used to build the package even without
 # autoconf/automake present
@@ -42,7 +42,7 @@ clean-generic:
 
 	@ ${RM} -rf *~ .*~ classes src ${AUTOCONF_FILES} ${jar_DATA} .servomaster.properties
 
-@PACKAGE@.jar: build
+@PACKAGE@-@VERSION@.jar: build
 
 all: build
 

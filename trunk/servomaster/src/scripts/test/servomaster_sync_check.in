@@ -5,7 +5,7 @@
 # they need to
 
 TARGET_CLASSPATH=:${TARGET_CLASSPATH}:\
-@prefix@/lib/@PACKAGE@.jar:\
+@prefix@/share/java/@PACKAGE@-@VERSION@.jar:\
 @JUSB_CLASSES@
 
 LD_LIBRARY_PATH=@JUSB_LIB@:$LD_LIBRARY_PATH @JAVAX@ org.freehold.servomaster.test.integration.SyncCheck $*

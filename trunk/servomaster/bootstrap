@@ -2,4 +2,4 @@
 
 # Just in case you haven't noticed: configure takes a command line tail.
 
-aclocal && autoconf-2.53 && automake && ./configure $* 
+aclocal && autoconf && automake && ./configure $* 

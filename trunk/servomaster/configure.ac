@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.6 2003-07-03 18:40:57 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.7 2004-02-04 06:11:37 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -30,7 +30,7 @@ fi
 
 VERSION_MAJOR="0"
 VERSION_MINOR="6"
-PATCHLEVEL="1"
+PATCHLEVEL="2"
 
 AC_SUBST(VERSION_MAJOR)dnl
 AC_SUBST(VERSION_MINOR)dnl
@@ -53,8 +53,12 @@ AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})dnl
 AC_PROG_TEST
 AC_PROG_TR
 AC_PROG_FIND
+AC_PROG_LN_S
 AC_PATH_PROG_VERIFY(RM,rm,$PATH)dnl
 AC_PATH_PROG_VERIFY(DIRNAME,dirname,$PATH)dnl
+AC_PATH_PROG(RPM,rpm,,$PATH)dnl
+AC_PATH_PROG(RPMBUILD,rpmbuild,,$PATH)dnl
+
 
 AC_CANONICAL_HOST
 case $host_os in
@@ -164,11 +168,13 @@ AC_CONFIG_FILES([Makefile
 	build/build.sh
 	build/.servomaster.properties
 	src/Makefile
+	src/rpm/Makefile
+	src/rpm/servomaster.spec
 	src/scripts/Makefile
 	src/scripts/run/Makefile
-	src/scripts/run/console
+	src/scripts/run/servomaster_console
 	src/scripts/test/Makefile
-	src/scripts/test/sync_check
+	src/scripts/test/servomaster_sync_check
 	src/java/Makefile
 ])
 AC_OUTPUT

@@ -1,3 +1,12 @@
+0.6p2	- Stability bugfixes. Hopefully, 'Disconnected mode' is really
+	  supported for QuadServo this time.
+	- Allowed devices to be disconnected at driver startup (if exact
+	  hardware type is known)
+	- Run script name changed again to servomaster_console (to allow a
+	  polite RPM layout)
+	- Changed test script name to servomaster_sync_check
+	- Changed deployment layout to conform to RPM guidelines better
+
 0.6p1	- Firmware update for AdvancedServo, fixed the USB timeout problem
 
 0.6p0	- 'Disconnected mode' properly supported for QuadServo

@@ -76,7 +76,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.34 2005-01-14 02:59:19 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.35 2005-01-14 03:29:23 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -124,7 +124,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      */
     public FT639ServoController() {
     
-        servoSet = new Servo[getServoCount()];
     }
     
     /**
@@ -151,7 +150,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      */
     public FT639ServoController(String portName) throws IOException {
     
-        servoSet = new Servo[getServoCount()];
         init(portName);
     }
     

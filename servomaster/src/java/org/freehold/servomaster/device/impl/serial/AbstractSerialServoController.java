@@ -12,12 +12,13 @@ import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.AbstractServoController;
+import org.freehold.servomaster.device.model.Servo;
 
 /**
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.2 2005-01-14 01:07:28 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.3 2005-01-14 03:29:24 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -39,6 +40,14 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
      * The serial port output stream.
      */
     protected OutputStream serialOut;
+    
+    public AbstractSerialServoController() {
+    
+        // It is safe to do it here because by this time we know what
+        // controller we're dealing with (unlike USB subclasses).
+    
+        servoSet = new Servo[getServoCount()];
+    }
     
     /**
      * Initialize the controller.

@@ -74,7 +74,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.1 2001-08-31 21:38:00 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.2 2001-09-01 03:32:44 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -85,6 +85,10 @@ public class FT639ServoController implements ServoController, FT639Constants {
     
     /**
      * Open timeout.
+     *
+     * <p>
+     *
+     * Wait this much trying to open the serial port.
      */
     public static final int OPEN_TIMEOUT = 5000;
     

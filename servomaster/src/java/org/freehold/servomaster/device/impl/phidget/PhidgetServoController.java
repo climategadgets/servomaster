@@ -40,7 +40,7 @@ import org.freehold.servomaster.device.impl.phidget.firmware.Servo8;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: PhidgetServoController.java,v 1.23 2004-02-04 00:17:35 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.24 2004-02-04 00:33:51 vtt Exp $
  */
 public class PhidgetServoController extends AbstractServoController {
 
@@ -442,6 +442,8 @@ public class PhidgetServoController extends AbstractServoController {
         return servos.iterator();
     }
     
+    private long lastDetect = 0;
+    
     private Device findUSB(String portName) throws IOException {
 
         // VT: There are multiple ways to handle this:
@@ -455,6 +457,22 @@ public class PhidgetServoController extends AbstractServoController {
         //	  if there's more than one or none.
         
         try {
+        
+            // VT: Make sure we don't loop endlessly. Since there are no
+            // notifications, the only chance to discover the device is just
+            // keep polling. This means that this method will be called
+            // every time there's an attempt to use the device. Let's
+            // restrict the poll rate...
+            
+            // VT: FIXME: Right now, the delay is hardcoded at 1 second -
+            // make this configurable
+            
+            if ( (System.currentTimeMillis() - lastDetect) < 1000 ) {
+            
+                throw new IOException("Polling too fast");
+            }
+            
+            lastDetect = System.currentTimeMillis();
         
             // VT: FIXME: What if there's more than one host? Bummer...
             
@@ -1238,6 +1256,14 @@ public class PhidgetServoController extends AbstractServoController {
         
         protected synchronized void send(byte buffer[]) throws IOException {
         
+            // thePhidgetServo instance can still be null if the driver
+            // works in disconnected mode
+            
+            if ( thePhidgetServo == null ) {
+            
+                return;
+            }
+            
             ControlMessage message = new ControlMessage();
 
             message.setRequestType((byte)(ControlMessage.DIR_TO_DEVICE
@@ -1248,9 +1274,6 @@ public class PhidgetServoController extends AbstractServoController {
             message.setIndex((byte)0);
             message.setLength(buffer.length);
             message.setBuffer(buffer);
-            
-            // The instance has to be non-null at this point, or the
-            // IOException was already thrown
             
             thePhidgetServo.control(message);
         }

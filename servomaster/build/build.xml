@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.15 2002-03-12 07:06:59 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.16 2002-05-14 21:02:10 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -35,7 +35,16 @@
         
       -->
     <property name="version" value="0.1"/>
-    <property name="build.compiler" value="classic"/>
+    
+    <!--
+    
+        Ant 1.5 breaks the build if the compiler type is not supported
+        
+      -->
+    <property name="build.compiler" value="modern"/>
+    <property name="javac.depend" value="false"/>
+    <property name="javac.deprecation" value="true"/>
+    
     <property name="build.dir" value="../build/classes"/>
     <property name="src.java.dir" value="../src/java"/>
     <property name="dist.dir" value="../build/${project}-${version}"/>
@@ -167,7 +176,7 @@
 
         </copy>
 
-        <javac depend="on" deprecation="on" srcdir="${model.build.src}" destdir="${build.dir}"/>
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${model.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -200,7 +209,7 @@
         The classes pertinent to FerretTronics FT639
         
       -->
-    
+
     <target name="ft639" depends="model,JavaCOMM_enable">
     
         <copy todir="${ft639.build.src}/org/freehold/servomaster">
@@ -214,7 +223,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
 
@@ -236,14 +245,14 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${phidget.build.src}" destdir="${build.dir}">
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>
         </javac>
         
     </target>
-    
+
     <!--
     
         The view
@@ -266,7 +275,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${view.build.src}" destdir="${build.dir}"/>
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -282,7 +291,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
 
     </target>
 
@@ -298,7 +307,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}"/>
 
     </target>
     
@@ -314,7 +323,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>
@@ -334,7 +343,7 @@
             
         </copy>
     
-        <javac depend="on" deprecation="on" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
             <classpath>
                 <pathelement path="${JUSB.jar}"/>
             </classpath>

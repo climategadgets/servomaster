@@ -18,48 +18,48 @@ dnl consistency sake. If you want to use them, analyze the source.
 
 dnl Find the 'false program, I'll need it as a substitute later
 dnl Result goes in FALSE
-AC_DEFUN(AC_PROG_FALSE,
+AC_DEFUN([AC_PROG_FALSE],
 [
     AC_PATH_PROG_VERIFY(FALSE,false,$PATH)
 ])
 
 dnl Ditto for echo
-AC_DEFUN(AC_PROG_ECHO,
+AC_DEFUN([AC_PROG_ECHO],
 [
     AC_PATH_PROG_VERIFY(ECHO,echo,$PATH)
 ])
 
 dnl Ditto for test
-AC_DEFUN(AC_PROG_TEST,
+AC_DEFUN([AC_PROG_TEST],
 [
     AC_PATH_PROG_VERIFY(TEST,test,$PATH)
 ])
 
 dnl Ditto for grep
-AC_DEFUN(AC_PROG_GREP,
+AC_DEFUN([AC_PROG_GREP],
 [
     AC_PATH_PROG_VERIFY(GREP,grep,$PATH)
 ])
 
 dnl Ditto for find
-AC_DEFUN(AC_PROG_FIND,
+AC_DEFUN([AC_PROG_FIND],
 [
     AC_PATH_PROG_VERIFY(FIND,find,$PATH)
 ])
 
 dnl Ditto for cut
-AC_DEFUN(AC_PROG_CUT,
+AC_DEFUN([AC_PROG_CUT],
 [
     AC_PATH_PROG_VERIFY(CUT,cut,$PATH)
 ])
 
 dnl Ditto for tr
-AC_DEFUN(AC_PROG_TR,
+AC_DEFUN([AC_PROG_TR],
 [
     AC_PATH_PROG_VERIFY(TR,tr,$PATH)
 ])
 
-AC_DEFUN(AC_PROG_JAR,
+AC_DEFUN([AC_PROG_JAR],
 [
     AC_PROG_JAVATOOL(JAR,jar,[     Java Archiver])
 ])
@@ -69,7 +69,7 @@ dnl Results go in JDK_HOME
 dnl Also sets JAVA_PLATFORM to 1 for 1.1 and to 2 for 1.2
 dnl See also AC_WITH_PLATFORM
 
-AC_DEFUN(AC_PATH_JDK,
+AC_DEFUN([AC_PATH_JDK],
 [
     if ${TEST} "${CYGWIN}" = "yes" ; then
         AC_MSG_WARN(It will take quite a while to find the JDK home on Cygwin)
@@ -125,6 +125,7 @@ AC_DEFUN(AC_PATH_JDK,
     	do
     	    
     	    for JAVA_VERSION in \
+    	        1.5.0 \
     	        1.4.2_03 \
     	        1.4.1_01 \
     	        1.4.1 \
@@ -159,6 +160,10 @@ AC_DEFUN(AC_PATH_JDK,
                         4)
                         
                             AC_MSG_RESULT([guess Java 2 (1.4)])
+                            ;;
+                        5)
+                        
+                            AC_MSG_RESULT([guess Java 2 (1.5)])
                             ;;
 
                         *)
@@ -229,7 +234,7 @@ dnl adjustments)
 
 dnl The order is: --with-rmic first, environment second, guessed value third.
 
-AC_DEFUN(AC_PROG_RMIC,
+AC_DEFUN([AC_PROG_RMIC],
 [
     AC_REQUIRE([AC_PATH_JDK])
     AC_REQUIRE([AC_PROG_FALSE])
@@ -278,7 +283,7 @@ dnl out.
 dnl Results go to $1 (bare location) and $1X (with classpath and flag
 dnl adjustments).
 
-AC_DEFUN(AC_PROG_JAVATOOL,
+AC_DEFUN([AC_PROG_JAVATOOL],
 [
     AC_REQUIRE([AC_PATH_JDK])
     AC_REQUIRE([AC_PROG_FALSE])
@@ -338,7 +343,7 @@ dnl The forth parameter is a --help message
 dnl If the fifth parameter is not empty, this package is optional.
 dnl The output goes into $1_CLASSES
 
-AC_DEFUN(AC_PATH_JAVACLASS,
+AC_DEFUN([AC_PATH_JAVACLASS],
 [
     AC_REQUIRE([AC_PROG_TEST])
     AC_REQUIRE([AC_PROG_ECHO])
@@ -465,7 +470,7 @@ AC_DEFUN(AC_PATH_JAVACLASS,
 dnl This one verifies if the $3 class exists in the $2 jar file and places
 dnl the $2 in $1 if it is, otherwise sets it to empty string.
  
-AC_DEFUN(AC_PATH_VERIFYJAR,
+AC_DEFUN([AC_PATH_VERIFYJAR],
 [
     AC_REQUIRE([AC_PROG_JAR])
     AC_REQUIRE([AC_PROG_TEST])
@@ -487,7 +492,7 @@ dnl If the directory is a classpath root, return it in $1.
 dnl If it is not, but the class is there, bail out.
 dnl If it doesn't contain the class file at all, return the empty string.
 
-AC_DEFUN(AC_PATH_SEARCHCLASS,
+AC_DEFUN([AC_PATH_SEARCHCLASS],
 [
 
     AC_REQUIRE([AC_PROG_FIND])
@@ -522,7 +527,7 @@ dnl If the jar/zip is found, return it in $1.
 
 dnl (VT: looks like AC_PATH_VERIFYJAR, may be just use it?)
 
-AC_DEFUN(AC_PATH_SEARCHJAR,
+AC_DEFUN([AC_PATH_SEARCHJAR],
 [
     AC_REQUIRE([AC_PROG_FIND])
     AC_REQUIRE([AC_PROG_TR])
@@ -551,7 +556,7 @@ dnl if the correspondend environment variable is set.
 dnl
 dnl First parameter is the environment variable name, without _CLASSES appended.
 
-AC_DEFUN(AC_REPORT_OPTIONAL, [
+AC_DEFUN([AC_REPORT_OPTIONAL], [
 
     if ${TEST} -n "${$1_CLASSES}" ; then
         AC_MSG_RESULT($1 (optional) used: ${$1_CLASSES})
@@ -565,7 +570,7 @@ dnl if the correspondend environment variable is set.
 dnl
 dnl First parameter is the environment variable name, without _CLASSES appended.
 
-AC_DEFUN(AC_REPORT_MANDATORY, [
+AC_DEFUN([AC_REPORT_MANDATORY], [
 
     if ${TEST} -n "${$1_CLASSES}" ; then
         AC_MSG_RESULT($1 used: ${$1_CLASSES})
@@ -574,14 +579,14 @@ AC_DEFUN(AC_REPORT_MANDATORY, [
     fi
 ])
 
-AC_DEFUN(AC_PATH_EXTRA,
+AC_DEFUN([AC_PATH_EXTRA],
 [
     if ${TEST} -n "${$1_CLASSES}" ; then
         TARGET_CLASSPATH="${TARGET_CLASSPATH}${PATH_SEPARATOR}${$1_CLASSES}"
     fi
 ])
 
-AC_DEFUN(AC_PATH_PROG_VERIFY,
+AC_DEFUN([AC_PATH_PROG_VERIFY],
 [
 
     dnl $TEST must be defined before running this. The case when $TEST is
@@ -599,7 +604,7 @@ AC_DEFUN(AC_PATH_PROG_VERIFY,
 
 dnl Search all the common names for GNU make
 
-AC_DEFUN(CHECK_GNU_MAKE,
+AC_DEFUN([CHECK_GNU_MAKE],
 [
     AC_CACHE_CHECK( for GNU make,_cv_gnu_make_command,_cv_gnu_make_command='' ;
 

@@ -68,6 +68,8 @@
                                      <li> <a href="#comm"><code>UnsupportedCommOperationException</code></a>
                                      
                                      <li> <a href="#usbfs">USB <code>SecurityException</code></a>
+                                     
+                                     <li> <a href="#hid">usb.linux.USBException: claimInterface -- Device or resource busy</a>
                                          
                                  </ul>
                             
@@ -331,6 +333,47 @@ make all install >> tmp/sm.out
                                 This will enable all the users to access the
                                 usbfs.  Alternatives are possible, look up
                                 the usbfs documentation for that.
+                            
+                            </blockquote>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th bgcolor="#737b9c" align=left>
+                                <a name="hid">
+                                <font color="#ffffff">
+                                    
+                                    usb.linux.USBException: claimInterface -- Device or resource busy
+                                
+                                </font>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                            <blockquote>
+                            
+                                If you keep getting the following exception:
+                                
+                                <blockquote>
+                                
+                                    Unable to initialize controller, cause:
+                                    <br>
+                                    usb.linux.USBException: claimInterface -- Device or resource busy [16] 
+                                                            
+                                </blockquote>
+                                
+                                then make sure that the <code>hid</code>
+                                module is not loaded. In some distributions,
+                                it gets loaded automatically when the device
+                                is connected, incorrectly determines the
+                                PhidgetServo as Pointer and interferes with
+                                the normal operation.
+                                
+                                <p>
+                                
+                                If you do need some HID devices, just
+                                <code>rmmod</code> the module, start the
+                                ServoMaster, and <code>modprobe</code> it
+                                again.
                             
                             </blockquote>
                             </td>

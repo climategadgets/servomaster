@@ -18,8 +18,9 @@ Packager: Vadim Tkachenko <vt@freehold.crocodile.org>
 Requires: j2sdk = 1.4.2_03-fcs, jusb >= 0.4p5
 %description
 
-ServoMaster is a unified hardware independent way of controlling the servos
-with the personal computer. This release provides Java support.
+ServoMaster is a unified hardware independent servo controller driver. Servo
+controller is a device that allows to control common R/C servos using the
+personal computer. This release provides Java support.
 
 Two kinds of servo controllers are supported at this point:
 

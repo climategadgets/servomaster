@@ -35,15 +35,68 @@
         
             <li> Cheap, as in having limited functionality.
             
+                 <p>
+            
             <li> Is a write-only device. It is not possible to even tell
                  whether it is connected to the serial port, save read the
                  status. Minimal functionality, like "controller ready"
                  status reflected on hardware flow control pin, would be
                  great.
                  
+                 <p>
+                 
             <li> I think the guys really, really underestimate the necessity
-                 of higher speed communication. <i>(some math will be placed
-                 here when I'm ready)</i>
+                 of higher speed communication. Consider this: on 2400 baud,
+                 it takes about 10-11 milliseconds to transmit a command to
+                 the servo with the protocol currently used. It allows up to
+                 100 steps per second when controlling a single servo.
+                 
+                 <p>
+                 
+                 When controlling five servos simultaneously (maximum
+                 supported by FT639) this figure drops down to about 20
+                 steps per second.
+                 
+                 <p>
+                 
+                 When controlling twenty five servos simultaneously (maximum
+                 supported by FT649) this figure drops to about 4 (four)
+                 steps per second.
+                 
+                 <p>
+                 
+                 Suppose, I have a requirement of controlling the servos in
+                 a smooth, silent manner, or smoothly and precisely. Does
+                 this requirement get satisfied when I have twenty five
+                 servos? No. Please note, that raising the communication
+                 speed to 9600 baud is hardly enough. 19200 seems to be more
+                 or less acceptable.
+                 
+                 <p>
+                 
+                 Oh well.
+                 
+                 <p>
+                 
+            <li> This one drives me nuts. The "header length" command. With
+                 the header length set less than 9-10, the servo (your
+                 typical one, <a
+                 href="http://www.servocity.com/Products/Futaba_Servos_/S3003_Standard/s3003_standard.html">Futaba
+                 S3003</a>) starts behaving funny, doesn't want to move when
+                 the position gets in the lower half, and starts emitting
+                 the disturbing high-pitch noise (ever been to the dentist?
+                 The kind of noise their tools have). I don't think this is
+                 normal. Plus, this feature is not documented clearly. Plus,
+                 the reasonable default value should be 0, or it has to be
+                 documented, and the default value for the header length
+                 doesn't seem to be neither 0 nor 15 (the maximum value).
+                 
+                 <p>
+                 
+                 I'll just leave this feature disabled, to prevent damage to
+                 the servo. If someone can enlighten me on what's going on,
+                 I would definitely appreciate that. Too bad I don't have
+                 an oscilloscope to take look at the signal.
                  
         </ul>
     

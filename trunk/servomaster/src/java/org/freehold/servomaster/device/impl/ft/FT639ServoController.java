@@ -18,6 +18,7 @@ import javax.comm.UnsupportedCommOperationException;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoMetaData;
 import org.freehold.servomaster.device.model.ServoController;
+import org.freehold.servomaster.device.model.ServoControllerMetaData;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.ServoControllerListener;
 
@@ -78,7 +79,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.9 2001-12-14 21:58:12 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.10 2001-12-29 06:33:19 vtt Exp $
  */
 public class FT639ServoController implements ServoController, FT639Constants {
 
@@ -282,14 +283,14 @@ public class FT639ServoController implements ServoController, FT639Constants {
     /**
      * Enable the long throw for the servos.
      *
-     * Default is 90 degree range.
+     * Default is 90\u00B0 range.
      *
      * <p>
      *
      * Be careful with the long throw, not all servos support it.
      *
-     * @param range <code>false</code> for 90 degree range,
-     * <code>true</code> for 180 degree range.
+     * @param range <code>false</code> for 90\u00B0 range,
+     * <code>true</code> for 180\u00B0 range.
      *
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
@@ -383,18 +384,18 @@ public class FT639ServoController implements ServoController, FT639Constants {
     }
 
     /**
-     * Check if the value is within 0...255 range.
+     * Check if the value is within 0...1.0 range.
      *
      * @param position Value to check.
      *
-     * @exception IllegalArgumentException if the position is out of 0...255
+     * @exception IllegalArgumentException if the position is out of 0...1.0
      * range.
      */
-    protected void checkPosition(int position) {
+    protected void checkPosition(double position) {
     
-        if ( position < 0 || position > 255 ) {
+        if ( position < 0 || position > 1.0 ) {
         
-            throw new IllegalArgumentException("Position out of 0...255 range: " + position);
+            throw new IllegalArgumentException("Position out of 0...1.0 range: " + position);
         }
     }
     
@@ -658,7 +659,45 @@ public class FT639ServoController implements ServoController, FT639Constants {
         
         listenerSet.remove(listener);
     }
+    
+    public ServoControllerMetaData getMetaData() {
+    
+        return new FT639MetaData();
+    }
 
+    protected class FT639MetaData implements ServoControllerMetaData {
+    
+        public String getManufacturerURL() {
+        
+            return "http://www.ferrettronics.com/";
+        }
+        
+        public String getManufacturerName() {
+        
+            return "FerretTronics";
+        }
+        
+        public String getModelName() {
+        
+            return "FT639";
+        }
+        
+        public int getMaxServos() {
+        
+            return 5;
+        }
+        
+        public boolean supportsSilentMode() {
+        
+            return true;
+        }
+        
+        public int getPrecision() {
+        
+            return 256;
+        }
+    }
+    
     /**
      * The servo implementation.
      *
@@ -677,7 +716,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
         /**
          * Requested position.
          */
-        private int position;
+        private double position;
         
         /**
          * Actual position.
@@ -687,7 +726,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
          * Differs from {@link #position requested position} when the smooth
          * mode is engaged.
          */
-        private int actualPosition;
+        private double actualPosition;
         
         /**
          * Enabled mode.
@@ -722,7 +761,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             this.id = id;
             
             // Reset the servo position
-            setPosition(255 >> 1, false, 0);
+            setPosition((255 >> 1)/255.0, false, 0);
         }
         
         public String getName() {
@@ -735,7 +774,7 @@ public class FT639ServoController implements ServoController, FT639Constants {
             this.enabled = enabled;
         }
         
-        public synchronized void setPosition(int position, boolean smooth, long interval) throws IOException {
+        public synchronized void setPosition(double position, boolean smooth, long interval) throws IOException {
         
             if ( !enabled ) {
             
@@ -772,11 +811,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
          * {@link #setPosition setPosition()} when smooth mode is not
          * active.
          */
-        private synchronized void setActualPosition(int position) throws IOException {
+        private synchronized void setActualPosition(double position) throws IOException {
         
             checkPosition(position);
             setActiveMode();
-            send(renderPositionCommand(id, position));
+            send(renderPositionCommand(id, double2int(position)));
             this.actualPosition = position;
             actualPositionChanged();
             
@@ -810,12 +849,12 @@ public class FT639ServoController implements ServoController, FT639Constants {
             throw new UnsupportedOperationException("This operation is controller-specific for FT639, you have to invoke it on the controller");
         }
         
-        public int getPosition() {
+        public double getPosition() {
         
             return position;
         }
         
-        public int getActualPosition() {
+        public double getActualPosition() {
         
             return actualPosition;
         }
@@ -838,12 +877,35 @@ public class FT639ServoController implements ServoController, FT639Constants {
             listenerSet.remove(listener);
         }
         
+        private static final double step = 1.0 / 255.0;
+        
         protected class TransitionController implements Runnable {
         
             public void run() {
             
-                while ( position != actualPosition ) {
+                // VT: NOTE: Since the input is in doubles, and the actual
+                // control values are integers, we need some slack so
+                // there's no jitter on the software level (which does
+                // happen if I just compare the position and the actual
+                // position). The slack is equal to 1 divided by the
+                // controller precision. Since we know for sure that it is
+                // 255, we can skip the calculation and declare it final
+                // (above).
                 
+                while ( true ) {
+                
+                    double diff = position - actualPosition;
+                    
+                    if ( diff < 0 ) {
+                    
+                        diff = -diff;
+                    }
+                    
+                    if ( diff <= step ) {
+                    
+                        break;
+                    }
+                    
                     try {
                     
                         // VT: NOTE: Remember not to interfere with the
@@ -853,11 +915,11 @@ public class FT639ServoController implements ServoController, FT639Constants {
                         
                             if ( actualPosition > position ) {
                             
-                                setActualPosition(actualPosition - 1);
+                                setActualPosition(actualPosition - step);
                                 
                             } else if ( actualPosition < position ) {
                             
-                                setActualPosition(actualPosition + 1);
+                                setActualPosition(actualPosition + step);
                             }
                         }
                     
@@ -952,5 +1014,10 @@ public class FT639ServoController implements ServoController, FT639Constants {
             
             s.setPosition(s.getPosition(), false, 0);
         }
+    }
+    
+    private static int double2int(double value) {
+    
+        return (int)(value * 255);
     }
 }

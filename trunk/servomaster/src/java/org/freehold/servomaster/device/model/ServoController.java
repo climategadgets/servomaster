@@ -10,7 +10,7 @@ import java.util.Iterator;
  * platform-independent entity.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.2 2001-09-01 21:46:03 vtt Exp $
+ * @version $Id: ServoController.java,v 1.3 2001-12-29 06:33:19 vtt Exp $
  */
 public interface ServoController {
 
@@ -154,4 +154,14 @@ public interface ServoController {
      * doesn't support listeners.
      */
     public void removeListener(ServoControllerListener listener);
+
+    /**
+     * Get the servo controller metadata.
+     *
+     * @return Servo controller metadata.
+     *
+     * @exception UnsupportedOperationException if the particular
+     * implementation doesn't support the capabilities discovery.
+     */
+    public ServoControllerMetaData getMetaData();
 }

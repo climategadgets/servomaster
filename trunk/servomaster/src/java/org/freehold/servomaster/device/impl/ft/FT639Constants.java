@@ -5,7 +5,7 @@ package org.freehold.servomaster.device.impl.ft;
  * FT639</a> servo controller constants.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639Constants.java,v 1.2 2001-09-01 03:32:44 vtt Exp $
+ * @version $Id: FT639Constants.java,v 1.3 2001-12-29 06:33:19 vtt Exp $
  */
 public interface FT639Constants {
 
@@ -21,13 +21,13 @@ public interface FT639Constants {
     
     /**
      * A byte to send to the controller (in the setup mode) to make it
-     * produce pulses corresponding to 90 degrees (short) servo range.
+     * produce pulses corresponding to 90\u00B0 (short) servo range.
      */
     public static final byte PULSE_SHORT = 85;
 
     /**
      * A byte to send to the controller (in the setup mode) to make it
-     * produce pulses corresponding to 180 degrees (long) servo range.
+     * produce pulses corresponding to 180\u00B0 (long) servo range.
      */
     public static final byte PULSE_LONG = 90;
 }

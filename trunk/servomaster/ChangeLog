@@ -1,3 +1,11 @@
+0.2p0	- API changed to accept double 0...1 instead of int 0...255
+        - controller and servo metadata added
+        - major bugfixes related to the above changes - one bug still
+          lingers, it's not possible to get up to the max in smooth mode,
+          but what the hell, let's release now and fix later - it's going to
+          be in 0.2p1
+        - minor bugfixes not related to the API changes
+
 0.1p2
 
 	- Servos change position according to the range selection immediately after

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and smooth positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.5 2001-12-14 21:58:12 vtt Exp $
+ * @version $Id: Servo.java,v 1.6 2001-12-29 06:33:19 vtt Exp $
  */
 public interface Servo {
 
@@ -22,7 +22,7 @@ public interface Servo {
     /**
      * Set the position.
      *
-     * @param position Position to set, between 0 and 255.
+     * @param position Position to set, between 0 and 1.0.
      *
      * @param smooth True if the movement has to be smooth, false if it has
      * to be instant.
@@ -50,7 +50,7 @@ public interface Servo {
      * <li> The <code>transitionTime</code> is not <code>0</code> when
      *      <code>smooth</code> is false;
      *
-     * <li> The position is outside of <code>0...255</code> range.
+     * <li> The position is outside of <code>0...1.0</code> range.
      *
      * </ul>
      *
@@ -60,7 +60,7 @@ public interface Servo {
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
-    public void setPosition(int position, boolean smooth, long transitionTime) throws IOException;
+    public void setPosition(double position, boolean smooth, long transitionTime) throws IOException;
     
     /**
      * Get the position.
@@ -71,7 +71,7 @@ public interface Servo {
      * #getActualPosition getActualPosition()} to obtain the actual servo
      * position.
      */
-    public int getPosition();
+    public double getPosition();
     
     /**
      * Get the actual position.
@@ -85,17 +85,20 @@ public interface Servo {
      *
      * @return The actual position of the servo.
      */
-    public int getActualPosition();
+    public double getActualPosition();
     
     /**
-     * Enable the long throw.
+     * Set the servo range.
      *
      * <p>
      *
-     * Be careful with the long throw, not all servos support it.
+     * Be careful with the range selection, especially over 90\u00B0, not
+     * all the servos support it.
      *
-     * @param range <code>false</code> for 90 degree range,
-     * <code>true</code> for 180 degree range.
+     * @param range Requested servo range, 0\u00B0 to 180\u00B0.
+     *
+     * @exception IllegalArgumentException if the servo isn't capable of
+     * supporting the requested range.
      *
      * @exception UnsupportedOperationException if the hardware controller
      * doesn't support the range selection.
@@ -140,7 +143,8 @@ public interface Servo {
     /**
      * Get the servo metadata.
      *
-     * @return Servo metadata.
+     * @return Servo metadata array. Each array entry corresponds to the
+     * servo properties under the voltage pertinent to that entry.
      *
      * @exception UnsupportedOperationException if the particular
      * implementation doesn't support the capabilities discovery.

@@ -25,7 +25,7 @@ import org.freehold.servomaster.device.model.ServoListener;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoView.java,v 1.7 2001-12-14 05:08:45 vtt Exp $
+ * @version $Id: ServoView.java,v 1.8 2001-12-29 06:33:19 vtt Exp $
  */
 public class ServoView extends JPanel implements ChangeListener, ItemListener, ServoListener {
 
@@ -88,6 +88,14 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     private boolean smooth = false;
     
     /**
+     * Number of steps the controller can provide for this servo.
+     *
+     * Default is set to 256, however, this is absolutely not true for most
+     * controllers.
+     */
+    private int precision = 256;
+    
+    /**
      * Create an instance.
      *
      * @param controller The controller to request the instance from.
@@ -97,6 +105,15 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     ServoView(ServoController controller, String servoName) {
     
         this.servoName = servoName;
+        
+        try {
+        
+            this.precision = controller.getMetaData().getPrecision();
+        
+        } catch ( UnsupportedOperationException ex ) {
+        
+            System.err.println("Controller doesn't provide metadata, precision set to 256");
+        }
         
         try {
         
@@ -148,7 +165,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         
         cs.gridy = 3;
         
-        positionLabel = new JLabel("128", JLabel.CENTER);
+        positionLabel = new JLabel(Integer.toString(precision/2), JLabel.CENTER);
         positionLabel.setToolTipText("Current servo position");
         positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
         
@@ -160,7 +177,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
         cs.weighty = 1;
         cs.fill = GridBagConstraints.VERTICAL;
         
-        viewSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
+        viewSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
         viewSlider.setToolTipText("The actual position of the servo");
         viewSlider.setEnabled(false);
         
@@ -169,11 +186,11 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
 
         cs.gridx = 1;
         
-        controlSlider = new JSlider(JSlider.VERTICAL, 0, 255, 128);
+        controlSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
         controlSlider.setToolTipText("Move this to make the servo move");
         controlSlider.addChangeListener(this);
-        controlSlider.setMajorTickSpacing(32);
-        controlSlider.setMinorTickSpacing(4);
+        controlSlider.setMajorTickSpacing(precision/8);
+        controlSlider.setMinorTickSpacing(precision/64);
         controlSlider.setPaintTicks(true);
         controlSlider.setPaintLabels(true);
         controlSlider.setSnapToTicks(false);
@@ -187,10 +204,12 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
     /**
      * Reflect the change in actual position.
      */
-    private void setPosition(int position) {
+    private void setPosition(double position) {
     
-        viewSlider.setValue(position);
-        positionLabel.setText(Integer.toString(position));
+        int iPosition = (int)(position * (precision - 1));
+        
+        viewSlider.setValue(iPosition);
+        positionLabel.setText(Integer.toString(iPosition));
     }
     
     /**
@@ -207,7 +226,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
             
             try {
             
-                servo.setPosition(position, smooth, 0);
+                servo.setPosition(position/255.0, smooth, 0);
                 
             } catch ( Throwable t ) {
             
@@ -240,7 +259,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      *
      * @param source The servo whose requested position has changed.
      */
-    public void positionChanged(Servo source, int position) {
+    public void positionChanged(Servo source, double position) {
     
         // This notification doesn't have to be visibly reflected
     
@@ -252,7 +271,7 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      *
      * @param source The servo whose actual position has changed.
      */
-    public void actualPositionChanged(Servo source, int position) {
+    public void actualPositionChanged(Servo source, double position) {
     
         setPosition(position);
     }
@@ -264,6 +283,6 @@ public class ServoView extends JPanel implements ChangeListener, ItemListener, S
      */
     void reset() {
     
-        controlSlider.setValue(128);
+        controlSlider.setValue(precision/2);
     }
 }

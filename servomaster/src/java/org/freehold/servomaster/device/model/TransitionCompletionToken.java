@@ -7,7 +7,7 @@ package org.freehold.servomaster.device.model;
  * asynchronously}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: TransitionCompletionToken.java,v 1.1 2005-04-20 20:44:35 vtt Exp $
+ * @version $Id: TransitionCompletionToken.java,v 1.2 2005-04-20 21:44:29 vtt Exp $
  */
 public interface TransitionCompletionToken {
 
@@ -22,12 +22,12 @@ public interface TransitionCompletionToken {
     /**
      * Wait for the transition to complete.
      */
-    public void waitFor();
+    public void waitFor() throws InterruptedException;
     
     /**
      * Wait for either timeout expiration or transition completion.
      *
      * @param millis Time to wait.
      */
-    public void waitFor(long millis);
+    public void waitFor(long millis) throws InterruptedException;
 }

@@ -12,7 +12,7 @@ import java.util.Set;
  * controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: AbstractServo.java,v 1.7 2005-01-21 06:35:44 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.8 2005-04-20 21:44:29 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -118,7 +118,7 @@ abstract public class AbstractServo implements Servo {
         return servoController;
     }
     
-    public void setPosition(double position) throws IOException {
+    public TransitionCompletionToken setPosition(double position) throws IOException {
     
         if ( !enabled ) {
         
@@ -128,6 +128,8 @@ abstract public class AbstractServo implements Servo {
         // The reason it is synchronized on the controller is that the
         // setActualPosition() calls the controller's synchronized methods
         // and the deadlock can occur if *this* method was made synchronized
+        
+        TransitionCompletionToken token = null;
         
         synchronized ( servoController ) {
         
@@ -146,10 +148,14 @@ abstract public class AbstractServo implements Servo {
             } else {
             
                 setActualPosition(position);
+                
+                token = new TCT(true);
             }
         }
         
         positionChanged();
+        
+        return token;
     }
 
     /**
@@ -306,5 +312,60 @@ abstract public class AbstractServo implements Servo {
                 }
             }
         }
+    }
+    
+    protected class TCT implements TransitionCompletionToken {
+    
+       private boolean complete;
+       
+       public TCT(boolean complete) {
+       
+           this.complete = complete;
+       }
+       
+       public synchronized boolean isComplete() {
+       
+           return complete;
+       }
+       
+       public synchronized void waitFor() throws InterruptedException {
+       
+           while (!complete) {
+           
+               wait();
+           }
+       }
+
+       public synchronized void waitFor(long millis) throws InterruptedException {
+       
+           long start = System.currentTimeMillis();
+           long timeout = millis;
+           
+           while (!complete) {
+           
+               timeout = millis - (System.currentTimeMillis() - start);
+           
+               if (timeout <= 0) {
+               
+                   // VT: FIXME: This is a wrong kind of exception...
+                   
+                   throw new InterruptedException("Timeout expired: " + millis + "ms");
+               }
+           
+               wait(timeout);
+           }
+       }
+       
+       public synchronized void done() {
+       
+           if (complete) {
+           
+               throw new IllegalStateException("Already done");
+           }
+           
+           complete = true;
+           
+           notifyAll();
+       }
     }
 }

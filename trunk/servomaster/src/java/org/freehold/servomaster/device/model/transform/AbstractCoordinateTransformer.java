@@ -6,6 +6,7 @@ import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.AbstractServo;
 import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.TransitionCompletionToken;
 
 /**
  * The coordinate transformer skeleton.
@@ -14,7 +15,7 @@ import org.freehold.servomaster.device.model.Meta;
  * means to perform the actual coordinate transformation.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.5 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.6 2005-04-20 21:44:30 vtt Exp $
  */
 abstract public class AbstractCoordinateTransformer extends AbstractServo {
 
@@ -56,9 +57,9 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
-    public void setPosition(double position) throws IOException {
+    public TransitionCompletionToken setPosition(double position) throws IOException {
     
-        getTarget().setPosition(transform(position));
+        return getTarget().setPosition(transform(position));
     }
     
     /**

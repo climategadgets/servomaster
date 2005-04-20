@@ -8,7 +8,7 @@ import java.io.IOException;
  * Allows instant and controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.11 2005-04-20 21:44:29 vtt Exp $
+ * @version $Id: Servo.java,v 1.12 2005-04-20 22:01:32 vtt Exp $
  */
 public interface Servo {
 
@@ -30,7 +30,7 @@ public interface Servo {
      * @return A token that allows to track the completion of the servo
      * movement. If the servo has a transition controller {@link #attach
      * attached}, then the token wil track the servo movement. Otherwise,
-     * it's {@link TransitionCompletionToken#isComplete isComplete()} method
+     * its {@link TransitionCompletionToken#isComplete isComplete()} method
      * will always return <code>true</code>, and its {@link
      * TransitionCompletionToken#waitFor waitFor()} method will return
      * immediately.

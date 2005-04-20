@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.35 2005-03-25 21:29:56 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.36 2005-04-20 20:44:34 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -163,6 +163,7 @@
                 <include name="device/model/AbstractServoController.java"/>
                 <include name="device/model/DisconnectListener.java"/>
                 <include name="device/model/HardwareServo.java"/>
+                <include name="device/model/TransitionCompletionToken.java"/>
                 <include name="device/model/TransitionController.java"/>
                 <include name="device/model/TransitionToken.java"/>
                 <include name="device/model/SilentDevice.java"/>

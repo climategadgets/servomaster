@@ -2,6 +2,7 @@
         - Replaced --enable-ft639 and --enable-phidget with more generic
 	  --enable-serial and --enable-usb
         - Added LimitTransformer
+	- Added TransitionCompletionToken
 
 0.6p3dev1 Replaced jUSB (http://jusb.sf.net) with javax.usb
           (http://javax-usb.sf.net), to get a feeling for it. Seems to work

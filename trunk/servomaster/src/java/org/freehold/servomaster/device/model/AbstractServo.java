@@ -12,7 +12,7 @@ import java.util.Set;
  * controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: AbstractServo.java,v 1.8 2005-04-20 21:44:29 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.9 2005-04-20 22:01:31 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -314,58 +314,89 @@ abstract public class AbstractServo implements Servo {
         }
     }
     
+    /**
+     * Implementation for the {@link TransitionCompletionToken
+     * TrasitionCompletionToken} interface.
+     *
+     * The difference between the interface and the implementation is the
+     * {@link #done done()} method the API user should have no business
+     * knowing about.
+     */
     protected class TCT implements TransitionCompletionToken {
     
-       private boolean complete;
-       
-       public TCT(boolean complete) {
-       
-           this.complete = complete;
-       }
-       
-       public synchronized boolean isComplete() {
-       
-           return complete;
-       }
-       
-       public synchronized void waitFor() throws InterruptedException {
-       
-           while (!complete) {
-           
-               wait();
-           }
-       }
+        /**
+         * Completion state.
+         */
+        private boolean complete;
+        
+        /**
+         * Create an instance.
+         *
+         * @param complete Completion state. If this argument is
+         * <code>true</code>, the token will be considered complete upon
+         * creation - this is required for the case when no transition
+         * controller is attached.
+         */
+        public TCT(boolean complete) {
+        
+            this.complete = complete;
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public synchronized boolean isComplete() {
+        
+            return complete;
+        }
+        
+        /**
+         * {@inheritDoc}
+         */
+        public synchronized void waitFor() throws InterruptedException {
+        
+            while (!complete) {
+            
+                wait();
+            }
+        }
 
-       public synchronized void waitFor(long millis) throws InterruptedException {
-       
-           long start = System.currentTimeMillis();
-           long timeout = millis;
-           
-           while (!complete) {
-           
-               timeout = millis - (System.currentTimeMillis() - start);
-           
-               if (timeout <= 0) {
-               
-                   // VT: FIXME: This is a wrong kind of exception...
-                   
-                   throw new InterruptedException("Timeout expired: " + millis + "ms");
-               }
-           
-               wait(timeout);
-           }
-       }
-       
-       public synchronized void done() {
-       
-           if (complete) {
-           
-               throw new IllegalStateException("Already done");
-           }
-           
-           complete = true;
-           
-           notifyAll();
-       }
+        /**
+         * {@inheritDoc}
+         */
+        public synchronized void waitFor(long millis) throws InterruptedException {
+        
+            long start = System.currentTimeMillis();
+            long timeout = millis;
+            
+            while (!complete) {
+            
+                timeout = millis - (System.currentTimeMillis() - start);
+            
+                if (timeout <= 0) {
+                
+                    // VT: FIXME: This is a wrong kind of exception...
+                    
+                    throw new InterruptedException("Timeout expired: " + millis + "ms");
+                }
+            
+                wait(timeout);
+            }
+        }
+        
+        /**
+         * Mark the token as complete.
+         */
+        public synchronized void done() {
+        
+            if (complete) {
+            
+                throw new IllegalStateException("Already done");
+            }
+            
+            complete = true;
+            
+            notifyAll();
+        }
     }
 }

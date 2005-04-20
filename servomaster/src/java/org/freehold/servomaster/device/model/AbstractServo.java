@@ -12,7 +12,7 @@ import java.util.Set;
  * controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: AbstractServo.java,v 1.9 2005-04-20 22:01:31 vtt Exp $
+ * @version $Id: AbstractServo.java,v 1.10 2005-04-20 22:39:04 vtt Exp $
  */
 abstract public class AbstractServo implements Servo {
 
@@ -141,8 +141,9 @@ abstract public class AbstractServo implements Servo {
                 
                     transitionDriver.stop();
                 }
-                
-                transitionDriver = new TransitionDriver(this, position);
+
+                token = new TCT(false);
+                transitionDriver = new TransitionDriver(this, position, (TCT)token);
                 new Thread(transitionDriver).start();
 
             } else {
@@ -262,11 +263,13 @@ abstract public class AbstractServo implements Servo {
         private Servo target;
         private double targetPosition;
         private TransitionToken token = new TransitionToken();
+        private TCT completionToken;
         
-        TransitionDriver(Servo target, double targetPosition) {
+        TransitionDriver(Servo target, double targetPosition, TCT completionToken) {
         
             this.target = target;
             this.targetPosition = targetPosition;
+            this.completionToken = completionToken;
         }
     
         public void run() {
@@ -289,26 +292,33 @@ abstract public class AbstractServo implements Servo {
         
             public void run() {
             
-                while ( true ) {
-                
-                    try {
+                try {
+
+                    while ( true ) {
                     
-                        setActualPosition(token.consume());
+                        try {
                         
-                    } catch ( IllegalStateException isex ) {
-                    
-                        //System.err.println("Controller stopped the transition:");
-                        //isex.printStackTrace();
+                            setActualPosition(token.consume());
+                            
+                        } catch ( IllegalStateException isex ) {
+                        
+                            //System.err.println("Controller stopped the transition:");
+                            //isex.printStackTrace();
 
-                        return;
-                    
-                    } catch ( Throwable t ) {
-                    
-                        System.err.println("Unexpected transition problem:");
-                        t.printStackTrace();
+                            return;
+                        
+                        } catch ( Throwable t ) {
+                        
+                            System.err.println("Unexpected transition problem:");
+                            t.printStackTrace();
 
-                        return;
+                            return;
+                        }
                     }
+
+                } finally {
+                
+                    completionToken.done();
                 }
             }
         }

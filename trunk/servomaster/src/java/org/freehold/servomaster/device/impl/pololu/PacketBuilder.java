@@ -24,7 +24,7 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.3 2005-02-03 07:23:15 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.4 2005-05-03 18:14:15 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -139,7 +139,31 @@ public class PacketBuilder {
         rq++;
         size += buffer.length;
         
-        //System.err.println("" + rq + " requests, " + size + " bytes");
+        if (true) {
+        
+            // If the device is not set up right, the output buffer will get
+            // stuck soon
+            
+            System.err.println("" + rq + " requests, " + size + " bytes");
+        
+            // Let's see if the buffer content is OK
+            
+            StringBuffer sb = new StringBuffer();
+            
+            for (int offset = 0; offset < buffer.length; offset++ ) {
+            
+                int b = buffer[offset] & 0x00FF;
+                
+                if (b < 0x10) {
+                
+                    sb.append('0');
+                }
+                
+                sb.append(Integer.toHexString(b)).append(' ');
+            }
+            
+            System.err.println("Buffer (" + buffer.length + " bytes): " + sb.toString());
+        }
     }
 
 }

@@ -24,7 +24,7 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.4 2005-05-03 18:14:15 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.5 2005-05-04 01:07:47 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -110,10 +110,34 @@ public class PacketBuilder {
         buffer[1] = (byte)0x01; // device ID
         buffer[2] = (byte)0x04; // command
         buffer[3] = servoId;
-        buffer[4] = (byte)(position & 0x00FF);
-        buffer[5] = (byte)((position & 0xFF00) >> 8);
+        buffer[4] = (byte)(position & 0x007F);
+        buffer[5] = (byte)((position & 0xFF80) >> 7);
         
         complain(buffer);
+        
+        // According to documentation, all the bytes except the start byte
+        // must have the high bit off. Let's see if we're doing it right.
+        
+        for (int offset = 1; offset < 6; offset++) {
+        
+            try {
+            
+                checkHighBit(buffer[offset]);
+                
+            } catch (IllegalArgumentException ex) {
+            
+                throw (IllegalStateException) (new IllegalStateException("Byte at offset " + offset + " has high bit set").initCause(ex));
+            }
+        }
+        
+        if (false) {
+        
+            // Let's also check where we are going, just in case
+            
+            int checkPosition = buffer[4] | (buffer[5] << 7);
+            
+            System.err.println("Position: " + checkPosition);
+        }    
         
         return buffer;
     }
@@ -165,5 +189,4 @@ public class PacketBuilder {
             System.err.println("Buffer (" + buffer.length + " bytes): " + sb.toString());
         }
     }
-
 }

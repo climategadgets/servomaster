@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Observations on Nic van der Walt's 1-Wire&reg; servo controller</title>
+    </header>
+    <body>
+    
+        <section>
+            <title>Summary</title>
+            
+            <p>
+            
+                The controller in question was designed and implemented by
+                Nic van der Walt. It's based on DS2890 1-Wire&reg; chip and
+                can be controlled by a conventional 1-Wire&reg; network.
+                
+            </p>
+            <fixme author="VT">
+            
+                The driver for this device has not yet been written.
+                
+            </fixme>
+            <table>
+                <caption>Supported Features</caption>
+                <tr>
+                    <td>
+                        <link href="site:contract_removable">Removable Device</link>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+
+                        {The rest is to be defined}
+
+                    </td>
+                </tr>
+            </table>
+            
+        </section>
+        <section>
+        
+            <title>Good Things</title>
+            <fixme author="VT">
+            
+                Coming soon.
+                
+            </fixme>
+        </section>
+        <section>
+            <title>Bad Things</title>
+            
+            <fixme author="VT">
+            
+                Coming soon.
+                
+            </fixme>
+        </section>
+        <section>
+            
+            <title>Conclusion</title>
+            
+            <fixme author="VT">
+            
+                Coming soon.
+                
+            </fixme>
+            
+        </section>
+
+    </body>
+
+</document>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Metadata: <code>controller/silent</code></title>
+    </header>
+    <body>
+        
+        <section>
+            <title>Definition</title>
+            
+            <p>
+            
+                <code>controller/silent</code> <em>feature</em> is true if
+                the hardware is able to shut off the servos.
+                
+            </p>
+            <p>
+
+                <code>controller/silent</code> <em>property</em> contains
+                the currently set shutoff timeout.
+                
+            </p>
+            <p>
+            
+                 Servo shutoff is useful for applications where long periods
+                 of inactivity may happen - the servo wear and energy
+                 consumption are greatly reduced. An example may be found
+                 here.
+                 
+            </p>
+            <p>
+            
+                 Please note that some controllers (like <link
+                 href="site:ft639">FT639</link>) are able to support the
+                 shutoff on per-controller basis (all the servos are shut
+                 off at the same time), some (like <link
+                 href="site:phidget_quad">QuadServo</link>) are able to
+                 support the shutoff on per-servo basis (see <link
+                 href="site:meta_servo_silent">servo/silent</link>, and some
+                 are not able to do it at all.
+                 
+            </p>
+            <p>
+            
+                 Use the <link
+                 href="site:meta_servo_silent">servo/silent</link> feature
+                 and property to set the shutoff timeout for the controllers
+                 that support per-servo control. For those, the value set
+                 with controller/silent will merely be a default.
+                
+            </p>
+            
+        </section>
+        
+    </body>
+</document>

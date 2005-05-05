@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faqs PUBLIC "-//APACHE//DTD FAQ V1.2//EN" "http://apache.org/forrest/dtd/faq-v12.dtd">
+
+<faqs title="ServoMaster: Frequently Asked Questions">
+
+    <part id="general">
+        <title>General</title>
+
+        <faq id="what_is_supported">
+            <question>
+
+                What hardware is supported?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    Two generic classes of controllers are supported: serial
+                    and USB. Specific list is:
+                    
+                </p>
+                
+                <dl>
+                
+                    <dt>
+                    
+                        Serial:
+                        
+                    </dt>
+                    
+                    <dd>
+                    
+                        FerretTronics <link href="site:ft639">FT639</link>;
+                        
+                    </dd>
+
+                    <dt>
+                    
+                        USB:
+                        
+                    </dt>
+                    
+                    <dd>
+                    
+                        <ul>
+                        
+                            <li>
+                            
+                                <link
+                                href="site:phidget_quad">PhidgetServo</link>;
+                                
+                            </li>
+
+                            <li>
+                            
+                                PhidgetUniServo (as a subset of <link
+                                href="site:phidget_quad">PhidgetServo</link>);
+                                
+                            </li>
+
+                            <li>
+                            
+                                <link
+                                href="site:phidget_servo8">PhidgetAdvancedServo</link>
+                                (prototype).
+                                
+                            </li>
+                            
+                        </ul>
+                        
+                    </dd>
+                    
+                </dl>
+                
+                <p>
+                
+                    However, a lot of attention was paid to making the code
+                    as abstract and reusable as possible, therefore, writing
+                    a driver for a new device should take just a few days,
+                    if not hours.
+                    
+                </p>
+                
+            </answer>
+        </faq>
+        <faq id="more_controllers">
+            <question>
+
+                Are there more hardware controller drivers coming?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    Yes. Currently, there's one in the queue (<link
+                    href="site:nic_servo">1-Wire&reg; based servo
+                    controller</link> which is pretty close to my <link
+                    href="site:contract">ideal servo controller</link>) and
+                    one planned (<link href="ext:pololu_usb16">Pololu
+                    16-servo USB controller</link>).
+                    
+                </p>
+                
+            </answer>
+        </faq>
+        <faq id="selection_criteria">
+            <question>
+
+                How do you select the hardware controllers to implement the
+                drivers for?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    First one I bought. The rest were donated.  If you want
+                    the driver for your controller, consider donating one
+                    <link href="site:credits">like others did</link> - by
+                    now, the implementation is pretty straightforward, it
+                    takes a day or two of straight coding.
+                    
+                    
+                </p>
+                
+            </answer>
+        </faq>
+        <faq id="stable">
+            <question>
+
+                How stable is ServoMaster?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    Rock solid. It's been used to run inside the <link
+                    href="ext:dz">DIY Zoning Project</link> code for several
+                    years, 24/7/365, non-stop. Never failed.
+                    
+                </p>
+                
+            </answer>
+        </faq>
+        <faq id="silent">
+            <question>
+
+                What is this "silent mode" thing?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    If you are familiar with the servos, you probably know
+                    that they can make a sound that can make you jump,
+                    especially caught off guard. The application this
+                    project is serving is intended to have the servos
+                    operate next to people whose comfort level is paramount,
+                    so they must not be scared do death periodically when
+                    the servos come to life.
+                    
+                </p>
+                <p>
+                
+                    Also, as servos wear down, they sometimes start
+                    "growling".
+
+                </p>
+                <p>
+                
+                    In order to reduce noise related to servo operation, it
+                    is possible to shut off the pulse to the servo - it
+                    enters the "sleep mode" shortly thereafter. While
+                    sleeping, it emits no noise.
+                    
+                </p>
+                <p>
+                     
+                    As a side effect, this reduces the energy consumption
+                    (the sleeping servo goes to a powerdown and consumes
+                    about 8mA - thanks again, Chester) and servo wear. Since
+                    the servos may be working 24x7, this may be important as
+                    well.
+                    
+                </p>
+                
+            </answer>
+        </faq>
+    </part>
+    <part id="serial">
+        <title>Serial</title>
+        <faq id="javacomm">
+            <question>
+
+                Why do I keep getting <code>noClassDefFoundError:
+                javax/comm/UnsupportedCommOperationException</code>?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    Because you didn't install the <link
+                    href="ext:javax-comm">JavaCOMM</link> properly. If you
+                    keep getting probems even though you've followed the
+                    instructions to the letter, try to go with the JRE
+                    instead of JDK - copy the <code>comm.jar</code> to
+                    <code>${JRE_HOME}/lib/ext</code> directory.
+                    
+                </p>
+                <p>
+                    
+                    As a rule of thumb, the newer the version of the
+                    JDK/JRE, the less problems you will have.
+                
+                </p>
+                
+            </answer>
+        </faq>
+    </part>
+    <part id="usb">
+        <title>USB</title>
+        <faq id="visibility">
+            <question>
+
+                ServoMaster doesn't detect my USB controller, why?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    This seems to be a peculiarity related to the way <link
+                    href="ext:javax-usb">javax.usb</link> security is
+                    implemented.
+                    
+                </p>
+                
+                <p>
+                
+                    Quick fix: <code>chmod -R a+w /proc/bus/usb</code> -
+                    this will allow you to test whether the controller is
+                    connected. Alternative way is to use
+                    <code>usbview</code> utility, it should show the device
+                    unconditionally (if it is present, that is).
+                    
+                </p>
+                
+                <warning>
+                
+                    It is not recommended to run ServoMaster code as root,
+                    for security reasons. Nothing in particular, but I'm
+                    just paranoid.
+                    
+                </warning>
+                
+                <p>
+                
+                    A more thorough solution involves properly configuring
+                    <link href="ext:hotplug">hotplug</link>.
+                    
+                </p>
+                
+                <note>
+                
+                   Don't forget to check <link
+                   href="site:faq_hid">hid</link> if your USB controller is
+                   a Phidget.
+                   
+                </note>
+                
+            </answer>
+        </faq>
+    </part>
+    <part id="phidgets">
+        <title>Phidgets</title>
+        <faq id="hid">
+            <question>
+
+                USB security is OK, but I still can't see the Phidget!
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    This is due to the fact that [at least] <link
+                    href="site:phidget_quad">QuadServo</link> advertises
+                    itself as a HID class device, but in fact doesn't
+                    properly implement HID specifications (if I remember
+                    Chester's explanations right).
+                    
+                </p>
+                
+                <p>
+                
+                    Quick fix is: <code>rmmod hid</code>. A more thorough
+                    solution would be to add <code>hid</code> to <link
+                    href="ext:hotplug">hotplug</link> blacklist, but both of
+                    these have an unfortunate side effect of disabling
+                    <em>all</em> HID devices. Let's hope that hotplug
+                    becomes smart enough to ban individual devices.
+                
+                </p>
+                
+            </answer>
+        </faq>
+        <faq id="servo8">
+            <question>
+
+                How do I get a hold of AdvancedServo?
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    You can't. The device that I have is a prototype
+                    generously <link href="site:donations">donated</link> by
+                    Chester Fitchett, a.k.a. Mr. <link
+                    href="ext:phidgets">Phidget</link>. This magnificent
+                    concept evolved into something even better that will
+                    soon be available from Phidgets, Inc. - keep checking
+                    in.
+                
+                </p>
+                
+            </answer>
+        </faq>
+    </part>
+</faqs>

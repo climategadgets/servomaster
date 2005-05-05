@@ -1,0 +1,259 @@
+<?xml version="1.0"?>
+
+<!--
+Forrest site.xml
+
+This file contains an outline of the site's information content.  It is used to:
+- Generate the website menus (though these can be overridden - see docs)
+- Provide semantic, location-independent aliases for internal 'site:' URIs, eg
+<link href="site:changes"> links to changes.html (or ../changes.html if in
+  subdir).
+- Provide aliases for external URLs in the external-refs section.  Eg, <link
+  href="ext:cocoon"> links to http://xml.apache.org/cocoon/ 
+
+See http://xml.apache.org/forrest/linking.html for more info
+-->
+
+<site label="ServoMaster" href="" xmlns="http://apache.org/forrest/linkmap/1.0" tab="">
+
+  <about label="About">
+    <index label="Introduction" href="index.html" description="ServoMaster"/>
+    <news label="News &amp; Status" href="news.html" description="Project news and status" />
+    <faq label="FAQs" href="faq.html" description="Frequently Asked Questions">
+    
+        <faq_hid href="#hid"/>
+        
+    </faq>
+    
+  </about>
+  
+  <bits label="Bits &amp; Pieces" href="dev/" tab="bits">
+    <contract label="Design Contract" href="contract.html">
+        <contract_hardware href="#hardware"/>
+        <contract_removable href="#removable"/>
+    </contract>
+    <transform label="Transitions &amp; Transormations" href="transform.html" description="Transition Controllers, Coordinate Transformers &amp; Their Combinations"/>
+    <future label="Future Plans" href="future.html" description="Future Plans &amp; Crazy Ideas"/>
+    <references label="Reference Library" href="references.html" description="Reference Library"/>
+    
+  </bits>
+  
+  <drelnotes label="Driver Release Notes" href="relnotes/" tab="Driver Release Notes">
+    <relnotes label="Release Notes" href="index.html" description="General Release Notes"/>
+    
+    <ft639 label="FT639" href="ft639.html" description="FerretTronics FT639 Driver Release Notes"/>
+    <phidget_quad label="QuadServo" href="quad.html" description="Phidget QuadServo Release Notes"/>
+    <phidget_servo8 label="AdvancedServo" href="servo8.html" description="Phidget AdvancedServo Release Notes"/>
+    <nic_servo label="1-Wire Servo Controller" href="onewire.html" description="DS2890 based 1-Wire servo controller"/>
+    
+  </drelnotes>
+  
+  <metadata label="Metadata" href="meta/" description="Metadata" tab="Metadata">
+  
+      <index label="Rationale &amp; Summary" href="index.html"/>
+  
+      <meta_manufacturer  label="Manufacturer" href="manufacturer/" dir="manufacturer">
+          <meta_mf_name   label="name" href="name/index.html"/>
+          <meta_mf_url    label="URL" href="URL/index.html"/>
+          <meta_mf_model  label="model" href="model/index.html"/>
+      </meta_manufacturer>
+
+      <meta_controller   label="Controller"   href="controller/"   dir="controller">
+          <meta_controller_maxservos         label="maxservos" href="maxservos/index.html"/>
+          <meta_controller_bandwidth         label="bandwidth" href="bandwidth/index.html"/>
+          <meta_controller_precision         label="precision" href="precision/index.html"/>
+          <meta_controller_silent            label="silent"    href="silent/index.html"/>
+          <meta_controller_protocol_USB      label="protocol/USB" href="protocol/USB/index.html"/>
+          <meta_controller_protocol_serial   label="protocol/serial" href="protocol/serial/index.html"/>
+          <meta_controller_transition        label="transition" href="transition/index.html"/>
+          <meta_controller_allow_disconnect  label="allow_disconnect" href="allow_disconnect/index.html"/>
+          <meta_controller_firmware_revision label="firmware/revision" href="firmware/revision/index.html"/>
+      </meta_controller>
+
+      <meta_servo                  label="Servo"        href="servo/"        dir="servo">
+          <meta_servo_precision    label="precision"    href="precision/index.html"/>
+          <meta_servo_range_units  label="range/units"  href="range/units/index.html"/>
+          <meta_servo_range_min    label="range/min"    href="range/min/index.html"/>
+          <meta_servo_range_max    label="range/max"    href="range/max/index.html"/>
+          <meta_servo_silent       label="silent"       href="silent/index.html"/>
+          <meta_servo_velocity     label="velocity"     href="velocity/index.html"/>
+          <meta_servo_acceleration label="acceleration" href="acceleration/index.html"/>
+      </meta_servo>
+
+  </metadata>
+
+
+  <sourceforge label="SourceForge" href="">
+      <projectpage label="Project Page"
+            href="http://sourceforge.net/projects/diy-zoning/"
+            description="Project Summary">
+      </projectpage>
+      <downloads label="Downloads"
+            href="http://sourceforge.net/project/showfiles.php?group_id=34418"
+            description="Binaries, source, documentation">
+      </downloads>
+      <cvs label="CVS"
+            href="http://sourceforge.net/cvs/?group_id=34418"
+            description="For those brave of heart">
+      </cvs>
+      <lists label="Mailing Lists"
+            href="http://sourceforge.net/mail/?group_id=34418"
+            description="Make your voice heard">
+          <static_pressure_thread href="http://sourceforge.net/mailarchive/forum.php?thread_id=888144&amp;forum_id=10124"/>
+      </lists>
+      <bugs label="Bug Reports"
+            href="http://sourceforge.net/tracker/?group_id=34418&amp;atid=412121"
+            description="Go here if it breaks, and someone will hold your pieces for you">
+      </bugs>
+      <rfe  href="http://sourceforge.net/tracker/?group_id=34418&amp;atid=412122"/>
+      <support
+            href="http://sourceforge.net/tracker/?group_id=34418&amp;atid=412124"/>
+      
+  </sourceforge>
+
+  <family label="Family" href="samples" tab="Family">
+      <dz label="DIY Zoning"
+            href="http://diy-zoning.sourceforge.net/"
+            description="Do It Yourself Temperature Zoning (that's us, right?)">
+      </dz>
+      <haywire label="Haywire"
+            href="http://haywire.sourceforge.net/"
+            description="High Level 1-Wire API">
+      </haywire>
+      <jukebox label="Jukebox"
+            href="http://jukebox4.sourceforge.net/"
+            description="Server Side Middleware Framework">
+      </jukebox>
+      <servomaster label="ServoMaster"
+            href="http://servomaster.sourceforge.net/"
+            description="Platform and hardware independent servo controller driver">
+      </servomaster>
+  </family>
+
+  <misc label="Miscellaneous" href="Miscellaneous/" tab="Miscellaneous">
+      <credits label="Credits" href="credits.html" description="People that helped this happen" tab="Miscellaneous"/>
+      <legal label="Legal" href="legal.html" description="Legal stuff they make us say" tab="Miscellaneous"/>
+      <donations label="Donations" href="donations.html" description="Show your appreciation, and it will come back to you"/>
+  </misc>
+
+
+<!--
+  <samples label="Samples" href="samples/" tab="samples">
+    <sample label="Apache document page" href="sample.html" 
+      description="A nonsense document using all possible elements in the current document">
+      <top href="#top"/>
+      <section href="#section"/>
+    </sample>
+    <sample2 label="Static content" href="sample2.html" 
+      description="More Samples" />
+    <sample-wiki label="Wiki page" href="wiki-sample.html" 
+      description="wiki-sample" />
+    <sample-ihtml label="ihtml page" href="ihtml-sample.html" 
+      description="Test iHTML page" />
+    <sample-ehtml label="ehtml page" href="ehtml-sample.html" 
+      description="Sample HTML page" />
+    <faqx label="FAQ" href="faq.html" description="Frequently Asked Questions" />
+    <sdocbook label="Simplifed Docbook page" href="sdocbook.html" 
+      description="Simplified DocBook title" />
+    <subdir label="Subdir" href="subdir/">
+      <index label="Index" href="index.html" 
+        description="Page generated from a subdirectory"/>
+    </subdir>
+  </samples>
+  -->
+  <all>
+    <whole_site_html label="Whole Site HTML" href="site.html"/>
+    <whole_site_html label="Whole Site PDF" href="site.pdf"/>
+  </all>
+
+  <external-refs>
+  
+      <ant href="http://ant.apache.org/"/>
+      <asccontrol href="http://www.acscontrol.com/Pages/Products/USB/USB_Servo_Controller.htm"/>
+      <catb.org href="http://www.catb.org/">
+          <esr_luxury_of_ignorance href="~esr/writings/cups-horror.html"/>
+      </catb.org>
+      <controlanything href="http://www.controlanything.com/">
+          <controlanything_sv href="html/sv16.htm"/>
+      </controlanything>
+      <dz href="http://diy-zoning.sourceforge.net/"/>
+      <ferret href="http://www.ferrettronics.com/"/>
+      <geocities href="http://www.geocities.com/">
+          <parallel href="SiliconValley/Lakes/7156/articl4.htm"/>
+      </geocities>
+      <gnu.org href="http://www.gnu.org/">
+          <gnu_autoconf href="software/autoconf/"/>
+          <gnu_automake href="software/automake/"/>
+          <gnu_libtool  href="software/libtool/"/>
+          <gnu_make     href="software/make/"/>
+      </gnu.org>
+      <havinga href="http://www.havingasoftware.nl/">
+          <preset href="robots/servo/servo.htm"/>
+      </havinga>
+      <hotplug href="http://linux-hotplug.sourceforge.net/"/>
+      <java.sun.com href="http://java.sun.com/"/>
+      <javax-comm href="http://java.sun.com/products/javacomm/"/>
+      <javax-usb href="http://javax-usb.org/"/>
+      <jusb href="http://jusb.sourceforge.net/"/>
+      <jwz.org href="http://www.jwz.org/">
+          <worse_is_better href="doc/worse-is-better.html"/>
+      </jwz.org>
+      <libphidget href="http://libphidget.sourceforge.net/"/>
+      <libusb href="http://libusb.sourceforge.net/"/>
+      <lynxmotion href="http://www.lynxmotion.com/">
+          <ssc12 href="Product.aspx?productID=53&amp;CategoryID=52"/>
+          <lynxmotion_usb href="Product.aspx?productID=214&amp;CategoryID=52"/>
+      </lynxmotion>
+      <parallax href="http://www.parallax.com/">
+          <psc href="detail.asp?product_id=28023"/>
+      </parallax>
+      <phidgets href="http://www.phidgets.com/">
+          <phidget_quad href="index.php?module=pncommerce&amp;func=itemview&amp;KID=109788074268.231.52.148&amp;IID=31"/>
+      </phidgets>
+      <phidgetsusa href="http://www.phidgetsusa.com"/>
+      <pololu href="http://www.pololu.com/">
+          <pololu_usb16 href="products/pololu/0390/"/>
+          <pololu_serial16 href="products/pololu/0240/"/>
+      </pololu>
+      <pontech href="http://www.pontech.com/">
+          <sv203 href="products/sv200/index.htm"/>
+          <sv203bc href="products/sv200bc/index.htm"/>
+      </pontech>
+      <rxtx href="http://rxtx.org/"/>
+      <seattlerobotics href="http://www.seattlerobotics.org/">
+          <designing_servo_controller href="encoder/200101/kevinro2.html"/>
+          <robotic_controller href="encoder/200106/16csscnt.htm"/>
+      </seattlerobotics>
+      <seetron href="http://www.seetron.com/">
+          <ssc2 href="ssc.htm"/>
+      </seetron>
+      <servocity href="http://servocity.com"/>
+      
+      <libphidget href="http://libphidget.sourceforge.net"/>
+      
+      <maxim-dbserv href="http://dbserv.maxim-ic.com/">
+          <maxim-onewire-index href="1-Wire.cfm"/>
+      </maxim-dbserv>
+      <maxim-db href="http://db.maxim-ic.com/">
+          <maxim-owapi href="ibutton/example/"/>
+      </maxim-db>
+      
+      <uoguelf href="http://www.uoguelph.ca/">
+          <uo_gadgets href="~antoon/gadgets/gadgets.htm"/>
+      </uoguelf>
+      
+      <web-hobbies href="http://www.web-hobbies.com/">
+          <torque_feedback href="servo8t.html"/>
+      </web-hobbies>
+      
+    <xml.apache.org href="http://xml.apache.org/">
+      <forrest href="forrest/">
+        <validation href="validation.html"/>
+        <webapp href="your-project.html#webapp"/>
+        <document-v11 href="document-v11.html"/>
+      </forrest>
+      <cocoon href="cocoon/"/>
+    </xml.apache.org>
+  </external-refs>
+
+</site>

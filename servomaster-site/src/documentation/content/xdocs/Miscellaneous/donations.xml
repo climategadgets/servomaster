@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document> 
+  <header> 
+    <title>ServoMaster: Donations</title> 
+  </header> 
+  <body> 
+    <section>
+        <title>Your help is appreciated</title>
+        
+        <p>
+        
+            ServoMaster Project is now accepting donations.  The donations
+            are accepted through a mechanism that was set up by <link
+            href="http://sourceforge.net/">SourceForge</link>.  If you feel
+            like making a donation, you can do so by visiting a <link
+            href="http://sourceforge.net/donate/index.php?group_id=34418">ServoMaster
+            Project Donations</link> page.  Currently, 5% of every donation
+            is granted to SourceForge - they did an excellent job of
+            supporting this project (and countless others).
+            
+        </p>
+        
+    </section>
+    <section>
+        <title>Why make a donation?</title>
+        
+        <p>
+        
+            Well, first of all, because it can help to make this project
+            better. Even as it is, it makes a significant contribution to
+            <link href="ext:dz">DIY Zoning</link>, allowing it to take a
+            second place on Google search on "temperature zoning", right
+            after Honeywell.
+        
+        </p>
+    </section>
+    <section>
+        <title>There are things other than money</title>
+        
+        <section>
+            <title>Feedback</title>
+            <p>
+            
+                It is very difficult to find an answer if you don't know the
+                question. Internet is endless, and it's easy to drown, and
+                sometimes impossible to find something, even if you know
+                where to look for it.
+                
+            </p>
+            <p>
+            
+                <link href="site:lists">Let us know</link> about your pains.
+                
+            </p>
+        </section>
+        <section>
+            <title>Hardware</title>
+            <p>
+            
+                Hardware is cheap.
+                 
+                <br/>
+                 
+                Software is expensive.
+                 
+                <br/>
+                 
+                Software development is <strong>outrageously</strong>
+                expensive.
+                 
+                <br/>
+                 
+                We <strong>know</strong> how to do it, and we've
+                <strong>done</strong> it, repeatedly.
+                 
+            </p>
+             
+            <p>
+            
+                Donate hardware, and get the working drivers available to
+                all your customers in a few days. And the name of your
+                company gets into the <link href="site:credits">Hall Of
+                Fame</link>. And your customers will know you care about
+                them.
+                 
+            </p>
+        </section>
+        <section>
+            <title>Wishes</title>
+            <p>
+            
+                 <link href="site:lists">Tell us</link> what you always
+                 wanted to have but never could - your wish may come true. 
+                 Some people have requirements that others can't even think
+                 about but find them useful when they become available. For
+                 example, believe it or not, but there was a person whose
+                 significant other was driving him mad because she couldn't
+                 learn how to deal with the thermostat...
+                     
+            </p>
+            <p>
+                     
+                If you have a wish and want to fullfill it, you may have
+                just come to a right place.
+                
+            </p>
+        </section>
+        
+    </section>
+  </body>
+</document>

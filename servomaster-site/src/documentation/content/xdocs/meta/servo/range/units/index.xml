@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Metadata: <code>servo/range/units</code></title>
+    </header>
+    <body>
+        
+        <section>
+            <title>Definition</title>
+            
+            <p>
+            
+                <code>servo/range/units</code> <em>property</em> returns the
+                name of the servo range representation units for <link
+                href="site:meta_servo_range_min"><code>servo/range/min</code></link>
+                and <link
+                href="site:meta_servo_range_max"><code>servo/range/max</code></link>,
+                as UTF-8 string.
+                
+            </p>
+            <p>
+            
+                 Possible values include, but are not limited to, "&deg;"
+                 (angular degrees) and "&#181;s" (microseconds).
+                
+            </p>
+            
+        </section>
+        
+    </body>
+</document>

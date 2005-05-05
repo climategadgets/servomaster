@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document> 
+  <header> 
+    <title>Servomaster: Legal Stuff They Make Us Say</title> 
+  </header> 
+  <body> 
+    <section>
+        <title>License</title>
+        
+        <p>
+        
+            All material on this site is Copyright &copy; <link
+            href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</link>,
+            2000-2004, unless explicitly specified otherwise.
+            
+        </p>
+        <p>
+            
+            The code may be used and redistributed according to <link
+            href="http://www.fsf.org/copyleft/gpl.html">GNU General Public
+            License</link>.
+            
+        </p>
+        <p>
+            
+            Sun, Sun Microsystems, Solaris, Java, JavaServer Web Development
+            Kit, and JavaServer Pages are trademarks or registered
+            trademarks of Sun Microsystems, Inc. UNIX is a registered
+            trademark in the United States and other countries, exclusively
+            licensed through X/Open Company, Ltd. Windows, WindowsNT, and
+            Win32 are registered trademarks of Microsoft Corp. All other
+            product names mentioned herein and throughout the entire web
+            site are trademarks of their respective owners.
+
+        </p>
+        
+    </section>
+  </body>
+</document>

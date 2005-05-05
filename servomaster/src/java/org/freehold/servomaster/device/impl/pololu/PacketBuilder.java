@@ -24,7 +24,7 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.5 2005-05-04 01:07:47 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.6 2005-05-05 06:42:52 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -110,8 +110,12 @@ public class PacketBuilder {
         buffer[1] = (byte)0x01; // device ID
         buffer[2] = (byte)0x04; // command
         buffer[3] = servoId;
-        buffer[4] = (byte)(position & 0x007F);
-        buffer[5] = (byte)((position & 0xFF80) >> 7);
+        
+        // According to documentation, Data2 contains the lower 7 bits, and
+        // Data1 contains upper bits
+        
+        buffer[4] = (byte)((position & 0xFF80) >> 7);
+        buffer[5] = (byte)(position & 0x007F);
         
         complain(buffer);
         
@@ -134,7 +138,7 @@ public class PacketBuilder {
         
             // Let's also check where we are going, just in case
             
-            int checkPosition = buffer[4] | (buffer[5] << 7);
+            int checkPosition = (buffer[4] << 7) | buffer[5];
             
             System.err.println("Position: " + checkPosition);
         }    

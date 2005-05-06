@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Observations on Pololu Servo Controllers</title>
+    </header>
+    <body>
+        
+        <section>
+            <title>Summary</title>
+            
+            <p>
+            
+                All Pololu servo controllers share elegant and compact
+                mechanical design with lots of status lights - should be
+                pretty comfortable to work with.
+                
+            </p>
+            <p>
+            
+                SAME PROTOCOL
+                
+            </p>
+            
+            <table>
+                <caption>Supported Features</caption>
+                <tr>
+                    <td>
+
+                        Individual Servo <link
+                        href="site:meta_servo_range_min">min</link>/<link
+                        href="site:meta_servo_range_max">max</link> preset
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <link href="site:meta_controller_silent">Silent Operation</link>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        
+                        Hardware controlled constant <link
+                        href="site:meta_servo_velocity">velocity</link>
+                        transition, per servo
+                        
+                    </td>
+                </tr>
+            </table>
+
+            <warning>
+            
+                Not all the features are implemented yet.
+                
+            </warning>
+            
+        </section>
+        <section>
+            <title>Release Notes</title>
+            
+            <p>
+            
+                Unfortunately, I was never able to actually control the
+                device, due to the fact that it is not a true USB
+                controller, but rather a serial controller with USB/Serial
+                bridge attached to it (see below). The controller couldn't
+                be connected to the RS-232 serial port directly, either, it
+                requires a level convertor. I did solder it, but hadn't
+                connected it (FUD factor, anyone?) until after the driver
+                was written.  Turns out, I was right in my reluctance to
+                connect it, because as soon as I did so, it let the magic
+                smoke out, and I'm not sure if it is still functional
+                (passes the POST, though).
+                
+            </p>
+                
+        </section>
+        
+        <section>
+        
+            <title>Good Things</title>
+        
+            <ul>
+            
+                <li>
+                
+                    Elegant mechanical design - all 16 servo connectors are
+                    packed nicely, the USB connector is a mini connector
+                    (unlike full B connector found on other devices);
+                    
+                </li>
+                <li>
+                
+                    Small - much smaller than other designs;
+                    
+                </li>
+                <li>
+                
+                    Lots of diagnostic lights on the PCB;
+                    
+                </li>
+                <li>
+                
+                    Precise. The resolution is 5000 steps, which should
+                    probably give you more control over your mechanical
+                    components than they'd notice;
+                    
+                </li>
+                <li>
+                
+                    Flexible. You can control properties (shut off and
+                    transition velocity) on per-servo basis.
+                    
+                </li>
+            
+            </ul>
+            
+        </section>
+        <section>
+        
+            <title>Bad Things</title>
+            
+            <ul>
+            
+                 <li>
+                 
+                     <p>
+                     
+                         It is not a true USB device. You won't be able to
+                         benefit from generic features offered by USB
+                         interface, in particular, hotplugging. This device
+                         must be accessed as a virtual serial port (well,
+                         unless someone writes a direct driver that will
+                         treat this device as a servo controller, and not a
+                         serial port).
+                         
+                     </p>
+                     
+                 </li>
+                 <li>
+                 
+                     <p>
+                 
+                         The USB/Serial bridge chip used in this controller
+                         (CP2101 by Silicon Laboratories) is not supported
+                         on Linux (Google search on <link
+                         href="http://www.google.com/search?q=cp2101+linux">"CP2101
+                         Linux"</link> at the moment of writing produces
+                         <link
+                         href="http://www.kroah.com/log/2004/11/18/">this</link>
+                         link at the top), at least currently.  SiLabs
+                         refused to provide the chip protocol specifications
+                         when I asked, and despite the fact that they <link
+                         href="http://www.sparkfun.com/cgi-bin/phpbb/viewtopic.php?t=742">promised</link>
+                         to open the code a while later, it seems to be just
+                         a lip service.
+                     
+                     </p>
+                     <p>
+                     
+                         At the moment of writing, it appears that someone
+                         reverse engineered the CP2101 chip and produced a
+                         Linux kernel module. This is better than nothing,
+                         however, it is still questionable whether the
+                         module will work properly with RxTx. If I have
+                         enough time and/or motivation later, I'll just
+                         rewrite the driver as a part of Servomaster, thus
+                         adding true USB functionality to this controller's
+                         driver.
+                         
+                     </p>
+                     
+                 </li>
+
+            </ul>
+        </section>
+        <section>
+            
+            <title>Conclusion</title>
+            
+            <p>
+            
+                TBD
+                
+            </p>
+            
+        </section>
+
+    </body>
+
+</document>

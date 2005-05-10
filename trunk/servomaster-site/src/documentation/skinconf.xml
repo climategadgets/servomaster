@@ -98,7 +98,7 @@ be used to configure the chosen Forrest skin.
   <host-logo>http://sourceforge.net/sflogo.php?group_id=34418&amp;type=8</host-logo>
 
   <!-- The following are used to construct a copyright statement -->
-  <year>2000-2004</year>
+  <year>2000-2005</year>
   <vendor>Vadim Tkachenko</vendor>
 
   <!-- Some skins use this to form a 'breadcrumb trail' of links. If you don't

@@ -16,7 +16,7 @@ footer, searchbar, css etc.  As input, it takes XML of the form:
   </div>
 </site>
 
-$Id: site2xhtml.xsl,v 1.1 2005-05-06 05:55:25 vtt Exp $
+$Id: site2xhtml.xsl,v 1.2 2005-05-10 07:04:45 vtt Exp $
 -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -32,9 +32,9 @@ $Id: site2xhtml.xsl,v 1.1 2005-05-06 05:55:25 vtt Exp $
       <head>
         <title><xsl:value-of select="div[@class='content']/table/tr/td/h1"/></title>
         <meta name="description"
-              content="DIY Zoning: Do It Yourself HVAC zoning system"/>
+              content="Servomaster: platform independent servo controller driver"/>
         <meta name="keywords"
-              content="DIY zoning HVAC temperature airflow balance home automation remote monitoring servo comfort"/>
+              content="Servomaster platform independent servo controller driver FT639 Phidget QuadServo UniServo Java Linux Pololu USB serial"/>
         <link rel="stylesheet" href="{$root}skin/page.css" type="text/css"/>
       </head>
       <body bgcolor="#FFFFFF" text="#000000">

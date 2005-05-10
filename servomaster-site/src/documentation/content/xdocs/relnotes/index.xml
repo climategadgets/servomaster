@@ -79,6 +79,46 @@
                 </note>
                 
             </section>
+            <section>
+                <title>Permissions Management</title>
+                
+                <p>
+                
+                    You will run into this issue, no matter what interface
+                    you're using. You may not notice it at first if you're
+                    fiddling with your devices while running your
+                    applications as root, or being logged in as the same
+                    user you run your applications under, but you will
+                    <em>definitely</em> notice them as soon as you start
+                    your application as a daemon, or you're working on a
+                    remote box with someone logging in and out.
+                    
+                </p>
+                <p>
+                
+                    Different distributions handle this issue in a different
+                    way, so there's no single answer. If you had run into
+                    this issue, and were able to successfully resolve it in
+                    an elegant way, your feedback would be <link
+                    href="site:lists">much appreciated</link> and aggregated
+                    into this site, with all the <link
+                    href="site:credits">credits</link> given.
+                    
+                </p>
+                <p>
+                
+                    For USB adapters, <link
+                    href="ext:hotplug">hotplug</link> is the starting point.
+                    
+                </p>
+                <p>
+                
+                    For serial ports, you're on your own, until someone
+                    (maybe you?) donates a universal solution.
+                    
+                </p>
+                
+            </section>
         </section>
 
     </body>

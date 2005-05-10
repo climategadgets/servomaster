@@ -41,8 +41,14 @@
             <li>
             
                 <strong>Nic van der Walt</strong>, for hardware donations
-                and attitude.
+                and attitude;
                  
+            </li>
+            
+            <li>
+            
+                <strong>Vlad Izyumov</strong>, for help with Pololu driver.
+                
             </li>
                 
         </ul>
@@ -65,7 +71,15 @@
             
             <li>
             
-                Nic van der Walt: {1-Wire&reg; based controller}.
+                Nic van der Walt: <link href="site:nic_servo">1-Wire&reg;
+                based controller</link>;
+                
+            </li>
+            
+            <li>
+            
+                <link href="ext:pololu">Pololu Corporation</link> - <link
+                href="ext:pololu_usb16">16-Servo USB Controller</link>.
                 
             </li>
             

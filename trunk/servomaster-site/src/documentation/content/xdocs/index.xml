@@ -43,8 +43,7 @@
             
                 <li>
                 
-                    <link href="ext:ferret">FerretTronics</link> FT639,
-                    F649;
+                    FerretTronics FT639, F649;
                 
                 </li>
                 
@@ -68,13 +67,12 @@
             <p>
                 
                 However, almost all of them (with <link
-                href="site:phidget_quad">notable exceptions</link>), being
-                in the hardware manufacturing business, care little about
-                providing a consistent interface for the servos and
-                controllers. This is understandable, but disappointing,
-                because all the servos are just about the same, and the
-                basic functionality of the controllers is just about the
-                same.
+                href="site:credits">notable exceptions</link>), being in the
+                hardware manufacturing business, care little about providing
+                a consistent interface for the servos and controllers. This
+                is understandable, but disappointing, because all the servos
+                are just about the same, and the basic functionality of the
+                controllers is just about the same.
                 
             </p>
             

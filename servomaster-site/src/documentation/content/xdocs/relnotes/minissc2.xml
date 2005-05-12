@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Observations on Mini SSC II Servo Controller</title>
+    </header>
+    <body>
+    
+        <section>
+            <title>Foreword</title>
+            
+            <p>
+            
+                I don't have this controller, and all the code was written
+                based on the protocol specification published at Scott
+                Edwards Electronics, Inc. site and in the <link
+                href="site:pololu">Pololu</link> servo controller user
+                manual.  It is possible that I've made a mistake somewhere -
+                if so, I'd appreciate if you could fix the code and send me
+                the patch - I mean, I don't think there'd be many mistakes
+                in 135 lines of documented code. If you want to <link
+                href="site:donations">donate the hardware</link> - well, the
+                better.
+            
+            </p>
+            
+        </section>
+        
+        <section>
+            <title>Summary</title>
+            
+            <p>
+            
+                Mini SSC II is one of the oldest controllers available on
+                the market. It doesn't support any of more advanced features
+                available from later controllers, but I guess it's still
+                pretty popular due to the fact that it's been out there
+                forever.
+            
+            </p>
+            
+        </section>
+        <section>
+        
+            <title>Good Things</title>
+        
+            <ul>
+            
+                <li>
+                
+                    Simple protocol - a driver takes 10 minutes to write;
+                    
+                </li>
+                <li>
+                
+                    Modest protocol overhead of 33% (more, than <link
+                    href="site:ft639">FT639</link>, less than <link
+                    href="site:pololu">Pololu</link>) - this matters since
+                    it only supports 2400 or 9600 baud;
+                    
+                </li>
+                <li>
+                
+                    Stackable. You can connect multiple controllers to the
+                    same serial line, provided you've configured the servo
+                    numbers beforehand, all the way to 254 (however, you'd
+                    have to order a special firmware version if you want to
+                    have more than 15 servos).
+                    
+                </li>
+            
+            </ul>
+            
+        </section>
+        <section>
+        
+            <title>Bad Things</title>
+        
+            <p>
+            
+                Two power sources required - this was a turnoff for me back
+                in 2001, when I was considering my first servo controller.
+            
+            </p>
+            
+        </section>
+        <section>
+        
+            <title>Note on Stacked Configurations</title>
+        
+            <p>
+            
+                According to documentation, Mini SSC II controllers can be
+                stacked (multiple controllers connected to the same serial
+                port).
+                
+            </p>
+            <p>
+            
+                Servomaster currently doesn't support sparse servo arrays,
+                so this feature is not explicitly supported.  This is due to
+                the fact that none of servo controllers supported report
+                back what servos are connected and what aren't.
+                
+            </p>
+            <p>
+            
+                However, it is possible to support all the servos on all the
+                controllers connected - all you have to do is change the
+                value returned by <code>getServoCount()</code> in the
+                implementation class.
+                
+            </p>
+            <p>
+            
+                If you need this feature, <link href="site:lists">let us
+                know</link> - it's trivial to implement.
+                
+            </p>
+            
+        </section>
+        <section>
+            
+            <title>Conclusion</title>
+            
+            <p>
+            
+                Since I've never dealt with this hardware myself, there will
+                be no conclusion. However, I'm open to publishing other's
+                feedback, should someone volunteer to contribute it.
+                
+            </p>
+            
+        </section>
+
+    </body>
+
+</document>

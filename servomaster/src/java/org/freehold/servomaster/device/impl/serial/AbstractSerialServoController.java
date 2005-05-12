@@ -12,13 +12,14 @@ import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.AbstractServoController;
+import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 
 /**
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.11 2005-05-12 18:18:20 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.12 2005-05-12 20:02:49 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -32,6 +33,11 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
     public static final int OPEN_TIMEOUT = 5000;
     
     /**
+     * String key for retrieving the controller baud rate property.
+     */
+    public static final String META_SPEED = "controller/protocol/serial/speed";
+    
+    /**
      * The serial port.
      */
     protected SerialPort port = null;
@@ -42,6 +48,8 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
     private OutputStream serialOut;
     
     public AbstractSerialServoController() {
+    
+        // Can't invoke this(null) because this will blow up in doInit()
     }
 
     public AbstractSerialServoController(String portName) throws IOException {
@@ -112,7 +120,55 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
             }
             
             serialOut = port.getOutputStream();
-            port.setSerialPortParams(2400,
+            
+            // A particular controller may have a different speed setting. 
+            // If there's none, we'll fall back to the default of 2400 baud. 
+            // And all of the controllers supported far use 8N1, so we'll
+            // just leave that as a default.
+            
+            int portSpeed = 2400;
+            
+            Meta controllerMeta = getMeta();
+            
+            if (controllerMeta == null) {
+            
+                System.err.println("Driver doesn't support meta, port speed is 2400: " + getClass().getName());
+
+            } else {
+            
+                try {
+            
+                    // speedObject will never be null - we'll get
+                    // UnsupportedOperationException instead
+                
+                    Object speedObject = controllerMeta.getProperty(META_SPEED);
+                    
+                    try {
+                    
+                        String speedString = (String) speedObject;
+                        
+                        portSpeed = Integer.parseInt(speedString);
+                        
+                    } catch (Throwable t) {
+                    
+                        // This is serious enough to blow up - somebody did
+                        // a bad job, the speed is hardcoded into the driver
+                        
+                        throw (IllegalArgumentException) (new IllegalArgumentException("Unable to parse property "
+                            + META_SPEED + ", object class is " + speedObject.getClass().getName() + ", value is '" + speedObject + "'").initCause(t));
+                    }
+
+                } catch (UnsupportedOperationException uoex) {
+                
+                    System.err.println("Port speed is 2400, cause: " + uoex.getMessage());
+                }
+            }
+            
+            // Now, if someone has specified an insane speed, that's not my
+            // problem... Hopefully, the port implementation will filter it
+            // out.
+            
+            port.setSerialPortParams(portSpeed,
                                      SerialPort.DATABITS_8,
                                      SerialPort.STOPBITS_1,
                                      SerialPort.PARITY_NONE);

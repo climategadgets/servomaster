@@ -12,14 +12,16 @@ import javax.comm.SerialPort;
 import javax.comm.UnsupportedCommOperationException;
 
 import org.freehold.servomaster.device.model.AbstractServoController;
+import org.freehold.servomaster.device.model.HardwareServo;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoController;
 
 /**
  * Base class for all serial servo controllers.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractSerialServoController.java,v 1.12 2005-05-12 20:02:49 vtt Exp $
+ * @version $Id: AbstractSerialServoController.java,v 1.13 2005-05-12 21:16:12 vtt Exp $
  */
 abstract public class AbstractSerialServoController extends AbstractServoController {
 
@@ -235,5 +237,40 @@ abstract public class AbstractSerialServoController extends AbstractServoControl
         }
         
         serialOut.flush();
+    }
+    
+    abstract protected class SerialServo extends HardwareServo {
+    
+        public SerialServo(ServoController sc, int id) {
+        
+            super(sc, id);
+        }
+
+        protected final void setActualPosition(double position) throws IOException {
+        
+            checkInit();
+            checkPosition(position);
+            
+            synchronized ( getController() ) {
+
+                // The reason it is synchronized on the controller is that the
+                // setActualPosition() calls the controller's synchronized methods
+                // and the deadlock can occur if *this* method was made synchronized
+                
+                sendPosition(position);
+                this.actualPosition = position;
+            }
+            
+            actualPositionChanged();
+            
+            AbstractSerialServoController.this.touch();
+        }
+        
+        /**
+         * Send the position command to the controller.
+         *
+         * @param position Position to send.
+         */
+        abstract protected void sendPosition(double position) throws IOException;
     }
 }

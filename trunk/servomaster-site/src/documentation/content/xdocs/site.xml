@@ -199,14 +199,17 @@ See http://xml.apache.org/forrest/linking.html for more info
       <jwz.org href="http://www.jwz.org/">
           <worse_is_better href="doc/worse-is-better.html"/>
       </jwz.org>
+      <libhid href="http://libhid.alioth.debian.org/"/>
       <libphidget href="http://libphidget.sourceforge.net/"/>
+      <libphidgets href="http://libphidgets.alioth.debian.org/"/>
       <libusb href="http://libusb.sourceforge.net/"/>
       <lynxmotion href="http://www.lynxmotion.com/">
           <ssc12 href="Product.aspx?productID=53&amp;CategoryID=52"/>
           <lynxmotion_usb href="Product.aspx?productID=214&amp;CategoryID=52"/>
       </lynxmotion>
       <parallax href="http://www.parallax.com/">
-          <psc href="detail.asp?product_id=28023"/>
+          <parallax_psc href="detail.asp?product_id=28023"/>
+          <parallax_usb href="detail.asp?product_id=28823"/>
       </parallax>
       <phidgets href="http://www.phidgets.com/">
           <phidget_quad href="index.php?module=pncommerce&amp;func=itemview&amp;KID=109788074268.231.52.148&amp;IID=31"/>
@@ -215,6 +218,7 @@ See http://xml.apache.org/forrest/linking.html for more info
       <pololu href="http://www.pololu.com/">
           <pololu_usb16 href="products/pololu/0390/"/>
           <pololu_serial16 href="products/pololu/0240/"/>
+          <pololu_dualmotor href="products/pololu/0101/"/>
       </pololu>
       <pontech href="http://www.pontech.com/">
           <sv203 href="products/sv200/index.htm"/>

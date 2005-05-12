@@ -36,6 +36,22 @@
         <section>
         
             <title>Project News</title>
+            
+            <section>
+            
+                <title>May 11 2005</title>
+                
+                <p>
+                
+                    Finished a usable driver and documentation for <link
+                    href="site:pololu">Pololu</link> family of servo
+                    controllers. The driver will be included into the next
+                    release, so far you can get it from the <link
+                    href="site:cvs">CVS</link>.
+                    
+                </p>
+                
+            </section>
         
             <section>
             

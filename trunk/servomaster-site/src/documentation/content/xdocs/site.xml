@@ -46,6 +46,7 @@ See http://xml.apache.org/forrest/linking.html for more info
     <phidget_servo8 label="AdvancedServo" href="servo8.html" description="Phidget AdvancedServo Release Notes"/>
     <nic_servo label="1-Wire Servo Controller" href="onewire.html" description="DS2890 based 1-Wire servo controller"/>
     <pololu label="Pololu Family" href="pololu.html" description="Pololu Family of Servo Controllers"/>
+    <minissc2 label="Mini SSC II" href="minissc2.html" description="Mini SSC II servo controller"/>
     
   </drelnotes>
   

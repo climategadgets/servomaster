@@ -17,6 +17,7 @@ import org.freehold.servomaster.device.model.ServoControllerListener;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
 import org.freehold.servomaster.device.model.HardwareServo;
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
+import org.freehold.servomaster.device.impl.serial.SerialMeta;
 
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
@@ -76,7 +77,7 @@ import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.41 2005-02-03 06:51:49 vtt Exp $
+ * @version $Id: FT639ServoController.java,v 1.42 2005-05-12 21:04:55 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -352,7 +353,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         return meta;
     }
     
-    protected class FT639Meta extends AbstractMeta {
+    protected class FT639Meta extends SerialMeta {
     
         public FT639Meta() {
         
@@ -360,9 +361,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             properties.put("manufacturer/URL", "http://www.ferrettronics.com/");
             properties.put("manufacturer/model", "FT639");
 
-            features.put("controller/allow_disconnect", new Boolean(true));
             features.put("controller/silent", new Boolean(true));
-            features.put("controller/protocol/serial", new Boolean(true));
             
             properties.put("controller/maxservos", "5");
             

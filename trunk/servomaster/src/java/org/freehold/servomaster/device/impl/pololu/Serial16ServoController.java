@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
+import org.freehold.servomaster.device.impl.serial.SerialMeta;
 import org.freehold.servomaster.device.model.AbstractMeta;
 import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
@@ -21,7 +22,7 @@ import org.freehold.servomaster.device.model.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.12 2005-05-12 20:03:51 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.13 2005-05-12 21:04:55 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -74,7 +75,7 @@ public class Serial16ServoController extends AbstractSerialServoController {
         return new PololuServo(this, id);
     }
     
-    protected class PololuMeta extends AbstractMeta {
+    protected class PololuMeta extends SerialMeta {
     
         public PololuMeta() {
         
@@ -82,14 +83,9 @@ public class Serial16ServoController extends AbstractSerialServoController {
             properties.put("manufacturer/URL", "http://www.pololu.com/");
             properties.put("manufacturer/model", "Serial 16-Servo");
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
-            
-            // This is a serial controller
-
-            features.put("controller/allow_disconnect", new Boolean(false));
+            properties.put("controller/protocol/serial/speed", "38400");
             
             features.put("controller/silent", new Boolean(true));
-            features.put("controller/protocol/serial", new Boolean(true));
-            properties.put("controller/protocol/serial/speed", "38400");
             
             // VT: FIXME
             

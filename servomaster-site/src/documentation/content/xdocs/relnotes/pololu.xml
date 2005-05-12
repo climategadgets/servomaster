@@ -110,12 +110,118 @@
                     </li>
                     <li>
                     
+                        Fast. The baud rate may go as high as 38.4K.
+                        
+                    </li>
+                    <li>
+                    
                         Flexible. You can control properties (shut off and
                         transition velocity) on per-servo basis.
                         
                     </li>
+                    <li>
+                    
+                        Stackable. You can connect multiple controllers to
+                        the same serial line, provided you've configured the
+                        servo numbers beforehand, all the way to 127 (254 in
+                        Mini SSC II compatibility mode).
+                        
+                    </li>
                 
                 </ul>
+                
+            </section>
+            <section>
+            
+                <title>Bad Things</title>
+            
+                <p>
+                
+                    Not a bad thing per se, but a result of a tradeoff with
+                    flexibility: protocol overhead is quite high, 6 bytes
+                    per positioning command. Well, given the high baud rate
+                    the controller can sustain, and the fact that you can
+                    optimize transitions with hardware supported constant
+                    velocity, this becomes rather a theoretical issue.
+                
+                </p>
+                
+                <note>
+                
+                    If you need to speed up the communications between the
+                    controller and your application, you have a choice of
+                    putting the controller into Mini SSC II compatibility
+                    mode (which requires 3 bytes per positioning command),
+                    but in this case you will lose the ability to use
+                    hardware supported <link
+                    href="site:meta_servo_velocity">constant velocity
+                    transition</link>.
+                
+                </note>
+                
+            </section>
+            <section>
+            
+                <title>Features not available through Servomaster driver</title>
+            
+                <p>
+                
+                    [when it is all finished] Servomaster uses only three of
+                    6 available Pololu commands: Command 0 (set parameters)
+                    to shut off an individual servo, Command 1 (set servo
+                    speed), and Command 4 (set position, absolute). It is
+                    not a deficiency, but a design decision - I thought that
+                    the rest of the functionality (detailed below) is better
+                    implemented with abstractions implemented in Servomaster
+                    itself, and not through hardware commands.
+                
+                </p>
+                <p>
+                
+                    Here's why:
+                    
+                </p>
+                <ul>
+                
+                    <li>
+                    
+                        Command 2 (set position, 7 bit): the result of this
+                        command's execution is stateful, it depends on the
+                        values passed before to Command 0 (set range). 
+                        Whereas Command 2 takes 5 bytes, not 6, the overhead
+                        reduction is insignificant when compared to increase
+                        in driver complexity (the driver which takes
+                        <code>double 0..1</code> range will have to have
+                        internal logic to keep track of what state the
+                        controller is in).
+                        
+                    </li>
+                    <li>
+                    
+                        Command 3 (set position, 8 bit): it's still 6 bytes.
+                        No benefit whatsoever.
+                        
+                    </li>
+                    <li>
+                    
+                        Command 5 (set neutral): given the fact that
+                        Servomaster supports the notion of <link
+                        href="site:meta_servo_range_min">min</link>/<link
+                        href="site:meta_servo_range_max">max</link> range,
+                        this command seems superfluous.
+                        
+                    </li>
+                    
+                </ul>
+                
+                <note>
+                
+                    Note that the unused functionaly seems superfluous only
+                    in the context where Servomaster makes sense - when the
+                    huge overhead of a JVM is not considered excessive.
+                    These unused commands do benefit simple designs.
+                    
+                </note>
                 
             </section>
         </section>
@@ -135,31 +241,49 @@
             
             <p>
             
-                Unfortunately, I was never able to actually control the
-                device, due to the fact that it is not a true USB
-                controller, but rather a serial controller with USB/Serial
-                bridge attached to it (see below). The controller couldn't
-                be connected to the RS-232 serial port directly, either, it
-                requires a level convertor. I did solder it, but hadn't
-                connected it (FUD factor, anyone?) until after the driver
-                was written.  Turns out, I was right in my reluctance to
-                connect it, because as soon as I did so, it let the magic
-                smoke out, and I'm not sure if it is still functional
-                (passes the POST, though).
+                Due either to my stupidity or bad luck, I've managed to burn
+                the USB part of it - the serial port still works. I guess
+                it's been too long since I've done any real hardware work,
+                save for putting together <link
+                href="site:ft639">FT639</link>.  In any case, I have
+                contacted Pololu, and they said they'll try and figure out
+                the cause for this failure. Preliminary verdict is a bad
+                USB/Serial bridge chip.
                 
             </p>
             
             <note>
             
-                This is mostly my fault - it's been too long since I've done
-                any real hardware work, save for putting together <link
-                href="site:ft639">FT639</link>. However, it's been decades
-                since I've actually burned something, either... I will
-                contact Pololu and try and figure out the cause for this
-                failure.
+                Keep in mind that you will need a level convertor for this
+                serial port implementation - it uses TTL levels, not RS-232
+                levels. The schematics for this convertor are in the PDF
+                user manual of <link href="ext:pololu_dualmotor">Dual Serial
+                Motor Controller</link>. Plus, you'll have to pull the reset
+                line to high - 4.7K resistor to +5V will do the job.
                 
             </note>
+            
+            <section>
+                <title>Good Things</title>
                 
+                <ul>
+                
+                    <li>
+                    
+                        Mini USB connector, unlike USB B connectors used in
+                        other controllers;
+                    
+                    </li>
+                    <li>
+                    
+                        Convenient screw-in power connector.
+                        
+                    </li>
+                
+                </ul>
+                
+            </section>
+            
             <section>
             
                 <title>Bad Things</title>
@@ -198,7 +322,9 @@
                              fact that they <link
                              href="http://www.sparkfun.com/cgi-bin/phpbb/viewtopic.php?t=742">promised</link>
                              to open the code a while later, it seems to be
-                             just a lip service.
+                             just a lip service - you can't really consider
+                             an obfuscated piece of C code with no comments
+                             Open Source, can you?
                          
                          </p>
                          <p>
@@ -221,6 +347,17 @@
                              to this controller's driver.
                              
                          </p>
+                         
+                     </li>
+                     
+                     <li>
+                     
+                         <em>[Just a wish]</em> One mounting hole may be
+                         problematic given the fact that there'll be at
+                         least one sturdy (USB) cable and 16 servo cables. 
+                         Of course, any attempt to add another mounting hole
+                         will result in the PCB getting bigger, but one can
+                         always wish, right?
                          
                      </li>
 
@@ -246,6 +383,17 @@
                 binary driver is available from SiLabs, you won't get the
                 advantages of USB hotplugging - and this may be a
                 showstopper for a mission critical application.
+                
+            </p>
+            
+        </section>
+        <section>
+            <title>Acknowledgements</title>
+            
+            <p>
+            
+                I'm grateful for troubleshooting assistance from Pololu
+                Corporation. Special thanks to Jan Malasek.
                 
             </p>
             

@@ -19,6 +19,13 @@
                     etc.) are supported as well.
                     
                 </li>
+                <li>
+                
+                    <link href="ext:libphidgets">libphidgets</link> - a
+                    <link href="ext:libhid">libhid</link> based user-space
+                    access library for Phidgets.
+                    
+                </li>
                  
             </ul>
         </section>
@@ -177,7 +184,7 @@
                     </td>
                     <td>$5.0625</td>
                     <td>16</td>
-                    <td>USB</td>
+                    <td>USB, Serial</td>
                     <td>
                     
                         
@@ -263,7 +270,7 @@
                 <tr>
                     <td>
                 
-                        Parallax <link href="ext:psc">PSC</link>
+                        Parallax <link href="ext:parallax_psc">PSC</link>
                        
                     </td>
                     <td>$2.4375</td>
@@ -273,6 +280,21 @@
                     
                         Stackable up to 2 controllers. Seems to be a very
                         cost-efficient solution
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                
+                        Parallax <link href="ext:parallax_usb">USB</link>
+                       
+                    </td>
+                    <td>$2.4375</td>
+                    <td>16</td>
+                    <td>USB</td>
+                    <td>
+                    
+                        Seems to be the most cost-efficient solution
                         
                     </td>
                 </tr>

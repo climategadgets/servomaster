@@ -10,7 +10,6 @@ import org.freehold.servomaster.device.model.Meta;
 import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.ServoController;
 import org.freehold.servomaster.device.model.silencer.SilentProxy;
-import org.freehold.servomaster.device.model.HardwareServo;
 
 /**
  * <a href="http://pololu.com/products/pololu/0240/" target="_top">Pololu
@@ -22,7 +21,7 @@ import org.freehold.servomaster.device.model.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.13 2005-05-12 21:04:55 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.14 2005-05-12 21:16:12 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -108,7 +107,7 @@ public class Serial16ServoController extends AbstractSerialServoController {
         }
     }
     
-    protected class PololuServo extends HardwareServo {
+    protected class PololuServo extends SerialServo {
     
         /**
          * Minimal allowed absolute position for this device.
@@ -136,27 +135,15 @@ public class Serial16ServoController extends AbstractSerialServoController {
         
             return new PololuServoMeta();
         }
-
-        protected void setActualPosition(double position) throws IOException {
         
-            checkInit();
-            checkPosition(position);
-            
+        /**
+         * {@inheritDoc}
+         */
+        protected void sendPosition(double position) throws IOException {
+
             short units = (short)(min_pulse + (position * (max_pulse - min_pulse)));
             
-            synchronized ( getController() ) {
-
-                // The reason it is synchronized on the controller is that the
-                // setActualPosition() calls the controller's synchronized methods
-                // and the deadlock can occur if *this* method was made synchronized
-                
-                send(PacketBuilder.setAbsolutePosition((byte)id, units));
-                this.actualPosition = position;
-            }
-            
-            actualPositionChanged();
-            
-            Serial16ServoController.this.touch();
+            Serial16ServoController.this.send(PacketBuilder.setAbsolutePosition((byte)id, units));
         }
         
         protected void setVelocity(byte speed) throws IOException {

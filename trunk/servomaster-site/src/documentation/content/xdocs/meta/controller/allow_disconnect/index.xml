@@ -20,7 +20,7 @@
             
                 <code>controller/allow_disconnect</code> <em>property</em>
                 determines whether controller departure is treated as a
-                transient of catastrophic condition.
+                transient or catastrophic condition.
                 
             </p>
             

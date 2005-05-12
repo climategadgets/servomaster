@@ -60,15 +60,16 @@ See http://xml.apache.org/forrest/linking.html for more info
       </meta_manufacturer>
 
       <meta_controller   label="Controller"   href="controller/"   dir="controller">
-          <meta_controller_maxservos         label="maxservos" href="maxservos/index.html"/>
-          <meta_controller_bandwidth         label="bandwidth" href="bandwidth/index.html"/>
-          <meta_controller_precision         label="precision" href="precision/index.html"/>
-          <meta_controller_silent            label="silent"    href="silent/index.html"/>
-          <meta_controller_protocol_USB      label="protocol/USB" href="protocol/USB/index.html"/>
-          <meta_controller_protocol_serial   label="protocol/serial" href="protocol/serial/index.html"/>
-          <meta_controller_transition        label="transition" href="transition/index.html"/>
-          <meta_controller_allow_disconnect  label="allow_disconnect" href="allow_disconnect/index.html"/>
-          <meta_controller_firmware_revision label="firmware/revision" href="firmware/revision/index.html"/>
+          <meta_controller_maxservos               label="maxservos" href="maxservos/index.html"/>
+          <meta_controller_bandwidth               label="bandwidth" href="bandwidth/index.html"/>
+          <meta_controller_precision               label="precision" href="precision/index.html"/>
+          <meta_controller_silent                  label="silent"    href="silent/index.html"/>
+          <meta_controller_protocol_USB            label="protocol/USB" href="protocol/USB/index.html"/>
+          <meta_controller_protocol_serial         label="protocol/serial" href="protocol/serial/index.html"/>
+          <meta_controller_protocol_serial_speed   label="protocol/serial/speed" href="protocol/serial/speed/index.html"/>
+          <meta_controller_transition              label="transition" href="transition/index.html"/>
+          <meta_controller_allow_disconnect        label="allow_disconnect" href="allow_disconnect/index.html"/>
+          <meta_controller_firmware_revision       label="firmware/revision" href="firmware/revision/index.html"/>
       </meta_controller>
 
       <meta_servo                  label="Servo"        href="servo/"        dir="servo">

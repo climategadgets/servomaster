@@ -23,6 +23,14 @@
                 href="site:meta_controller_precision">precision</link>.
                 
             </p>
+            <p>
+            
+                This is an immutable property. For some implementations, it
+                may be dynamically calculated - for some controllers the
+                bottleneck may be the port speed, for others it may be
+                computational delays in the controller itself.
+                
+            </p>
             
         </section>
         

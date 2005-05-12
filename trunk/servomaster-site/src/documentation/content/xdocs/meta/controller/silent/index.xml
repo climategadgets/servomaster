@@ -35,7 +35,8 @@
                  href="site:ft639">FT639</link>) are able to support the
                  shutoff on per-controller basis (all the servos are shut
                  off at the same time), some (like <link
-                 href="site:phidget_quad">QuadServo</link>) are able to
+                 href="site:phidget_quad">QuadServo</link> and <link
+                 href="site:pololu">Pololu</link> family) are able to
                  support the shutoff on per-servo basis (see <link
                  href="site:meta_servo_silent">servo/silent</link>, and some
                  are not able to do it at all.

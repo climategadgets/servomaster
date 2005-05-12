@@ -21,7 +21,7 @@ import org.freehold.servomaster.device.model.HardwareServo;
  * with IDs of 8 and up.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.11 2005-02-03 07:20:41 vtt Exp $
+ * @version $Id: Serial16ServoController.java,v 1.12 2005-05-12 20:03:51 vtt Exp $
  */
 public class Serial16ServoController extends AbstractSerialServoController {
 
@@ -29,6 +29,7 @@ public class Serial16ServoController extends AbstractSerialServoController {
     
     public Serial16ServoController() {
     
+        // Can't invoke this(null) because this will blow up in doInit()
     }
     
     public Serial16ServoController(String portName) throws IOException {
@@ -81,11 +82,14 @@ public class Serial16ServoController extends AbstractSerialServoController {
             properties.put("manufacturer/URL", "http://www.pololu.com/");
             properties.put("manufacturer/model", "Serial 16-Servo");
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
+            
+            // This is a serial controller
 
-            features.put("controller/allow_disconnect", new Boolean(true));
+            features.put("controller/allow_disconnect", new Boolean(false));
             
             features.put("controller/silent", new Boolean(true));
             features.put("controller/protocol/serial", new Boolean(true));
+            properties.put("controller/protocol/serial/speed", "38400");
             
             // VT: FIXME
             
@@ -105,7 +109,6 @@ public class Serial16ServoController extends AbstractSerialServoController {
             
             properties.put("servo/range/min", "500");
             properties.put("servo/range/max", "5500");
-            
         }
     }
     

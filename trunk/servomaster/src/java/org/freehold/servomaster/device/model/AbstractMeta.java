@@ -22,7 +22,7 @@ import org.freehold.servomaster.util.ImmutableIterator;
  * corresponding maps ({@link #featureWriters featureWriters}, {@link
  * #propertyWriters propertyWriters}) in the derived class constructor.
  *
- * @version $Id: AbstractMeta.java,v 1.2 2002-09-30 00:31:40 vtt Exp $
+ * @version $Id: AbstractMeta.java,v 1.3 2005-05-12 20:55:12 vtt Exp $
  */
 abstract public class AbstractMeta implements Meta {
 
@@ -48,17 +48,17 @@ abstract public class AbstractMeta implements Meta {
      */
     protected Map propertyWriters = new TreeMap();
 
-    public Iterator getFeatures() {
+    public final Iterator getFeatures() {
     
         return new ImmutableIterator(features.keySet().iterator());
     }
 
-    public Iterator getProperties() {
+    public final Iterator getProperties() {
     
         return new ImmutableIterator(properties.keySet().iterator());
     }
     
-    public boolean getFeature(String key) {
+    public final boolean getFeature(String key) {
     
         if ( key.startsWith(metaPrefix) ) {
         
@@ -84,7 +84,7 @@ abstract public class AbstractMeta implements Meta {
         }
     }
 
-    public Object getProperty(String key) {
+    public final Object getProperty(String key) {
     
         if ( key.startsWith(metaPrefix) ) {
         
@@ -99,7 +99,7 @@ abstract public class AbstractMeta implements Meta {
         return properties.get(key);
     }
     
-    public synchronized void setFeature(String id, boolean value) {
+    public final synchronized void setFeature(String id, boolean value) {
     
         FeatureWriter w = (FeatureWriter)featureWriters.get(id);
         
@@ -115,7 +115,7 @@ abstract public class AbstractMeta implements Meta {
         features.put(id, new Boolean(value));
     }
     
-    public synchronized void setProperty(String id, Object value) {
+    public final synchronized void setProperty(String id, Object value) {
     
         PropertyWriter w = (PropertyWriter)propertyWriters.get(id);
         

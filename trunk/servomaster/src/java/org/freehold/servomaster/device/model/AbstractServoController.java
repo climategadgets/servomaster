@@ -25,9 +25,14 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.11 2005-03-30 22:18:40 vtt Exp $
+ * @version $Id: AbstractServoController.java,v 1.12 2005-05-12 20:11:41 vtt Exp $
  */
 abstract public class AbstractServoController implements ServoController {
+
+    /**
+     * String key to retrieve the silent support feature.
+     */
+    public static final String META_SILENT = "controller/silent";
 
     /**
      * The port the controller is connected to.
@@ -145,14 +150,14 @@ abstract public class AbstractServoController implements ServoController {
         return false;
     }
     
-    public synchronized void addListener(ServoControllerListener listener) {
+    public final synchronized void addListener(ServoControllerListener listener) {
     
         checkInit();
     
         listenerSet.add(listener);
     }
     
-    public synchronized void removeListener(ServoControllerListener listener) {
+    public final synchronized void removeListener(ServoControllerListener listener) {
     
         checkInit();
     
@@ -173,7 +178,7 @@ abstract public class AbstractServoController implements ServoController {
      * @param mode The new silent status. <code>false</code> means device is
      * sleeping, <code>true</code> means device is active.
      */
-    protected void silentStatusChanged(boolean mode) {
+    protected final void silentStatusChanged(boolean mode) {
     
         for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
         
@@ -186,7 +191,7 @@ abstract public class AbstractServoController implements ServoController {
      *
      * @param t The exception to broadcast.
      */
-    protected void exception(Throwable t) {
+    protected final void exception(Throwable t) {
     
         for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
         
@@ -197,24 +202,18 @@ abstract public class AbstractServoController implements ServoController {
     public void setSilentTimeout(long timeout, long heartbeat) {
     
         checkInit();
-    
-        if ( silencer == null ) {
         
-            throw new UnsupportedOperationException("Silent operation is not supported");
-        }
+        checkSilencer();
         
         silencer.setSilentTimeout(timeout, heartbeat);
     }
     
-    public void setSilentMode(boolean mode) {
+    public final void setSilentMode(boolean mode) {
     
         checkInit();
+        
+        checkSilencer();
     
-        if ( silencer == null ) {
-        
-            throw new UnsupportedOperationException("Silent operation is not supported");
-        }
-        
         boolean oldMode = getSilentMode();
         
         silencer.setSilentMode(mode);
@@ -227,12 +226,46 @@ abstract public class AbstractServoController implements ServoController {
         touch();
     }
     
-    public boolean getSilentMode() {
+    /**
+     * Check if the silent operation is supported <strong>and</strong>
+     * implemented.
+     *
+     * @exception UnsupportedOperationException if the silent operation is
+     * either not supported or not implemented.
+     */
+    private synchronized void checkSilencer() {
+    
+        // First check if it is declared
+        
+        // VT: Let's assume for a second that it is not null
+        
+        Meta controllerMeta = getMeta();
+        
+        // This will throw the exception if it is not declared
+        
+        boolean silentSupport = controllerMeta.getFeature(META_SILENT);
+        
+        if (!silentSupport) {
+        
+            // Oh well...
+            
+            throw new UnsupportedOperationException("Silent operation is not supported");
+        }
+            
+        // Then see if it is implemented
+    
+        if ( silencer == null ) {
+        
+            throw new UnsupportedOperationException("Silent operation seems to be supported, but not implemented");
+        }
+    }
+    
+    public final boolean getSilentMode() {
     
         return (silencer == null) ? false : silencer.getSilentMode();        
     }
     
-    public boolean isSilentNow() {
+    public final boolean isSilentNow() {
     
         return (silencer == null) ? false : silencer.isSilentNow();
     }
@@ -298,7 +331,7 @@ abstract public class AbstractServoController implements ServoController {
      * controller energized for some more ({@link #reset reset()}, {@link
      * Servo#setPosition Servo.setPosition()}) is performed.
      */
-    protected void touch() {
+    protected final void touch() {
     
         if ( silencer != null ) {
         
@@ -374,6 +407,7 @@ abstract public class AbstractServoController implements ServoController {
             throw new IllegalArgumentException("Not a number: '" + id + "'");
         }
     }
+
     /**
      * Create the servo instance.
      *

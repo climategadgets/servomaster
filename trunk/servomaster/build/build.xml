@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.36 2005-04-20 20:44:34 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.37 2005-05-12 21:01:06 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -218,6 +218,7 @@
             <fileset dir="${src.java.dir}/org/freehold/servomaster/device/impl/serial">
             
                 <include name="AbstractSerialServoController.java"/>
+                <include name="SerialMeta.java"/>
                 
             </fileset>
             

@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.38 2005-05-12 21:36:37 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.39 2005-05-12 22:32:00 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -324,6 +324,10 @@
                 <include name="device/impl/pololu/USB16ServoController.java"/>
                 <include name="device/impl/pololu/PacketBuilder.java"/>
                 
+                <!-- VT: FIXME: Let's just dump Mini SSC II code here for now -->
+                
+                <include name="device/impl/ssc/MiniSSC2.java"/>
+
             </fileset>
             
         </copy>

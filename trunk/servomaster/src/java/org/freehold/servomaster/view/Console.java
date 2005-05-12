@@ -65,7 +65,7 @@ import org.freehold.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Console.java,v 1.19 2003-06-08 01:33:23 vtt Exp $
+ * @version $Id: Console.java,v 1.20 2005-05-12 20:04:23 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 
@@ -213,7 +213,7 @@ public class Console implements ActionListener, WindowListener {
                     
                 } catch ( UnsupportedOperationException ex ) {
                 
-                    System.out.println("Controller doesn't support servo shutoff");
+                    System.out.println("Controller doesn't support servo shutoff (" + ex.getMessage() + ")");
                 }
                 
             

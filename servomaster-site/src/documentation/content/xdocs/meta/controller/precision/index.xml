@@ -19,10 +19,11 @@
             <p>
             
                 Note that this value may not represent the actual precision
-                exactly for example, the precision for the particular servos
-                in <link href="site:phidget_quad">QuadServo</link> and <link
-                href="site:phidget_servo8">AdvancedServo</link> will depend
-                on the current <code>min_pulse</code> and
+                exactly - for example, the precision for the particular
+                servos in <link href="site:phidget_quad">QuadServo</link>,
+                <link href="site:phidget_servo8">AdvancedServo</link>, and
+                <link href="site:pololu">Pololu</link> family will depend on
+                the current <code>min_pulse</code> and
                 <code>max_pulse</code> settings. In order to retrieve the
                 exact precision, use the <link
                 href="site:meta_servo_precision"><code>servo/precision</code></link>

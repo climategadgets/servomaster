@@ -20,9 +20,10 @@
 
                 Keep in mind that there are controllers that support more
                 than one protocol, like <link
-                href="site:phidget_servo8">AdvancedServo</link>, which will
-                have both <code>controller/protocol/USB</code> and <link
-                href="site:meta_controller_protocol_serial"><code>controller/protocol/serial</code></link>
+                href="site:phidget_servo8">AdvancedServo</link> and <link
+                href="site:pololu">Pololu 16-Servo</link>, which will have
+                both <code>controller/protocol/serial</code> and <link
+                href="site:meta_controller_protocol_USB"><code>controller/protocol/USB</code></link>
                 features set to <code>true</code>.
                 
             </p>

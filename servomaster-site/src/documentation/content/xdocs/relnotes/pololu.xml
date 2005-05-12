@@ -224,6 +224,42 @@
                 </note>
                 
             </section>
+            <section>
+            
+                <title>Note on Stacked Configurations</title>
+            
+                <p>
+                
+                    According to documentation, Pololu controllers can be
+                    stacked (multiple controllers connected to the same
+                    serial port), and their servo numbers can be changed.
+                    
+                </p>
+                <p>
+                
+                    Servomaster currently doesn't support sparse servo
+                    arrays, so this feature is not explicitly supported.
+                    This is due to the fact that none of servo controllers
+                    supported report back what servos are connected and what
+                    aren't.
+                    
+                </p>
+                <p>
+                
+                    However, it is possible to support all the servos on all
+                    the controllers connected - all you have to do is change
+                    the value returned by <code>getServoCount()</code> in
+                    the implementation class.
+                    
+                </p>
+                <p>
+                
+                    If you need this feature, <link href="site:lists">let us
+                    know</link> - it's trivial to implement.
+                    
+                </p>
+                
+            </section>
         </section>
         <section>
             <title>Serial Controllers</title>

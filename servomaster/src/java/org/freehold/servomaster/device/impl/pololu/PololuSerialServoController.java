@@ -23,7 +23,7 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * target="_top">16-Servo USB</a> connected via serial interface.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PololuSerialServoController.java,v 1.1 2005-05-12 21:36:37 vtt Exp $
+ * @version $Id: PololuSerialServoController.java,v 1.2 2005-05-23 01:08:10 vtt Exp $
  */
 abstract public class PololuSerialServoController extends AbstractSerialServoController {
 
@@ -47,9 +47,18 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
     /**
      * {@inheritDoc}
      */
-    public final void reset() throws IOException {
+    public synchronized final void reset() throws IOException {
     
-        System.err.println("reset(): not implemented");
+        for (Iterator i = getServos(); i.hasNext(); ) {
+        
+            PololuServo servo = (PololuServo) i.next();
+            
+            // Default active
+            servo.setOn(true);
+            
+            // Default is move the servo instantly
+            servo.setSpeed((byte) 0x00);
+        }
     }
     
     /**
@@ -139,15 +148,26 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
          * {@inheritDoc}
          */
         protected final void sendPosition(double position) throws IOException {
+        
+            // This method doesn't need to be synchronized because send() is
 
             short units = (short)(min_pulse + (position * (max_pulse - min_pulse)));
             
             PololuSerialServoController.this.send(PacketBuilder.setAbsolutePosition((byte)id, units));
         }
         
-        protected final void setVelocity(byte speed) throws IOException {
+        protected final void setOn(boolean on) throws IOException {
         
-            System.err.println("FIXME: setVelocity()");
+            // This method doesn't need to be synchronized because send() is
+
+            PololuSerialServoController.this.send(PacketBuilder.setParameters((byte)id, on));
+        }
+        
+        protected final void setSpeed(byte speed) throws IOException {
+        
+            // This method doesn't need to be synchronized because send() is
+
+            PololuSerialServoController.this.send(PacketBuilder.setSpeed((byte)id, speed));
         }
         
         protected final class PololuServoMeta extends AbstractMeta {
@@ -228,7 +248,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
                         
                         try {
                         
-                            setVelocity(velocity);
+                            setSpeed(velocity);
 
                         } catch ( IOException ioex ) {
                         

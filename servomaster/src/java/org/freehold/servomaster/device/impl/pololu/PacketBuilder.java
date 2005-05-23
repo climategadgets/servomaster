@@ -24,7 +24,7 @@ package org.freehold.servomaster.device.impl.pololu;
  * #absolute position}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.6 2005-05-05 06:42:52 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.7 2005-05-23 00:55:30 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -53,10 +53,10 @@ public class PacketBuilder {
         buffer[2] = (byte)0x00; // command
         buffer[3] = servoId;
         
-        // 0xFF is the default range
+        // 0x0F is the default range
         
         byte enabledMask = (byte)(enabled ? 0x4000 : 0x0000);
-        buffer[4] = (byte)(0xFF | enabledMask);
+        buffer[4] = (byte)(0x0F | enabledMask);
         
         complain(buffer);
         

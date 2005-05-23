@@ -190,6 +190,58 @@
                 
             </answer>
         </faq>
+        <faq id="too_big">
+            <question>
+
+                The Servomaster debug console doesn't fit into my screen!
+
+            </question>
+            <answer>
+
+                <p>
+                
+                    Well, since the advent of 16-servo controllers it
+                    doesn't fit into my 1600x1200 screen, either.
+                    
+                </p>
+                <p>
+                
+                    This is unfortunate, and there are two things that can
+                    possibly be done:
+
+                </p>
+                <ul>
+                
+                    <li>
+                    
+                        Decrease the size of the console elements to make it
+                        all smaller. This is quite painful to implement
+                        (basically I'll have to change the default font on
+                        every single element), and will make the font
+                        unreadable, which is unacceptable for me. Don't ask
+                        for it, I won't do it.
+                        
+                    </li>
+                    <li>
+                    
+                        Make the console frame scrollable. This has already
+                        been done, and while it does look ugly, remember
+                        that this is just a debug console we're talking
+                        about, and I'd hate to put efforts into it if I can
+                        do something more useful instead.
+                        
+                    </li>
+                    
+                </ul>
+                <p>
+                
+                    So, the solution is to just change the frame size - and
+                    the contents will become scrollable.
+                    
+                </p>
+                
+            </answer>
+        </faq>
     </part>
     <part id="serial">
         <title>Serial</title>
@@ -281,11 +333,17 @@
         <faq id="hid">
             <question>
 
-                USB security is OK, but I still can't see the Phidget!
+                USB permissions are OK, but I still can't see the Phidget!
 
             </question>
             <answer>
 
+                <p>
+                
+                    The symptom is usually a complaint about the fact that
+                    the USB interface is already claimed.
+                    
+                </p>
                 <p>
                 
                     This is due to the fact that [at least] <link
@@ -306,6 +364,13 @@
                     becomes smart enough to ban individual devices.
                 
                 </p>
+                <note>
+                
+                    Module name may be other than <code>hid</code> for some
+                    distributions. In particular, for newer Fedora it is
+                    <code>phidgetservo</code>.
+                    
+                </note>
                 
             </answer>
         </faq>

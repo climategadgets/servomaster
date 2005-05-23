@@ -166,12 +166,12 @@
             
                 <p>
                 
-                    [when it is all finished] Servomaster uses only three of
-                    6 available Pololu commands: Command 0 (set parameters)
-                    to shut off an individual servo, Command 1 (set servo
-                    speed), and Command 4 (set position, absolute). It is
-                    not a deficiency, but a design decision - I thought that
-                    the rest of the functionality (detailed below) is better
+                    Servomaster uses only three of 6 available Pololu
+                    commands: Command 0 (set parameters) to shut off an
+                    individual servo, Command 1 (set servo speed), and
+                    Command 4 (set position, absolute). It is not a
+                    deficiency, but a design decision - I thought that the
+                    rest of the functionality (detailed below) is better
                     implemented with abstractions implemented in Servomaster
                     itself, and not through hardware commands.
                 

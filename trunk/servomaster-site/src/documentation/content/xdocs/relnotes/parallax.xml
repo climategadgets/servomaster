@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
+<document>
+    <header>
+        <title>ServoMaster: Observations on Parallax Servo Controllers</title>
+    </header>
+    <body>
+        
+        <section>
+            <title>Summary</title>
+            
+            <p>
+            
+                There are two controllers: <link
+                href="ext:parallax_psc">serial</link> and <link
+                href="ext:parallax_usb">USB</link>. Like <link
+                href="site:pololu">Pololu</link>, Parallax USB controller is
+                basically a Parallax serial with Serial/USB bridge on top of
+                it. Unlike Pololu, Parallax USB uses a well supported <link
+                href="ext:ftdichip">FTDI</link> FT232BM chip, well supported
+                by Linux community.
+                
+            </p>
+            <p>
+            
+                Both of them share the same protocol, so the driver doesn't
+                have to be changed.
+                
+            </p>
+            <warning>
+            
+                I don't have the actual hardware in my possession yet
+                (supposed to be in transit), so the rest of this chapter is
+                based on speculations and reading available documentation at
+                this point.
+                
+            </warning>
+            
+            <table>
+                <caption>Supported Features</caption>
+                <tr>
+                    <td>
+
+                        Individual Servo <link
+                        href="site:meta_servo_range_min">min</link>/<link
+                        href="site:meta_servo_range_max">max</link> preset
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        
+                        Hardware controlled constant <link
+                        href="site:meta_servo_velocity">velocity</link>
+                        transition, per servo
+                        
+                    </td>
+                </tr>
+            </table>
+            
+        </section>
+        <section>
+            <title>Common Features</title>
+            <section>
+            
+                <title>Good Things</title>
+            
+                <ul>
+                
+                    <li>
+                    
+                        Status feedback - this is the only controller that
+                        supports it (to the best of my knowledge);
+                        
+                    </li>
+                    <li>
+                    
+                        Moreover, real time status feedback for hardware
+                        supported transition - if you command the servo to
+                        start the transition, and then keep reading its
+                        position, the controller will report the real time
+                        position information back to you - this is really
+                        cool;
+                        
+                    </li>
+                    <li>
+                    
+                        Precise. The position unit is 2&#181;s, which should
+                        be enough for most applications;
+                        
+                    </li>
+                    <li>
+                    
+                        Fast. The baud rate may go as high as 38.4K.
+                        
+                    </li>
+                    <li>
+                    
+                        Stackable. You can connect two controllers to
+                        control up to 32 servos.
+                        
+                    </li>
+                
+                </ul>
+                
+            </section>
+            <section>
+            
+                <title>Bad Things</title>
+                
+                <ul>
+                
+                    <li>
+                    
+                        You have to be careful with the baud rate selection
+                        - once the controller is configured to work at
+                        38.4KBaud, there's no going back until after
+                        hardware reset. This may require jumping through
+                        extra hoops to ensure the mission-critical
+                        application is able to properly reinitialize the
+                        controller driver on a subsequent startup without
+                        someone actually pressing the reset button on the
+                        controller - that would be pretty inconvenient.
+                    
+                    </li>
+                    
+                </ul>
+                
+            </section>
+        </section>
+        <section>
+            <title>To be continued</title>
+            
+            <p>
+            
+                The rest will be written as soon as I get the actual
+                hardware.
+                
+            </p>
+            
+        </section>
+
+    </body>
+
+</document>

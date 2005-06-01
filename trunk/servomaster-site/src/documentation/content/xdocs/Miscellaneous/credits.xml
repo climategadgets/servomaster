@@ -84,6 +84,13 @@
             
             <li>
             
+                <link href="ext:parallax">Parallax, Inc.</link> - <link
+                href="site:parallax">serial and USB</link> controllers.
+                
+            </li>
+            
+            <li>
+            
                 <link href="ext:pololu">Pololu Corporation</link> - <link
                 href="ext:pololu_usb16">16-Servo USB Controller</link>.
                 

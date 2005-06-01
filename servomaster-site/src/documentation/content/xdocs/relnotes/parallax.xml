@@ -29,10 +29,11 @@
             </p>
             <warning>
             
-                I don't have the actual hardware in my possession yet
-                (supposed to be in transit), so the rest of this chapter is
+                The hardware has just arrived, and I didn't have a chance to
+                finish the actual driver yet, so the rest of this chapter is
                 based on speculations and reading available documentation at
-                this point.
+                this point (actually, all this stuff was written before I
+                received the hardware). Take with a grain of salt.
                 
             </warning>
             
@@ -112,15 +113,27 @@
                 
                     <li>
                     
-                        You have to be careful with the baud rate selection
-                        - once the controller is configured to work at
-                        38.4KBaud, there's no going back until after
-                        hardware reset. This may require jumping through
-                        extra hoops to ensure the mission-critical
-                        application is able to properly reinitialize the
-                        controller driver on a subsequent startup without
-                        someone actually pressing the reset button on the
-                        controller - that would be pretty inconvenient.
+                        <p>
+                        
+                            You have to be careful with the baud rate
+                            - selection once the controller is configured to
+                            work at 38.4KBaud, there's no going back until
+                            after hardware reset. This may require jumping
+                            through extra hoops to ensure the
+                            mission-critical application is able to properly
+                            reinitialize the controller driver on a
+                            subsequent startup without someone actually
+                            pressing the reset button on the controller -
+                            that would be pretty inconvenient.
+                        
+                        </p>
+                        
+                        <note>
+                        
+                            It is yet to be determined how the Serial/USB
+                            bridge behaves in this situation.
+                            
+                        </note>
                     
                     </li>
                     
@@ -133,8 +146,7 @@
             
             <p>
             
-                The rest will be written as soon as I get the actual
-                hardware.
+                The rest will be written as soon as I finish the driver.
                 
             </p>
             

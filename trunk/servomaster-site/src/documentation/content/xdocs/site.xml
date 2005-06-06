@@ -34,6 +34,7 @@ See http://xml.apache.org/forrest/linking.html for more info
     </contract>
     <transform label="Transitions &amp; Transormations" href="transform.html" description="Transition Controllers, Coordinate Transformers &amp; Their Combinations"/>
     <future label="Future Plans" href="future.html" description="Future Plans &amp; Crazy Ideas"/>
+    <serial-usb label="Rant on Serial/USB Bridges" href="serial-usb.html" description="Analysis of pros and cons of using Serial/USB bridges in embedded system design"/>
     <references label="Reference Library" href="references.html" description="Reference Library"/>
     
   </bits>
@@ -203,6 +204,9 @@ See http://xml.apache.org/forrest/linking.html for more info
       <jwz.org href="http://www.jwz.org/">
           <worse_is_better href="doc/worse-is-better.html"/>
       </jwz.org>
+      <kroah href="http://www.kroah.com/">
+          <kroah_cp2101 href="log/2004/11/18/"/>
+      </kroah>
       <libhid href="http://libhid.alioth.debian.org/"/>
       <libphidget href="http://libphidget.sourceforge.net/"/>
       <libphidgets href="http://libphidgets.alioth.debian.org/"/>

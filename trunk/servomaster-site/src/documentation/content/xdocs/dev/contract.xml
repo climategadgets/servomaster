@@ -17,6 +17,7 @@
                 <th><link href="site:phidget_servo8">Advanced</link></th>
                 <th><link href="site:nic_servo">1-Wire</link></th>
                 <th><link href="site:pololu">Pololu</link></th>
+                <th><link href="site:parallax">Parallax</link></th>
             </tr>
             <tr>
                 <td>
@@ -25,6 +26,7 @@
                 
                 </td>
                 <td colspan="5">See <link href="site:contract_hardware">Hardware Status Reporting</link></td>
+                <td>+</td>
             </tr>
             <tr>
                 <td>
@@ -34,7 +36,7 @@
                     itself, but the abstraction should support it.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -43,7 +45,7 @@
                      not take much space, but will be very useful.
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -53,7 +55,7 @@
                      description for this dependency is going to be tricky.
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -68,6 +70,7 @@
                 <td>+</td>
                 <td>+</td>
                 <td>+</td>
+                <td>+</td>
             </tr>
             <tr>
                 <td>
@@ -77,7 +80,7 @@
                     but arbitrary angle.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -95,6 +98,7 @@
                 <td>+</td>
                 <td>?</td>
                 <td>+</td>
+                <td>+</td>
             </tr>
             <tr>
                 <td>
@@ -108,6 +112,7 @@
                 <td>+</td>
                 <td>+</td>
                 <td>?</td>
+                <td>+</td>
                 <td>+</td>
             </tr>
             <tr>
@@ -123,6 +128,7 @@
                 <td>+</td>
                 <td>?</td>
                 <td>+</td>
+                <td>+</td>
             </tr>
             <tr>
                 <td>
@@ -136,7 +142,7 @@
                      "configurability".
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -147,7 +153,7 @@
                      Begs for XML configuration file.
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -163,7 +169,7 @@
                     be included into capabilities discovery.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -178,7 +184,7 @@
                     you can plug the servo into.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -189,7 +195,7 @@
                     module as well.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -198,7 +204,7 @@
                     signal and mapping between the feedback and control.
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -209,7 +215,7 @@
                     on the back of the servo.
                      
                 </td>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
             </tr>
             <tr>
                 <td>
@@ -219,7 +225,7 @@
                     the abstraction of the <strong>servo</strong>.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -230,7 +236,7 @@
                     the same uniform manner, and share common properties.
                      
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -244,6 +250,7 @@
                 <td></td>
                 <td></td>
                 <td>+</td>
+                <td></td>
                 <td></td>
             </tr>
             <tr>
@@ -260,6 +267,7 @@
                 <td>+</td>
                 <td>+</td>
                 <td>+/-</td>
+                <td>+/-</td>
             </tr>
             <tr>
                 <td>
@@ -271,6 +279,7 @@
                 <td></td>
                 <td>+</td>
                 <td></td>
+                <td>+</td>
                 <td>+</td>
             </tr>
             <tr>
@@ -286,7 +295,7 @@
                     master").
                     
                 </td>
-                <td colspan="5">See <link href="site:transform">Transitions &amp; Transformations</link></td>
+                <td colspan="6">See <link href="site:transform">Transitions &amp; Transformations</link></td>
             </tr>
             <tr>
                 <td>
@@ -295,7 +304,7 @@
                     enough to "attach" one to the servo abstraction.
                     
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
             <tr>
                 <td>
@@ -305,7 +314,7 @@
                     at any level of the coordination transformer stack.
                     
                 </td>
-                <td colspan="5">+</td>
+                <td colspan="6">+</td>
             </tr>
         </table>
         
@@ -316,10 +325,11 @@
         
         <p>
         
-            At the moment of writing, I'm yet to see a servo controller that
-            will allow to ask itself about its status and/or will issue any
-            kind of status notification whatsoever. However, there are some
-            limited special cases - they are discussed below.
+            At the moment of writing, the only controllers that support
+            hardware status reporting are the <link
+            href="site:parallax">Parallax serial and USB controllers</link>. 
+            However, there are some additional limited special cases - they
+            are discussed below.
             
         </p>
         

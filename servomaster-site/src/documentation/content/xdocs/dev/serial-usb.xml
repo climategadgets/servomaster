@@ -116,6 +116,22 @@
                 
             </section>
             <section>
+                <title>Missing Capabilities Discovery Support</title>
+                
+                <p>
+                
+                    <em>(Thanks to Jerry Scharf for reminding)</em> USB
+                    devices are able to advertise their capabilities and
+                    functionality, to some extent (at least device class
+                    information is available). Serial ports do not have an
+                    ability to provide this information. "Probing" serial
+                    ports is ill-advised and unsafe - data sequences
+                    meaningful for one device may break another and cause
+                    massive damage on peripheral equipment.
+                    
+                </p>
+            </section>
+            <section>
                 <title>Missing Support for Removable Devices</title>
                 
                 <p>
@@ -210,10 +226,18 @@
             </p>
             <p>
             
-                Then, this solution implies more work for the software
-                driver developer, and slower time-to-market, so you have to
-                consider whether the problems outlined above matter for your
-                cause.
+                Then, it seems that capabilities discovery is still not
+                possible to support, due to the fact that it is the bridge
+                that makes itself visible to the USB bus, not the device
+                controlled by the bridge.
+                
+            </p>
+            <p>
+            
+                And eventually, this solution implies more work for the
+                software driver developer, and slower time-to-market, so you
+                have to consider whether the problems outlined above matter
+                for your cause.
                 
             </p>
         </section>

@@ -45,6 +45,32 @@
             
         </section>
         <section>
+            <title>The Scope</title>
+            
+            <p>
+            
+                The rest of the article is dedicated to issues related to
+                using devices equipped with Serial/USB bridges in the
+                context of high uptime, low maintenance, mission critical
+                applications.
+                
+            </p>
+            <p>
+            
+                The most important issue is the ability to gracefully
+                recover from hardware failures without shutting down the
+                entire system. Serial devices don't provide this ability at
+                all, unless they're specifically engineered to do that - and
+                in any case, even unplugging the serial device and plugging
+                another one should be strongly discouraged, though it seems
+                to be a common practice. On the other hand, you can just
+                unplug a USB device and replace with an identical (or
+                compatible) one.
+                
+            </p>
+            
+        </section>
+        <section>
             <title>The Shortcut</title>
             
             <p>

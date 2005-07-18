@@ -90,7 +90,7 @@ See http://xml.apache.org/forrest/linking.html for more info
 
   <sourceforge label="SourceForge" href="">
       <projectpage label="Project Page"
-            href="http://sourceforge.net/projects/diy-zoning/"
+            href="http://sourceforge.net/projects/servomaster/"
             description="Project Summary">
       </projectpage>
       <downloads label="Downloads"

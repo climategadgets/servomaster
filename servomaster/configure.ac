@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.14 2005-01-13 02:57:51 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.15 2005-12-30 21:06:48 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -88,7 +88,7 @@ dnl [You will not be able to create the Javadoc documentation])
 dnl AC_PROG_JAVATOOL(JAR,jar,[     Java Archiver])
 
 AC_PATH_JAVACLASS(JAVA_COMPILER,${JDK_HOME}/lib,sun.tools.javac.Main,[     Where to find the Jakarta javac jar file (http://jakarta.apache.org/)])
-AC_PATH_JAVACLASS(XERCES,/usr/share/java,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
+AC_PATH_JAVACLASS(XERCES,/usr/share/java/xerces-j2.jar,org.apache.xerces.parsers.DOMParser,[     Where to find the Xerces jar file (http://xml.apache.org/xerces-j/)])
 
 SERIAL_ENABLED=false
 

@@ -94,12 +94,20 @@
 
                 <p>
                 
-                    Yes. Currently, there's one in the queue (<link
+                    Actually, quite a few. The <link
+                    href="site:pololu">Pololu controller family</link>
+                    driver is already usable, and <link
+                    href="site:parallax">Parallax controller family</link>
+                    is a few days away, but it's been extremely difficult to
+                    find those few days to finish it.
+                    
+                </p>
+                <p>
+                
+                    Then, there's one in the queue (<link
                     href="site:nic_servo">1-Wire&reg; based servo
                     controller</link> which is pretty close to my <link
-                    href="site:contract">ideal servo controller</link>) and
-                    one planned (<link href="ext:pololu_usb16">Pololu
-                    16-servo USB controller</link>).
+                    href="site:contract">ideal servo controller</link>).
                     
                 </p>
                 
@@ -197,11 +205,17 @@
 
             </question>
             <answer>
+            
+                <p>
+                
+                    It is a <link href="ext:bug_660607">known issue</link>
+                    
+                </p>
 
                 <p>
                 
-                    Well, since the advent of 16-servo controllers it
-                    doesn't fit into my 1600x1200 screen, either.
+                    Since the advent of 16-servo controllers it doesn't fit
+                    into my 1600x1200 screen, either.
                     
                 </p>
                 <p>

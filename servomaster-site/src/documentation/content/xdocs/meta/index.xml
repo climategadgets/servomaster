@@ -70,7 +70,7 @@
                     Since this is quite cumbersome, partial URLs will be
                     accepted as well by the API calls. For this particular
                     example, the identifier will look like
-                    controller/precision.
+                    <code>controller/precision</code>.
                  
                 </p>
                 <p>

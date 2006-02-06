@@ -5,7 +5,7 @@
         <title>ServoMaster: News &amp; Status</title>
     </header>
     <body>
-        
+    
         <section>
             <title>Project Status</title>
             
@@ -36,6 +36,35 @@
         <section>
         
             <title>Project News</title>
+            
+            <section>
+                <title>February 5 2006</title>
+                
+                <p>
+                
+                    Site cleanup caused by obsolescence of the content
+                    management system formerly used. Another dose of <link
+                    href="ext:rxtx">RxTx</link> upgrade pains. Good news,
+                    may be able to take care of those pesky <link
+                    href="site:serial-usb">USB/Serial</link> bridges the
+                    right way.
+                
+                </p>
+                
+                <p>
+                
+                    Unrelated to above, a backward incompatible codebase
+                    change to utilize features offered by JDK 1.5 is in
+                    progress. In particular, <link
+                    href="site:meta_index">metadata</link> implementation
+                    will be augmented and/or replaced with JDK 1.5 <link
+                    href="ext:jdk15_annotations">annotations</link>, and
+                    <link href="ext:jmx">JMX</link>, which is now a part of
+                    the JDK.
+                    
+                </p>
+                
+            </section>
             
             <section>
             

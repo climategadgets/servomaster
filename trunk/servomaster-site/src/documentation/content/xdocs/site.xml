@@ -54,7 +54,7 @@ See http://xml.apache.org/forrest/linking.html for more info
   
   <metadata label="Metadata" href="meta/" description="Metadata" tab="Metadata">
   
-      <index label="Rationale &amp; Summary" href="index.html"/>
+      <meta_index label="Rationale &amp; Summary" href="index.html"/>
   
       <meta_manufacturer  label="Manufacturer" href="manufacturer/" dir="manufacturer">
           <meta_mf_name   label="name" href="name/index.html"/>
@@ -116,7 +116,7 @@ See http://xml.apache.org/forrest/linking.html for more info
       
   </sourceforge>
 
-  <family label="Family" href="samples" tab="Family">
+  <family label="Family" tab="Family">
       <dz label="DIY Zoning"
             href="http://diy-zoning.sourceforge.net/"
             description="Do It Yourself Temperature Zoning (that's us, right?)">
@@ -197,7 +197,10 @@ See http://xml.apache.org/forrest/linking.html for more info
           <preset href="robots/servo/servo.htm"/>
       </havinga>
       <hotplug href="http://linux-hotplug.sourceforge.net/"/>
-      <java.sun.com href="http://java.sun.com/"/>
+      <java.sun.com href="http://java.sun.com/">
+          <jdk15_annotations href="j2se/1.5.0/docs/guide/language/annotations.html"/>
+          <jmx href="products/JavaManagement/"/>
+      </java.sun.com>
       <javax-comm href="http://java.sun.com/products/javacomm/"/>
       <javax-usb href="http://javax-usb.org/"/>
       <jusb href="http://jusb.sourceforge.net/"/>
@@ -241,6 +244,9 @@ See http://xml.apache.org/forrest/linking.html for more info
           <ssc2 href="ssc.htm"/>
       </seetron>
       <servocity href="http://servocity.com"/>
+      <sf_bugs href="http://sourceforge.net/tracker/index.php?func=detail&amp;">
+          <bug_660607 href="aid=660607&amp;group_id=34418&amp;atid=412121"/>
+      </sf_bugs>
       
       <libphidget href="http://libphidget.sourceforge.net"/>
       

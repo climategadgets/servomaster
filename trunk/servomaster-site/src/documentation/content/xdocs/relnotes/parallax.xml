@@ -29,11 +29,12 @@
             </p>
             <warning>
             
-                The hardware has just arrived, and I didn't have a chance to
-                finish the actual driver yet, so the rest of this chapter is
-                based on speculations and reading available documentation at
-                this point (actually, all this stuff was written before I
-                received the hardware). Take with a grain of salt.
+                I didn't have a chance to finish the actual driver yet
+                (shame on me, the hardware came on May 31 2005), so the rest
+                of this chapter is based on speculations and reading
+                available documentation at this point (actually, all this
+                stuff was written before I received the hardware). Take with
+                a grain of salt.
                 
             </warning>
             

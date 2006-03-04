@@ -308,6 +308,23 @@
                 
                 <p>
                 
+                    The following output from
+                    <code>servomaster_console</code> would be a good
+                    indication that you're having this problem:
+                    
+                </p>
+<source>
+Unable to initialize controller, cause:
+java.io.IOException: No compatible devices found. Make sure you have /proc/bus/usb read/write permissions.
+        at org.freehold.servomaster.device.impl.usb.AbstractUsbServoController.findUSB(AbstractUsbServoController.java:259)
+        at org.freehold.servomaster.device.impl.usb.AbstractUsbServoController.doInit(AbstractUsbServoController.java:474)
+        at org.freehold.servomaster.device.model.AbstractServoController.init(AbstractServoController.java:110)
+        at org.freehold.servomaster.view.Console.run(Console.java:166)
+        at org.freehold.servomaster.view.Console.main(Console.java:134)
+</source>
+                
+                <p>
+                
                     Quick fix: <code>chmod -R a+w /proc/bus/usb</code> -
                     this will allow you to test whether the controller is
                     connected. Alternative way is to use
@@ -355,36 +372,62 @@
                 <p>
                 
                     The symptom is usually a complaint about the fact that
-                    the USB interface is already claimed.
+                    the USB interface is already claimed (long line split):
+                    
+                </p>
+<source>
+Unable to initialize controller, cause:
+java.io.IOException: Can't claim interface - already claimed. \
+Make sure no other applications or modules (hid.o or phidgetservo.o in particular) use this device
+        at org.freehold.servomaster.device.impl.usb.AbstractUsbServoController.doInit(AbstractUsbServoController.java:481)
+        at org.freehold.servomaster.device.model.AbstractServoController.init(AbstractServoController.java:110)
+        at org.freehold.servomaster.view.Console.run(Console.java:166)
+        at org.freehold.servomaster.view.Console.main(Console.java:134)
+</source>
+                <p>
+                
+                    Following is the message you see in the system log if
+                    this is happening (when you attach the controller):
+                </p>
+
+<source>
+Mar  3 19:39:08 shadow kernel: ohci_hcd 0000:00:02.0: wakeup
+Mar  3 19:39:08 shadow kernel: usb 2-3: new low speed USB device using ohci_hcd and address 2
+Mar  3 19:39:09 shadow kernel: phidgetservo 2-3:1.0: USB 4-Motor PhidgetServo v3.0 attached
+Mar  3 19:39:09 shadow kernel: usbcore: registered new driver phidgetservo
+</source>
+                <p>
+                
+                    Quick fix, depending on the kernel version, is: either
+                    <code>rmmod hid</code> or <code>rmmod
+                    phidgetservo</code>. It'll keep bothering you, though, as you unpug and re-plug the device.
                     
                 </p>
                 <p>
-                
-                    This is due to the fact that [at least] <link
-                    href="site:phidget_quad">QuadServo</link> advertises
-                    itself as a HID class device, but in fact doesn't
-                    properly implement HID specifications (if I remember
-                    Chester's explanations right).
                     
+                    A more thorough solution would be to add the culprit to
+                    <link href="ext:hotplug">hotplug</link> blacklist, but
+                    it may have an unfortunate side effect of disabling
+                    <em>all</em> HID devices in older kernels. Recently,
+                    hotplug has become smart enough to be able to
+                    specifically ban the <code>phidgetservo</code> module -
+                    look either into <code>/etc/hotplug/blacklist</code>, or
+                    <code>/etc/modprobe.d/blacklist-compat</code> - the rest
+                    is self-explanatory.
+                
                 </p>
                 
                 <p>
                 
-                    Quick fix is: <code>rmmod hid</code>. A more thorough
-                    solution would be to add <code>hid</code> to <link
-                    href="ext:hotplug">hotplug</link> blacklist, but both of
-                    these have an unfortunate side effect of disabling
-                    <em>all</em> HID devices. Let's hope that hotplug
-                    becomes smart enough to ban individual devices.
-                
-                </p>
-                <note>
-                
-                    Module name may be other than <code>hid</code> for some
-                    distributions. In particular, for newer Fedora it is
-                    <code>phidgetservo</code>.
+                    This is how your system log should look like if you're
+                    successfully disabled the <code>phidgetservo</code>
+                    module:
                     
-                </note>
+                </p>
+<source>
+Mar  3 19:59:41 shadow kernel: ohci_hcd 0000:00:02.0: wakeup
+Mar  3 19:59:41 shadow kernel: usb 2-3: new low speed USB device using ohci_hcd and address 4
+</source>
                 
             </answer>
         </faq>

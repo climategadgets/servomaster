@@ -38,6 +38,17 @@
             <title>Project News</title>
             
             <section>
+                <title>March 3 2006</title>
+            
+                <p>
+                
+                    Documented the procedure to prevent the kernel modules
+                    from interfering with Servomaster code.
+                    
+                </p>
+                
+            </section>
+            <section>
                 <title>February 5 2006</title>
                 
                 <p>

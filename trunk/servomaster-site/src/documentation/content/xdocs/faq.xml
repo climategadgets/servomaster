@@ -350,9 +350,8 @@ java.io.IOException: No compatible devices found. Make sure you have /proc/bus/u
                 
                 <note>
                 
-                   Don't forget to check <link
-                   href="site:faq_hid">hid</link> if your USB controller is
-                   a Phidget.
+                   Don't forget to check <link href="site:faq_hid">kernel
+                   modules</link> if your USB controller is a Phidget.
                    
                 </note>
                 

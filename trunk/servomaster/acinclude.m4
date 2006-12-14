@@ -1,13 +1,13 @@
 dnl This file contains autoconf macros used by jukebox. -*-sh-*-
-dnl 
+dnl
 dnl Copyright (C) 1997 Free Software Foundation, Inc.
-dnl Copyright (C) 1999-2000 Vadim Tkachenko <vt@freehold.crocodile.org> 
+dnl Copyright (C) 1999-2000 Vadim Tkachenko <vt@freehold.crocodile.org>
 dnl CHECK_GNU_MAKE thanks to John Darrington <j.darrington@elvis.murdoch.edu.au>
 dnl
 dnl Authoritative source URL for this file is <http://jukebox4.sourceforge.net/acinclude.m4>
 
 dnl These are the top-level macros provided:
-dnl 
+dnl
 dnl AC_PATH_JDK		Finds the JDK or accepts the location argument.
 dnl AC_PROG_JAVATOOL	Finds the JDK tool or accepts the location argument.
 dnl AC_PATH_JAVACLASS	Finds the jar file or directory with the classes or
@@ -78,10 +78,10 @@ AC_DEFUN([AC_PATH_JDK],
     AC_MSG_CHECKING(for JDK home)
 
     dnl The order is: --with-jdk first, environment second, guessed value third.
-    
+
     dnl This is a safe default. Could screw up on the security features, but
     dnl oh well, this is what --with-java2 is for.
-    
+
     JAVA_PLATFORM="1"
     JDK_HOME_FOUND=""
 
@@ -89,20 +89,20 @@ AC_DEFUN([AC_PATH_JDK],
     [  --with-jdk-home=DIR     Where is your JDK root directory.],
     [
 	JDK_HOME=${withval}
-	
+
 	if ${TEST} ! -d "${JDK_HOME}" ; then
 	    AC_MSG_ERROR(Not a directory: ${JDK_HOME})
 	fi
-	
+
 	AC_MSG_RESULT(${JDK_HOME})
-	
+
     ],
     [
         if ${TEST} -n "${JDK_HOME}" ; then
-        
+
             dnl Well, I didn't think of trying to recognize the platform if
             dnl it was specified in the environment...
-            
+
             AC_MSG_RESULT([Using environment: ${JDK_HOME}, you may want to specify --with-java2 if required])
         fi
     ])
@@ -119,27 +119,28 @@ AC_DEFUN([AC_PATH_JDK],
             /opt
         do
     	for VARIANT in \
-    	    j2sdk \
+    	    jdk \
     	    java \
-    	    jdk 
+    	    j2sdk
     	do
-    	    
+
     	    for JAVA_VERSION in \
-    	        1.5.0 \
-    	        1.4.2_06 \
-    	        1.4.2_04 \
-    	        1.4.2_03 \
-    	        1.4.1_01 \
-    	        1.4.1 \
-    	        1.4.0_01 \
-    	        1.4.0
+    	        1.6.0 \
+    	        1.5.0_10 \
+    	        1.5.0_09 \
+    	        1.5.0_08 \
+    	        1.5.0_07 \
+    	        1.5.0_06 \
+    	        1.5.0_05 \
+    	        1.5.0_04 \
+    	        1.5.0_03
                 do
                     if ${TEST} -d "${JDK_PREFIX}/${VARIANT}${JAVA_VERSION}/bin" \
                     && ${TEST} -d "${JDK_PREFIX}/${VARIANT}${JAVA_VERSION}/include" ; then
 
             	    JDK_HOME="${JDK_PREFIX}/${VARIANT}${JAVA_VERSION}"
 		    AC_MSG_RESULT(${JDK_HOME})
-            	    
+
                     dnl Let's try to guess the Java version from the pathname, to save an expensive check
                     AC_MSG_CHECKING(Java platform)
 
@@ -150,7 +151,7 @@ AC_DEFUN([AC_PATH_JDK],
                         1)
                             AC_MSG_RESULT(guess 1.1.x)
                             ;;
-                            
+
                         2)
                             AC_MSG_RESULT(guess Java 2)
                             ;;
@@ -158,14 +159,19 @@ AC_DEFUN([AC_PATH_JDK],
                         3)
                             AC_MSG_RESULT([guess Java 2 (1.3)])
                             ;;
-                            
+
                         4)
-                        
+
                             AC_MSG_RESULT([guess Java 2 (1.4)])
                             ;;
                         5)
-                        
+
                             AC_MSG_RESULT([guess Java 2 (1.5)])
+                            ;;
+
+                        6)
+
+                            AC_MSG_RESULT([guess Java 2 (1.6)])
                             ;;
 
                         *)
@@ -178,7 +184,7 @@ AC_DEFUN([AC_PATH_JDK],
 
             	    break
             	fi
-                  
+
                   if ${TEST} -n "${JDK_HOME_FOUND}" ; then
                       break
                   fi
@@ -192,7 +198,7 @@ AC_DEFUN([AC_PATH_JDK],
           fi
         done
     else
-    
+
         AC_MSG_CHECKING(Java platform)
 
         AC_ARG_WITH(java2,
@@ -200,7 +206,7 @@ AC_DEFUN([AC_PATH_JDK],
         [
             dnl This requires a bit of tweaking to be handled properly, but
             dnl the default is good enough
-            
+
             if ${TEST} "${JAVA_PLATFORM}" = "3" ; then
                 AC_MSG_RESULT([with all due respect, I will not downgrade])
             else
@@ -210,7 +216,7 @@ AC_DEFUN([AC_PATH_JDK],
             fi
         ])
 
-        
+
 
     fi
 
@@ -228,7 +234,7 @@ AC_PROVIDE([$0])
 dnl Find the  rmic program (so far useful only for EJBoss
 dnl (http://www.ejboss.org/), but preserved because doesn't break anything and
 dnl allows this file to be reused for Jserv, ECS, Jukebox and EJBoss.
-dnl 
+dnl
 dnl I guess I'd work on this one later. I don't like it, it's not generic (VT).
 
 dnl Result goes in RMIC (bare location) and RMICX (with classpath and flag
@@ -248,7 +254,7 @@ AC_DEFUN([AC_PROG_RMIC],
         if ${TEST} "$withval" = "yes" || ${TEST} "$withval" = "no" ; then
             AC_MSG_ERROR(You must specify the rmic binary as the parameter for --with-rmic)
         fi
-        
+
         if ${TEST} ! -x "$withval" ; then
             AC_MSG_ERROR(Bad value for --with-rmic: $withval)
         fi
@@ -259,7 +265,7 @@ AC_DEFUN([AC_PROG_RMIC],
             AC_MSG_ERROR(rmic binary not found in ${JDK_HOME})
         fi
     ])
-    
+
     AC_MSG_RESULT(${RMIC})
     AC_SUBST(RMIC)
     AC_PROVIDE([$0])
@@ -297,7 +303,7 @@ AC_DEFUN([AC_PROG_JAVATOOL],
         if ${TEST} "$withval" = "yes" || ${TEST} "$withval" = "no" ; then
             AC_MSG_ERROR(You must specify the $2 binary as the parameter for --with-$2)
         fi
-        
+
         if ${TEST} ! -x "$withval" ; then
             AC_MSG_ERROR(Bad value for --with-$2: $withval)
         fi
@@ -313,16 +319,16 @@ AC_DEFUN([AC_PROG_JAVATOOL],
             fi
         fi
     ])
-    
+
     AC_MSG_RESULT(${$1})
     AC_SUBST($1)
-    
+
     AC_PROVIDE($1)
-    
+
     dnl VT: This ugly bypass is here because autoconf complains about its
     dnl bug. In the future, I'll be checking it once in a while
-    
-    
+
+
     OPTION=$1
     OPTION="${OPTION}_OPT"
 
@@ -352,11 +358,11 @@ AC_DEFUN([AC_PATH_JAVACLASS],
     AC_REQUIRE([AC_PROG_CUT])
     AC_REQUIRE([AC_PROG_GREP])
     AC_MSG_CHECKING($1)
-    
+
     dnl Find out if we have a parameter
-    
+
     JAVACLASS_DISABLED=""
-    
+
     AC_ARG_WITH($1,
     [  --with-$1=DIR/JAR $4],
     [
@@ -364,9 +370,9 @@ AC_DEFUN([AC_PATH_JAVACLASS],
 
         dnl Find out if it is not disabled
 
-        
+
         if ${TEST} "$withval" = "no" ; then
-        
+
             AC_MSG_RESULT(disabled)
             JAVACLASS_DISABLED="yes"
             $1_CLASSES=""
@@ -377,36 +383,36 @@ AC_DEFUN([AC_PATH_JAVACLASS],
         dnl If the name starts with /, consider it absolute and don't touch,
         dnl if it contains /, don't touch it either, otherwise treat it as
         dnl /usr/local/${file}
-        
+
         ABSOLUTE=`${ECHO} $2|${CUT} -c 1|${GREP} /`
-        
+
         if ${TEST} -n "${ABSOLUTE}" ; then
-        
+
             # It is an absolute name, don't touch it
-            
+
             $1_CLASSES=$2
-            
+
         else
-        
+
             CONTAINS_SLASH=`${ECHO} $2|${GREP} /`
-            
+
             if ${TEST} -n "${CONTAINS_SLASH}" ; then
-            
+
                 # If it contains /, don't touch it
-                
+
                 $1_CLASSES=$2
-                
+
             else
-            
+
                 $1_CLASSES="/usr/local/$2"
             fi
         fi
     ])
-    
+
     if ${TEST} "${JAVACLASS_DISABLED}" != "yes" ; then
-    
+
         dnl Find out if it exists at all
-            
+
         if ${TEST} ! -e "${$1_CLASSES}" ; then
             if ${TEST} -z "$5" ; then
                 AC_MSG_ERROR(Does not exist: '${$1_CLASSES}')
@@ -416,22 +422,22 @@ AC_DEFUN([AC_PATH_JAVACLASS],
         else
 
             dnl Transform the class name into the path name
-            
+
             CLASS="`${ECHO} $3|${TR} "." "/"`.class"
-            
+
             dnl Find out what it is
-            
+
             if ${TEST} -d "${$1_CLASSES}" ; then
-            
+
                 dnl OK, so this is a directory. Try to find the class,
                 dnl giving the preference to the jar
-                
+
                 AC_PATH_SEARCHJAR($1,${$1_CLASSES},${CLASS})
-                
+
                 if ${TEST} -z "${$1}" ; then
 
                     AC_PATH_SEARCHCLASS($1,${$1_CLASSES},${CLASS})
-                    
+
                     if ${TEST} -z "${$1}" ; then
                         if ${TEST} -z "$5" ; then
                             AC_MSG_ERROR(no $3 class or jar with it in ${$1_CLASSES})
@@ -441,46 +447,46 @@ AC_DEFUN([AC_PATH_JAVACLASS],
                     fi
                 fi
             else
-            
+
                 dnl OK, so this is a jar file
-                
+
                 AC_PATH_VERIFYJAR($1,${$1_CLASSES},${CLASS})
-                
+
                 if ${TEST} -z "${$1}" ; then
                     AC_MSG_ERROR($3 not found in ${$1_CLASSES})
                 fi
             fi
         fi
-        
+
         $1_CLASSES=${$1}
-        
+
         if ${TEST} -n "${$1_CLASSES}" ; then
             AC_MSG_RESULT(${$1_CLASSES})
         fi
-        
+
         AC_SUBST($1_CLASSES)
         AC_PROVIDE($1_CLASSES)
-    
+
     fi
-    
+
     dnl It appears that it's not possible to use the substitution in AM_CONDITIONAL,
     dnl so by now it's required to use it in configure.in, unfortunately.
-    
+
     dnl AM_CONDITIONAL($1,${TEST} -n "${$1_CLASSES}")
 ])
 
 dnl This one verifies if the $3 class exists in the $2 jar file and places
 dnl the $2 in $1 if it is, otherwise sets it to empty string.
- 
+
 AC_DEFUN([AC_PATH_VERIFYJAR],
 [
     AC_REQUIRE([AC_PROG_JAR])
     AC_REQUIRE([AC_PROG_TEST])
-    
+
     dnl You may want to call it before, just to make the output look good
-    
+
     $1=`${JAR} -tvf $2 2>&1|grep $3`
-    
+
     if ${TEST} -n "${$1}" ; then
     	$1=$2
     else
@@ -502,24 +508,24 @@ AC_DEFUN([AC_PATH_SEARCHCLASS],
     AC_REQUIRE([AC_PROG_ECHO])
     AC_REQUIRE([AC_PROG_TEST])
     AC_REQUIRE([AC_PROG_CUT])
-    
+
     PRESENT=`(cd $2 && ${FIND} . -name "*.class"|${GREP} "$3"|${CUT} -c 3-)`
-    
+
     if ${TEST} -n "${PRESENT}" ; then
-    
+
         PRESENT=`${ECHO} ${PRESENT}|${GREP} -x "${CLASS}"`
-        
+
         if ${TEST} -z "${PRESENT}" ; then
 
             dnl OK, here's a misajustment - let's try to fix it later by
             dnl calculating the length difference, so far - error
-            
+
             AC_MSG_ERROR([$2 is not a classpath root for $3 - adjust it])
         else
             $1=$2
         fi
     fi
-    
+
     AC_SUBST($1)
 ])
 
@@ -534,16 +540,16 @@ AC_DEFUN([AC_PATH_SEARCHJAR],
     AC_REQUIRE([AC_PROG_FIND])
     AC_REQUIRE([AC_PROG_TR])
     AC_REQUIRE([AC_PROG_TEST])
-    
+
     JARS=`${FIND} $2/ -name "*.jar" -o -name "*.zip"|${TR} "\n" " "`
-    
+
     if ${TEST} -n "$JARS" ; then
         for JARFILE in ${JARS}; do
 dnl            AC_MSG_CHECKING('$JARFILE' for $3)
             PRESENT=`${JAR} -tf ${JARFILE} 2>&1|grep $3`
-            
+
 dnl            AC_MSG_RESULT(Got '${PRESENT}')
-            
+
             if ${TEST} -n "${PRESENT}" ; then
                 $1=${JARFILE}
                 AC_SUBST($1)
@@ -594,9 +600,9 @@ AC_DEFUN([AC_PATH_PROG_VERIFY],
     dnl $TEST must be defined before running this. The case when $TEST is
     dnl not defined yet, but this macro is used to find it, is rather
     dnl tricky, but rather rare ;)
-    
+
     AC_PATH_PROG($1,$2,$3)
-    
+
     dnl Can't use -x here 'cause 4.3BSD doesn't have it
 
     if ${TEST} ! -f "${$1}" ; then

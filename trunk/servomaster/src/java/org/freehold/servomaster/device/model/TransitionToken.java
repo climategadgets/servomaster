@@ -15,18 +15,18 @@ package org.freehold.servomaster.device.model;
  * coordinates produced by the transition controller may depend on the
  * system timing and delays.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: TransitionToken.java,v 1.2 2002-01-02 09:18:52 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: TransitionToken.java,v 1.3 2006-12-14 09:17:10 vtt Exp $
  */
 public class TransitionToken {
 
     private Double position = null;
     private boolean done = false;
-    
+
     public TransitionToken() {
-    
+
     }
-    
+
     /**
      * Supply the calculated position.
      *
@@ -34,26 +34,28 @@ public class TransitionToken {
      *
      * @exception IllegalStateException when the transition is {@link #done
      * done} because the consumer {@link #stop aborted} it.
+     *
+     * @throws InterruptedException if the wait is interrupted.
      */
     public synchronized void supply(double position) throws InterruptedException {
-    
+
         while ( this.position != null && !done ) {
-        
+
             wait();
         }
-        
+
         if ( done ) {
-        
+
             throw new IllegalStateException("Transition is over");
         }
-        
+
         this.position = new Double(position);
-        
+
 //        System.err.println("Supply: " + this.position);
-        
+
         notifyAll();
     }
-    
+
     /**
      * Consume the calculated position.
      *
@@ -61,30 +63,32 @@ public class TransitionToken {
      *
      * @exception IllegalStateException when the transition is {@link #done
      * done} because the supplier {@link #stop completed} the transition.
+     * 
+     * @throws InterruptedException if the wait is interrupted.
      */
     public synchronized double consume() throws InterruptedException {
-    
+
         while ( position == null && !done ) {
-        
+
             wait();
         }
-        
+
         if ( done ) {
-        
+
             throw new IllegalStateException("Transition is over");
         }
-        
+
         double result = position.doubleValue();
-        
+
         position = null;
-        
+
 //        System.err.println("Consume: " + result);
-        
+
         notifyAll();
-        
+
         return result;
     }
-    
+
     /**
      * Bidirectional stop.
      *
@@ -93,9 +97,9 @@ public class TransitionToken {
      * will consider the transition done.
      */
     public synchronized void stop() {
-    
+
         done = true;
-        
+
         notifyAll();
     }
 }

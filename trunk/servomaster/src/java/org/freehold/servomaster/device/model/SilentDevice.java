@@ -13,8 +13,8 @@ import java.io.IOException;
  * Some controllers support deenergizing the servos on per-controller, some
  * on per-servo basis.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: SilentDevice.java,v 1.2 2002-03-09 05:23:16 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: SilentDevice.java,v 1.3 2006-12-14 09:17:10 vtt Exp $
  */
 public interface SilentDevice {
 
@@ -45,8 +45,8 @@ public interface SilentDevice {
      * @exception IOException if there was a problem communicating to the
      * hardware controller.
      */
-    public void setSilentMode(boolean silent) throws IOException;
-    
+    void setSilentMode(boolean silent) throws IOException;
+
     /**
      * Set the silent timeout.
      *
@@ -72,8 +72,8 @@ public interface SilentDevice {
      * @exception UnsupportedOperationException if the hardware controller
      * is not capable of suspending the control pulse.
      */
-    public void setSilentTimeout(long timeout, long heartbeat);
-    
+    void setSilentTimeout(long timeout, long heartbeat);
+
     /**
      * Whether the device is silent right now.
      *
@@ -82,8 +82,8 @@ public interface SilentDevice {
      * @exception UnsupportedOperationException if the hardware controller
      * is not capable of suspending the control pulse.
      */
-    public boolean isSilentNow();
-    
+    boolean isSilentNow();
+
     /**
      * Find out if the device is in the silent mode.
      *
@@ -92,5 +92,5 @@ public interface SilentDevice {
      * @exception UnsupportedOperationException if the hardware controller
      * is not capable of suspending the control pulse.
      */
-    public boolean getSilentMode();
+    boolean getSilentMode();
 }

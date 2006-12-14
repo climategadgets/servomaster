@@ -6,11 +6,11 @@ package org.freehold.servomaster.device.model;
  * This interface allows to receive notifications about the disconnectable
  * device arrivals and departures.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: DisconnectListener.java,v 1.2 2002-03-09 05:23:16 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @version $Id: DisconnectListener.java,v 1.3 2006-12-14 09:17:10 vtt Exp $
  */
 public interface DisconnectListener {
 
-    public void deviceArrived(ServoController device);
-    public void deviceDeparted(ServoController device);
+    void deviceArrived(ServoController device);
+    void deviceDeparted(ServoController device);
 }

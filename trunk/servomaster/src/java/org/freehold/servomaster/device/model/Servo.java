@@ -7,8 +7,8 @@ import java.io.IOException;
  *
  * Allows instant and controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: Servo.java,v 1.12 2005-04-20 22:01:32 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: Servo.java,v 1.13 2006-12-14 09:17:10 vtt Exp $
  */
 public interface Servo {
 
@@ -17,8 +17,8 @@ public interface Servo {
      *
      * @return Servo name.
      */
-    public String getName();
-    
+    String getName();
+
     /**
      * Set the position.
      *
@@ -41,8 +41,8 @@ public interface Servo {
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
-    public TransitionCompletionToken setPosition(double position) throws IOException;
-    
+    TransitionCompletionToken setPosition(double position) throws IOException;
+
     /**
      * Get the position.
      *
@@ -52,8 +52,8 @@ public interface Servo {
      * #getActualPosition getActualPosition()} to obtain the actual servo
      * position.
      */
-    public double getPosition();
-    
+    double getPosition();
+
     /**
      * Get the actual position.
      *
@@ -66,8 +66,8 @@ public interface Servo {
      *
      * @return The actual position of the servo.
      */
-    public double getActualPosition();
-    
+    double getActualPosition();
+
     /**
      * Add the servo listener.
      *
@@ -76,8 +76,8 @@ public interface Servo {
      * @exception UnsupportedOperationException if the implementation
      * doesn't support listeners.
      */
-    public void addListener(ServoListener listener);
-    
+    void addListener(ServoListener listener);
+
     /**
      * Remove the servo listener.
      *
@@ -88,25 +88,25 @@ public interface Servo {
      * @exception UnsupportedOperationException if the implementation
      * doesn't support listeners.
      */
-    public void removeListener(ServoListener listener);
-    
+    void removeListener(ServoListener listener);
+
     /**
      * Enable or disable the servo.
      *
-     * @param enable <code>true</code> to enable.
+     * @param enabled <code>true</code> to enable.
      *
      * @exception IOException if ther was a problem communicating with the
      * hardware controller.
      */
-    public void setEnabled(boolean enabled) throws IOException;
-    
+    void setEnabled(boolean enabled) throws IOException;
+
     /**
      * Get the servo metadata.
      *
      * @return Servo metadata.
      */
-    public Meta getMeta();
-    
+    Meta getMeta();
+
     /**
      * Get the reference to the controller.
      *
@@ -118,8 +118,8 @@ public interface Servo {
      * return value can not be <code>null</code>, if the servo instance is a
      * wrapper, it must get the original servo controller reference.
      */
-    public ServoController getController();
-    
+    ServoController getController();
+
     /**
      * Attach the transition controller.
      *
@@ -134,21 +134,21 @@ public interface Servo {
      * already installed at the lower level of the coordinate transformation
      * stack - the transition controllers are not stackable.
      */
-    public void attach(TransitionController transitionController);
-    
+    void attach(TransitionController transitionController);
+
     /**
      * Get the transition controller attached to this servo.
      *
      * @return Transition controller reference, or <code>null</code> if
      * there is none.
      */
-    public TransitionController getTransitionController();
-    
+    TransitionController getTransitionController();
+
     /**
      * Get the servo that is stacked right under this servo.
      *
      * @return The next servo in the stack, or <code>null</code> if this
      * servo is at the top of the stack.
      */
-    public Servo getTarget();
+    Servo getTarget();
 }

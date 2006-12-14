@@ -7,19 +7,17 @@ import org.freehold.servomaster.device.model.ServoController;
  *
  * <p>
  *
- * If the servo controller provides the features not available in the {@link
- * org.freehold.servomaster.device.model.ServoController ServoController
- * interface}, the class implementing this interface should be able to add
- * the display and control features to the {@link Console servo controller
- * console}.
+ * If the servo controller provides the features not available in the {@link ServoController ServoController interface},
+ * the class implementing this interface should be able to add the display and control features to the
+ * {@link Console servo controller console}.
  *
  * <p>
  *
  * This functionality is not mandatory, but recommended (all in all, how
  * else would people know how smart your controller is???).
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoControllerView.java,v 1.3 2002-01-02 09:11:18 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: ServoControllerView.java,v 1.4 2006-12-14 09:17:11 vtt Exp $
  */
 public interface ServoControllerView {
 
@@ -32,5 +30,5 @@ public interface ServoControllerView {
      * @exception IllegalArgumentException if the controller passed into
      * this method is <code>null</code>.
      */
-    public void init(ServoController controller);
+    void init(ServoController controller);
 }

@@ -8,26 +8,31 @@ Version: @VERSION@
 Release: 1
 Summary: ServoMaster: uniform Java servo controller driver
 Source: %{name}-%{version}.tar.gz
-Copyright: GPL
+License: LGPL
 Group: System/Libraries
 URL: http://servomaster.sourceforge.net/
 Buildroot: %{_tmppath}/%{name}-root
 Prefix: /usr
 Packager: Vadim Tkachenko <vt@freehold.crocodile.org>
-Requires: j2sdk >= 1.4.0
+Requires: j2sdk >= 1.5.0
 %description
 
 ServoMaster is a unified hardware independent servo controller driver. Servo
 controller is a device that allows to control common R/C servos using the
 personal computer. This release provides Java support.
 
-Two kinds of servo controllers are supported at this point:
+Four families of servo controllers are supported at this point:
 
 - FT639 (http://www.ferrettronics.com/)
 - Phidget family (http://www.phidgets.com/), including
 	- UniServo
 	- QuadServo
 	- AdvancedServo
+- Pololu family (http://www.pololu.com/), including
+	- Serial 8-servo
+	- Serial 16-servo
+	- USB 16-servo (via serial interface only on Linux)
+- Mini SSC II (http://www.seetron.com/ssc.htm)
 
 %clean
 case "$RPM_BUILD_ROOT" in *-root) rm -rf $RPM_BUILD_ROOT ;; esac
@@ -36,7 +41,7 @@ case "$RPM_BUILD_ROOT" in *-root) rm -rf $RPM_BUILD_ROOT ;; esac
 %setup
 
 %build
-./configure --prefix=%{prefix} --enable-ft639 --enable-phidget --enable-rpm-build
+./configure --prefix=%{prefix} --enable-serial --enable-usb --enable-rpm-build
 make
 make check
 
@@ -64,11 +69,3 @@ make install \
 %{prefix}/share/java/jsr80_linux.jar
 %{prefix}/share/java/jsr80_ri.jar
 %{prefix}/lib/libJavaxUsb.so
-            
-%changelog
-
-* Tue Oct 12 2004 Vadim Tkachenko <vt@freehold.crocodile.org>
-- Replaced jUSB with javax.usb
-
-* Tue Feb 03 2003 Vadim Tkachenko <vt@freehold.crocodile.org>
-- Initial take at RPM build

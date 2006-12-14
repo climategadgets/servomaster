@@ -1,23 +1,17 @@
 package org.freehold.servomaster.device.impl.ft;
 
 import java.io.IOException;
-
-import java.util.LinkedList;
 import java.util.Iterator;
-import java.util.Set;
 
-import javax.comm.UnsupportedCommOperationException;
-
-import org.freehold.servomaster.device.model.Servo;
-import org.freehold.servomaster.device.model.Meta;
-import org.freehold.servomaster.device.model.AbstractMeta;
-import org.freehold.servomaster.device.model.ServoController;
-import org.freehold.servomaster.device.model.ServoListener;
-import org.freehold.servomaster.device.model.ServoControllerListener;
-import org.freehold.servomaster.device.model.silencer.SilentProxy;
-import org.freehold.servomaster.device.model.HardwareServo;
 import org.freehold.servomaster.device.impl.serial.AbstractSerialServoController;
 import org.freehold.servomaster.device.impl.serial.SerialMeta;
+import org.freehold.servomaster.device.model.AbstractMeta;
+import org.freehold.servomaster.device.model.AbstractServoController;
+import org.freehold.servomaster.device.model.HardwareServo;
+import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoController;
+import org.freehold.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
@@ -34,7 +28,7 @@ import org.freehold.servomaster.device.impl.serial.SerialMeta;
  * <ul>
  *
  * <li> Supports just RS-232. I wish it supported USB.
- * 
+ *
  * <li> Supports just 2400 baud speed on the serial port. Clearly not enough.
  *
  * <li> Does not support the smooth transition.
@@ -76,8 +70,8 @@ import org.freehold.servomaster.device.impl.serial.SerialMeta;
  * subclassing a {@link #createServo template method}, thus allowing to
  * extend the functionality without rewriting half of the code.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: FT639ServoController.java,v 1.42 2005-05-12 21:04:55 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2006
+ * @version $Id: FT639ServoController.java,v 1.43 2006-12-14 09:17:11 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -93,40 +87,40 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * setup mode after being instantiated.
      */
     private boolean activeMode = true;
-    
+
     /**
      * The current range value.
      *
      * @see #setRange
      */
     protected boolean range = false;
-    
+
     /**
      * True if the heartbeat thread is repositioning the servos now.
      */
     private boolean repositioningNow = false;
-    
+
     /**
      * Metadata instance.
      */
     private Meta meta;
-    
+
     /**
      * Create the controller instance.
      *
      * <p>
      *
      * The reason the no-argument constructor is here is to allow
-     * instantiating the controller with <code>Class.newInstance()</code>. 
+     * instantiating the controller with <code>Class.newInstance()</code>.
      * The instance created in such a manner is not functional, and {@link
-     * #init(java.lang.String) init(portName)} has to be called to make it
+     * #init(String) init(portName)} has to be called to make it
      * functional. Otherwise, <code>IllegalStateException</code> will be
      * thrown on every method call.
      */
     public FT639ServoController() {
-    
+
     }
-    
+
     /**
      * Create the controller instance.
      *
@@ -150,10 +144,10 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * the port.
      */
     public FT639ServoController(String portName) throws IOException {
-    
+
         init(portName);
     }
-    
+
     /**
      * Enable the long throw for the servos.
      *
@@ -170,25 +164,25 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * hardware controller.
      */
     public synchronized void setRange(boolean range) throws IOException {
-    
+
         checkInit();
-        
+
         setSetupMode();
         this.range = range;
 
         send(range ? PULSE_LONG : PULSE_SHORT);
-        
+
         repositionServos();
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public int getServoCount() {
-    
+
         return 5;
     }
-    
+
     /**
      * Create the servo instance.
      *
@@ -200,11 +194,12 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
      */
+    @Override
     protected Servo createServo(int id) throws IOException {
-    
+
         // VT: NOTE: There is no sanity checking, I expect the author of the
         // calling code to be sane - this is a protected method
-    
+
         return new FT639Servo(this, id);
     }
 
@@ -215,20 +210,20 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * the port.
      */
     protected synchronized void setSetupMode() throws IOException {
-    
+
         checkInit();
-    
+
         if ( !activeMode ) {
-        
+
             // We're already in setup mode
-            
+
             return;
         }
-        
+
         send(MODE_SETUP);
-        
+
         activeMode = false;
-        
+
         //System.err.println("mode: setup");
         //new Exception("setup").printStackTrace();
 
@@ -245,22 +240,22 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * the port.
      */
     protected synchronized void setActiveMode() throws IOException {
-    
+
         checkInit();
-    
+
         if ( activeMode ) {
-        
+
             // We're already in active mode
-            
+
             return;
         }
-        
+
         send(MODE_ACTIVE);
-        
+
         activeMode = true;
 
         touch();
-        
+
         //System.err.println("mode: active");
         //new Exception("active").printStackTrace();
 
@@ -269,7 +264,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         silentStatusChanged(true);
     }
-    
+
     /**
      * Render the positioning command to be sent to the hardware.
      *
@@ -280,22 +275,22 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * @return Two byte array representing FT639 positioning command.
      */
     private byte[] renderPositionCommand(int id, int position) {
-    
+
         // The sanity check was supposed to be done by now
-        
+
         byte servo = (byte)(id << 4);
-        
-        
+
+
         byte upper = (byte)((((position >> 4) & 0x0F) | 0x80) | servo);
         byte lower = (byte)((position & 0x0F) | servo);
-        
+
         //System.out.println(Integer.toHexString(servo) + " [" + Integer.toHexString((int)lower) + ", " + Integer.toHexString(((int)upper) & 0xFF) + "]");
-        
-        byte result[] = { lower, upper };
-        
+
+        byte[] result = { lower, upper };
+
         return result;
     }
-    
+
     /**
      * Adjust the initial position.
      *
@@ -306,82 +301,85 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * target="_top">implementation notes</a>.
      *
      * @param headerLength A value indicating the initial servo position.
+     *
+     * @throws IOException if things go wrong in {@link #send(byte[])} or {@link #repositionServos()}.
      */
     public synchronized void setHeaderLength(int headerLength) throws IOException {
-    
+
         checkInit();
-    
+
         if ( headerLength < 0 || headerLength > 15 ) {
-        
+
             throw new IllegalArgumentException("Header length outside of 0...15 range: " + headerLength);
         }
-        
+
         setSetupMode();
-        
+
         // VT: FIXME: account for the pulse length?
-        
+
         headerLength |= 0x60;
-        
+
         System.err.println("Trim: " + headerLength + ": 0x" + Integer.toHexString(headerLength));
-        
+
         send((byte)headerLength);
-        
+
         repositionServos();
     }
-    
+
     public void reset() throws IOException {
-    
+
         checkInit();
-    
+
         // Since we don't know the controller mode (some other application
         // might have been controlling it and left it in active mode), we'll
         // fake the active mode and make it forcibly go into setup mode (see
         // the activeMode declaration)
-        
+
         activeMode = true;
         //setSetupMode(); implied by setRange
         setRange(range);
     }
-    
+
+    @Override
     public synchronized Meta getMeta() {
-    
+
         if ( meta == null ) {
-        
+
             meta = new FT639Meta();
         }
-        
+
         return meta;
     }
-    
+
     protected class FT639Meta extends SerialMeta {
-    
-        public FT639Meta() {
-        
+
+        protected FT639Meta() {
+
             properties.put("manufacturer/name", "FerretTronics");
             properties.put("manufacturer/URL", "http://www.ferrettronics.com/");
             properties.put("manufacturer/model", "FT639");
 
             features.put("controller/silent", new Boolean(true));
-            
+
             properties.put("controller/maxservos", "5");
-            
+
             // 2400 baud max
             // 2 bytes per command
-            
+
             properties.put("controller/bandwidth", Integer.toString((2400 / 8) / 2));
             properties.put("controller/precision", "256");
-            
+
             // Silent timeout is five seconds
 
             properties.put("controller/silent", "5000");
-            
+
             // Default range is 90 degrees
             // Warning: this is an FT639 specific property
-            
+
             properties.put("controller/range", "90");
         }
     }
-    
+
     /**
      * The servo implementation.
      *
@@ -391,7 +389,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * - this check is done before the servo instance can be obtained.
      */
     public class FT639Servo extends HardwareServo {
-    
+
         /**
          * Create an instance.
          *
@@ -403,77 +401,79 @@ public class FT639ServoController extends AbstractSerialServoController implemen
          * the hardware controller.
          */
         protected FT639Servo(ServoController sc, int id) throws IOException {
-        
+
             super(sc, id);
-        
+
             // Reset the servo position
             setPosition((255 >> 1)/255.0);
         }
-        
+
         /**
          * {@inheritDoc}
          */
+        @Override
         protected Meta createMeta() {
-        
+
             return new FT639ServoMeta();
         }
-        
+
+        @Override
         protected void setActualPosition(double position) throws IOException {
-        
+
             checkInit();
             checkPosition(position);
-            
+
             int requestedPosition = double2int(position);
-            
+
             if ( isLazy() && !repositioningNow ) {
 
                 // Let's see if we really have to do it
-                
+
                 if ( double2int(this.actualPosition) == requestedPosition ) {
-                
+
                     // Nah, we don't have to bother.
-                    
+
                     // Chances are that if we're going to go ahead with it, the
                     // time spent on transmitting the control signal is going to
                     // be much more than spent in double2int().
-                    
+
                     //System.err.println("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
                     return;
                 }
             }
-            
+
             synchronized ( getController() ) {
 
                 // The reason it is synchronized on the controller is that the
                 // setActualPosition() calls the controller's synchronized methods
                 // and the deadlock can occur if *this* method was made synchronized
-                
+
                 setActiveMode();
                 send(renderPositionCommand(id, requestedPosition));
                 this.actualPosition = position;
             }
-            
+
             actualPositionChanged();
-            
+
             // FIXME: Again, this stupid problem I forgot the solution of:
             // can't access the outer class. Oh well.
-            
+
             FT639ServoController.this.touch();
         }
 
         public void setRange(int range) {
-        
+
             throw new UnsupportedOperationException("This operation is controller-specific for FT639, you have to invoke it on the controller");
         }
-        
-        private static final double step = 1.0 / 255.0;
-        
+
+        //private static final double step = 1.0 / 255.0;
+
         protected class FT639ServoMeta extends AbstractMeta {
-        
-            public FT639ServoMeta() {
-            
+
+            protected FT639ServoMeta() {
+
                 // VT: FIXME: Check if there are other properties
-                
+
                 properties.put("servo/precision", "256");
             }
         }
@@ -489,79 +489,83 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * thing) and the header length change (hardware implementation). In
      * order to make sure that the servos are where they are supposed to be,
      * we'll just get the position and set it to the same value.
+     * @throws IOException if things go wrong in {@link #getServos()} or {@link FT639Servo#setActualPosition(double)}.
      */
     private void repositionServos() throws IOException {
-    
+
         // Now that we've taken care of the range, let's reset the servo
         // position
-        
+
         repositioningNow = true;
-        
+
         try {
-        
-            for ( Iterator i = getServos(); i.hasNext(); ) {
-            
+
+            for ( Iterator<Servo> i = getServos(); i.hasNext(); ) {
+
                 FT639Servo s = (FT639Servo)i.next();
-                
+
                 s.setActualPosition(s.getPosition());
             }
 
         } finally {
-        
+
             repositioningNow = false;
         }
     }
-    
+
     private static int double2int(double value) {
-    
+
         return (int)(value * 255);
     }
 
+    @Override
     protected SilentProxy createSilentProxy() {
-    
+
         return new FT639SilentProxy();
     }
-    
+
     private void _silentStatusChanged(boolean mode) {
-    
+
         silentStatusChanged(mode);
     }
-    
+
     /**
-     * Wrapper for {@link AbstractServoController#exception exception()}
+     * Wrapper for {@link AbstractServoController#exception(Throwable)}.
+     *
+     * @param t Exception to rethrow.
      */
     private void _exception(Throwable t) {
-    
+
         exception(t);
     }
-    
+
     protected class FT639SilentProxy implements SilentProxy {
-    
+
         public synchronized void sleep() {
-        
+
             try {
-            
+
                 setSetupMode();
                 _silentStatusChanged(false);
-                
+
             } catch ( IOException ioex ) {
-            
+
                 _exception(ioex);
             }
         }
-        
+
         public synchronized void wakeUp() {
-        
+
             try {
-            
+
                 if ( !activeMode ) {
-                
+
                     reset();
                     _silentStatusChanged(true);
                 }
-                
+
             } catch ( IOException ioex ) {
-            
+
                 _exception(ioex);
             }
         }

@@ -8,13 +8,14 @@ package org.freehold.servomaster.device.impl.phidget;
  * that the device <strong>is a</strong> Quad Servo, we can safely
  * instantiate it and put it into disconnected mode right away.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: QuadServoController.java,v 1.2 2004-10-13 06:55:21 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @version $Id: QuadServoController.java,v 1.3 2006-12-14 09:17:09 vtt Exp $
  */
 public class QuadServoController extends PhidgetServoController {
 
+    @Override
     protected void fillProtocolHandlerMap() {
-    
+
         registerHandler("6c2:38", new ProtocolHandler0x38());
     }
 }

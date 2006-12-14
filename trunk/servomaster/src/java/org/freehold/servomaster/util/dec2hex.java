@@ -14,55 +14,55 @@ import java.util.StringTokenizer;
  * Since this class is primitive, it will not tolerate any alien elements in
  * the input stream.
  *
- * @author <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a>
- * @version $Id: dec2hex.java,v 1.1 2003-06-16 07:02:05 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: dec2hex.java,v 1.2 2006-12-14 09:17:11 vtt Exp $
  */
 public class dec2hex {
 
-    public static void main(String args[]) {
-    
+    public static void main(String[] args) {
+
         try {
-    
+
             if ( args.length == 0 ) {
-            
+
                 System.err.println("Usage: dec2hex <input file>");
             }
-        
+
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
-            
+
             int offset = 0;
-            
+
             while ( true ) {
-            
+
                 String line = br.readLine();
-                
+
                 if ( line == null ) {
-                
+
                     break;
                 }
-                
+
                 for ( StringTokenizer st = new StringTokenizer(line, ",\n"); st.hasMoreTokens(); ) {
-                
-                    if ( (offset++ % 8) == 0 ) {
-                    
+
+                    if (offset++ % 8 == 0) {
+
                         System.out.println("");
                     }
-                
+
                     String token = st.nextToken();
                     int value = Integer.parseInt(token);
                     String hexValue = Integer.toHexString(value);
-                    
+
                     if ( hexValue.length() == 1 ) {
-                    
+
                         hexValue = "0" + hexValue;
                     }
-                    
+
                     System.out.print("(byte)0x" + hexValue + ", ");
                 }
             }
-        
+
         } catch ( Throwable t ) {
-        
+
             System.err.println("Oops...");
             t.printStackTrace();
         }

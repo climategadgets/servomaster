@@ -7,8 +7,8 @@ package org.freehold.servomaster.device.impl.phidget;
  * @see QuadServoController
  * @see PhidgetServoControllerView
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: QuadServoControllerView.java,v 1.1 2003-06-16 07:03:02 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: QuadServoControllerView.java,v 1.2 2006-12-14 09:17:09 vtt Exp $
  */
 public class QuadServoControllerView extends PhidgetServoControllerView {
 }

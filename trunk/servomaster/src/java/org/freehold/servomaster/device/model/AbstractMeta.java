@@ -22,122 +22,123 @@ import org.freehold.servomaster.util.ImmutableIterator;
  * corresponding maps ({@link #featureWriters featureWriters}, {@link
  * #propertyWriters propertyWriters}) in the derived class constructor.
  *
- * @version $Id: AbstractMeta.java,v 1.3 2005-05-12 20:55:12 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: AbstractMeta.java,v 1.4 2006-12-14 09:17:10 vtt Exp $
  */
-abstract public class AbstractMeta implements Meta {
+public abstract class AbstractMeta implements Meta {
 
     public static final String metaPrefix = "http://servomaster.sourceforge.net/meta/";
-    
+
     /**
      * Feature map.
      */
-    protected Map features = new TreeMap();
-    
+    protected Map<String, Boolean> features = new TreeMap<String, Boolean>();
+
     /**
      * Property map.
      */
-    protected Map properties = new TreeMap();
+    protected Map<String, Object> properties = new TreeMap<String, Object>();
 
     /**
      * Feature writer map.
      */
-    protected Map featureWriters = new TreeMap();
-    
+    protected Map<String, FeatureWriter> featureWriters = new TreeMap<String, FeatureWriter>();
+
     /**
      * Property map.
      */
-    protected Map propertyWriters = new TreeMap();
+    protected Map<String, PropertyWriter> propertyWriters = new TreeMap<String, PropertyWriter>();
 
-    public final Iterator getFeatures() {
-    
-        return new ImmutableIterator(features.keySet().iterator());
+    public final Iterator<String> getFeatures() {
+
+        return new ImmutableIterator<String>(features.keySet().iterator());
     }
 
-    public final Iterator getProperties() {
-    
-        return new ImmutableIterator(properties.keySet().iterator());
+    public final Iterator<String> getProperties() {
+
+        return new ImmutableIterator<String>(properties.keySet().iterator());
     }
-    
-    public final boolean getFeature(String key) {
-    
-        if ( key.startsWith(metaPrefix) ) {
-        
-            return getFeature(key.substring(metaPrefix.length()));
+
+    public final boolean getFeature(String id) {
+
+        if ( id.startsWith(metaPrefix) ) {
+
+            return getFeature(id.substring(metaPrefix.length()));
         }
-        
-        if ( !features.containsKey(key) ) {
-        
-            throw new UnsupportedOperationException("No feature '" + key + "'");
+
+        if ( !features.containsKey(id) ) {
+
+            throw new UnsupportedOperationException("No feature '" + id + "'");
         }
-        
-        Object value = features.get(key);
-        
+
+        Object value = features.get(id);
+
         if ( value instanceof Boolean ) {
-        
+
             return ((Boolean)value).booleanValue();
 
         } else {
-        
+
             // This is bad, it shouldn't have happened
-            
-            throw new IllegalStateException("Bad data for key '" + key + "', class is " + value.getClass().getName());
+
+            throw new IllegalStateException("Bad data for key '" + id + "', class is " + value.getClass().getName());
         }
     }
 
-    public final Object getProperty(String key) {
-    
-        if ( key.startsWith(metaPrefix) ) {
-        
-            return getProperty(key.substring(metaPrefix.length()));
+    public final Object getProperty(String id) {
+
+        if ( id.startsWith(metaPrefix) ) {
+
+            return getProperty(id.substring(metaPrefix.length()));
         }
-        
-        if ( !properties.containsKey(key) ) {
-        
-            throw new UnsupportedOperationException("No property '" + key + "'");
+
+        if ( !properties.containsKey(id) ) {
+
+            throw new UnsupportedOperationException("No property '" + id + "'");
         }
-        
-        return properties.get(key);
+
+        return properties.get(id);
     }
-    
+
     public final synchronized void setFeature(String id, boolean value) {
-    
-        FeatureWriter w = (FeatureWriter)featureWriters.get(id);
-        
+
+        FeatureWriter w = featureWriters.get(id);
+
         if ( w == null ) {
-        
+
             throw new UnsupportedOperationException("Can't set feature '" + id + "' - don't have a writer");
         }
-        
+
         w.set(id, value);
-        
+
         // Now that we've succeeded, we can store the value into the map
-        
+
         features.put(id, new Boolean(value));
     }
-    
+
     public final synchronized void setProperty(String id, Object value) {
-    
-        PropertyWriter w = (PropertyWriter)propertyWriters.get(id);
-        
+
+        PropertyWriter w = propertyWriters.get(id);
+
         if ( w == null ) {
-        
+
             throw new UnsupportedOperationException("Can't set property '" + id + "' - don't have a writer");
         }
-        
+
         w.set(id, value);
-        
+
         // Now that we've succeeded, we can store the value into the map
-        
+
         properties.put(id, value);
     }
-    
+
     protected abstract class FeatureWriter {
-    
-        abstract public void set(String key, boolean value);
+
+        public abstract void set(String key, boolean value);
     }
 
     protected abstract class PropertyWriter {
-    
-        abstract public void set(String key, Object value);
+
+        public abstract void set(String key, Object value);
     }
 }

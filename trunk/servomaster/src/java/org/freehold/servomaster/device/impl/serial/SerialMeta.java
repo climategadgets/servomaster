@@ -1,11 +1,6 @@
 package org.freehold.servomaster.device.impl.serial;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
-
 import org.freehold.servomaster.device.model.AbstractMeta;
-import org.freehold.servomaster.util.ImmutableIterator;
 
 /**
  * Serial controller metadata.
@@ -26,12 +21,13 @@ import org.freehold.servomaster.util.ImmutableIterator;
  * this implementation will not break it - all you have to do is override
  * the feature in the device meta class.
  *
- * @version $Id: SerialMeta.java,v 1.1 2005-05-12 21:01:08 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: SerialMeta.java,v 1.2 2006-12-14 09:17:08 vtt Exp $
  */
-abstract public class SerialMeta extends AbstractMeta {
+public abstract class SerialMeta extends AbstractMeta {
 
-    public SerialMeta() {
-    
+    protected SerialMeta() {
+
         features.put("controller/allow_disconnect", new Boolean(false));
         features.put("controller/protocol/serial", new Boolean(true));
 

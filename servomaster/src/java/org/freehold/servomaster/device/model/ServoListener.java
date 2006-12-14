@@ -8,8 +8,8 @@ package org.freehold.servomaster.device.model;
  * Tracking may be expensive for the servo implementation. Be sure to make
  * sending notifications asynchronous from the servo operation itself.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoListener.java,v 1.3 2002-01-02 09:11:18 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: ServoListener.java,v 1.4 2006-12-14 09:17:10 vtt Exp $
  */
 public interface ServoListener {
 
@@ -25,8 +25,8 @@ public interface ServoListener {
      *
      * @param position New position.
      */
-    public void positionChanged(Servo source, double position);
-    
+    void positionChanged(Servo source, double position);
+
     /**
      * Accept the actual servo position change notification.
      *
@@ -34,5 +34,5 @@ public interface ServoListener {
      *
      * @param position New position.
      */
-    public void actualPositionChanged(Servo source, double position);
+    void actualPositionChanged(Servo source, double position);
 }

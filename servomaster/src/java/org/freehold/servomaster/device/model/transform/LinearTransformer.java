@@ -18,8 +18,8 @@ import org.freehold.servomaster.device.model.Servo;
  * cumbersome, plus adds unnecessary overhead, so it was decided to provide
  * a separate implementation.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: LinearTransformer.java,v 1.4 2002-01-04 03:15:57 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: LinearTransformer.java,v 1.5 2006-12-14 09:17:09 vtt Exp $
  */
 public class LinearTransformer extends AbstractCoordinateTransformer {
 
@@ -27,7 +27,7 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      * Start angle, degrees.
      */
     private final double startAngle;
-    
+
     /**
      * End angle, degrees.
      */
@@ -39,21 +39,21 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      * Used in the calculations.
      */
     private final double range;
-    
+
     /**
      * Start offset, equals to the cosine of the start angle.
      *
      * Used in the calculations.
      */
     private final double offset;
-    
+
     /**
      * Difference between the start and end offset.
      *
      * Used in the calculations.
      */
     private final double scale;
-    
+
     /**
      * Create an instance supporting 0\u00B0 to 180\u00B0 linear
      * transformation.
@@ -61,10 +61,10 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      * @param target Servo to provide the transformation for.
      */
     public LinearTransformer(Servo target) {
-    
+
         this(target, 0.0, 180.0);
     }
-    
+
     /**
      * Create an instance supporting a linear transformation on arbitrary
      * angle range.
@@ -80,39 +80,41 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
      * range - it doesn't make sense to support that for a servo.
      */
     public LinearTransformer(Servo target, double startAngle, double endAngle) {
-    
+
         super(target);
-        
+
         if ( startAngle < 0 || startAngle > 180 ) {
-        
+
             throw new IllegalArgumentException("Start angle is outside of 0...180 range");
         }
 
         if ( endAngle < 0 || endAngle > 180 ) {
-        
+
             throw new IllegalArgumentException("End angle is outside of 0...180 range");
         }
-        
+
         if ( endAngle <= startAngle ) {
-        
+
             throw new IllegalArgumentException("End angle is less or equal than start angle");
         }
-        
+
         this.startAngle = startAngle;
         this.endAngle = endAngle;
-        
+
         range = endAngle - startAngle;
         offset = Math.cos(Math.toRadians(startAngle));
         scale = -(offset - Math.cos(Math.toRadians(endAngle)));
     }
-    
+
+    @Override
     protected double transform(double value) {
-        
-        return Math.toDegrees(Math.acos((value * scale)  + offset)) / range;
+
+        return Math.toDegrees(Math.acos(value * scale + offset)) / range;
     }
-    
-    protected double resolve(double value) {
-    
-        return (Math.cos(Math.toRadians(value * range)) - offset) / scale;
+
+    @Override
+    protected double resolve(double position) {
+
+        return (Math.cos(Math.toRadians(position * range)) - offset) / scale;
     }
 }

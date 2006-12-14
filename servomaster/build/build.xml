@@ -1,6 +1,6 @@
 <project name="ServoMaster" default="servomaster" basedir=".">
 
-    <!-- $Id: build.xml,v 1.39 2005-05-12 22:32:00 vtt Exp $ -->
+    <!-- $Id: build.xml,v 1.40 2006-12-14 09:17:12 vtt Exp $ -->
 
     <property name="project" value="servomaster"/>
 
@@ -129,7 +129,7 @@
         
         <!-- Check if we have JavaCOMM available -->
         
-        <available classname="javax.comm.SerialPort" property="JavaCOMM.present"/>
+        <available classname="gnu.io.SerialPort" property="JavaCOMM.present"/>
     
     </target>
     
@@ -189,7 +189,13 @@
 
         </copy>
 
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${model.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${model.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
 
     </target>
     
@@ -224,7 +230,13 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${serial.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${serial.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
 
     </target>
 
@@ -247,7 +259,13 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${ft639.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${ft639.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
 
     </target>
     
@@ -269,7 +287,12 @@
 
         </copy>
         
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${usb.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${usb.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -298,7 +321,12 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${phidget.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${phidget.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -332,7 +360,12 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${pololu.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${pololu.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -361,7 +394,13 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${view.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
 
     </target>
     
@@ -377,7 +416,13 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_ft639.build.src}" destdir="${build.dir}"/>
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${view_ft639.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
 
     </target>
 
@@ -394,7 +439,12 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${view_phidget.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${view_phidget.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -413,7 +463,12 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${test.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>
@@ -435,7 +490,12 @@
             
         </copy>
     
-        <javac debug="${javac.debug}" depend="${javac.depend}" deprecation="${javac.deprecation}" srcdir="${test.build.src}" destdir="${build.dir}">
+        <javac debug="${javac.debug}"
+               depend="${javac.depend}"
+               deprecation="${javac.deprecation}"
+               srcdir="${test.build.src}"
+               destdir="${build.dir}">
+            <compilerarg value="-Xlint:unchecked"/>
             <classpath>
                 <pathelement path="${javax-usb.jar}"/>
             </classpath>

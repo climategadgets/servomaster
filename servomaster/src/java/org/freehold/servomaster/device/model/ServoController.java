@@ -9,8 +9,8 @@ import java.util.Iterator;
  * Provides the encapsulation of the actual hardware controller into a
  * platform-independent entity.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: ServoController.java,v 1.12 2005-01-14 01:07:29 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: ServoController.java,v 1.13 2006-12-14 09:17:10 vtt Exp $
  */
 public interface ServoController extends SilentDevice {
 
@@ -33,7 +33,7 @@ public interface ServoController extends SilentDevice {
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
      */
-    public void init(String portName) throws IOException;
+    void init(String portName) throws IOException;
 
     /**
      * Get the servo instance.
@@ -60,8 +60,8 @@ public interface ServoController extends SilentDevice {
      * @exception IOException if there was a problem communicating to the
      * hardware controller.
      */
-    public Servo getServo(String id) throws IOException;
-    
+    Servo getServo(String id) throws IOException;
+
     /**
      * Get the number of servos this controller supports.
      *
@@ -72,8 +72,8 @@ public interface ServoController extends SilentDevice {
      *
      * @return Number of servos supported by this controller.
      */
-    public int getServoCount();
-    
+    int getServoCount();
+
     /**
      * Get all the servos that this controller supports.
      *
@@ -90,8 +90,8 @@ public interface ServoController extends SilentDevice {
      * @exception IOException if there was a problem communicating to the
      * hardware controller.
      */
-    public Iterator getServos() throws IOException;
-    
+    Iterator<Servo> getServos() throws IOException;
+
     /**
      * Reset the controller.
      *
@@ -103,7 +103,7 @@ public interface ServoController extends SilentDevice {
      *
      * @exception IOException when the controller is beyond repair.
      */
-    public void reset() throws IOException;
+    void reset() throws IOException;
 
     /**
      * Add the servo controller listener.
@@ -114,7 +114,7 @@ public interface ServoController extends SilentDevice {
      * @exception UnsupportedOperationException if the implementation
      * doesn't support listeners.
      */
-    public void addListener(ServoControllerListener listener);
+    void addListener(ServoControllerListener listener);
 
     /**
      * Remove the servo listener.
@@ -126,15 +126,15 @@ public interface ServoController extends SilentDevice {
      * @exception UnsupportedOperationException if the implementation
      * doesn't support listeners.
      */
-    public void removeListener(ServoControllerListener listener);
+    void removeListener(ServoControllerListener listener);
 
     /**
      * Get the servo controller metadata.
      *
      * @return Servo controller metadata.
      */
-    public Meta getMeta();
-    
+    Meta getMeta();
+
     /**
      * Get the port name.
      *
@@ -143,8 +143,8 @@ public interface ServoController extends SilentDevice {
      * @exception IllegalStateException if the controller hasn't been {@link
      * #init initialized} yet.
      */
-    public String getPort();
-    
+    String getPort();
+
     /**
      * Enable or disable the lazy mode.
      *
@@ -159,8 +159,8 @@ public interface ServoController extends SilentDevice {
      * <code>false</code>, even redundant commands will be sent to the
      * controller.
      */
-    public void setLazyMode(boolean enable);
-    
+    void setLazyMode(boolean enable);
+
     /**
      * Get the current lazy mode.
      *
@@ -168,5 +168,5 @@ public interface ServoController extends SilentDevice {
      * <strong>not</strong> sent to the controller, <code>false</code>
      * otherwise.
      */
-    public boolean isLazy();
+    boolean isLazy();
 }

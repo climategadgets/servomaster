@@ -42,25 +42,29 @@ import java.util.Iterator;
  * full URL points to the page containing the support documentation for this
  * feature or property, for example, <a
  * href="http://servomaster.sourceforge.net/meta/controller/precision"
- * target="_top">http://servomaster.sourceforge.net/meta/controller/precision</a>. 
- * Since this is quite cumbersome, partial URLs will be accepted as well. 
+ * target="_top">http://servomaster.sourceforge.net/meta/controller/precision</a>.
+ * Since this is quite cumbersome, partial URLs will be accepted as well.
  * For this particular example, the identifier will look like
  * <code>controller/precision</code>.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: Meta.java,v 1.3 2003-01-06 20:14:31 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @version $Id: Meta.java,v 1.4 2006-12-14 09:17:10 vtt Exp $
  */
 public interface Meta {
 
     /**
      * Get the iterator on the supported features.
+     *
+     * @return Iterator on the set of feature names.
      */
-    public Iterator getFeatures();
-    
+    Iterator<String> getFeatures();
+
     /**
      * Get the iterator on the supported properties.
+     *
+     * @return Iterator on the set of property names.
      */
-    public Iterator getProperties();
+    Iterator<String> getProperties();
 
     /**
      * Look up the value of the feature.
@@ -72,8 +76,8 @@ public interface Meta {
      * @exception UnsupportedOperationException if this feature is not
      * supported.
      */
-    public boolean getFeature(String id);
-    
+    boolean getFeature(String id);
+
     /**
      * Set the feature.
      *
@@ -86,18 +90,20 @@ public interface Meta {
      *
      * @exception IllegalAccessError if this feature is read only.
      */
-    public void setFeature(String id, boolean value);
-    
+    void setFeature(String id, boolean value);
+
     /**
      * Get the property.
      *
      * @param id Property name.
      *
+     * @return the property value.
+     *
      * @exception UnsupportedOperationException if this property is not
      * supported.
      */
-    public Object getProperty(String id);
-    
+    Object getProperty(String id);
+
     /**
      * Set the property.
      *
@@ -110,5 +116,5 @@ public interface Meta {
      *
      * @exception IllegalAccessError if this property is read only.
      */
-    public void setProperty(String id, Object value);
+    void setProperty(String id, Object value);
 }

@@ -2,10 +2,10 @@ package org.freehold.servomaster.device.model.transform;
 
 import java.io.IOException;
 
-import org.freehold.servomaster.device.model.Servo;
 import org.freehold.servomaster.device.model.AbstractServo;
-import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.Meta;
+import org.freehold.servomaster.device.model.Servo;
+import org.freehold.servomaster.device.model.ServoListener;
 import org.freehold.servomaster.device.model.TransitionCompletionToken;
 
 /**
@@ -14,10 +14,10 @@ import org.freehold.servomaster.device.model.TransitionCompletionToken;
  * Provides the 'wrapper' for the servo being controlled, as well as the
  * means to perform the actual coordinate transformation.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: AbstractCoordinateTransformer.java,v 1.6 2005-04-20 21:44:30 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: AbstractCoordinateTransformer.java,v 1.7 2006-12-14 09:17:09 vtt Exp $
  */
-abstract public class AbstractCoordinateTransformer extends AbstractServo {
+public abstract class AbstractCoordinateTransformer extends AbstractServo {
 
     /**
      * Create the instance.
@@ -25,12 +25,12 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      * @param target Servo to control. May be another coordinate transformer
      * as well.
      */
-    public AbstractCoordinateTransformer(Servo target) {
-    
+    protected AbstractCoordinateTransformer(Servo target) {
+
         super(null, target);
-    
+
         if ( getTarget() == null ) {
-        
+
             throw new IllegalArgumentException("target can't be null");
         }
     }
@@ -41,10 +41,10 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      * @return Servo name.
      */
     public String getName() {
-    
+
         return getTarget().getName();
     }
-    
+
     /**
      * Set the position, applying the {@link #transform coordinate
      * transofmation}.
@@ -57,11 +57,12 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
+    @Override
     public TransitionCompletionToken setPosition(double position) throws IOException {
-    
+
         return getTarget().setPosition(transform(position));
     }
-    
+
     /**
      * Get the position, applying the {@link #resolve reverse coordinate
      * transofmation}.
@@ -72,11 +73,12 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      * #getActualPosition getActualPosition()} to obtain the actual servo
      * position.
      */
+    @Override
     public double getPosition() {
-    
+
         return resolve(getTarget().getPosition());
     }
-    
+
     /**
      * Get the actual position, applying the {@link #resolve reverse
      * coordinate transofmation}.
@@ -90,37 +92,42 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      *
      * @return The actual position of the servo.
      */
+    @Override
     public double getActualPosition() {
-    
+
         return resolve(getTarget().getActualPosition());
     }
-    
+
+    @Override
     public void addListener(ServoListener listener) {
-    
+
         getTarget().addListener(listener);
     }
-    
+
+    @Override
     public void removeListener(ServoListener listener) {
-    
+
         getTarget().removeListener(listener);
     }
-    
+
+    @Override
     public void setEnabled(boolean enabled) throws IOException {
-    
+
         getTarget().setEnabled(enabled);
     }
-    
+
     public Meta getMeta() {
-    
+
         return getTarget().getMeta();
     }
-    
+
+    @Override
     protected void setActualPosition(double position) throws IOException {
-    
+
         throw new Error("How come we ended up here?");
         //getTarget().setActualPosition(position);
     }
-    
+
     /**
      * Provide the forward coordinate transformation.
      *
@@ -128,7 +135,7 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      *
      * @return Servo position after the coordinate transformation.
      */
-    abstract protected double transform(double value);
+    protected abstract double transform(double value);
 
     /**
      * Provide the reverse coordinate transformation.
@@ -138,5 +145,5 @@ abstract public class AbstractCoordinateTransformer extends AbstractServo {
      *
      * @return The original value before the coordinate transformation.
      */
-    abstract protected double resolve(double position);
+    protected abstract double resolve(double position);
 }

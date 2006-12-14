@@ -5,8 +5,8 @@ import org.freehold.servomaster.device.model.SilentDevice;
 /**
  * Provides the functionality required to support the silent mode.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: SilentHelper.java,v 1.2 2002-03-09 05:23:16 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @version $Id: SilentHelper.java,v 1.3 2006-12-14 09:17:09 vtt Exp $
  */
 public class SilentHelper extends Thread implements SilentDevice {
 
@@ -18,7 +18,7 @@ public class SilentHelper extends Thread implements SilentDevice {
      * are application specific and better be consciously set.
      */
     private boolean silent = false;
-    
+
     /**
      * Silent timeout, in milliseconds.
      *
@@ -31,7 +31,7 @@ public class SilentHelper extends Thread implements SilentDevice {
      * Default is 10 seconds.
      */
     private long timeout = 10000;
-    
+
     /**
      * Silent heartbeat, in milliseconds.
      *
@@ -43,12 +43,12 @@ public class SilentHelper extends Thread implements SilentDevice {
      * Default is 5 minutes.
      */
     private long heartbeat = 1000 * 60 * 5;
-    
+
     /**
      * Last time when the operation was performed.
      */
     private long lastOperation = System.currentTimeMillis();
-    
+
     /**
      * The proxy object.
      *
@@ -58,7 +58,7 @@ public class SilentHelper extends Thread implements SilentDevice {
      * inaccessible from outside the target.
      */
     private SilentProxy proxy;
-    
+
     /**
      * State handler.
      *
@@ -66,221 +66,230 @@ public class SilentHelper extends Thread implements SilentDevice {
      * @see SilentHelper.Passive
      */
     private StateHandler stateHandler = new Active();
-    
+
     /**
      * @param proxy The proxy that controls the target device.
      */
     public SilentHelper(SilentProxy proxy) {
-    
+
         this.proxy = proxy;
     }
-    
+
     /**
      * Update the timestamp.
      */
     public synchronized void touch() {
-     
+
         //complain("touch", null);
-        
+
         lastOperation = System.currentTimeMillis();
         notifyAll();
     }
-    
+
     public synchronized void setSilentMode(boolean silent) {
-    
+
         this.silent = silent;
         notifyAll();
     }
-    
+
     public synchronized void setSilentTimeout(long timeout, long heartbeat) {
-    
+
         if ( timeout <= 0 ) {
-        
+
             throw new IllegalArgumentException("Timeout must be positive");
         }
-        
+
         if ( heartbeat < 0 ) {
-        
+
             throw new IllegalArgumentException("Heartbeat must be positive");
         }
-    
+
         this.timeout = timeout;
         this.heartbeat = heartbeat;
-        
+
         notifyAll();
     }
-    
+
     public boolean isSilentNow() {
-    
-        return (stateHandler instanceof Passive);
+
+        return stateHandler instanceof Passive;
     }
-    
+
     public boolean getSilentMode() {
-    
+
         return silent;
     }
-    
+
     /**
      * Keep watching the device.
      */
+    @Override
     public void run() {
-    
+
         while ( true ) {
-        
+
             //complain("run:" + silent, null);
-            
+
             try {
-            
+
                 int s = silent ? 1 : 0;
-                
+
                 switch ( s ) {
-                
+
                     case 0:
-                    
+
                         // Not silent
-                        
+
                         // We have nothing to do here but just wait.
-                        
+
                         _wait();
                         break;
-                        
+
                     case 1:
-                    
+
                         // Silent
-                        
+
                         //complain("wait:" + stateHandler.getClass().getName(), null);
-                        
+
                         stateHandler.handleWait();
                 }
-                
+
             } catch ( InterruptedException iex ) {
-            
+
                 // Most probably, we were stopped
-                
+
                 complain("Interrupted", iex);
                 return;
-            
+
             } catch ( Throwable t ) {
-            
+
                 complain("Screwed up, ignored:", t);
             }
         }
     }
-    
+
     private synchronized void _wait() throws InterruptedException {
-    
+
         //complain("_wait", null);
         wait();
     }
 
     private synchronized void _wait(long millis) throws InterruptedException {
-    
+
         //complain("_wait(" + millis + ")", null);
         wait(millis);
     }
-    
+
     private synchronized void complain(String message, Throwable t) {
-    
+
         if ( message != null ) {
-        
+
             System.err.println(message);
         }
-        
+
         if ( t != null ) {
-        
+
             t.printStackTrace();
         }
     }
-    
-    abstract protected class StateHandler {
-    
+
+    protected abstract class StateHandler {
+
         /**
          * Wait until wait is over and handle the state.
+         *
+         * @throws InterruptedException if interrupted, duh...
          */
         abstract void handleWait() throws InterruptedException;
-        
+
         /**
          * Calculate how much time is left to wait.
+         *
+         * @return Time to keep waiting, in milliseconds.
          */
         abstract long left();
     }
-    
+
     protected class Active extends StateHandler {
-    
+
+        @Override
         void handleWait() throws InterruptedException {
-        
+
             long left = left();
-            
+
             if ( left <= 0 ) {
-            
+
                 return;
             }
-        
+
             _wait(left);
-            
+
             if ( !silent ) {
-            
+
                 // Damn!
-                
+
                 return;
             }
-            
+
             if ( left() <= 0 ) {
-            
+
                 // VT: FIXME: Verify the order
-                
+
                 proxy.sleep();
                 stateHandler = new Passive();
             }
         }
-        
+
+        @Override
         long left() {
-        
+
             return timeout - (System.currentTimeMillis() - lastOperation);
         }
     }
 
     protected class Passive extends StateHandler {
-    
+
+        @Override
         void handleWait() throws InterruptedException {
-        
+
             if ( heartbeat == 0 ) {
-            
+
                 _wait();
-                
+
             } else {
-            
+
                 long left = left();
-                
+
                 if ( left <= 0 ) {
-                
+
                     return;
                 }
-            
+
                 _wait(left);
             }
 
             if ( !silent ) {
-            
+
                 // Damn!
-                
+
                 // Better wake them up
-                
+
                 proxy.wakeUp();
-                
+
                 return;
             }
-            
+
             stateHandler = new Active();
             proxy.wakeUp();
-            
+
             // Just in case
-            
+
             touch();
         }
 
+        @Override
         long left() {
-        
+
             return (timeout + heartbeat) - (System.currentTimeMillis() - lastOperation);
         }
     }

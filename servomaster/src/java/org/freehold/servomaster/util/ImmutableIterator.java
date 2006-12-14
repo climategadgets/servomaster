@@ -1,39 +1,46 @@
 package org.freehold.servomaster.util;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * An immutable wrapper for {@link java.util.Iterator java.util.Iterator}.
+ * An immutable wrapper for {@link Iterator java.util.Iterator}.
  *
- * Sloppy developers often expose privileged objects through an iterator. 
+ * Sloppy developers often expose privileged objects through an iterator.
  * This class makes sure that {@link #remove remove()} method will not alter
  * the state of the collection being iterated.
  *
- * @author <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a>
- * @version $Id: ImmutableIterator.java,v 1.3 2005-02-03 07:05:56 vtt Exp $
+ * <p>
+ *
+ * VT: FIXME: Since this class was created, {@link Collections} with their immutable operations
+ * arrived. May need to retire this class - there's no point to have it anymore.
+ *
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2006
+ * @version $Id: ImmutableIterator.java,v 1.4 2006-12-14 09:17:11 vtt Exp $
  */
-public class ImmutableIterator implements Iterator {
+public class ImmutableIterator<T> implements Iterator<T> {
 
     /**
      * An iterator to protect.
      */
-    private Iterator target;
-    
+    private Iterator<T> target;
+
     /**
      * Create an instance.
      *
      * @param target Iterator to protect.
      */
-    public ImmutableIterator(Iterator target) {
-    
+    public ImmutableIterator(Iterator<T> target) {
+
         if ( target == null ) {
-        
+
             throw new IllegalArgumentException("Target can't be null");
         }
-        
+
         this.target = target;
     }
-    
+
     /**
      * Returns <code>true</code> if the iteration has more elements. (In
      * other words, returns <code>true</code> if <code>next()</code> would
@@ -42,10 +49,10 @@ public class ImmutableIterator implements Iterator {
      * @return <code>true</code> if the iterator has more elements.
      */
     public boolean hasNext() {
-    
+
         return target.hasNext();
     }
-    
+
     /**
      * Returns the next element in the iteration.
      *
@@ -53,11 +60,11 @@ public class ImmutableIterator implements Iterator {
      *
      * @exception NoSuchElementException if iteration has no more elements.
      */
-    public Object next() {
-    
+    public T next() {
+
         return target.next();
     }
-    
+
     /**
      * Throws <code>UnsupportedOperationException</code> exception.
      *
@@ -65,7 +72,7 @@ public class ImmutableIterator implements Iterator {
      * <code>remove()</code>.
      */
     public void remove() {
-    
+
         throw new UnsupportedOperationException("Can't remove an item from under immutable iterator");
     }
 }

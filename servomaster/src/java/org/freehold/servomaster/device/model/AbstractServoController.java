@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.freehold.servomaster.device.model.silencer.SilentHelper;
@@ -24,10 +25,10 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  *
  * </ul>
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002
- * @version $Id: AbstractServoController.java,v 1.12 2005-05-12 20:11:41 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @version $Id: AbstractServoController.java,v 1.13 2006-12-14 09:17:10 vtt Exp $
  */
-abstract public class AbstractServoController implements ServoController {
+public abstract class AbstractServoController implements ServoController {
 
     /**
      * String key to retrieve the silent support feature.
@@ -40,12 +41,12 @@ abstract public class AbstractServoController implements ServoController {
      * This variable contains the device-specific port name.
      */
     protected String portName;
-    
+
     /**
      * The listener set.
      */
-    private Set listenerSet = new HashSet();
-    
+    private Set<ServoControllerListener> listenerSet = new HashSet<ServoControllerListener>();
+
     /**
      * 'disconnected' mode flag.
      *
@@ -58,7 +59,7 @@ abstract public class AbstractServoController implements ServoController {
      * @see #isConnected
      */
     private boolean disconnected = true;
-    
+
     /**
      * Is the device currently connected?
      */
@@ -69,109 +70,112 @@ abstract public class AbstractServoController implements ServoController {
      * The silencer.
      */
     private SilentHelper silencer;
-    
+
     /**
      * The silencer proxy.
      */
     private SilentProxy silencerProxy;
-    
+
     /**
      * Physical servo representation.
      */
-    protected Servo servoSet[];
-    
-    public AbstractServoController() {
-    
+    protected Servo[] servoSet;
+
+    protected AbstractServoController() {
+
     }
-    
-    public AbstractServoController(String portName) throws IOException {
-    
+
+    protected AbstractServoController(String portName) throws IOException {
+
         init(portName);
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public final String getPort() {
-    
+
         checkInit();
-        
+
         return portName;
     }
-    
-    public synchronized final void init(String portName) throws IOException {
-    
+
+    public final synchronized void init(String portName) throws IOException {
+
         if ( this.portName != null ) {
-        
+
             throw new IllegalStateException("Already initialized");
         }
-        
+
         doInit(portName);
-    
+
         try {
-        
+
             if ( getMeta().getFeature("controller/silent") ) {
-            
+
                 silencerProxy = createSilentProxy();
                 silencer = new SilentHelper(silencerProxy);
                 silencer.start();
             }
-            
-        } catch ( UnsupportedOperationException uoex ) {
-        
+
+        } catch ( UnsupportedOperationException ignored ) {
+
             // They don't want to play nice, fine :(
 
-        } catch ( IllegalStateException isex ) {
-        
+        } catch ( IllegalStateException ignored ) {
+
             // Ditto
         }
     }
-    
+
     /**
      * Perform the actual initialization.
+     *
+     * @param portName Port to initialize with.
+     * @throws IOException if there was a hardware error.
      */
-    abstract protected void doInit(String portName) throws IOException;
-    
+    protected abstract void doInit(String portName) throws IOException;
+
     /**
      * Check if the controller is initialized.
      *
      * @exception IllegalStateException if the controller is not yet
      * initialized.
      */
-    abstract protected void checkInit();
-    
-    public void setLazyMode(boolean lazy) {
-    
+    protected abstract void checkInit();
+
+    public void setLazyMode(boolean enable) {
+
         throw new UnsupportedOperationException("Lazy mode is not supported");
     }
 
     public boolean isLazy() {
-    
+
         return false;
     }
-    
+
     public final synchronized void addListener(ServoControllerListener listener) {
-    
+
         checkInit();
-    
+
         listenerSet.add(listener);
     }
-    
+
     public final synchronized void removeListener(ServoControllerListener listener) {
-    
+
         checkInit();
-    
+
         if ( !listenerSet.contains(listener) ) {
-        
+
             throw new IllegalArgumentException("Not a registered listener: "
                                                + listener.getClass().getName()
                                                + "@"
                                                + listener.hashCode());
         }
-        
+
         listenerSet.remove(listener);
     }
-    
+
     /**
      * Notify the listeners about the change in the silent status.
      *
@@ -179,53 +183,53 @@ abstract public class AbstractServoController implements ServoController {
      * sleeping, <code>true</code> means device is active.
      */
     protected final void silentStatusChanged(boolean mode) {
-    
-        for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-        
-            ((ServoControllerListener)i.next()).silentStatusChanged(this, mode);
+
+        for ( Iterator<ServoControllerListener> i = listenerSet.iterator(); i.hasNext(); ) {
+
+            i.next().silentStatusChanged(this, mode);
         }
     }
-    
+
     /**
      * Notify the listeners about the problem that occured.
      *
      * @param t The exception to broadcast.
      */
     protected final void exception(Throwable t) {
-    
-        for ( Iterator i = listenerSet.iterator(); i.hasNext(); ) {
-        
-            ((ProblemListener)i.next()).exception(this, t);
+
+        for ( Iterator<ServoControllerListener> i = listenerSet.iterator(); i.hasNext(); ) {
+
+            i.next().exception(this, t);
         }
     }
-    
+
     public void setSilentTimeout(long timeout, long heartbeat) {
-    
+
         checkInit();
-        
+
         checkSilencer();
-        
+
         silencer.setSilentTimeout(timeout, heartbeat);
     }
-    
-    public final void setSilentMode(boolean mode) {
-    
+
+    public final void setSilentMode(boolean silent) {
+
         checkInit();
-        
+
         checkSilencer();
-    
+
         boolean oldMode = getSilentMode();
-        
-        silencer.setSilentMode(mode);
-        
-        if ( mode != oldMode ) {
-        
+
+        silencer.setSilentMode(silent);
+
+        if ( silent != oldMode ) {
+
             silentStatusChanged(isSilentNow());
         }
-        
+
         touch();
     }
-    
+
     /**
      * Check if the silent operation is supported <strong>and</strong>
      * implemented.
@@ -234,47 +238,47 @@ abstract public class AbstractServoController implements ServoController {
      * either not supported or not implemented.
      */
     private synchronized void checkSilencer() {
-    
+
         // First check if it is declared
-        
+
         // VT: Let's assume for a second that it is not null
-        
+
         Meta controllerMeta = getMeta();
-        
+
         // This will throw the exception if it is not declared
-        
+
         boolean silentSupport = controllerMeta.getFeature(META_SILENT);
-        
+
         if (!silentSupport) {
-        
+
             // Oh well...
-            
+
             throw new UnsupportedOperationException("Silent operation is not supported");
         }
-            
+
         // Then see if it is implemented
-    
+
         if ( silencer == null ) {
-        
+
             throw new UnsupportedOperationException("Silent operation seems to be supported, but not implemented");
         }
     }
-    
+
     public final boolean getSilentMode() {
-    
-        return (silencer == null) ? false : silencer.getSilentMode();        
+
+        return (silencer == null) ? false : silencer.getSilentMode();
     }
-    
+
     public final boolean isSilentNow() {
-    
+
         return (silencer == null) ? false : silencer.isSilentNow();
     }
 
     public Meta getMeta() {
-    
+
         throw new UnsupportedOperationException("This driver class doesn't provide metadata (most probably oversight on developer's part)");
     }
-    
+
     /**
      * Disable or enable the controller driver 'disconnected' mode.
      *
@@ -285,22 +289,24 @@ abstract public class AbstractServoController implements ServoController {
      *
      * This is the only method that is allowed to be called before {@link
      * #init init()}.
+     *
+     * @param disconnected {@code true} if disconnected operation is allowed.
      */
     public void allowDisconnect(boolean disconnected) {
-    
+
         this.disconnected = disconnected;
     }
-    
+
     /**
      * Check the disconnected mode.
      *
      * @return true if the controller driver can function if the device is not connected.
      */
     public boolean isDisconnectAllowed() {
-    
+
         return disconnected;
     }
-    
+
     /**
      * Is the device currently connected?
      *
@@ -311,18 +317,18 @@ abstract public class AbstractServoController implements ServoController {
      *
      * @return true if the device seems to be connected.
      */
-    abstract public boolean isConnected();
-    
+    public abstract boolean isConnected();
+
     public void deviceArrived(ServoController device) {
-    
+
         System.err.println("deviceArrived is not implemented by " + getClass().getName());
     }
 
     public void deviceDeparted(ServoController device) {
-    
+
         System.err.println("deviceDeparted is not implemented by " + getClass().getName());
     }
-    
+
     /**
      * Update the silent helper timestamp.
      *
@@ -332,39 +338,41 @@ abstract public class AbstractServoController implements ServoController {
      * Servo#setPosition Servo.setPosition()}) is performed.
      */
     protected final void touch() {
-    
+
         if ( silencer != null ) {
-        
+
             silencer.touch();
         }
     }
-    
+
     /**
      * Create the silencer proxy.
      *
      * This is a template method because the specific means of controlling
      * the sleep mode are controller-specific.
+     *
+     * @return The proxy object.
      */
-    abstract protected SilentProxy createSilentProxy();
+    protected abstract SilentProxy createSilentProxy();
 
     /**
      * @exception IllegalStateException if the controller wasn't previously
      * initialized.
      */
-    public final Iterator getServos() throws IOException {
-    
+    public final Iterator<Servo> getServos() throws IOException {
+
         checkInit();
-    
-        LinkedList servos = new LinkedList();
-        
+
+        List<Servo> servos = new LinkedList<Servo>();
+
         for ( int idx = 0; idx < getServoCount(); idx++ ) {
-        
+
             servos.add(getServo(Integer.toString(idx)));
         }
-        
+
         return servos.iterator();
     }
-    
+
     /**
      * Get the servo instance.
      *
@@ -383,28 +391,28 @@ abstract public class AbstractServoController implements ServoController {
      * initialized.
      */
     public final synchronized Servo getServo(String id) throws IOException {
-    
+
         checkInit();
-        
+
         try {
-        
+
             int iID = Integer.parseInt(id);
-            
+
             if ( iID < 0 || iID > getServoCount() ) {
-            
+
                 throw new IllegalArgumentException("ID out of 0..." + getServoCount() + " range: '" + id + "'");
             }
-            
+
             if ( servoSet[iID] == null ) {
-            
+
                 servoSet[iID] = createServo(iID);
             }
-            
+
             return servoSet[iID];
-            
+
         } catch ( NumberFormatException nfex ) {
-        
-            throw new IllegalArgumentException("Not a number: '" + id + "'");
+
+            throw new IllegalArgumentException("Not a number: '" + id + "'", nfex);
         }
     }
 
@@ -416,8 +424,10 @@ abstract public class AbstractServoController implements ServoController {
      *
      * @param id Servo ID to create.
      *
+     * @return The servo instance.
+     * 
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
      */
-    abstract protected Servo createServo(int id) throws IOException;
+    protected abstract Servo createServo(int id) throws IOException;
 }

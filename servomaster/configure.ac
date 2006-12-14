@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.15 2005-12-30 21:06:48 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.16 2006-12-14 09:17:08 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
@@ -29,7 +29,7 @@ if test -f "${LOCAL_OPTIONS}" && test -z "${LOCAL_OPTIONS_PRESENT}" ; then
 fi
 
 VERSION_MAJOR="0"
-VERSION_MINOR="7"
+VERSION_MINOR="8"
 PATCHLEVEL="0"
 
 AC_SUBST(VERSION_MAJOR)dnl
@@ -99,7 +99,7 @@ AC_ARG_ENABLE(serial,
 [
     AC_MSG_RESULT(yes)
     SERIAL_ENABLED=true
-    
+
 ],
 [
     AC_MSG_RESULT(no)
@@ -130,7 +130,7 @@ if ${TEST} "${SERIAL_ENABLED}" = "false" && ${TEST} "${USB_ENABLED}" = "false" ;
     AC_MSG_RESULT([In order to build the project, at least one of --enable-serial and --enable-usb])
     AC_MSG_RESULT([options have to be specified])
     AC_MSG_RESULT()
-    
+
     AC_MSG_ERROR([Please specify --enable-serial, --enable-usb or both])
 fi
 

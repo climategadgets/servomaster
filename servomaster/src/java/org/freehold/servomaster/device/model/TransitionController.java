@@ -9,8 +9,8 @@ package org.freehold.servomaster.device.model;
  * a simple positioning. This interface provides a unified way to control
  * the motion.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001
- * @version $Id: TransitionController.java,v 1.2 2002-01-02 09:11:18 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @version $Id: TransitionController.java,v 1.3 2006-12-14 09:17:10 vtt Exp $
  */
 public interface TransitionController {
 
@@ -30,5 +30,5 @@ public interface TransitionController {
      * transition.
      *
      */
-    public void move(Servo target, TransitionToken token, double targetPosition);
+    void move(Servo target, TransitionToken token, double targetPosition);
 }

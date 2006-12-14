@@ -25,33 +25,34 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
  * target="_top">16-Servo USB</a> connected via serial interface.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: ParallaxSerialServoController.java,v 1.1 2006-12-14 12:38:28 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @version $Id: ParallaxSerialServoController.java,v 1.2 2006-12-14 12:57:16 vtt Exp $
  */
-abstract public class ParallaxSerialServoController extends AbstractSerialServoController {
+public abstract class ParallaxSerialServoController extends AbstractSerialServoController {
 
     private final Meta meta = createMeta();
 
-    public ParallaxSerialServoController() {
+    protected ParallaxSerialServoController() {
 
         // Can't invoke this(null) because this will blow up in doInit()
     }
 
-    public ParallaxSerialServoController(String portName) throws IOException {
+    protected ParallaxSerialServoController(String portName) throws IOException {
 
         super(portName);
     }
 
+    @Override
     public final Meta getMeta() {
-
         return meta;
     }
 
     /**
      * {@inheritDoc}
      */
-    public synchronized final void reset() throws IOException {
+    public final synchronized void reset() throws IOException {
 
-        for (Iterator i = getServos(); i.hasNext(); ) {
+        for (Iterator<Servo> i = getServos(); i.hasNext(); ) {
 
             ParallaxServo servo = (ParallaxServo) i.next();
 
@@ -66,6 +67,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
     /**
      * {@inheritDoc}
      */
+    @Override
     protected final SilentProxy createSilentProxy() {
 
         throw new UnsupportedOperationException("Not Implemented");
@@ -74,6 +76,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
     /**
      * {@inheritDoc}
      */
+    @Override
     protected final synchronized Servo createServo(int id) throws IOException {
 
         return new ParallaxServo(this, id);
@@ -81,27 +84,30 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
 
 
     //TODO: this should really go into the properties and be used in the AbstractSerialServoController
+    @Override
     protected void doInit(String portName) throws IOException {
 
-    	super.doInit(portName);
-    	try{
-    		port.setSerialPortParams(port.getBaudRate(),SerialPort.DATABITS_8,
-                    SerialPort.STOPBITS_2,
-                    SerialPort.PARITY_NONE);
+        super.doInit(portName);
 
+        try {
+            port.setSerialPortParams(
+              port.getBaudRate(),
+              SerialPort.DATABITS_8,
+              SerialPort.STOPBITS_2,
+              SerialPort.PARITY_NONE);
 
-    		ParallaxSerialServoController.this.send(PacketBuilder.setParameters(port.getBaudRate()));
-    	}catch (UnsupportedCommOperationException e) {
-			// TODO: handle exception
-		}
+            send(PacketBuilder.setParameters(port.getBaudRate()));
 
+        } catch (UnsupportedCommOperationException e) {
+            throw new IllegalStateException("Failed to initialize " + portName, e);
+        }
     }
 
-    abstract protected Meta createMeta();
+    protected abstract Meta createMeta();
 
-    abstract protected class ParallaxMeta extends SerialMeta {
+    protected abstract class ParallaxMeta extends SerialMeta {
 
-        public ParallaxMeta() {
+        protected ParallaxMeta() {
 
             properties.put("manufacturer/name", "Parallax Corp.");
             properties.put("manufacturer/URL", "http://www.Parallax.com/");
@@ -163,7 +169,8 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
             super(sc, id);
         }
 
-        public final Meta createMeta() {
+        @Override
+        public Meta createMeta() {
 
             return new PololuServoMeta();
         }
@@ -171,25 +178,26 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
         /**
          * {@inheritDoc}
          */
-        protected final void sendPosition(double position) throws IOException {
+        @Override
+        protected void sendPosition(double position) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
 
-            short units = (short)(min_pulse + (position * (max_pulse - min_pulse)));
+            short units = (short)(min_pulse + position * (max_pulse - min_pulse));
 
             System.err.println("Units:"+ units);
             System.err.println("Position:"+ position);
             ParallaxSerialServoController.this.send(PacketBuilder.setAbsolutePosition((byte)id, velocity, units));
         }
 
-        protected final void setOn(boolean on) throws IOException {
+        void setOn(boolean on) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
 
             //ParallaxSerialServoController.this.send(PacketBuilder.setParameters(port.getBaudRate()));
         }
 
-        protected final void setSpeed(byte speed) throws IOException {
+        void setSpeed(byte speed) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
 
@@ -198,7 +206,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
 
         protected final class PololuServoMeta extends AbstractMeta {
 
-            public PololuServoMeta() {
+            protected PololuServoMeta() {
 
                 // VT: NOTE: According to the documentation, valid values are 500-5500
 
@@ -206,6 +214,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
 
                 PropertyWriter pwMin = new PropertyWriter() {
 
+                    @Override
                     public void set(String key, Object value) {
 
                         short p = Short.parseShort(value.toString());
@@ -237,6 +246,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
 
                 PropertyWriter pwMax = new PropertyWriter() {
 
+                    @Override
                     public void set(String key, Object value) {
 
                         short p = Short.parseShort(value.toString());
@@ -268,6 +278,7 @@ abstract public class ParallaxSerialServoController extends AbstractSerialServoC
 
                 PropertyWriter pwVelocity = new PropertyWriter() {
 
+                    @Override
                     public void set(String key, Object value) {
 
                         velocity = Byte.parseByte(value.toString());

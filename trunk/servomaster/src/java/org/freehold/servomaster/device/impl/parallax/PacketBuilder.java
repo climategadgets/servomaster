@@ -3,30 +3,13 @@ package org.freehold.servomaster.device.impl.parallax;
 import java.nio.ByteBuffer;
 
 /**
- * Packet builder for Pololu {@link USB16ServoController USB} and (later)
- * serial controllers.
+ * Packet builder for Parallax controller.
  *
- * <p>
- *
- * Since the original Pololu driver for the USB controller is just a USB to
- * serial bridge, it is possible (hopefully --vt) to reuse protocol packet
- * building code between USB and serial controller drivers.
- *
- * <p>
- *
- * Unfortunately, it's not possible to provide an abstract Pololu controller
- * driver class and then extend it to support USB and serial controllers
- * because USB and serial support has already been implemented in abstract
- * classes, so this solution (for the time being) seems to be better.
- *
- * <p>
- *
- * This class doesn't implement the complete command set because the only
- * #method used to set the servo position is {@link setAbsolutePosition set
- * #absolute position}.
+ * Based on {@link org.freehold.servomaster.device.impl.pololu.PacketBuilder}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: PacketBuilder.java,v 1.1 2006-12-14 12:38:28 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @version $Id: PacketBuilder.java,v 1.2 2006-12-14 12:57:16 vtt Exp $
  */
 public class PacketBuilder {
 
@@ -36,27 +19,21 @@ public class PacketBuilder {
     /**
      * Build a byte buffer for "set parameters" command (0x00).
      *
-     * This call ignores the "reverse" and "range" parameters because the
-     * only method used to set the servo position is {@link
-     * #setAbsolutePosition set absolute position}.
+     * @param speed ???
      *
-     * @param servoId Servo number, zero based.
-     *
-     * @param enabled true if the servo is enabled.
+     * @return Rendered buffer.
      */
     public static byte[] setParameters(int speed) {
-    
-    	;
-    	
+
         //setting baud rate
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.put(new byte[]{(byte)33, (byte)83, (byte)67, (byte)83, (byte)66, (byte)82, (speed == 38400)?(byte)1:(byte)0});
         bb.put((byte)0x0D);
 
-        byte buffer[] = bb.array();
+        byte[] buffer = bb.array();
         complain(buffer);
-    
-    
+
+
         return buffer;
     }
 
@@ -66,32 +43,16 @@ public class PacketBuilder {
      * @param servoId Servo number, zero based.
      *
      * @param speed Servo speed.
+     *
+     * @return Rendered buffer.
      */
     public static byte[] setSpeed(byte servoId, byte speed) {
-    
-        
-    /*	
-     * This is not necessary for the Parallax, the speed is sent with every command (setAboslutePosition)
-     * 
-     * checkHighBit(servoId);
-        checkHighBit(speed);
- 
-         
-        byte buffer[] = new byte[5];
-        
-        buffer[0] = (byte)0x80; // start byte
-        buffer[1] = (byte)0x01; // device ID
-        buffer[2] = (byte)0x01; // command
-        buffer[3] = servoId;
-        buffer[4] = speed;
-        
-        buffer = bb.array();
-        
-        complain(buffer);
-        
-        return buffer;
-        */
-    	return null;
+
+
+        /*
+         * This is not necessary for the Parallax, the speed is sent with every command (setAboslutePosition)
+         */
+        return null;
     }
 
     /**
@@ -102,12 +63,12 @@ public class PacketBuilder {
      * @param position Servo position. Valid values are 500...5500.
      */
     public static byte[] setAbsolutePosition(byte servoId, byte velocity, short position) {
-    
+
         //checkHighBit(servoId);
-    
-       
-    
-        
+
+
+
+
         ByteBuffer bb = ByteBuffer.allocate(8);
         bb.put(new byte[]{(byte)33, (byte)83, (byte)67});
         bb.put(servoId);
@@ -116,10 +77,10 @@ public class PacketBuilder {
         bb.put((byte)(position>>>8));
         bb.put((byte)0x0D);
         byte buffer[] = bb.array();
-        
+
         /*
         byte buffer[] = new byte[8];
-        
+
         buffer[0] = (byte)33; // start byte
         buffer[1] = (byte)83; // device ID
         buffer[2] = (byte)67; // command
@@ -130,19 +91,19 @@ public class PacketBuilder {
         buffer[7] = (byte)0x0D;
         */
         complain(buffer);
-          
+
         if (false) {
-        
+
             // Let's also check where we are going, just in case
-            
+
             int checkPosition = (buffer[4] << 7) | buffer[5];
-            
+
             System.err.println("Position: " + checkPosition);
-        }    
-        
+        }
+
         return buffer;
     }
-    
+
     /**
      * Check if the value is valid.
      *
@@ -152,41 +113,41 @@ public class PacketBuilder {
      * @param value value to check.
      */
     private static void checkHighBit(byte value) {
-    
+
         if ( (value & (byte)0x80) != 0 ) {
-        
+
             throw new IllegalArgumentException("Invalid value (" + Integer.toHexString(value) + ") - high bit must be off");
         }
     }
-    
+
     private static void complain(byte buffer[]) {
-    
+
         rq++;
         size += buffer.length;
-        
+
         if (true) {
-        
+
             // If the device is not set up right, the output buffer will get
             // stuck soon
-            
+
             System.err.println("" + rq + " requests, " + size + " bytes");
-        
+
             // Let's see if the buffer content is OK
-            
+
             StringBuffer sb = new StringBuffer();
-            
+
             for (int offset = 0; offset < buffer.length; offset++ ) {
-            
+
                 int b = buffer[offset] & 0x00FF;
-                
+
                 if (b < 0x10) {
-                
+
                     sb.append('0');
                 }
-                
+
                 sb.append(Integer.toHexString(b)).append(' ');
             }
-            
+
             System.err.println("Buffer (" + buffer.length + " bytes): " + sb.toString());
         }
     }

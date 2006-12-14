@@ -1,12 +1,12 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_REVISION($Id: configure.ac,v 1.16 2006-12-14 09:17:08 vtt Exp $)dnl
+AC_REVISION($Id: configure.ac,v 1.17 2006-12-14 11:27:15 vtt Exp $)dnl
 
 dnl This file ensures our --srcdir is right. Later it's also used to verify
 dnl the acceptable version of Java compiler and the options specific to the
 dnl versions.
 
-AC_INIT
+AC_INIT(servomaster, 0.8p0)
 AC_CONFIG_SRCDIR([src/java/org/freehold/servomaster/device/model/Servo.java])
 
 dnl I'd like it to read the configure-options to allow both the global set
@@ -48,7 +48,7 @@ AC_PREFIX_DEFAULT(/usr/local/servomaster)dnl
 AC_PREREQ(2.57)dnl
 AC_CONFIG_AUX_DIR(src/scripts/install)dnl
 
-AM_INIT_AUTOMAKE(${PACKAGE}, ${VERSION})dnl
+AM_INIT_AUTOMAKE([tar-ustar])dnl
 
 AC_PROG_TEST
 AC_PROG_TR

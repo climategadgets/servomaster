@@ -24,13 +24,13 @@ import org.freehold.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * <a
- * href="http://www.cpsc.ucalgary.ca/grouplab/phidgets/phidget-servo/phidget-servo.html"
- * target="_top">PhidgetServo</a> controller.
+ * href="http://phidgets.com/index.php?module=pncommerce&func=categoryview&CID=7"
+ * target="_top">Generic PhidgetServo</a> controller.
  *
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
- * @version $Id: PhidgetServoController.java,v 1.35 2006-12-14 09:17:09 vtt Exp $
+ * @version $Id: PhidgetServoController.java,v 1.36 2006-12-14 11:37:45 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 

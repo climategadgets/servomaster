@@ -5,16 +5,11 @@ import java.io.IOException;
 import org.freehold.servomaster.device.model.Meta;
 
 /**
- * <a href="http://pololu.com/products/pololu/0240/" target="_top">Pololu
- * Serial 16-Servo Controller</a> controller.
- *
- * Should also work with the <a
- * href="http://www.pololu.com/products/pololu/0290/"
- * target="_top">8-Servo</a> controller, but be careful not to access servos
- * with IDs of 8 and up.
+ * <a href="http://parallax.com/" target="_top">Parallax</a> controller.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @version $Id: Serial16ServoController.java,v 1.1 2006-12-14 12:38:28 vtt Exp $
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @version $Id: Serial16ServoController.java,v 1.2 2006-12-14 12:57:16 vtt Exp $
  */
 public class Serial16ServoController extends ParallaxSerialServoController {
 
@@ -39,6 +34,7 @@ public class Serial16ServoController extends ParallaxSerialServoController {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected final Meta createMeta() {
 
         return new Serial16Meta();
@@ -46,7 +42,7 @@ public class Serial16ServoController extends ParallaxSerialServoController {
 
     protected class Serial16Meta extends ParallaxMeta {
 
-        public Serial16Meta() {
+        protected Serial16Meta() {
 
             properties.put("manufacturer/model", "Serial 16-Servo");
         }

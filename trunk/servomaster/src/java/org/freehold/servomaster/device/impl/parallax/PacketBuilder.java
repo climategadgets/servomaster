@@ -4,151 +4,134 @@ import java.nio.ByteBuffer;
 
 /**
  * Packet builder for Parallax controller.
- *
+ * <p/>
  * Based on {@link org.freehold.servomaster.device.impl.pololu.PacketBuilder}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
- * @version $Id: PacketBuilder.java,v 1.2 2006-12-14 12:57:16 vtt Exp $
+ * @version $Id: PacketBuilder.java,v 1.3 2006-12-14 18:36:15 vtt Exp $
  */
 public class PacketBuilder {
 
-    private static int rq = 0;
-    private static int size = 0;
+  /**
+   * Protocol preamble - literal string "!SC".
+   */
+  private static final byte[] preamble = new byte[] {(byte) 33, (byte) 83, (byte) 67};
 
-    /**
-     * Build a byte buffer for "set parameters" command (0x00).
-     *
-     * @param speed ???
-     *
-     * @return Rendered buffer.
-     */
-    public static byte[] setParameters(int speed) {
+  private static int rq = 0;
+  private static int size = 0;
 
-        //setting baud rate
-        ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.put(new byte[]{(byte)33, (byte)83, (byte)67, (byte)83, (byte)66, (byte)82, (speed == 38400)?(byte)1:(byte)0});
-        bb.put((byte)0x0D);
+  /**
+   * Build a byte buffer for "set parameters" command (0x00).
+   *
+   * @param speed ???
+   *
+   * @return Rendered buffer.
+   */
+  public static byte[] setParameters(int speed) {
 
-        byte[] buffer = bb.array();
-        complain(buffer);
+    //setting baud rate
+    ByteBuffer bb = ByteBuffer.allocate(8);
+    bb.put(preamble);
+    bb.put(new byte[]{(byte) 83, (byte) 66, (byte) 82, speed == 38400 ? (byte) 1 : (byte) 0});
+    bb.put((byte) 0x0D);
+
+    byte[] buffer = bb.array();
+    complain(buffer);
 
 
-        return buffer;
+    return buffer;
+  }
+
+  /**
+   * Build a byte buffer for "set speed" command (0x01).
+   *
+   * @param servoId Servo number, zero based.
+   * @param speed Servo speed.
+   *
+   * @return Rendered buffer.
+   * @deprecated Need to get rid of this method - it doesn't make sense anymore, and does nothing.
+   */
+  @Deprecated
+  public static byte[] setSpeed(byte servoId, byte speed) {
+
+    // This is not necessary for the Parallax, the speed is sent with every command (setAboslutePosition)
+    return null;
+  }
+
+  /**
+   * Build a byte buffer for "set absolute position" command (0x04).
+   *
+   * @param servoId Servo number, zero based.
+   * @param velocity Servo velocity. Valid values are 0...63.
+   * @param position Servo position. Valid values are (tentatively) 250...1250.
+   *
+   * @return Rendered buffer.
+   */
+  public static byte[] setAbsolutePosition(byte servoId, byte velocity, short position) {
+
+    if (velocity < 0 || velocity > 63) {
+      throw new IllegalArgumentException("Invalid velocity (" + velocity + ") - outside of 0...63 range");
     }
 
-    /**
-     * Build a byte buffer for "set speed" command (0x01).
-     *
-     * @param servoId Servo number, zero based.
-     *
-     * @param speed Servo speed.
-     *
-     * @return Rendered buffer.
-     */
-    public static byte[] setSpeed(byte servoId, byte speed) {
-
-
-        /*
-         * This is not necessary for the Parallax, the speed is sent with every command (setAboslutePosition)
-         */
-        return null;
+    if (position < 250 || position > 1250) {
+      throw new IllegalArgumentException("Invalid position (" + position + ") - outside of 250...1250 range");
     }
 
-    /**
-     * Build a byte buffer for "set absolute position" command (0x04).
-     *
-     * @param servoId Servo number, zero based.
-     *
-     * @param position Servo position. Valid values are 500...5500.
-     */
-    public static byte[] setAbsolutePosition(byte servoId, byte velocity, short position) {
+    ByteBuffer bb = ByteBuffer.allocate(8);
 
-        //checkHighBit(servoId);
+    bb.put(preamble);
+    bb.put(servoId);
+    bb.put(velocity);
+    bb.put((byte) position);
+    bb.put((byte) (position >>> 8));
+    bb.put((byte) 0x0D);
 
+    byte[] buffer = bb.array();
 
+    complain(buffer);
 
+    if (false) {
 
-        ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.put(new byte[]{(byte)33, (byte)83, (byte)67});
-        bb.put(servoId);
-        bb.put(velocity);
-        bb.put((byte)position);
-        bb.put((byte)(position>>>8));
-        bb.put((byte)0x0D);
-        byte buffer[] = bb.array();
+      // Let's also check where we are going, just in case
 
-        /*
-        byte buffer[] = new byte[8];
+      int checkPosition = buffer[4] << 7 | buffer[5];
 
-        buffer[0] = (byte)33; // start byte
-        buffer[1] = (byte)83; // device ID
-        buffer[2] = (byte)67; // command
-        buffer[3] = servoId;
-        buffer[4] = velocity; // start byte
-        buffer[5] = (byte)position; // low byte
-        buffer[6] = ((byte)(position>>>8)); // high byte
-        buffer[7] = (byte)0x0D;
-        */
-        complain(buffer);
+      System.err.println("Position: " + checkPosition);
+    }
 
-        if (false) {
+    return buffer;
+  }
 
-            // Let's also check where we are going, just in case
+  private static void complain(byte[] buffer) {
 
-            int checkPosition = (buffer[4] << 7) | buffer[5];
+    rq++;
+    size += buffer.length;
 
-            System.err.println("Position: " + checkPosition);
+    if (true) {
+
+      // If the device is not set up right, the output buffer will get
+      // stuck soon
+
+      System.err.println("" + rq + " requests, " + size + " bytes");
+
+      // Let's see if the buffer content is OK
+
+      StringBuffer sb = new StringBuffer();
+
+      for (int offset = 0; offset < buffer.length; offset++) {
+
+        int b = buffer[offset] & 0x00FF;
+
+        if (b < 0x10) {
+
+          sb.append('0');
         }
 
-        return buffer;
+        sb.append(Integer.toHexString(b)).append(' ');
+      }
+
+      System.err.println("Buffer (" + buffer.length + " bytes): " + sb.toString());
     }
-
-    /**
-     * Check if the value is valid.
-     *
-     * High bit should be off. If it is not,
-     * <code>IllegalArgumentException</code> is thrown.
-     *
-     * @param value value to check.
-     */
-    private static void checkHighBit(byte value) {
-
-        if ( (value & (byte)0x80) != 0 ) {
-
-            throw new IllegalArgumentException("Invalid value (" + Integer.toHexString(value) + ") - high bit must be off");
-        }
-    }
-
-    private static void complain(byte buffer[]) {
-
-        rq++;
-        size += buffer.length;
-
-        if (true) {
-
-            // If the device is not set up right, the output buffer will get
-            // stuck soon
-
-            System.err.println("" + rq + " requests, " + size + " bytes");
-
-            // Let's see if the buffer content is OK
-
-            StringBuffer sb = new StringBuffer();
-
-            for (int offset = 0; offset < buffer.length; offset++ ) {
-
-                int b = buffer[offset] & 0x00FF;
-
-                if (b < 0x10) {
-
-                    sb.append('0');
-                }
-
-                sb.append(Integer.toHexString(b)).append(' ');
-            }
-
-            System.err.println("Buffer (" + buffer.length + " bytes): " + sb.toString());
-        }
-    }
+  }
 }

@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<description>Platform and Hardware Independent RC Servo Controller Driver, USB Subset</description>
+	<url>http://servomaster.sourceforge.net/</url>
+	<inceptionYear>2001</inceptionYear>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sf.servomaster</groupId>
+  <artifactId>servomaster-usb</artifactId>
+  <name>Servomaster</name>
+  <version>0.8-UNDEAD</version>
+  <issueManagement>
+  	<system>SourceForge</system>
+  	<url>http://sourceforge.net/tracker/?atid=412121&amp;group_id=34418&amp;func=browse</url>
+  </issueManagement>
+  <scm>
+  	<connection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</connection>
+  	<url>http://servomaster.svn.sourceforge.net/viewvc/servomaster/</url>
+  </scm>
+  <dependencies>
+  	<dependency>
+  		<groupId>net.sf.servomaster</groupId>
+  		<artifactId>servomaster-common</artifactId>
+  		<version> 0.8-UNDEAD</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>javax-usb</groupId>
+  		<artifactId>jsr80</artifactId>
+  		<version>1.0</version>
+  		<scope>system</scope>
+  		<systemPath>/usr/share/java/jsr80.jar</systemPath>
+  	</dependency>
+  </dependencies>
+</project>

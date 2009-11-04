@@ -1,106 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE document PUBLIC "-//APACHE//DTD Documentation V1.2//EN" "http://apache.org/forrest/dtd/document-v12.dtd">
 <document>
-    <header>
-        <title>ServoMaster</title>
-    </header>
-    <body>
-        
-        <section>
-            <title>Welcome</title>
-            
-            <p>
-            
-                 ServoMaster is dedicated to providing a consistent hardware
-                 independent way of controlling the servos with the personal
-                 computer.
-                 
+	<header>
+		<title>Servomaster</title>
+	</header>
+	<body>
+
+		<section>
+			<title>What is Servomaster?</title>
+
+			<p>
+
+				Servomaster is a platform and hardware Independent RC servo
+				controller driver.
+
             </p>
-            
-        </section>
-        
-        <section>
-        
-            <title>Mission Statement</title>
-            
-            <p>
-            
-                There is a lot of servos used in radio controlled modeling
-                or robotics applications, and there are vendors
-                manufacturing the hardware controllers allowing to control
-                the servos, to name a few:
-                
+
+		</section>
+
+		<section>
+
+			<title>Mission Statement</title>
+
+			<p>
+
+				Servos are commonly used in radio controlled modeling and robotics
+				applications. More and more vendors are manufacturing
+				hardware servo controllers that can be controlled by a personal computer
+				or embedded hardware. Initial list consisted of now defunct <link href="site:ferret">FerretTronics</link> FT639 &amp; FT 649,
+				<link href="ext:phidgets/">PhidgetServo</link>,
+				<link href="ext:seetron">Scott Edwards Electronics, Inc. (Seetron)</link>
+				<link href="ext:ssc2">SSC</link>, some
+				<link href="http://en.wikipedia.org/wiki/PIC16x84">PIC16x84</link> based; later came
+				<link href="ext:pololu">Pololu</link> and
+				<link href="ext:parallax">Parallax</link>; much more are out there now. 
+
             </p>
-                
-            <ul>
-            
-                <li>
-                
-                    <link
-                    href="http://www.phidgets.com/">PhidgetServo</link>;
-                     
-                </li>
-            
-                <li>
-                
-                    FerretTronics FT639, F649;
-                
-                </li>
-                
-                <li>
-                
-                    <link href="http://www.seetron.com/">Scott Edwards
-                    Electronics, Inc.  (Seetron)</link> <link
-                    href="http://www.seetron.com/ssc.htm">SSC</link>;
-                    
-                </li>
-                     
-                <li>
-                
-                    Quite a lot of vendors providing the hardware
-                    controllers based on PIC16F84 device.
-                    
-                </li>
-                     
-            </ul>
-            
-            <p>
-                
-                However, almost all of them (with <link
-                href="site:credits">notable exceptions</link>), being in the
-                hardware manufacturing business, care little about providing
-                a consistent interface for the servos and controllers. This
-                is understandable, but disappointing, because all the servos
-                are just about the same, and the basic functionality of the
-                controllers is just about the same.
-                
-            </p>
-            
-            <p>
-                
-                This <em>can</em> and <em>is</em> being fixed, right here.
-            
-            </p>
-            
-        </section>
-        
-        <section>
-        
-            <title>Brief History</title>
-            
-            <p>
-            
-                 ServoMaster was created as a complimentary project
-                 necessary to satisfy the needs of another project, <link
-                 href="ext:dz">DIY
-                 Zoning</link>. Being lazy (hate to rewrite the same code
-                 ten times), I decided to just make it generic from the very
-                 beginning. It turned out to be fun. Then, <link
-                 href="ext:phidgets">Chester</link> showed up, and it
-                 started to be really fun ;)
-                
-            </p>
-        </section>
-        
-    </body>
+
+			<p>
+
+				However, almost all of them (with
+				<link href="site:credits">notable exceptions</link>
+				), being in the hardware manufacturing business, care little about
+				providing a consistent interface for the servos and controllers. This
+				is understandable, but disappointing, because all the servos
+				are just about the same, and the basic functionality of the
+				controllers is just about the same.
+
+			</p>
+
+			<p>
+
+				This <em>can</em> and <em>is</em> being fixed, right here.
+
+			</p>
+
+		</section>
+		
+		<section>
+		
+			<title>What Exactly Is Offered</title>
+			
+				<ul>
+					<li>Uniform set of platform and hardware independent abstractions representing servos and servo controllers;</li>
+					<li>Motion <link href="site:transform">transitions and transformations</link>;</li>
+					<li>Way to introspect and perform capabilities discovery on your hardware;</li>
+					<li>Generic serial and USB implementation, suitable for extension for virtually any hardware;</li>
+					<li>Growing set of <link href="site:relnotes">concrete hardware drivers</link>.</li>
+				</ul>
+			
+		</section>
+		
+		<section>
+		
+			<title>How To Stay In Touch</title>
+			
+			<p>
+			
+				<link href="ext:dz_blog">DIY Zoning</link> blog has
+				a dedicated <link href="ext:dz_blog_servomaster">Servomaster</link> section.
+				Subscribing to its RSS Feed is the best way to stay aware of updates.
+				
+			</p>
+			<p>
+			
+				New releases can be found at <link href="site:downloads">SourceForge Downloads Page</link>.
+			</p>
+			
+		</section>
+
+		<section>
+
+			<title>Brief History</title>
+
+			<p>
+
+				ServoMaster was created as a complimentary project necessary to
+				satisfy the needs of another project, <link href="ext:dz">DIY Zoning</link>.
+				Being lazy (hate to rewrite the same code ten times), I decided to
+				just make it generic from the very beginning. It turned out to be
+				fun. Then, <link href="ext:phidgets">Chester</link> showed up, and it
+				started to be really fun ;)
+
+			</p>
+		</section>
+
+	</body>
 </document>

@@ -18,7 +18,6 @@ See http://xml.apache.org/forrest/linking.html for more info
 
   <about label="About">
     <index label="Introduction" href="index.html" description="ServoMaster"/>
-    <news label="News &amp; Status" href="news.html" description="Project news and status" />
     <faq label="FAQs" href="faq.html" description="Frequently Asked Questions">
     
         <faq_hid href="#hid"/>
@@ -94,7 +93,7 @@ See http://xml.apache.org/forrest/linking.html for more info
             description="Project Summary">
       </projectpage>
       <downloads label="Downloads"
-            href="http://sourceforge.net/project/showfiles.php?group_id=34418"
+            href="https://sourceforge.net/projects/servomaster/files/"
             description="Binaries, source, documentation">
       </downloads>
       <cvs label="CVS"
@@ -182,6 +181,8 @@ See http://xml.apache.org/forrest/linking.html for more info
           <controlanything_sv href="html/sv16.htm"/>
       </controlanything>
       <dz href="http://diy-zoning.sourceforge.net/"/>
+      <dz_blog href="http://diy-zoning.blogspot.com/"/>
+      <dz_blog_servomaster href="http://diy-zoning.blogspot.com/search/label/servomaster"/>
       <ferret href="http://www.ferrettronics.com/"/>
       <ftdichip href="http://ftdichip.com/"/>
       <geocities href="http://www.geocities.com/">

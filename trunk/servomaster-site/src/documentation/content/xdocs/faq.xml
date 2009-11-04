@@ -31,7 +31,11 @@
                     
                     <dd>
                     
-                        FerretTronics <link href="site:ft639">FT639</link>;
+                        <ul>
+                        	<li>FerretTronics <link href="site:ft639">FT639</link> (historical);</li>
+                        	<li><link href="site:pololu">Pololu</link> serial adapters;</li>
+                        	<li><link href="site:parallax">Parallax</link> serial adapters.</li>
+                        </ul>
                         
                     </dd>
 
@@ -45,27 +49,11 @@
                     
                         <ul>
                         
-                            <li>
-                            
-                                <link
-                                href="site:phidget_quad">PhidgetServo</link>;
-                                
-                            </li>
-
-                            <li>
-                            
-                                PhidgetUniServo (as a subset of <link
-                                href="site:phidget_quad">PhidgetServo</link>);
-                                
-                            </li>
-
-                            <li>
-                            
-                                <link
-                                href="site:phidget_servo8">PhidgetAdvancedServo</link>
-                                (prototype).
-                                
-                            </li>
+                            <li><link href="site:phidget_quad">PhidgetServo</link>;</li>
+                            <li>PhidgetUniServo (as a subset of <link href="site:phidget_quad">PhidgetServo</link>);</li>
+                            <li><link href="site:phidget_servo8">PhidgetAdvancedServo</link> (prototype, historical);</li>
+                            <li><link href="site:pololu">Pololu</link> USB adapters;</li>
+                        	<li><link href="site:parallax">Parallax</link> USB adapters.</li>
                             
                         </ul>
                         
@@ -93,21 +81,9 @@
             <answer>
 
                 <p>
-                
-                    Actually, quite a few. The <link
-                    href="site:pololu">Pololu controller family</link>
-                    driver is already usable, and <link
-                    href="site:parallax">Parallax controller family</link>
-                    is a few days away, but it's been extremely difficult to
-                    find those few days to finish it.
-                    
-                </p>
-                <p>
-                
-                    Then, there's one in the queue (<link
-                    href="site:nic_servo">1-Wire&reg; based servo
-                    controller</link> which is pretty close to my <link
-                    href="site:contract">ideal servo controller</link>).
+
+					None at the moment - but if you donate hardware, I'll most probably
+					write a driver for it.
                     
                 </p>
                 
@@ -354,6 +330,13 @@ java.io.IOException: No compatible devices found. Make sure you have /proc/bus/u
                    modules</link> if your USB controller is a Phidget.
                    
                 </note>
+                <warning>
+                
+	                A lot of water has gone under the bridge since this page was written, Ubuntu came to being,
+	                permission handling for USB devices changed quite a bit - I'll have to write an update.
+	                If you can contribute to this section, please do.
+                
+                </warning>
                 
             </answer>
         </faq>

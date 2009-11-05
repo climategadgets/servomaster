@@ -125,8 +125,8 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
             // Default range is (500/2)us to (5500/2)us
 
-            properties.put("servo/range/min", "100");
-            properties.put("servo/range/max", "1175");
+            properties.put("servo/range/min", "250");
+            properties.put("servo/range/max", "1250");
         }
     }
 
@@ -135,12 +135,12 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         /**
          * Minimal allowed absolute position for this device.
          */
-        final short MIN_PULSE = 100;
+        final short MIN_PULSE = 250;
 
         /**
          * Maximum allowed absolute position for this device.
          */
-        final short MAX_PULSE = 1175;
+        final short MAX_PULSE = 1250;
 
         boolean enabled = true;
         boolean reverse = false;

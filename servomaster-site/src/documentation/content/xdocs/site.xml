@@ -96,15 +96,10 @@ See http://xml.apache.org/forrest/linking.html for more info
             href="https://sourceforge.net/projects/servomaster/files/"
             description="Binaries, source, documentation">
       </downloads>
-      <cvs label="CVS"
-            href="http://sourceforge.net/cvs/?group_id=34418"
+      <cvs label="Subversion"
+            href="https://sourceforge.net/projects/servomaster/develop"
             description="For those brave of heart">
       </cvs>
-      <lists label="Mailing Lists"
-            href="http://sourceforge.net/mail/?group_id=34418"
-            description="Make your voice heard">
-          <static_pressure_thread href="http://sourceforge.net/mailarchive/forum.php?thread_id=888144&amp;forum_id=10124"/>
-      </lists>
       <bugs label="Bug Reports"
             href="http://sourceforge.net/tracker/?group_id=34418&amp;atid=412121"
             description="Go here if it breaks, and someone will hold your pieces for you">

@@ -8,7 +8,7 @@ import net.sf.servomaster.device.model.Meta;
  * <a href="http://parallax.com/" target="_top">Parallax</a> controller.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public class Serial16ServoController extends ParallaxSerialServoController {
 

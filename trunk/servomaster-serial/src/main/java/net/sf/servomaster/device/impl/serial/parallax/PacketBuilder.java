@@ -95,9 +95,12 @@ public class PacketBuilder {
 
         // Let's also check where we are going, just in case
 
-        int checkPosition = buffer[4] << 7 | buffer[5];
+        // Don't forget that Java doesn't have unsigned left shift
+        int byte1 = 0xFF & buffer[6];
+        int byte2 = 0xFF & buffer[5];
+        int checkPosition = (byte1 << 8 | byte2);
 
-        logger.debug("Position: " + checkPosition);
+        logger.debug("Position (expected/actual): " + Integer.toHexString(position) + "/" + Integer.toHexString(checkPosition));
 
         return buffer;
     }

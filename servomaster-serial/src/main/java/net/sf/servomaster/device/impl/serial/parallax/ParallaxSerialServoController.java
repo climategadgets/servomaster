@@ -17,7 +17,7 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * Generic driver for <a href="http://www.parallax.com/" target="_top">Parallax Serial Servo Controllers</a>.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public abstract class ParallaxSerialServoController extends AbstractSerialServoController {
 

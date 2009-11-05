@@ -4,6 +4,8 @@
   debug="false">
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     <layout class="org.apache.log4j.PatternLayout">
+    <!-- Comment the line above and uncomment the line below to get color output - see http://jukebox4.sourceforge.net/ for details -->
+    <!-- <layout class="net.sf.jukebox.logger.ANSIColorLayout"> -->
       <param name="ConversionPattern" value="%d{HH:mm:ss,SSS} %p %C{1} %t [%x] %m %n" />
     </layout>
   </appender>

@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
  * Based on {@link net.sf.servomaster.device.impl.pololu.PacketBuilder}.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Scott L'Hommedieu</a> 2006
+ * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public class PacketBuilder {
 

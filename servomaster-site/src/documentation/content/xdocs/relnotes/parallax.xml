@@ -119,18 +119,56 @@
                         
                         </p>
                         
-                        <note>
-                        
-                            It is yet to be determined how the Serial/USB
-                            bridge behaves in this situation.
-                            
-                        </note>
+                    </li>
                     
+                    <li>
+                    
+                    	<warning>Careful with your servos</warning>
+                    
+                    	<p>
+                    	
+                    		Controller has a strong timing bias towards the high end. Timing range is 500μs to 2500μs,
+                    		which makes the servos that I have (admittedly, there are no two identical ones) undershoot
+                    		a good 30&deg; turning clockwise, and overshoots turning counterclockwise.
+                    		
+                   		</p>
+                   		<p>                    		
+                    		One Parallax servo went growling at
+                    		1878μs, and Futabas I have have done the same at 2315μs, 2185μs, 2352μs, 2222μs, 2260μs, 2212μs, 2132μs, 2335μs, 1190μs, 2337μs
+                    		(92.6%, 87.4%, 94.1%, 88.8%, 90.4%, 88.4%, 85.3%, 93.4%, 79.6%, 95.1%, respectively). None of the servos
+                    		growled at the low end.
+                    	</p>
+                    
+                    </li>
+                    
+                    <li>
+                    
+                    	<p>
+                    	
+                    		As expected, USB disconnect is not possible to handle gracefully. If the process is still holding the
+                    		handle, the reconnected USB device allocates the next available serial port name. It is, I guess, possible
+                    		to pig the port once in a short while and fail once the port is gone, but reliable reconnect in case when
+                    		more than one USB to serial adapter is present is out of question - unless there's a way to lock a device
+                    		to a port, which I a) doubt b) have to read up on.
+                    	</p>
                     </li>
                     
                 </ul>
                 
             </section>
+        </section>
+        <section>
+            <title>More Good Things To Come</title>
+            
+            <p>
+            
+                I thought that the Parallax driver was more or less finished, turns out, far from that.
+                The current plan is to implement advanced controller features during next several days -
+                keep watching the <link href="site:downloads">downloads area</link> and the
+                <link href="ext:dz_blog_servomaster">news channel</link>.
+                
+            </p>
+            
         </section>
         <section>
             <title>To be continued</title>

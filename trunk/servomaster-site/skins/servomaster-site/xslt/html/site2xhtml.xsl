@@ -34,7 +34,7 @@ $Id: site2xhtml.xsl,v 1.2 2005-05-10 07:04:45 vtt Exp $
         <meta name="description"
               content="Servomaster: platform independent servo controller driver"/>
         <meta name="keywords"
-              content="Servomaster platform independent servo controller driver FT639 Phidget QuadServo UniServo Java Linux Pololu USB serial"/>
+              content="Servomaster platform independent servo controller driver FT639 Phidget QuadServo UniServo Java Linux Pololu Parallax USB serial"/>
         <link rel="stylesheet" href="{$root}skin/page.css" type="text/css"/>
       </head>
       <body bgcolor="#FFFFFF" text="#000000">

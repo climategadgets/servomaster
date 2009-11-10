@@ -6,7 +6,7 @@
   <groupId>net.sf.servomaster</groupId>
   <artifactId>servomaster-usb</artifactId>
   <name>Servomaster</name>
-  <version>0.8-UNDEAD</version>
+  <version>0.8.1</version>
   <issueManagement>
   	<system>SourceForge</system>
   	<url>http://sourceforge.net/tracker/?atid=412121&amp;group_id=34418&amp;func=browse</url>

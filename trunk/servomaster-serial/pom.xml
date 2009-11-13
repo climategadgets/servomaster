@@ -15,6 +15,26 @@
   	<connection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</connection>
   	<url>http://servomaster.svn.sourceforge.net/viewvc/servomaster/</url>
   </scm>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>RELEASE</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
   <dependencies>
   	<dependency>
   		<groupId>gnu.io</groupId>

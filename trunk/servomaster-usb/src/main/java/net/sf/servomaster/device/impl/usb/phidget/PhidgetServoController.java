@@ -37,10 +37,21 @@ public class PhidgetServoController extends AbstractUsbServoController {
     /**
      * Default constructor.
      *
-     * Provided for <code>Class.newInstance()</code> to be happy.
+     * Provided for {@code Class.newInstance()} to be happy.
      */
     public PhidgetServoController() {
 
+    }
+    
+    /**
+     * Create an instance connected to the device with the given serial number.
+     * 
+     * @param serialNumber Serial number of the device to connect to.
+     * 
+     * @throws IOException if things go wrong. See {@link #init(String)}.
+     */
+    public PhidgetServoController(String serialNumber) throws IOException {
+        init(serialNumber);
     }
 
     @Override

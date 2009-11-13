@@ -130,6 +130,19 @@ public abstract class AbstractMeta implements Meta {
 
         properties.put(id, value);
     }
+    
+    @Override
+    public synchronized String toString() {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("[features: ").append(features);
+        sb.append(", properties: ").append(properties);
+        sb.append("]");
+        
+        return sb.toString();
+        
+    }
 
     protected abstract class FeatureWriter {
 

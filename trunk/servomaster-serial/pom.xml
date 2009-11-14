@@ -36,13 +36,11 @@
 		</plugins>
 	</build>
   <dependencies>
-  	<dependency>
-  		<groupId>gnu.io</groupId>
-  		<artifactId>RxTx</artifactId>
-  		<version>2.1.7</version>
-  		<scope>system</scope>
-  		<systemPath>/usr/share/java/RXTXcomm.jar</systemPath>
-  	</dependency>
+	<dependency>
+		<groupId>org.rxtx</groupId>
+		<artifactId>rxtx</artifactId>
+		<version>2.1.7</version>
+	</dependency>
   	<dependency>
   		<groupId>net.sf.servomaster</groupId>
   		<artifactId>servomaster-common</artifactId>

@@ -27,7 +27,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         // Can't invoke this(null) because this will blow up in doInit()
     }
 
-    protected ParallaxSerialServoController(String portName) throws IOException {
+    public ParallaxSerialServoController(String portName) throws IOException {
         super(portName);
     }
 

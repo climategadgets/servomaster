@@ -115,7 +115,7 @@ public class PacketBuilder {
             // If the device is not set up right, the output buffer will get
             // stuck soon
 
-            System.err.println("" + rq + " requests, " + size + " bytes");
+            logger.debug("" + rq + " requests, " + size + " bytes");
 
             // Let's see if the buffer content is OK
 

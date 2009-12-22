@@ -14,6 +14,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
 import net.sf.servomaster.view.ServoControllerView;
@@ -44,6 +46,8 @@ import net.sf.servomaster.view.ServoControllerView;
  */
 @SuppressWarnings("serial")
 public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {
+
+    private Logger logger = Logger.getLogger(getClass());
 
     /**
      * The controller to ahem, control ;)
@@ -184,8 +188,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
 
         } catch ( Throwable t ) {
 
-            System.err.println("Trying to set range:");
-            t.printStackTrace();
+            logger.error("Trying to set range:", t);
         }
     }
 
@@ -214,8 +217,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
 
             } catch ( Throwable t ) {
 
-                System.err.println("Can't set header length, cause:");
-                t.printStackTrace();
+                logger.error("Can't set header length, cause:", t);
             }
         }
 
@@ -223,20 +225,16 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
 
     public void deviceArrived(ServoController device) {
 
-        System.err.println("deviceArrived is not implemented by " + getClass().getName());
+        logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
     public void deviceDeparted(ServoController device) {
 
-        System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+        logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
     public void exception(Object source, Throwable t) {
 
-        synchronized ( System.err ) {
-
-            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
-            t.printStackTrace();
-        }
+        logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);
     }
 }

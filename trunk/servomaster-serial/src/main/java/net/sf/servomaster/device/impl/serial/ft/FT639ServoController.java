@@ -3,6 +3,8 @@ package net.sf.servomaster.device.impl.serial.ft;
 import java.io.IOException;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.AbstractMeta;
@@ -74,6 +76,8 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * @version $Id: FT639ServoController.java,v 1.43 2006-12-14 09:17:11 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
+
+    private Logger logger = Logger.getLogger(getClass());
 
     /**
      * Controller mode.
@@ -224,7 +228,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         activeMode = false;
 
-        //System.err.println("mode: setup");
+        logger.debug("mode: setup");
         //new Exception("setup").printStackTrace();
 
         // VT: FIXME: Do I have a right to do this every time or I have to
@@ -256,7 +260,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         touch();
 
-        //System.err.println("mode: active");
+        logger.debug("mode: active");
         //new Exception("active").printStackTrace();
 
         // VT: FIXME: Do I have a right to do this every time or I have to
@@ -284,7 +288,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         byte upper = (byte)((((position >> 4) & 0x0F) | 0x80) | servo);
         byte lower = (byte)((position & 0x0F) | servo);
 
-        //System.out.println(Integer.toHexString(servo) + " [" + Integer.toHexString((int)lower) + ", " + Integer.toHexString(((int)upper) & 0xFF) + "]");
+        logger.debug(Integer.toHexString(servo) + " [" + Integer.toHexString((int)lower) + ", " + Integer.toHexString(((int)upper) & 0xFF) + "]");
 
         byte[] result = { lower, upper };
 
@@ -319,7 +323,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         headerLength |= 0x60;
 
-        System.err.println("Trim: " + headerLength + ": 0x" + Integer.toHexString(headerLength));
+        logger.debug("Trim: " + headerLength + ": 0x" + Integer.toHexString(headerLength));
 
         send((byte)headerLength);
 
@@ -437,7 +441,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
                     // time spent on transmitting the control signal is going to
                     // be much more than spent in double2int().
 
-                    //System.err.println("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
+                    logger.debug("Redundant position change request: #" + id + " at " + position + " (" + requestedPosition + ")");
                     return;
                 }
             }

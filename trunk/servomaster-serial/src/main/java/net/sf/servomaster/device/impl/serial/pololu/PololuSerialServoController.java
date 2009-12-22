@@ -201,7 +201,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
                         } catch ( IOException ioex ) {
 
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -232,7 +232,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
                         } catch ( IOException ioex ) {
 
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -251,7 +251,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
                         } catch ( IOException ioex ) {
 
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/velocity", Byte.toString(velocity));

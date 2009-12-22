@@ -6,7 +6,7 @@
   <groupId>net.sf.servomaster</groupId>
   <artifactId>servomaster-usb</artifactId>
   <name>Servomaster</name>
-  <version>0.8.2</version>
+  <version>0.8.2.2</version>
   <issueManagement>
   	<system>SourceForge</system>
   	<url>http://sourceforge.net/tracker/?atid=412121&amp;group_id=34418&amp;func=browse</url>
@@ -39,7 +39,7 @@
   	<dependency>
   		<groupId>net.sf.servomaster</groupId>
   		<artifactId>servomaster-common</artifactId>
-  		<version>0.8.2</version>
+  		<version>0.8.2.2</version>
   	</dependency>
   	<dependency>
   		<groupId>javax-usb</groupId>

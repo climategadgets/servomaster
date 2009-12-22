@@ -12,6 +12,8 @@ import javax.swing.BorderFactory;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
 import net.sf.servomaster.device.model.ServoController;
@@ -19,6 +21,8 @@ import net.sf.servomaster.device.model.ServoControllerListener;
 
 @SuppressWarnings("serial")
 public class SilencerPanel extends JPanel implements ServoControllerListener, ItemListener, ChangeListener {
+    
+    private final Logger logger = Logger.getLogger(getClass());
 
     /**
      * The checkbox responsible for controlling the silent mode.
@@ -170,12 +174,12 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
 
     public void deviceArrived(ServoController device) {
 
-        System.err.println("deviceArrived is not implemented by " + getClass().getName());
+        logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
     public void deviceDeparted(ServoController device) {
 
-        System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+        logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
     /**
@@ -227,10 +231,6 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
 
     public void exception(Object source, Throwable t) {
 
-        synchronized ( System.err ) {
-
-            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
-            t.printStackTrace();
-        }
+        logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);
     }
 }

@@ -217,7 +217,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
                             setActualPosition(actualPosition);
 
                         } catch (IOException ioex) {
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -246,7 +246,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
                             setActualPosition(actualPosition);
 
                         } catch (IOException ioex) {
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -265,7 +265,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
                             setSpeed(velocity);
 
                         } catch (IOException ioex) {
-                            ioex.printStackTrace();
+                            logger.warn("Unhandled exception", ioex);
                         }
 
                         properties.put("servo/velocity", Byte.toString(velocity));

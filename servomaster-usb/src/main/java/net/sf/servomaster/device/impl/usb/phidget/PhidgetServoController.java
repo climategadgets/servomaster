@@ -13,6 +13,8 @@ import javax.usb.UsbInterface;
 import javax.usb.UsbIrp;
 import javax.usb.UsbPipe;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.model.AbstractMeta;
@@ -33,6 +35,8 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * @version $Id: PhidgetServoController.java,v 1.36 2006-12-14 11:37:45 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
+
+    private Logger logger = Logger.getLogger(getClass());
 
     /**
      * Default constructor.
@@ -415,7 +419,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.error("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -435,7 +439,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.warn("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
@@ -539,7 +543,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             // VT: FIXME
 
-            System.err.println("silence() is not implemented in " + getClass().getName());
+            logger.warn("silence() is not implemented in " + getClass().getName());
         }
 
         @SuppressWarnings("unchecked")
@@ -695,21 +699,24 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 float2byte((this.velocity / 50) * 8109, buffer, 8);
                 float2byte((this.acceleration / 50) * 8109, buffer, 12);
 
-                //System.err.println("Position: " + this.position);
-                //System.err.print("Buffer:");
+                //logger.debug("Position: " + this.position);
 
                 /*
+                
+                StringBuilder sb = new StringBuilder();
+                
+                sb.append("Buffer: ");
                 for ( int idx = 0; idx < buffer.length; idx++ ) {
 
                     if ( (idx % 4) == 0 && idx > 0 ) {
 
-                        System.err.print(" -");
+                        sb.append(" -");
                     }
-                    System.err.print(" " + Integer.toHexString(buffer[idx] & 0xFF));
+                    sb.append(" " + Integer.toHexString(buffer[idx] & 0xFF));
 
                 }
 
-                System.err.println("");
+                logger.debug(sb.toString());
 
                  */
 
@@ -774,7 +781,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.warn("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/precision", Integer.toString(max_offset - min_offset));
@@ -794,7 +801,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.warn("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/precision", Integer.toString(max_offset - min_offset));
@@ -814,7 +821,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.warn("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/velocity", Float.toString(velocity));
@@ -834,7 +841,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                             } catch ( IOException ioex ) {
 
-                                ioex.printStackTrace();
+                                logger.warn("Unhandled exception", ioex);
                             }
 
                             properties.put("servo/acceleration", Float.toString(acceleration));
@@ -977,7 +984,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
         @Override
         public void boot(UsbDevice target) throws UsbException {
 
-            System.err.println("Booting SoftPhidget");
+            logger.info("Booting SoftPhidget");
 
             try {
 
@@ -988,11 +995,13 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 Firmware fw = new Servo8();
                 byte[] buffer = fw.get();
 
-                System.err.print("Firmware size " + buffer.length + ", header");
+                logger.info("Firmware size " + buffer.length + ", header");
 
+                StringBuilder sb = new StringBuilder();
+                
                 for ( int offset = 0; offset < 4; offset++ ) {
 
-                    System.err.print(" 0x");
+                    sb.append(" 0x");
 
                     String hex = Integer.toHexString(buffer[offset]&0xFF);
 
@@ -1001,10 +1010,10 @@ public class PhidgetServoController extends AbstractUsbServoController {
                         hex = "0" + hex;
                     }
 
-                    System.err.print(hex.toUpperCase());
+                    sb.append(hex.toUpperCase());
                 }
 
-                System.err.println("");
+                logger.info(sb.toString());
 
                 UsbPipe pipe = endpoint.getUsbPipe();
                 UsbIrp message = pipe.createUsbIrp();
@@ -1034,15 +1043,13 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                         // Yes, this is a classical symptom
 
-                        System.err.println("Boot may have failed: device prematurely departed; ignored");
-                        usbex.printStackTrace();
+                        logger.warn("Boot may have failed: device prematurely departed; ignored", usbex);
                     }
                 }
 
             } catch (Throwable t) {
 
-                System.err.println("Boot failed:");
-                t.printStackTrace();
+                logger.error("Boot failed:", t);
 
                 // Since there's nothing we can do about it, we'll just proceed
                 // as usual. The device either will not be found at all, or will

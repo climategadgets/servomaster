@@ -17,6 +17,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -52,6 +54,8 @@ import net.sf.servomaster.view.ServoControllerView;
  */
 public class PhidgetServoControllerView extends JPanel implements ServoControllerListener, ServoControllerView {
 
+    private Logger logger = Logger.getLogger(getClass());
+
     private PhidgetServoController controller;
 
     public void init(ServoController controller) {
@@ -80,8 +84,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
             // We're probably screwed, this shouldn't have really happened
 
-            System.err.println("Can't get the servos, cause:");
-            ioex.printStackTrace();
+            logger.error("Can't get the servos, cause:", ioex);
         }
 
         setBorder(BorderFactory.createTitledBorder("PhidgetServo specific controls"));
@@ -91,7 +94,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
         // FIXME
 
-        //System.err.println("Silent: " + mode);
+        //logger.debug("Silent: " + mode);
     }
 
     @SuppressWarnings("serial")
@@ -262,7 +265,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
             } catch ( UnsupportedOperationException uoex ) {
 
-                System.err.println("Servo doesn't support velocity/acceleration");
+                logger.warn("Servo doesn't support velocity/acceleration");
             }
         }
 
@@ -319,7 +322,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
                 } catch ( IOException ioex ) {
 
-                    ioex.printStackTrace();
+                    logger.warn("Unhandled exception", ioex);
                 }
                  */
 
@@ -330,20 +333,16 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
     public void deviceArrived(ServoController device) {
 
-        System.err.println("deviceArrived is not implemented by " + getClass().getName());
+        logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
     public void deviceDeparted(ServoController device) {
 
-        System.err.println("deviceDeparted is not implemented by " + getClass().getName());
+        logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
     public void exception(Object source, Throwable t) {
 
-        synchronized ( System.err ) {
-
-            System.err.println("Problem with " + Integer.toHexString(source.hashCode()) + ":");
-            t.printStackTrace();
-        }
+        logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);
     }
 }

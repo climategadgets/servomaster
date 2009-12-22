@@ -702,7 +702,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         try {
 
-            System.out.println("*** USB device attached: " + e.getUsbDevice().getProductString());
+            logger.warn("*** USB device attached: " + e.getUsbDevice().getProductString());
 
             // Let's see if this is by chance our runaway device
 
@@ -785,7 +785,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         } catch ( Throwable t ) {
 
-            t.printStackTrace();
+            logger.warn("Unhandled exception", t);
         }
     }
 
@@ -793,7 +793,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         try {
 
-            System.out.println("*** USB device detached: " + e.getUsbDevice().getProductString());
+            logger.warn("*** USB device detached: " + e.getUsbDevice().getProductString());
 
             UsbDevice departure = e.getUsbDevice();
 
@@ -809,7 +809,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         } catch ( Throwable t ) {
 
-            t.printStackTrace();
+            logger.warn("Unhandled exception", t);
         }
     }
 

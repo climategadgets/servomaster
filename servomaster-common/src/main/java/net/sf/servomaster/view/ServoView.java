@@ -16,6 +16,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
@@ -34,6 +36,8 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  */
 @SuppressWarnings("serial")
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
+
+    private Logger logger = Logger.getLogger(getClass());
 
     /**
      * The servo name.
@@ -151,7 +155,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         } catch ( UnsupportedOperationException ignored ) {
 
-            System.err.println("Controller doesn't provide metadata, precision set to 256");
+            logger.warn("Controller doesn't provide metadata, precision set to 256");
         }
 
         try {
@@ -310,8 +314,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
             } catch ( Throwable t ) {
 
-                System.err.println("Servo#setPosition:");
-                t.printStackTrace();
+                logger.error("Servo#setPosition:", t);
             }
         }
     }
@@ -362,7 +365,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
                 default:
 
-                    System.err.println("Unknown transition controller: " + cb.getSelectedItem());
+                    logger.error("Unknown transition controller: " + cb.getSelectedItem());
                 }
 
             } else if ( source == mapperComboBox ) {
@@ -408,7 +411,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
                 default:
 
-                    System.err.println("Unknown coordinate transformer: " + cb.getSelectedItem());
+                    logger.error("Unknown coordinate transformer: " + cb.getSelectedItem());
                 }
             }
 
@@ -443,8 +446,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         } catch ( Throwable t ) {
 
-            System.err.println("Setting mapper:");
-            t.printStackTrace();
+            logger.error("Setting mapper:", t);
         }
     }
 
@@ -457,7 +459,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         // This notification doesn't have to be visibly reflected
 
-        //System.err.println("Position requested: " + position);
+        //logger.debug("Position requested: " + position);
     }
 
     /**

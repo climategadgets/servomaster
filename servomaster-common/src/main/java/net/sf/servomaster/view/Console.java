@@ -183,22 +183,22 @@ public class Console implements ActionListener, WindowListener {
 
                 controllerMeta = controller.getMeta();
 
-                System.out.println("Features:");
+                logger.info("Features:");
 
                 for ( Iterator<String> cif = controllerMeta.getFeatures(); cif.hasNext(); ) {
 
                     String key = cif.next();
 
-                    System.out.println("    " + key + ": " + controllerMeta.getFeature(key));
+                    logger.info("    " + key + ": " + controllerMeta.getFeature(key));
                 }
 
-                System.out.println("Properties:");
+                logger.info("Properties:");
 
                 for ( Iterator<String> cip = controllerMeta.getProperties(); cip.hasNext(); ) {
 
                     String key = cip.next();
 
-                    System.out.println("    " + key + ": " + controllerMeta.getProperty(key));
+                    logger.info("    " + key + ": " + controllerMeta.getProperty(key));
                 }
 
                 try {
@@ -212,7 +212,7 @@ public class Console implements ActionListener, WindowListener {
 
                 } catch ( UnsupportedOperationException ex ) {
 
-                    System.out.println("Controller doesn't support servo shutoff (" + ex.getMessage() + ")");
+                    logger.warn("Controller doesn't support servo shutoff (" + ex.getMessage() + ")");
                 }
 
 

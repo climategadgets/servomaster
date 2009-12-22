@@ -42,12 +42,12 @@ public class TransitionToken {
      */
     public synchronized void supply(double position) throws InterruptedException {
 
-        while ( this.position != null && !done ) {
+        while (this.position != null && !done) {
 
             wait();
         }
 
-        if ( done ) {
+        if (done) {
 
             throw new IllegalStateException("Transition is over");
         }
@@ -71,12 +71,12 @@ public class TransitionToken {
      */
     public synchronized double consume() throws InterruptedException {
 
-        while ( position == null && !done ) {
+        while (position == null && !done) {
 
             wait();
         }
 
-        if ( done ) {
+        if (done) {
 
             throw new IllegalStateException("Transition is over");
         }

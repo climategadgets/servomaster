@@ -1,6 +1,7 @@
 package net.sf.servomaster.device.model.transition;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.TransitionController;
@@ -31,6 +32,8 @@ public class CrawlTransitionController implements TransitionController {
             throw new IllegalArgumentException("Neither target nor token can be null");
         }
 
+        NDC.push("move");
+        
         try {
 
             // Calculate the step
@@ -38,6 +41,8 @@ public class CrawlTransitionController implements TransitionController {
 
             final int precision = Integer.parseInt(target.getMeta().getProperty("servo/precision").toString());
             final double step = 1/(double)(precision - 1);
+            
+            logger.debug("precision=" + precision + ", step=" + step);
 
             while ( true ) {
 
@@ -92,6 +97,10 @@ public class CrawlTransitionController implements TransitionController {
             logger.error("Unexpected exception, stopping", t);
 
             token.stop();
+            
+        } finally {
+            
+            NDC.pop();
         }
     }
 }

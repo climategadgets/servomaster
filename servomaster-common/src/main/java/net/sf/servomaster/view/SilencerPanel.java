@@ -197,7 +197,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
 
             } catch ( IOException ioex ) {
 
-                ioex.printStackTrace();
+                logger.warn("Unhandled exception", ioex);
             }
 
             if ( selected ) {

@@ -169,8 +169,10 @@ public class Console implements ActionListener, WindowListener {
 
             } catch ( Throwable t ) {
 
-                logger.info("Unable to initialize controller, cause:");
-                t.printStackTrace();
+                // VT: FIXME: Need to verify if this actually gets printed - hopefully, log4j can
+                // properly flush the stream on System.exit()
+                
+                logger.info("Unable to initialize controller, cause:", t);
 
                 System.exit(1);
             }
@@ -409,7 +411,7 @@ public class Console implements ActionListener, WindowListener {
 
         } catch ( Throwable t ) {
 
-            t.printStackTrace();
+            logger.warn("Unhandled exception", t);
         }
     }
 

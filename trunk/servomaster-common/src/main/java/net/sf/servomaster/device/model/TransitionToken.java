@@ -1,6 +1,7 @@
 package net.sf.servomaster.device.model;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 /**
  * Exchange between the {@link AbstractServo AbstractServo} and {@link
@@ -41,22 +42,30 @@ public class TransitionToken {
      * @throws InterruptedException if the wait is interrupted.
      */
     public synchronized void supply(double position) throws InterruptedException {
+        
+        NDC.push("supply");
+        
+        try {
 
-        while (this.position != null && !done) {
+            while (this.position != null && !done) {
 
-            wait();
+                wait();
+            }
+
+            if (done) {
+
+                throw new IllegalStateException("Transition is over");
+            }
+
+            this.position = new Double(position);
+
+            logger.debug("position: " + this.position);
+
+            notifyAll();
+
+        } finally {
+            NDC.pop();
         }
-
-        if (done) {
-
-            throw new IllegalStateException("Transition is over");
-        }
-
-        this.position = new Double(position);
-
-        logger.debug("Supply: " + this.position);
-
-        notifyAll();
     }
 
     /**
@@ -70,26 +79,34 @@ public class TransitionToken {
      * @throws InterruptedException if the wait is interrupted.
      */
     public synchronized double consume() throws InterruptedException {
+        
+        NDC.push("consume");
 
-        while (position == null && !done) {
+        try {
 
-            wait();
+            while (position == null && !done) {
+
+                wait();
+            }
+
+            if (done) {
+
+                throw new IllegalStateException("Transition is over");
+            }
+
+            double result = position.doubleValue();
+
+            position = null;
+
+            logger.debug("position: " + result);
+
+            notifyAll();
+
+            return result;
+        
+        } finally {
+            NDC.pop();
         }
-
-        if (done) {
-
-            throw new IllegalStateException("Transition is over");
-        }
-
-        double result = position.doubleValue();
-
-        position = null;
-
-        logger.debug("Consume: " + result);
-
-        notifyAll();
-
-        return result;
     }
 
     /**

@@ -307,7 +307,7 @@ public abstract class AbstractServo implements Servo {
 
                         } catch ( IllegalStateException ex ) {
 
-                            logger.warn("Controller stopped the transition", ex);
+                            logger.debug("Controller stopped the transition", ex);
 
                             return;
 

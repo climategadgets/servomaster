@@ -11,18 +11,17 @@ import org.apache.log4j.Logger;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
  * @author Copyright &copy; Scott L'Hommedieu 2006
- * 
- * @deprecated There is a good chance that this class causes a memory leak.
- * Being replaced with {@link PacketBuilderNG}.
  */
-public class PacketBuilder {
+public class PacketBuilderNG {
 
-    private static final Logger logger = Logger.getLogger(PacketBuilder.class);
+    private static final Logger logger = Logger.getLogger(PacketBuilderNG.class);
 
     /**
      * Protocol preamble - literal string "!SC".
      */
-    private static final byte[] preamble = new byte[] {(byte) 33, (byte) 83, (byte) 67};
+    private static final byte[] PREAMBLE = new byte[] {(byte) 33, (byte) 83, (byte) 67};
+    
+    private static final byte[] SET_PARAMETERS = new byte[]{(byte) 83, (byte) 66, (byte) 82};
 
     private static int rq = 0;
     private static int size = 0;
@@ -30,19 +29,20 @@ public class PacketBuilder {
     /**
      * Build a byte buffer for "set parameters" command (0x00).
      *
+     * @param buffer Buffer to write into.
      * @param speed ???
      *
      * @return Rendered buffer.
      */
-    public static byte[] setParameters(int speed) {
+    public static byte[] setParameters(byte[] buffer, int speed) {
 
         //setting baud rate
-        ByteBuffer bb = ByteBuffer.allocate(8);
-        bb.put(preamble);
-        bb.put(new byte[]{(byte) 83, (byte) 66, (byte) 82, speed == 38400 ? (byte) 1 : (byte) 0});
+        ByteBuffer bb = ByteBuffer.wrap(buffer);
+        bb.put(PREAMBLE);
+        bb.put(SET_PARAMETERS);
+        bb.put(speed == 38400 ? (byte) 1 : (byte) 0);
         bb.put((byte) 0x0D);
 
-        byte[] buffer = bb.array();
         complain(buffer);
 
         return buffer;
@@ -67,13 +67,14 @@ public class PacketBuilder {
     /**
      * Build a byte buffer for "set absolute position" command (0x04).
      *
+     * @param buffer Buffer to write into.
      * @param servoId Servo number, zero based.
      * @param velocity Servo velocity. Valid values are 0...63.
      * @param position Servo position. Valid values are (tentatively) 250...1250.
      *
      * @return Rendered buffer.
      */
-    public static byte[] setAbsolutePosition(byte servoId, byte velocity, short position) {
+    public static byte[] setAbsolutePosition(byte[] buffer, byte servoId, byte velocity, short position) {
 
         if (velocity < 0 || velocity > 63) {
             throw new IllegalArgumentException("Invalid velocity (" + velocity + ") - outside of 0...63 range");
@@ -83,16 +84,14 @@ public class PacketBuilder {
             throw new IllegalArgumentException("Invalid position (" + position + ") - outside of 250...1250 range");
         }
 
-        ByteBuffer bb = ByteBuffer.allocate(8);
+        ByteBuffer bb = ByteBuffer.wrap(buffer);
 
-        bb.put(preamble);
+        bb.put(PREAMBLE);
         bb.put(servoId);
         bb.put(velocity);
         bb.put((byte) position);
         bb.put((byte) (position >>> 8));
         bb.put((byte) 0x0D);
-
-        byte[] buffer = bb.array();
 
         complain(buffer);
 

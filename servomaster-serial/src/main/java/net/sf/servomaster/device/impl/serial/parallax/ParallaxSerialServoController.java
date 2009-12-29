@@ -22,6 +22,12 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
 public abstract class ParallaxSerialServoController extends AbstractSerialServoController {
 
     private final Meta meta = createMeta();
+    
+    /**
+     * Byte buffer being used for all communications without exception
+     * in order to minimize chances of causing memory leaks.
+     */
+    private final byte[] serialBuffer = new byte[8];
 
     protected ParallaxSerialServoController() {
         // Can't invoke this(null) because this will blow up in doInit()
@@ -81,7 +87,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         try {
 
             port.setSerialPortParams(port.getBaudRate(), SerialPort.DATABITS_8, SerialPort.STOPBITS_2, SerialPort.PARITY_NONE);
-            send(PacketBuilder.setParameters(port.getBaudRate()));
+            send(PacketBuilderNG.setParameters(serialBuffer, port.getBaudRate()));
 
         } catch (UnsupportedCommOperationException e) {
             throw new IllegalStateException("Failed to initialize " + portName, e);
@@ -173,7 +179,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             logger.debug("Units:" + units);
             logger.debug("Position:" + position);
 
-            ParallaxSerialServoController.this.send(PacketBuilder.setAbsolutePosition((byte) id, velocity, units));
+            ParallaxSerialServoController.this.send(PacketBuilderNG.setAbsolutePosition(serialBuffer, (byte) id, velocity, units));
         }
 
         void setOn(boolean on) throws IOException {

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 /**
  * A servo abstraction.
@@ -286,6 +287,12 @@ public abstract class AbstractServo implements Servo {
             new Thread(l).start();
 
             transitionController.move(target, token, targetPosition);
+            
+            // This will help when thread pool executor is used
+            NDC.clear(); 
+            
+            // Without this, memory leaks like a sieve in DZ3
+            NDC.remove();
         }
 
         public void stop() {
@@ -296,6 +303,8 @@ public abstract class AbstractServo implements Servo {
         private class Listener implements Runnable {
 
             public void run() {
+                
+                NDC.push("run");
 
                 try {
 
@@ -322,6 +331,15 @@ public abstract class AbstractServo implements Servo {
                 } finally {
 
                     completionToken.done();
+                    
+                    // Just in case
+                    NDC.pop();
+
+                    // This will help when thread pool executor is used
+                    NDC.clear(); 
+                    
+                    // Without this, memory leaks like a sieve in DZ3
+                    NDC.remove();
                 }
             }
         }

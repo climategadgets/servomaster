@@ -3,11 +3,19 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sf.servomaster</groupId>
   <artifactId>servomaster-common</artifactId>
+  <packaging>jar</packaging>
   <name>Servomaster</name>
   <version>0.8.2.4-SNAPSHOT</version>
   <description>Platform and Hardware Independent RC Servo Controller Driver, Abstractions</description>
   <url>http://servomaster.sourceforge.net/</url>
   <inceptionYear>2001</inceptionYear>
+  <licenses>
+    <license>
+      <name>LGPL</name>
+      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <developers>
     <developer>
       <id>vtt</id>
@@ -30,6 +38,7 @@
   </developers>
   <scm>
     <connection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</connection>
+    <developerConnection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</developerConnection>
     <url>http://servomaster.svn.sourceforge.net/viewvc/servomaster/</url>
   </scm>
   <issueManagement>

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -14,11 +18,35 @@ import org.apache.log4j.NDC;
  * Supports the transition controller functionality. Allows instant and
  * controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2010
  */
 public abstract class AbstractServo implements Servo {
 
     private final Logger logger = Logger.getLogger(getClass());
+
+    /**
+     * Worker queue for transition drivers.
+     */
+    private final BlockingQueue<Runnable> driverQueue = new LinkedBlockingQueue<Runnable>();
+    
+    /**
+     * Worker queue for transition listeners.
+     */
+    private final BlockingQueue<Runnable> listenerQueue = new LinkedBlockingQueue<Runnable>();
+    
+    /**
+     * Thread pool for transition drivers.
+     * 
+     * It doesn't make sense for this pool to have more than one thread.
+     */
+    private final ThreadPoolExecutor transitionDriverExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, driverQueue);
+
+    /**
+     * Thread pool for transition listeners.
+     * 
+     * It doesn't make sense for this pool to have more than one thread.
+     */
+    private final ThreadPoolExecutor listenerExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, listenerQueue);
 
     /**
      * The actual servo to control.
@@ -148,7 +176,7 @@ public abstract class AbstractServo implements Servo {
 
                 token = new TCT(false);
                 transitionDriver = new TransitionDriver(this, position, (TCT)token);
-                new Thread(transitionDriver).start();
+                transitionDriverExecutor.execute(transitionDriver);
 
             } else {
 
@@ -282,9 +310,7 @@ public abstract class AbstractServo implements Servo {
 
             logger.debug("Transition: " + getActualPosition() + " => " + targetPosition);
 
-            Runnable l = new Listener();
-
-            new Thread(l).start();
+            listenerExecutor.execute(new Listener());
 
             transitionController.move(target, token, targetPosition);
             

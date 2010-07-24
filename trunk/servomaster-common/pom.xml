@@ -5,7 +5,7 @@
   <artifactId>servomaster-common</artifactId>
   <packaging>jar</packaging>
   <name>Servomaster</name>
-  <version>0.8.2.4-SNAPSHOT</version>
+  <version>0.8.2.4</version>
   <description>Platform and Hardware Independent RC Servo Controller Driver, Abstractions</description>
   <url>http://servomaster.sourceforge.net/</url>
   <inceptionYear>2001</inceptionYear>

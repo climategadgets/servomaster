@@ -57,7 +57,7 @@ public class TransitionToken {
                 throw new IllegalStateException("Transition is over");
             }
 
-            this.position = new Double(position);
+            this.position = Double.valueOf(position);
 
             logger.debug("position: " + this.position);
 

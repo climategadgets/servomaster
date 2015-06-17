@@ -58,7 +58,7 @@ public abstract class AbstractMeta implements Meta {
         return new ImmutableIterator<String>(properties.keySet().iterator());
     }
 
-    public final boolean getFeature(String id) {
+    public final synchronized boolean getFeature(String id) {
 
         if ( id.startsWith(metaPrefix) ) {
 
@@ -84,7 +84,7 @@ public abstract class AbstractMeta implements Meta {
         }
     }
 
-    public final Object getProperty(String id) {
+    public final synchronized Object getProperty(String id) {
 
         if ( id.startsWith(metaPrefix) ) {
 

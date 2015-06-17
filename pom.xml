@@ -4,7 +4,7 @@
     <artifactId>servomaster-master</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    <version>0.8.2.4</version>
+    <version>0.8.2.5-SNAPSHOT</version>
     <url>http://servomaster.sourceforge.net/</url>
     <inceptionYear>2001</inceptionYear>
     <developers>

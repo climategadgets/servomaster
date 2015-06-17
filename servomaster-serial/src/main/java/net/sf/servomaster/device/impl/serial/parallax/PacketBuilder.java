@@ -122,7 +122,7 @@ public class PacketBuilder {
 
             // Let's see if the buffer content is OK
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             for (int offset = 0; offset < buffer.length; offset++) {
 

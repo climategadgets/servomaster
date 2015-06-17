@@ -355,7 +355,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         return meta;
     }
 
-    protected class FT639Meta extends SerialMeta {
+    protected static class FT639Meta extends SerialMeta {
 
         protected FT639Meta() {
 

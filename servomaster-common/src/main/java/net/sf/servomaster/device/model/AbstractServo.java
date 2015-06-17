@@ -424,11 +424,10 @@ public abstract class AbstractServo implements Servo {
         public synchronized void waitFor(long millis) throws InterruptedException {
 
             long start = System.currentTimeMillis();
-            long timeout = millis;
 
             while (!complete) {
 
-                timeout = millis - (System.currentTimeMillis() - start);
+                long timeout = millis - (System.currentTimeMillis() - start);
 
                 if (timeout <= 0) {
 

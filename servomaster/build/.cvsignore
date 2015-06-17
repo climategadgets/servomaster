@@ -1,7 +1,0 @@
-classes
-src
-build.sh
-Makefile.in
-Makefile
-.servomaster.properties
-servomaster*.jar

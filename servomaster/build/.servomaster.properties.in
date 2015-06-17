@@ -1,4 +1,0 @@
-version=@VERSION@
-prefix=@prefix@
-serial.enabled=@SERIAL_ENABLED@
-usb.enabled=@USB_ENABLED@

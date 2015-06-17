@@ -70,18 +70,7 @@ public abstract class AbstractMeta implements Meta {
             throw new UnsupportedOperationException("No feature '" + id + "'");
         }
 
-        Object value = features.get(id);
-
-        if ( value instanceof Boolean ) {
-
-            return ((Boolean)value).booleanValue();
-
-        } else {
-
-            // This is bad, it shouldn't have happened
-
-            throw new IllegalStateException("Bad data for key '" + id + "', class is " + value.getClass().getName());
-        }
+        return features.get(id);
     }
 
     public final synchronized Object getProperty(String id) {

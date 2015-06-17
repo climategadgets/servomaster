@@ -1,120 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.sf.servomaster</groupId>
     <artifactId>servomaster-common</artifactId>
-    <packaging>jar</packaging>
-    <name>Servomaster</name>
-    <version>0.8.2.4</version>
     <description>Platform and Hardware Independent RC Servo Controller Driver, Abstractions</description>
-    <url>http://servomaster.sourceforge.net/</url>
-    <inceptionYear>2001</inceptionYear>
-    <licenses>
-        <license>
-            <name>LGPL</name>
-            <url>http://www.gnu.org/licenses/lgpl.html</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <developers>
-        <developer>
-            <id>vtt</id>
-            <name>Vadim Tkachenko</name>
-            <email>vt@freehold.crocodile.org</email>
-            <timezone>GMT-7</timezone>
-            <roles>
-                <role>Project Owner</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>ddcarter</id>
-            <name>David Carter</name>
-            <email>david@carter.net</email>
-            <timezone>EST</timezone>
-            <roles>
-                <role>Maven Repository Maintainer</role>
-            </roles>
-        </developer>
-    </developers>
-    <scm>
-        <connection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</connection>
-        <developerConnection>scm:svn:https://servomaster.svn.sourceforge.net/svnroot/servomaster</developerConnection>
-        <url>http://servomaster.svn.sourceforge.net/viewvc/servomaster/</url>
-    </scm>
-    <issueManagement>
-        <system>SourceForge</system>
-        <url>http://sourceforge.net/tracker/?atid=412121&amp;group_id=34418&amp;func=browse</url>
-    </issueManagement>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-            <version>1.2.16</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <configuration>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-    <profiles>
-        <profile>
-            <id>release-sign-artifacts</id>
-            <activation>
-                <property>
-                    <name>performRelease</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+    <parent>
+        <groupId>net.sf.servomaster</groupId>
+        <artifactId>servomaster-master</artifactId>
+        <version>0.8.2.4</version>
+        <relativePath>..</relativePath>
+    </parent>
 </project>

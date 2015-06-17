@@ -42,7 +42,6 @@ import net.sf.servomaster.view.ServoControllerView;
  * </ul>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: FT639ServoControllerView.java,v 1.7 2006-12-14 09:17:11 vtt Exp $
  */
 @SuppressWarnings("serial")
 public class FT639ServoControllerView extends JPanel implements ActionListener, ChangeListener, ServoControllerListener, ServoControllerView {

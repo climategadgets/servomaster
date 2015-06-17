@@ -32,7 +32,6 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  * Displays the servo status and allows to control it.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: ServoView.java,v 1.22 2006-12-14 09:17:11 vtt Exp $
  */
 @SuppressWarnings("serial")
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {

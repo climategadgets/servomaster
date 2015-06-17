@@ -15,7 +15,6 @@ import net.sf.servomaster.device.model.TransitionCompletionToken;
  * means to perform the actual coordinate transformation.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: AbstractCoordinateTransformer.java,v 1.7 2006-12-14 09:17:09 vtt Exp $
  */
 public abstract class AbstractCoordinateTransformer extends AbstractServo {
 

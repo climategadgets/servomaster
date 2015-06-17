@@ -22,7 +22,6 @@ import net.sf.servomaster.device.model.AbstractMeta;
  * the feature in the device meta class.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: SerialMeta.java,v 1.2 2006-12-14 09:17:08 vtt Exp $
  */
 public abstract class SerialMeta extends AbstractMeta {
 

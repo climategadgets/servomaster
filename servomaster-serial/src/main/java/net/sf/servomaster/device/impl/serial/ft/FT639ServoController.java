@@ -73,7 +73,6 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * extend the functionality without rewriting half of the code.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2006
- * @version $Id: FT639ServoController.java,v 1.43 2006-12-14 09:17:11 vtt Exp $
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 

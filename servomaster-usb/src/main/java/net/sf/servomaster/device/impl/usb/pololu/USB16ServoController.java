@@ -25,7 +25,6 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * USB 16-Servo Controller</a> controller.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
- * @version $Id: USB16ServoController.java,v 1.5 2006-12-14 09:17:11 vtt Exp $
  */
 public class USB16ServoController extends AbstractUsbServoController {
 

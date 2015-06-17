@@ -32,7 +32,6 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * Detailed documentation to follow.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
- * @version $Id: PhidgetServoController.java,v 1.36 2006-12-14 11:37:45 vtt Exp $
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 

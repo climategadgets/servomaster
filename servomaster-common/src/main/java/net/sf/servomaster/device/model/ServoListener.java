@@ -9,7 +9,6 @@ package net.sf.servomaster.device.model;
  * sending notifications asynchronous from the servo operation itself.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: ServoListener.java,v 1.4 2006-12-14 09:17:10 vtt Exp $
  */
 public interface ServoListener {
 

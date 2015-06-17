@@ -60,7 +60,6 @@ import net.sf.servomaster.device.model.TransitionController;
  * </ol>
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
- * @version $Id: Console.java,v 1.21 2006-12-14 09:17:11 vtt Exp $
  */
 public class Console implements ActionListener, WindowListener {
 

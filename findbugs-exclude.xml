@@ -1,39 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
-    <!-- This is exactly what should be happening here, waiting outside of the loop. -->
-    <Match>
-        <Class name="net.sf.jukebox.sem.EventSemaphore"/>
-        <Method name="waitFor" signature="()Z"/>
-        <Bug pattern="WA_NOT_IN_LOOP"/>
-    </Match>
-    <!-- This is exactly what should be happening here, waiting outside of the loop. -->
-    <Match>
-        <Class name="net.sf.jukebox.sem.EventSemaphore"/>
-        <Method name="waitFor" signature="(J)Z"/>
-        <Bug pattern="WA_NOT_IN_LOOP"/>
-    </Match>
-    <!-- This is exactly what should be happening here, waiting outside of the loop. -->
-    <Match>
-        <Class name="net.sf.jukebox.sem.MutexSemaphore"/>
-        <Method name="waitFor" signature="(J)Z"/>
-        <Bug pattern="WA_NOT_IN_LOOP"/>
-    </Match>
-    <!-- This is a mutex, there's no point in notifying more than one thread -->
-    <Match>
-        <Class name="net.sf.jukebox.sem.MutexSemaphore"/>
-        <Method name="release" />
-        <Bug pattern="NO_NOTIFY_NOT_NOTIFYALL"/>
-    </Match>
-    <!-- This is a test, the warning is irrelevant -->
-    <Match>
-        <Class name="net.sf.jukebox.service.MessengerTest"/>
-        <Field name="current" />
-        <Bug pattern="IS2_INCONSISTENT_SYNC"/>
-    </Match>
-    <!-- This is a test, the warning is irrelevant -->
-    <Match>
-        <Class name="net.sf.jukebox.service.MessengerTest"/>
-        <Field name="max" />
-        <Bug pattern="IS2_INCONSISTENT_SYNC"/>
-    </Match>
 </FindBugsFilter>

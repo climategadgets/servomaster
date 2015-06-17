@@ -28,8 +28,8 @@ public abstract class SerialMeta extends AbstractMeta {
 
     protected SerialMeta() {
 
-        features.put("controller/allow_disconnect", new Boolean(false));
-        features.put("controller/protocol/serial", new Boolean(true));
+        features.put("controller/allow_disconnect", Boolean.valueOf(false));
+        features.put("controller/protocol/serial", Boolean.valueOf(true));
 
         properties.put("controller/protocol/serial/speed", "2400");
     }

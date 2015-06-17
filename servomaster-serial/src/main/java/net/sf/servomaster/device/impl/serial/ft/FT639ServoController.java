@@ -363,7 +363,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             properties.put("manufacturer/URL", "http://www.ferrettronics.com/");
             properties.put("manufacturer/model", "FT639");
 
-            features.put("controller/silent", new Boolean(true));
+            features.put("controller/silent", Boolean.valueOf(true));
 
             properties.put("controller/maxservos", "5");
 

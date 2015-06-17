@@ -112,7 +112,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             properties.put(META_SPEED, "2400");
 
 
-            features.put(META_SILENT, new Boolean(true));
+            features.put(META_SILENT, Boolean.valueOf(true));
 
             // VT: FIXME
 

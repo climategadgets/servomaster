@@ -91,7 +91,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
             properties.put("controller/protocol/serial/speed", "38400");
 
-            features.put("controller/silent", new Boolean(true));
+            features.put("controller/silent", Boolean.valueOf(true));
 
             // VT: FIXME
 

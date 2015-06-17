@@ -4,8 +4,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 /**
- * Exchange between the {@link AbstractServo AbstractServo} and {@link
- * TransitionController TransitionController}.
+ * Exchange between the {@link AbstractServo} and {@link TransitionController}.
  *
  * The servo instantiates the token and passes it to the transition
  * controller. The transition controller supplies the coordinates following

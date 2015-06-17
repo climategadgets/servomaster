@@ -13,6 +13,10 @@
             <name>Vadim Tkachenko</name>
             <url>https://github.com/climategadgets</url>
             <id>climategadgets</id>
+            <timezone>GMT-7</timezone>
+            <roles>
+                <role>Project Owner</role>
+            </roles>
         </developer>
     </developers>
     <licenses>

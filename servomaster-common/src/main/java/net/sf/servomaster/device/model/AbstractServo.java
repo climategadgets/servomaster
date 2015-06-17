@@ -379,7 +379,7 @@ public abstract class AbstractServo implements Servo {
      * {@link #done done()} method the API user should have no business
      * knowing about.
      */
-    protected class TCT implements TransitionCompletionToken {
+    protected static class TCT implements TransitionCompletionToken {
 
         /**
          * Completion state.

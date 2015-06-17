@@ -25,8 +25,6 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public abstract class AbstractSerialServoController extends AbstractServoController {
 
-    protected final Logger logger = Logger.getLogger(getClass());
-
     /**
      * Open timeout.
      *

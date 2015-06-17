@@ -101,7 +101,7 @@ public abstract class AbstractMeta implements Meta {
 
         // Now that we've succeeded, we can store the value into the map
 
-        features.put(id, new Boolean(value));
+        features.put(id, Boolean.valueOf(value));
     }
 
     public final synchronized void setProperty(String id, Object value) {

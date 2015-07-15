@@ -27,7 +27,8 @@
     <modules>
         <module>servomaster-common</module>
         <module>servomaster-serial</module>
-        <module>servomaster-usb</module>
+        <!-- Let's make this module optional, it wants a non-standard dependency -->
+        <!-- <module>servomaster-usb</module> -->
     </modules>
     <scm>
         <connection>scm:git:git://github.com/climategadgets/jukebox.git</connection>

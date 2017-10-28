@@ -1,0 +1,26 @@
+subprojects {
+
+    apply plugin: 'java'
+    group = 'net.sf.servomaster'
+    version = '0.8.2.5-SNAPSHOT'
+
+    apply plugin: 'findbugs'
+
+    findbugs {
+
+        excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
+        ignoreFailures = true
+    }
+
+    repositories {
+
+        jcenter()
+    }
+
+    dependencies {
+
+        compile 'log4j:log4j:1.2.16'
+
+        testCompile 'junit:junit:4.12'
+    }
+}

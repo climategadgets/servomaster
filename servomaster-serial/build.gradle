@@ -1,0 +1,5 @@
+dependencies {
+
+    compile project(':servomaster-common')
+    compile 'org.rxtx:rxtx:2.1.7'
+}

@@ -29,7 +29,7 @@
         <module>servomaster-serial</module>
         <!-- Let's make this module optional, it wants a non-standard dependency -->
         <!-- <module>servomaster-usb</module> -->
-        <module>servomaster-PCA9685</module>
+        <module>servomaster-raspberry-pi</module>
     </modules>
     <scm>
         <connection>scm:git:git://github.com/climategadgets/jukebox.git</connection>

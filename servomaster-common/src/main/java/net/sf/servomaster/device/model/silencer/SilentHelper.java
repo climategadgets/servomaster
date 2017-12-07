@@ -90,12 +90,14 @@ public class SilentHelper extends Thread implements SilentDevice {
         notifyAll();
     }
 
+    @Override
     public synchronized void setSilentMode(boolean silent) {
 
         this.silent = silent;
         notifyAll();
     }
 
+    @Override
     public synchronized void setSilentTimeout(long timeout, long heartbeat) {
 
         if ( timeout <= 0 ) {
@@ -114,11 +116,13 @@ public class SilentHelper extends Thread implements SilentDevice {
         notifyAll();
     }
 
+    @Override
     public boolean isSilentNow() {
 
         return stateHandler instanceof Passive;
     }
 
+    @Override
     public boolean getSilentMode() {
 
         return silent;

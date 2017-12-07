@@ -88,6 +88,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
     protected class PhidgetSilentProxy implements SilentProxy {
 
+        @Override
         public synchronized void sleep() {
 
             try {
@@ -101,6 +102,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             }
         }
 
+        @Override
         public synchronized void wakeUp() {
 
             // VT: FIXME: Do I really have to do anything? The packet with the proper data gets sent anyway...

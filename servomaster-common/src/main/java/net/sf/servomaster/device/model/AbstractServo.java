@@ -115,6 +115,7 @@ public abstract class AbstractServo implements Servo {
         this.target = target;
     }
 
+    @Override
     public final synchronized void attach(TransitionController transitionController) {
 
         // This operation can safely be made synchronized because it doesn't
@@ -135,21 +136,25 @@ public abstract class AbstractServo implements Servo {
         this.transitionController = transitionController;
     }
 
+    @Override
     public final TransitionController getTransitionController() {
 
         return transitionController;
     }
 
+    @Override
     public final Servo getTarget() {
 
         return target;
     }
 
+    @Override
     public ServoController getController() {
 
         return servoController;
     }
 
+    @Override
     public TransitionCompletionToken setPosition(double position) throws IOException {
 
         if ( !enabled ) {
@@ -237,21 +242,25 @@ public abstract class AbstractServo implements Servo {
         }
     }
 
+    @Override
     public void setEnabled(boolean enabled) throws IOException {
 
         this.enabled = enabled;
     }
 
+    @Override
     public double getPosition() {
 
         return position;
     }
 
+    @Override
     public double getActualPosition() {
 
         return actualPosition;
     }
 
+    @Override
     public synchronized void addListener(ServoListener listener) {
 
         // This operation can safely be made synchronized because it doesn't
@@ -260,6 +269,7 @@ public abstract class AbstractServo implements Servo {
         listenerSet.add(listener);
     }
 
+    @Override
     public synchronized void removeListener(ServoListener listener) {
 
         // This operation can safely be made synchronized because it doesn't
@@ -306,6 +316,7 @@ public abstract class AbstractServo implements Servo {
             this.completionToken = completionToken;
         }
 
+        @Override
         public void run() {
 
             logger.debug("Transition: " + getActualPosition() + " => " + targetPosition);
@@ -328,6 +339,7 @@ public abstract class AbstractServo implements Servo {
 
         private class Listener implements Runnable {
 
+            @Override
             public void run() {
                 
                 NDC.push("run");
@@ -402,6 +414,7 @@ public abstract class AbstractServo implements Servo {
         /**
          * {@inheritDoc}
          */
+        @Override
         public synchronized boolean isComplete() {
 
             return complete;
@@ -410,6 +423,7 @@ public abstract class AbstractServo implements Servo {
         /**
          * {@inheritDoc}
          */
+        @Override
         public synchronized void waitFor() throws InterruptedException {
 
             while (!complete) {
@@ -421,6 +435,7 @@ public abstract class AbstractServo implements Servo {
         /**
          * {@inheritDoc}
          */
+        @Override
         public synchronized void waitFor(long millis) throws InterruptedException {
 
             long start = System.currentTimeMillis();

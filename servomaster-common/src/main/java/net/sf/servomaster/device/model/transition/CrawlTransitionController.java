@@ -25,6 +25,7 @@ public class CrawlTransitionController implements TransitionController {
 
     }
 
+    @Override
     public void move(Servo target, TransitionToken token, double targetPosition) {
 
         if ( target == null || token == null ) {

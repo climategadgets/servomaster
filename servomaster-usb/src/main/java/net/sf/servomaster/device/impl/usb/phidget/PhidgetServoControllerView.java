@@ -58,7 +58,8 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
     private PhidgetServoController controller;
 
-    public void init(ServoController controller) {
+    @Override
+ public void init(ServoController controller) {
 
         this.controller = (PhidgetServoController)controller;
 
@@ -90,6 +91,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
         setBorder(BorderFactory.createTitledBorder("PhidgetServo specific controls"));
     }
 
+    @Override
     public void silentStatusChanged(ServoController controller, boolean mode) {
 
         // FIXME
@@ -269,6 +271,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
             }
         }
 
+        @Override
         public void stateChanged(ChangeEvent e) {
 
             Object source = e.getSource();
@@ -306,6 +309,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
         /**
          * React to checkbox status changes.
          */
+        @Override
         public void itemStateChanged(ItemEvent e) {
 
             if ( e.getSource() == silentBox ) {
@@ -331,16 +335,19 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
         }
     }
 
+    @Override
     public void deviceArrived(ServoController device) {
 
         logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
+    @Override
     public void deviceDeparted(ServoController device) {
 
         logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
+    @Override
     public void exception(Object source, Throwable t) {
 
         logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);

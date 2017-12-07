@@ -160,6 +160,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
 
     }
 
+    @Override
     public void init(ServoController controller) {
 
         if ( controller == null ) {
@@ -172,6 +173,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         controller.addListener(this);
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
 
         try {
@@ -199,11 +201,13 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
      *
      * @param mode The silent mode if <code>true</code>.
      */
+    @Override
     public void silentStatusChanged(ServoController controller, boolean mode) {
 
         modeLabel.setText(mode ? "Active" : "Setup");
     }
 
+    @Override
     public void stateChanged(ChangeEvent e) {
 
         Object source = e.getSource();
@@ -222,16 +226,19 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
 
     }
 
+    @Override
     public void deviceArrived(ServoController device) {
 
         logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
+    @Override
     public void deviceDeparted(ServoController device) {
 
         logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
+    @Override
     public void exception(Object source, Throwable t) {
 
         logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);

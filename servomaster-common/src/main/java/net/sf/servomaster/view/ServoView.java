@@ -299,6 +299,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * React to the slider events.
      */
+    @Override
     public void stateChanged(ChangeEvent e) {
 
         Object source = e.getSource();
@@ -321,6 +322,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * React to the checkbox events.
      */
+    @Override
     public void itemStateChanged(ItemEvent e) {
 
         if ( e.getSource() == enableBox ) {
@@ -334,6 +336,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         }
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
 
         try {
@@ -454,6 +457,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      *
      * @param source The servo whose requested position has changed.
      */
+    @Override
     public void positionChanged(Servo source, double position) {
 
         // This notification doesn't have to be visibly reflected
@@ -466,6 +470,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      *
      * @param source The servo whose actual position has changed.
      */
+    @Override
     public void actualPositionChanged(Servo source, double position) {
 
         setPosition(position);

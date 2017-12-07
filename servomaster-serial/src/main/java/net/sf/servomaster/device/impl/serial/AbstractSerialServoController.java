@@ -21,7 +21,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * Base class for all serial servo controllers.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
  */
 public abstract class AbstractSerialServoController extends AbstractServoController {
 

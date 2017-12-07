@@ -9,11 +9,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax-usb</groupId>
-            <artifactId>jsr80</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>/usr/share/java/jsr80.jar</systemPath>
+            <groupId>org.usb4java</groupId>
+            <artifactId>usb4java-javax</artifactId>
+            <version>1.2.0</version>
         </dependency>
     </dependencies>
     <parent>

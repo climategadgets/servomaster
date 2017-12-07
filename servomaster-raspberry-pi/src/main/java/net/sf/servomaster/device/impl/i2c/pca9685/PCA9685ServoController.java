@@ -7,6 +7,8 @@ import org.apache.log4j.NDC;
 import com.pi4j.io.i2c.I2CBus;
 
 import net.sf.servomaster.device.impl.i2c.AbstractI2CServoController;
+import net.sf.servomaster.device.model.HardwareServo;
+import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.silencer.SilentProxy;
 
@@ -138,13 +140,16 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     @Override
     protected void checkInit() {
 
-        throw new IllegalStateException("Not Implemented");
+        // Do nothing. This controller is initialized in the constructor.
     }
 
     @Override
     public boolean isConnected() {
 
-        throw new IllegalStateException("Not Implemented");
+        // VT: FIXME: It remains to be seen how this check can be performed [reliably].
+        
+        logger.warn("FIXME: isConnected() returning unconditional true");
+        return true;
     }
 
     @Override
@@ -155,6 +160,26 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
     @Override
     protected Servo createServo(int id) throws IOException {
-        throw new IllegalStateException("Not Implemented");
+        
+        return new PCA9685Servo(this, id);
+    }
+    
+    private final class PCA9685Servo extends HardwareServo {
+
+        public PCA9685Servo(PCA9685ServoController sc, int id) {
+            super(sc, id);
+        }
+
+        @Override
+        protected Meta createMeta() {
+            
+            throw new IllegalStateException("Not Implemented");
+        }
+
+        @Override
+        protected void setActualPosition(double position) throws IOException {
+            
+            throw new IllegalStateException("Not Implemented");
+        }
     }
 }

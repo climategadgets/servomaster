@@ -1,0 +1,40 @@
+#! /bin/sh
+
+# VT: FIXME: no frills; if you made it this far, you can do it.
+# Better yet, please submit the fix to make this script better.
+
+# Gotta do 'mvn install' before this can be run.
+
+SERVOMASTER_VERSION=0.8.2.5-SNAPSHOT
+LIBDIR=${HOME}/.m2/repository
+
+APACHE_COMMONS_LANG3="${LIBDIR}/org/apache/commons/commons-lang3/3.2.1/commons-lang3-3.2.1.jar"
+LOG4J="${LIBDIR}/log4j/log4j/1.2.16/log4j-1.2.16.jar"
+SERVOMASTER="${LIBDIR}/net/sf/servomaster"
+RXTX="${LIBDIR}/org/rxtx/rxtx/2.1.7/rxtx-2.1.7.jar"
+USB_API_VERSION="1.0.2"
+USB_API="${LIBDIR}/javax/usb/usb-api/${USB_API_VERSION}/usb-api-${USB_API_VERSION}.jar"
+USB4JAVA_VERSION="1.2.0"
+USB4JAVA_JAVAX="${LIBDIR}/org/usb4java/usb4java-javax/${USB4JAVA_VERSION}/usb4java-javax-${USB4JAVA_VERSION}.jar"
+USB4JAVA="${LIBDIR}/org/usb4java/usb4java/${USB4JAVA_VERSION}/usb4java-${USB4JAVA_VERSION}.jar"
+USB4JAVA_X86_64="${LIBDIR}/org/usb4java/libusb4java/${USB4JAVA_VERSION}/libusb4java-${USB4JAVA_VERSION}-linux-x86_64.jar"
+USB4JAVA_ARM="${LIBDIR}/org/usb4java/libusb4java/${USB4JAVA_VERSION}/libusb4java-${USB4JAVA_VERSION}-linux-arm.jar"
+
+CLASSPATH="\
+${APACHE_COMMONS_LANG3}:\
+${LOG4J}:\
+${USB_API}:\
+${USB4JAVA_JAVAX}:\
+${USB4JAVA}:\
+${USB4JAVA_X86_64}:\
+${USB4JAVA_ARM}:\
+${RXTX}:\
+${SERVOMASTER}/servomaster-common/${SERVOMASTER_VERSION}/servomaster-common-${SERVOMASTER_VERSION}.jar:\
+${SERVOMASTER}/servomaster-serial/${SERVOMASTER_VERSION}/servomaster-serial-${SERVOMASTER_VERSION}.jar:\
+${SERVOMASTER}/servomaster-usb/${SERVOMASTER_VERSION}/servomaster-usb-${SERVOMASTER_VERSION}.jar:\
+"
+
+echo $CLASSPATH|tr ":" "\n"
+
+LD_LIBRARY_PATH=/usr/lib/jni java -cp $CLASSPATH net.sf.servomaster.view.Console $*
+

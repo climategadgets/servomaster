@@ -417,6 +417,7 @@ public class Console implements ActionListener, WindowListener {
     /**
      * React to the button presses.
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
 
         if ( demo != null ) {
@@ -448,38 +449,46 @@ public class Console implements ActionListener, WindowListener {
 
     // WindowListener methods
 
+    @Override
     public void windowOpened(WindowEvent e) {
 
     }
 
+    @Override
     public void windowClosing(WindowEvent e) {
 
         System.exit(0);
     }
 
 
+    @Override
     public void windowClosed(WindowEvent e) {
 
     }
 
+    @Override
     public void windowIconified(WindowEvent e) {
 
     }
 
+    @Override
     public void windowDeiconified(WindowEvent e) {
 
     }
 
+    @Override
     public void windowActivated(WindowEvent e) {
 
     }
 
+    @Override
     public void windowDeactivated(WindowEvent e) {
 
     }
 
     protected abstract class exec implements Runnable {
 
+        @Override
         public void run() {
 
             try {

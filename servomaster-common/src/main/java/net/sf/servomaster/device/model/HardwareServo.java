@@ -47,6 +47,7 @@ abstract public class HardwareServo extends AbstractServo {
      *
      * @return Servo name.
      */
+    @Override
     public final String getName() {
 
         return Integer.toString(id);
@@ -64,6 +65,7 @@ abstract public class HardwareServo extends AbstractServo {
      *
      * @return Servo metadata.
      */
+    @Override
     public final Meta getMeta() {
 
         return meta;

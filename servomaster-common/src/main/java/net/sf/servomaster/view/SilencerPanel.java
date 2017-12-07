@@ -167,16 +167,19 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
      *
      * @param mode The silent mode if <code>true</code>.
      */
+    @Override
     public void silentStatusChanged(ServoController controller, boolean mode) {
 
         silentLabel.setText(mode ? "Active" : "Sleeping");
     }
 
+    @Override
     public void deviceArrived(ServoController device) {
 
         logger.warn("deviceArrived is not implemented by " + getClass().getName());
     }
 
+    @Override
     public void deviceDeparted(ServoController device) {
 
         logger.warn("deviceDeparted is not implemented by " + getClass().getName());
@@ -185,6 +188,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
     /**
      * React to checkbox status changes.
      */
+    @Override
     public void itemStateChanged(ItemEvent e) {
 
         if ( e.getSource() == silentBox ) {
@@ -218,6 +222,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
     /**
      * React to the slider events.
      */
+    @Override
     public void stateChanged(ChangeEvent e) {
 
         int timeout = timeoutSlider.getValue();
@@ -229,6 +234,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat: " + heartbeat));
     }
 
+    @Override
     public void exception(Object source, Throwable t) {
 
         logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);

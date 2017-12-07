@@ -48,16 +48,19 @@ public abstract class AbstractMeta implements Meta {
      */
     protected Map<String, PropertyWriter> propertyWriters = new TreeMap<String, PropertyWriter>();
 
+    @Override
     public final Iterator<String> getFeatures() {
 
         return new ImmutableIterator<String>(features.keySet().iterator());
     }
 
+    @Override
     public final Iterator<String> getProperties() {
 
         return new ImmutableIterator<String>(properties.keySet().iterator());
     }
 
+    @Override
     public final synchronized boolean getFeature(String id) {
 
         if ( id.startsWith(metaPrefix) ) {
@@ -73,6 +76,7 @@ public abstract class AbstractMeta implements Meta {
         return features.get(id);
     }
 
+    @Override
     public final synchronized Object getProperty(String id) {
 
         if ( id.startsWith(metaPrefix) ) {
@@ -88,6 +92,7 @@ public abstract class AbstractMeta implements Meta {
         return properties.get(id);
     }
 
+    @Override
     public final synchronized void setFeature(String id, boolean value) {
 
         FeatureWriter w = featureWriters.get(id);
@@ -104,6 +109,7 @@ public abstract class AbstractMeta implements Meta {
         features.put(id, Boolean.valueOf(value));
     }
 
+    @Override
     public final synchronized void setProperty(String id, Object value) {
 
         PropertyWriter w = propertyWriters.get(id);

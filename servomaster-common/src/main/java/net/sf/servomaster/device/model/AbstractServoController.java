@@ -96,6 +96,7 @@ public abstract class AbstractServoController implements ServoController {
     /**
      * {@inheritDoc}
      */
+    @Override
     public final String getPort() {
 
         checkInit();
@@ -103,6 +104,7 @@ public abstract class AbstractServoController implements ServoController {
         return portName;
     }
 
+    @Override
     public final synchronized void init(String portName) throws IOException {
 
         if ( this.portName != null ) {
@@ -147,16 +149,19 @@ public abstract class AbstractServoController implements ServoController {
      */
     protected abstract void checkInit();
 
+    @Override
     public void setLazyMode(boolean enable) {
 
         throw new UnsupportedOperationException("Lazy mode is not supported");
     }
 
+    @Override
     public boolean isLazy() {
 
         return false;
     }
 
+    @Override
     public final synchronized void addListener(ServoControllerListener listener) {
 
         checkInit();
@@ -164,6 +169,7 @@ public abstract class AbstractServoController implements ServoController {
         listenerSet.add(listener);
     }
 
+    @Override
     public final synchronized void removeListener(ServoControllerListener listener) {
 
         checkInit();
@@ -277,6 +283,7 @@ public abstract class AbstractServoController implements ServoController {
         return (silencer == null) ? false : silencer.isSilentNow();
     }
 
+    @Override
     public Meta getMeta() {
 
         throw new UnsupportedOperationException("This driver class doesn't provide metadata (most probably oversight on developer's part)");
@@ -362,6 +369,7 @@ public abstract class AbstractServoController implements ServoController {
      * @exception IllegalStateException if the controller wasn't previously
      * initialized.
      */
+    @Override
     public final Iterator<Servo> getServos() throws IOException {
 
         checkInit();

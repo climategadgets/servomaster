@@ -44,6 +44,7 @@ public class LimitTransformer extends AbstractCoordinateTransformer {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected double transform(double value) {
 
         return min + (max - min) * value;
@@ -52,6 +53,7 @@ public class LimitTransformer extends AbstractCoordinateTransformer {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected double resolve(double value) {
 
         return (value - min) / (max - min);

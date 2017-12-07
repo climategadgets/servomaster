@@ -65,6 +65,7 @@ public class USB16ServoController extends AbstractUsbServoController {
 
     protected class PololuSilentProxy implements SilentProxy {
 
+        @Override
         public synchronized void sleep() {
 
             try {
@@ -78,6 +79,7 @@ public class USB16ServoController extends AbstractUsbServoController {
             }
         }
 
+        @Override
         public synchronized void wakeUp() {
 
             // VT: FIXME: Do I really have to do anything? The packet with

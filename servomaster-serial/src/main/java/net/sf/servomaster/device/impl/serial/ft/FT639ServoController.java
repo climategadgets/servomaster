@@ -544,6 +544,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
     protected class FT639SilentProxy implements SilentProxy {
 
+        @Override
         public synchronized void sleep() {
 
             try {
@@ -557,6 +558,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             }
         }
 
+        @Override
         public synchronized void wakeUp() {
 
             try {

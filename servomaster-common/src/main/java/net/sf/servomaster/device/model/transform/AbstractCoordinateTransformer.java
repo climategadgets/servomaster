@@ -39,6 +39,7 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      *
      * @return Servo name.
      */
+    @Override
     public String getName() {
 
         return getTarget().getName();
@@ -115,6 +116,7 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
         getTarget().setEnabled(enabled);
     }
 
+    @Override
     public Meta getMeta() {
 
         return getTarget().getMeta();

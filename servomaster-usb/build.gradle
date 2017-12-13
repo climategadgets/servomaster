@@ -1,0 +1,5 @@
+dependencies {
+
+    compile project(':servomaster-common')
+    compile 'org.usb4java:usb4java-javax:1.2.0'
+}

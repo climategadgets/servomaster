@@ -1,7 +1,6 @@
 include 'servomaster-common'
 include 'servomaster-serial'
-// Uncomment the following line if you need to compile the USB subset
-// include 'servomaster-usb'
+include 'servomaster-usb'
 include 'servomaster-raspberry-pi'
 
 rootProject.name = 'servomaster'

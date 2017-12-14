@@ -98,7 +98,6 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             device.write(PRESCALE, (byte) (Math.floor(preScale)));
             device.write(MODE1, oldmode);
 
-
             try {
 
                 // wait for oscillator
@@ -174,7 +173,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     public boolean isConnected() {
 
         // VT: FIXME: It remains to be seen how this check can be performed [reliably].
-        
+
         logger.warn("FIXME: isConnected() returning unconditional true");
         return true;
     }
@@ -187,10 +186,10 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
     @Override
     protected Servo createServo(int id) throws IOException {
-        
+
         return new PCA9685Servo(this, id);
     }
-    
+
     private final class PCA9685Servo extends HardwareServo {
 
         public PCA9685Servo(PCA9685ServoController sc, int id) {
@@ -199,13 +198,13 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         @Override
         protected Meta createMeta() {
-            
+
             throw new IllegalStateException("Not Implemented");
         }
 
         @Override
         protected void setActualPosition(double position) throws IOException {
-            
+
             throw new IllegalStateException("Not Implemented");
         }
     }

@@ -119,14 +119,41 @@ public class PCA9685ServoController extends AbstractI2CServoController {
         }
     }
 
+    /**
+     * Configure PWM pulse for an individual servo.
+     *
+     * @param channel Servo id (0..15).
+     * @param onAt Turn the signal on this many μs after the start of the pulse (0..4095, 2^12 values).
+     * @param offAt Turn the signal off this many μs after the start of the pulse  (0..4095, 2^12 values).
+     */
     private void setPWM(int channel, int onAt, int offAt) throws IOException {
 
-        // VT: NOTE: No sanity checks here, private method
+        // VT: NOTE: Arguments are calculation results, sanity checks are needed
+
+        if (channel < 0 || channel > getServoCount()) {
+            throw new IllegalArgumentException("servo channel (" + channel + ") out of range, valid values are 0.." + getServoCount());
+        }
+
+        checkOffset("on", onAt);
+        checkOffset("of", offAt);
 
         device.write(LED0_ON_L + 4 * channel, (byte) (onAt & 0xFF));
         device.write(LED0_ON_H + 4 * channel, (byte) (onAt >> 8));
         device.write(LED0_OFF_L + 4 * channel, (byte) (offAt & 0xFF));
         device.write(LED0_OFF_H + 4 * channel, (byte) (offAt >> 8));
+    }
+
+    /**
+     * Make sure the {@code offset} value is between 0..4095 inclusive.
+     *
+     * @param marker Error marker.
+     * @param offset Value to check.
+     */
+    private void checkOffset(String marker, int offset) {
+
+        if (offset < 0 || offset > 4095) {
+            throw new IllegalArgumentException("'" + marker + "' offset is out of range (valid values 0...4095)");
+        }
     }
 
     @Override

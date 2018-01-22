@@ -7,6 +7,8 @@ import org.apache.log4j.NDC;
 import com.pi4j.io.i2c.I2CBus;
 
 import net.sf.servomaster.device.impl.i2c.AbstractI2CServoController;
+import net.sf.servomaster.device.impl.i2c.I2CMeta;
+import net.sf.servomaster.device.model.AbstractMeta;
 import net.sf.servomaster.device.model.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
@@ -15,7 +17,7 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
 /**
  * Implementation based on {@link Raspberry Pi PWM HAT https://www.adafruit.com/product/2327}
  * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class PCA9685ServoController extends AbstractI2CServoController {
 
@@ -126,20 +128,30 @@ public class PCA9685ServoController extends AbstractI2CServoController {
      * @param offAt Turn the signal off this many μs after the start of the pulse  (0..4095, 2^12 values).
      */
     private void setPWM(int channel, int onAt, int offAt) throws IOException {
+        
+        NDC.push("setPWM");
+        
+        try {
+            
+            logger.debug("channel=" + channel + ", on=" + onAt + ", off=" + offAt);
 
-        // VT: NOTE: Arguments are calculation results, sanity checks are needed
-
-        if (channel < 0 || channel > getServoCount()) {
-            throw new IllegalArgumentException("servo channel (" + channel + ") out of range, valid values are 0.." + getServoCount());
+            // VT: NOTE: Arguments are calculation results, sanity checks are needed
+    
+            if (channel < 0 || channel > getServoCount()) {
+                throw new IllegalArgumentException("servo channel (" + channel + ") out of range, valid values are 0.." + getServoCount());
+            }
+    
+            checkOffset("on", onAt);
+            checkOffset("of", offAt);
+    
+            device.write(LED0_ON_L + 4 * channel, (byte) (onAt & 0xFF));
+            device.write(LED0_ON_H + 4 * channel, (byte) (onAt >> 8));
+            device.write(LED0_OFF_L + 4 * channel, (byte) (offAt & 0xFF));
+            device.write(LED0_OFF_H + 4 * channel, (byte) (offAt >> 8));
+        
+        } finally {
+            NDC.pop();
         }
-
-        checkOffset("on", onAt);
-        checkOffset("of", offAt);
-
-        device.write(LED0_ON_L + 4 * channel, (byte) (onAt & 0xFF));
-        device.write(LED0_ON_H + 4 * channel, (byte) (onAt >> 8));
-        device.write(LED0_OFF_L + 4 * channel, (byte) (offAt & 0xFF));
-        device.write(LED0_OFF_H + 4 * channel, (byte) (offAt >> 8));
     }
 
     /**
@@ -181,7 +193,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     @Override
     protected SilentProxy createSilentProxy() {
 
-        throw new IllegalStateException("Not Implemented");
+        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
@@ -189,8 +201,54 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         return new PCA9685Servo(this, id);
     }
+    
+    @Override
+    public Meta getMeta() {
+
+        return new PCA9685Meta();
+    }
+
+    protected class PCA9685Meta extends I2CMeta {
+
+        protected PCA9685Meta() {
+
+            properties.put("manufacturer/name", "Adafruit");
+            properties.put("manufacturer/URL", "https://www.adafruit.com/");
+            properties.put("manufacturer/model", "16-Channel PWM/Servo HAT for Raspberry Pi");
+            properties.put("controller/maxservos", Integer.toString(getServoCount()));
+
+            // VT: FIXME: Servo range unit is weirdly defined, need to clarify
+
+            // properties.put("servo/range/units", "\u03BCs");
+
+            // Default range is 50 to 600, whatever that means.
+            // This will be a bit beyond most servos' range out of the box.
+
+            properties.put("servo/range/min", "50");
+            properties.put("servo/range/max", "600");
+            properties.put("controller/precision", "550");
+
+            // Silent timeout is five seconds
+
+            properties.put("controller/silent", "5000");
+            features.put(META_SILENT, Boolean.valueOf(true));
+        }
+    }
 
     private final class PCA9685Servo extends HardwareServo {
+
+        /**
+         * Minimal allowed absolute position for this device.
+         */
+        final short MIN_PULSE = 50;
+
+        /**
+         * Maximum allowed absolute position for this device.
+         */
+        final short MAX_PULSE = 600;
+
+        short min_pulse = MIN_PULSE;
+        short max_pulse = MAX_PULSE;
 
         public PCA9685Servo(PCA9685ServoController sc, int id) {
             super(sc, id);
@@ -199,13 +257,82 @@ public class PCA9685ServoController extends AbstractI2CServoController {
         @Override
         protected Meta createMeta() {
 
-            throw new IllegalStateException("Not Implemented");
+            return new PCA9685ServoMeta();
         }
 
         @Override
         protected void setActualPosition(double position) throws IOException {
+            
+            setPWM(id, 0, (int) (min_pulse + position * (max_pulse - min_pulse)));
+        }
 
-            throw new IllegalStateException("Not Implemented");
+        protected final class PCA9685ServoMeta extends AbstractMeta {
+
+            protected PCA9685ServoMeta() {
+
+                properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+
+                PropertyWriter pwMin = new PropertyWriter() {
+
+                    @Override
+                    public void set(String key, Object value) {
+
+                        short p = Short.parseShort(value.toString());
+
+                        if (p < MIN_PULSE || p > MAX_PULSE) {
+                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
+                        }
+
+                        if (p >= max_pulse) {
+                            throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
+                        }
+
+                        min_pulse = p;
+
+                        try {
+
+                            setActualPosition(actualPosition);
+
+                        } catch (IOException ioex) {
+                            logger.warn("Unhandled exception", ioex);
+                        }
+
+                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    }
+                };
+
+                PropertyWriter pwMax = new PropertyWriter() {
+
+                    @Override
+                    public void set(String key, Object value) {
+
+                        short p = Short.parseShort(value.toString());
+
+                        if (p < MIN_PULSE || p > MAX_PULSE) {
+                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
+                        }
+
+                        if (p <= min_pulse) {
+                            throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
+                        }
+
+                        max_pulse = p;
+
+                        try {
+
+                            setActualPosition(actualPosition);
+
+                        } catch (IOException ioex) {
+                            logger.warn("Unhandled exception", ioex);
+                        }
+
+                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    }
+                };
+
+                propertyWriters.put("servo/range/min", pwMin);
+                propertyWriters.put("servo/range/max", pwMax);
+            }
         }
     }
 }

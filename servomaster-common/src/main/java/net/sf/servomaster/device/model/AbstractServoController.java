@@ -125,13 +125,11 @@ public abstract class AbstractServoController implements ServoController {
 
         } catch ( UnsupportedOperationException ex ) {
 
-            // VT: FIXME: combine these exceptions after figuring out how to enforce Java 7+ in Gradle
-
-            logger.warn("controlled declared itself as silent but refused to honor the promise", ex);
+            logger.info("controller doesn't support silent operation", ex);
 
         } catch ( IllegalStateException ex ) {
 
-            logger.warn("controlled declared itself as silent but refused to honor the promise", ex);
+            logger.warn("unexpected exception", ex);
         }
     }
 

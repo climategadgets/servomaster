@@ -218,8 +218,11 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
 
             // VT: FIXME: Servo range unit is weirdly defined, need to clarify
+            // This will finally lead to the right answer: https://forums.adafruit.com/viewtopic.php?f=19&t=71522
 
             // properties.put("servo/range/units", "\u03BCs");
+
+            properties.put("servo/range/units", "tick");
 
             // Default range is 50 to 600, whatever that means.
             // This will be a bit beyond most servos' range out of the box.

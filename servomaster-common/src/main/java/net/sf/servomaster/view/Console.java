@@ -7,13 +7,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -729,22 +730,43 @@ public class Console implements ActionListener, WindowListener {
             Servo servoMinute = servos.get(1);
             Servo servoHour = servos.get(2);
 
-            Thread.sleep(1000);
+            // With some bad luck, we might start the clock right about the top of the second,
+            // with drift making the demo skip seconds (). Believe it or not, this is guaranteed to happen
+            // within less than 90 seconds.
 
             while ( true ) {
 
-                Calendar c = new GregorianCalendar();
+                LocalTime now = syncSecond();
 
-                int seconds = c.get(Calendar.SECOND);
-                int minutes = c.get(Calendar.MINUTE);
-                int hours   = c.get(Calendar.HOUR_OF_DAY);
+                int seconds = now.getSecond();
+                int minutes = now.getMinute();
+                int hours   = now.getHour();
 
                 servoSecond.setPosition((double)seconds/(double)60);
                 servoMinute.setPosition((double)minutes/(double)60);
                 servoHour.setPosition((double)hours/(double)24);
-
-                Thread.sleep(50);
             }
+        }
+
+        private LocalTime syncSecond() throws InterruptedException {
+
+            // To avoid skipping the beats, let's synchronize right after
+            // the top of the second so the clock drift within the demo period won't affect the presentation
+
+            LocalTime now = LocalTime.now();
+
+            long timeout = 999999999 - now.getNano() + 99999999;
+
+            TimeUnit.NANOSECONDS.sleep(timeout);
+
+            // At this point, we're about 100 nanoseconds after the top of the second. Refresh the value, and round it for display.
+
+            now = LocalTime.now();
+            now = LocalTime.of(now.getHour(), now.getMinute(), now.getSecond());
+
+            logger.info("now: " + now);
+
+            return now;
         }
     }
 }

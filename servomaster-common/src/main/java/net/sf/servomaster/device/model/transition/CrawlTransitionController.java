@@ -3,6 +3,7 @@ package net.sf.servomaster.device.model.transition;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
+import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.TransitionController;
 import net.sf.servomaster.device.model.TransitionToken;
@@ -40,9 +41,19 @@ public class CrawlTransitionController implements TransitionController {
             // Calculate the step
             // VT: FIXME: this may throw UnsupportedOperationException
 
-            final int precision = Integer.parseInt(target.getMeta().getProperty("servo/precision").toString());
+            Meta meta = target.getMeta();
+
+            final int precision = Integer.parseInt(meta.getProperty("servo/precision").toString());
+
+            if (precision <= 1) {
+
+                // This will be logged as error, not debug. It is most probably a result of a programming error.
+
+                throw new IllegalArgumentException("Expected precision >1, got this: " + meta);
+            }
+
             final double step = 1/(double)(precision - 1);
-            
+
             logger.debug("precision=" + precision + ", step=" + step);
 
             while ( true ) {

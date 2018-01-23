@@ -24,7 +24,7 @@ abstract public class HardwareServo extends AbstractServo {
     /**
      * Servo metadata.
      */
-    private final Meta meta;
+    private Meta meta;
 
     /**
      * Create an instance.
@@ -39,7 +39,8 @@ abstract public class HardwareServo extends AbstractServo {
 
         this.id = id;
 
-        meta = createMeta();
+        // Doing so will cause this bug: https://github.com/climategadgets/servomaster/issues/9
+        // meta = createMeta();
     }
 
     /**
@@ -66,9 +67,13 @@ abstract public class HardwareServo extends AbstractServo {
      * @return Servo metadata.
      */
     @Override
-    public final Meta getMeta() {
+    public final synchronized Meta getMeta() {
+
+        if (meta == null) {
+
+            meta = createMeta();
+        }
 
         return meta;
     }
-
 }

@@ -22,6 +22,20 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
 public class PCA9685ServoController extends AbstractI2CServoController {
 
     /**
+     * Minimal allowed absolute position for this device.
+     *
+     * VT: FIXME: Figure out acceptable value after the range unit is figured out. Current value is well beyond sane.
+     */
+    private static final short MIN_PULSE = 25;
+
+    /**
+     * Maximum allowed absolute position for this device.
+     *
+     * VT: FIXME: Figure out acceptable value after the range unit is figured out. Current value is well beyond sane.
+     */
+    private static final short MAX_PULSE = 625;
+
+    /**
      * We don't need to be fancy, just 60Hz would be fine.
      */
     private static final int pwmFrequency = 60;
@@ -224,12 +238,9 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
             properties.put("servo/range/units", "tick");
 
-            // Default range is 50 to 600, whatever that means.
-            // This will be a bit beyond most servos' range out of the box.
-
-            properties.put("servo/range/min", "50");
-            properties.put("servo/range/max", "600");
-            properties.put("controller/precision", "550");
+            properties.put("servo/range/min", Integer.toString(MIN_PULSE));
+            properties.put("servo/range/max", Integer.toString(MAX_PULSE));
+            properties.put("controller/precision", Integer.toString(MAX_PULSE - MIN_PULSE));
 
             // Silent timeout is five seconds
 
@@ -239,16 +250,6 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     }
 
     private final class PCA9685Servo extends HardwareServo {
-
-        /**
-         * Minimal allowed absolute position for this device.
-         */
-        final short MIN_PULSE = 50;
-
-        /**
-         * Maximum allowed absolute position for this device.
-         */
-        final short MAX_PULSE = 600;
 
         short min_pulse = MIN_PULSE;
         short max_pulse = MAX_PULSE;

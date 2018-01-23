@@ -660,9 +660,15 @@ public class Console implements ActionListener, WindowListener {
 
             List<Servo> servos = new LinkedList<Servo>();
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (int offset = 0; offset < controller.getServoCount(); offset++) {
 
-                Servo s = i.next();
+                if (!servoPanel[offset].isEnabled()) {
+
+                    logger.info("skipped: @" + offset);
+                    continue;
+                }
+
+                Servo s = controller.getServo(Integer.toString(offset));
 
                 servos.add(s);
 

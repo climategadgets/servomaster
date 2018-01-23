@@ -485,4 +485,9 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         controlSlider.setValue(precision/2);
     }
+
+    public boolean isEnabled() {
+
+        return enabled;
+    }
 }

@@ -250,8 +250,10 @@ public class PCA9685ServoController extends AbstractI2CServoController {
         short min_pulse = MIN_PULSE;
         short max_pulse = MAX_PULSE;
 
-        public PCA9685Servo(PCA9685ServoController sc, int id) {
+        public PCA9685Servo(PCA9685ServoController sc, int id) throws IOException {
             super(sc, id);
+
+            setPosition(0.5);
         }
 
         @Override
@@ -262,8 +264,22 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         @Override
         protected void setActualPosition(double position) throws IOException {
-            
-            setPWM(id, 0, (int) (min_pulse + position * (max_pulse - min_pulse)));
+
+            NDC.push("setActualPosition id=" + id);
+
+            try {
+
+                checkPosition(position);
+
+                setPWM(id, 0, (int) (min_pulse + position * (max_pulse - min_pulse)));
+
+                this.actualPosition = position;
+
+                actualPositionChanged();
+
+            } finally {
+                NDC.pop();
+            }
         }
 
         protected final class PCA9685ServoMeta extends AbstractMeta {

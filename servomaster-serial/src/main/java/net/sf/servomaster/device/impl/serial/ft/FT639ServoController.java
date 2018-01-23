@@ -3,8 +3,6 @@ package net.sf.servomaster.device.impl.serial.ft;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.AbstractMeta;
@@ -18,6 +16,11 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
  * target="_top">FerretTronics FT639</a> servo controller implementation.
+ *
+ * <p>
+ *
+ * The product itself is long gone (though the data sheet is {@link http://dalalven.dtdns.net/linux/servo/FT639_PDN639_Datasheet.pdf
+ * still available}), however, this code is still usable as a demo, hence it stays in source control, along with all [dead] links.
  *
  * <p>
  *
@@ -75,8 +78,6 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2006
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
-
-    private Logger logger = Logger.getLogger(getClass());
 
     /**
      * Controller mode.

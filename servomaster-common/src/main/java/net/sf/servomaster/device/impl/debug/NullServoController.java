@@ -108,8 +108,10 @@ public class NullServoController extends AbstractServoController {
         
         short position = (short) (position_min + (position_max - position_min) / 2);
 
-        public NullServo(ServoController servoController, int id) {
+        public NullServo(ServoController servoController, int id) throws IOException {
             super(servoController, id);
+
+            setPosition(0.5);
         }
 
         @Override
@@ -125,11 +127,23 @@ public class NullServoController extends AbstractServoController {
             
             try {
                 
+                checkPosition(position);
+
                 this.position = (short)(position_min + (position_max - position_min) * position);
                 
                 logger.info("requested=" + position);
                 logger.info("actual=" + this.position);
+
+                {
+                    // This is where you'd send the command to set the position to the actual hardware
+
+                    // ...
+                }
+
+                this.actualPosition = position;
                 
+                actualPositionChanged();
+
             } finally {
                 NDC.pop();
             }

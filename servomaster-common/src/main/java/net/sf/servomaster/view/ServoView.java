@@ -137,6 +137,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         this.servo = source;
 
         // VT: NOTE: For some backwards implementations fallback to controller/precision may be necessary - or implementations need to be fixed
+        // VT: FIXME: this has to be dynamic: https://github.com/climategadgets/servomaster/issues/15
         precision = Integer.parseInt((String)servo.getMeta().getProperty("servo/precision"));
 
         reverse = new Reverser(servo);
@@ -151,6 +152,14 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         GridBagConstraints cs = new GridBagConstraints();
 
         setLayout(layout);
+
+        createHeader(layout, cs);
+        createSliders(layout, cs);
+
+        servo.addListener(this);
+    }
+
+    private void createHeader(GridBagLayout layout, GridBagConstraints cs) {
 
         cs.fill = GridBagConstraints.HORIZONTAL;
 
@@ -222,6 +231,9 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         layout.setConstraints(positionLabel, cs);
         add(positionLabel);
+    }
+
+    private void createSliders(GridBagLayout layout, GridBagConstraints cs) {
 
         cs.gridy++;
         cs.gridwidth = 1;
@@ -249,8 +261,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         layout.setConstraints(controlSlider, cs);
         add(controlSlider);
-
-        servo.addListener(this);
     }
 
     /**

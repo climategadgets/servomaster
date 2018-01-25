@@ -39,12 +39,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     private Logger logger = Logger.getLogger(getClass());
 
     /**
-     * The servo name.
-     */
-    @SuppressWarnings("unused")
-    private String servoName;
-
-    /**
      * The servo to display the status of and control.
      */
     private Servo servo;
@@ -142,8 +136,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      * @param servoName Servo name.
      */
     ServoView(ServoController controller, String servoName) {
-
-        this.servoName = servoName;
 
         try {
 

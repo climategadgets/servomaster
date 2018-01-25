@@ -137,11 +137,6 @@ public class Console implements ActionListener, WindowListener {
 
             controller.init(args.length == 2 ? args[1] : null);
 
-            // If the original port name wasn't specified, it is defined
-            // in the controller by now
-
-            String portName = controller.getPort();
-
             displayMetadata(controller);
             buildConsole(controller);
 

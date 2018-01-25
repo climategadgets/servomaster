@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -77,11 +78,6 @@ public class Console implements ActionListener, WindowListener {
      * The main Swing frame.
      */
     private JFrame mainFrame;
-
-    /**
-     * The controller silent status display.
-     */
-    private SilencerPanel silencerPanel;
 
     /**
      * Pressing this button will reset the controller.
@@ -171,21 +167,6 @@ public class Console implements ActionListener, WindowListener {
 
                     logger.info("    " + key + ": " + controllerMeta.getProperty(key));
                 }
-
-                try {
-
-                    if ( controllerMeta.getFeature("controller/silent") ) {
-
-                        controller.setSilentMode(true);
-                        controller.setSilentTimeout(10000, 30000);
-                        silencerPanel = new SilencerPanel(controller);
-                    }
-
-                } catch ( UnsupportedOperationException ex ) {
-
-                    logger.warn("Controller doesn't support servo shutoff (" + ex.getMessage() + ")");
-                }
-
 
             } catch ( UnsupportedOperationException ex ) {
 
@@ -300,6 +281,8 @@ public class Console implements ActionListener, WindowListener {
             // If the controller view has been instantiated, the constraint
             // Y coordinate has been advanced. If not, we didn't need it
             // anyway
+
+            SilencerPanel silencerPanel = createSilencerPanel(controller);
 
             if ( silencerPanel != null ) {
 
@@ -430,6 +413,28 @@ public class Console implements ActionListener, WindowListener {
         } finally {
             NDC.pop();
         }
+    }
+
+    private SilencerPanel createSilencerPanel(ServoController controller) throws IOException {
+
+        try {
+
+            if ( controller.getMeta().getFeature("controller/silent") ) {
+
+                controller.setSilentMode(true);
+                controller.setSilentTimeout(10000, 30000);
+
+                return new SilencerPanel(controller);
+            }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            logger.warn("Controller doesn't support servo shutoff (reason: " + ex.getMessage() + ")");
+            return null;
+        }
+
+        // VT: NOTE: getMeta() will throw an exception if the feature is not supported
+        throw new IllegalStateException("We shouldn't have arrived here");
     }
 
     /**

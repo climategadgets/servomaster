@@ -34,7 +34,7 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 @SuppressWarnings("serial")
-public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
+public class ServoView extends JPanel implements ChangeListener, ServoListener {
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -69,31 +69,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
      * The linear 0\u00B0-90\u00B0 mapping of the {@link #servo servo}.
      */
     private Servo linear90;
-
-    /**
-     * Checkbox responsible for enabling and disabling the servo.
-     */
-    private JCheckBox enableBox;
-
-    /**
-     * Panel containing the transition controller selection.
-     */
-    private JPanel transitionPanel;
-
-    /**
-     * Combo box for selecting the transition controller.
-     */
-    private JComboBox<String> transitionComboBox;
-
-    /**
-     * Panel containing the mapper selection radio buttons.
-     */
-    private JPanel mapperPanel;
-
-    /**
-     * Combo box for selecting the mapper.
-     */
-    private JComboBox<String> mapperComboBox;
 
     /**
      * The label displaying the current position.
@@ -167,70 +142,10 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         cs.gridy = 0;
         cs.gridwidth = 2;
 
-        JLabel servoLabel = new JLabel("ID: " + servo.getName(), JLabel.CENTER);
-        servoLabel.setToolTipText("The servo name");
-        servoLabel.setBorder(BorderFactory.createEtchedBorder());
-        servoLabel.setForeground(Color.black);
+        Header header = new Header();
 
-        layout.setConstraints(servoLabel, cs);
-        add(servoLabel);
-
-        enableBox = new JCheckBox("Enabled", true);
-        enableBox.setToolTipText("Enable or disable this servo");
-        enableBox.addItemListener(this);
-
-        cs.gridy++;
-
-        layout.setConstraints(enableBox, cs);
-        add(enableBox);
-
-        transitionPanel = new JPanel();
-
-        String[] transition = { "Instant", "Crawl" };
-
-        transitionComboBox = new JComboBox<String>(transition);
-        transitionComboBox.setToolTipText("Select the transition controller");
-        transitionComboBox.addActionListener(this);
-
-        //transitionPanel.add(transitionComboBox);
-
-        cs.gridy++;
-
-        transitionPanel.setBorder(BorderFactory.createTitledBorder("Transition"));
-        //layout.setConstraints(transitionPanel, cs);
-        //add(transitionPanel);
-
-        layout.setConstraints(transitionComboBox, cs);
-        add(transitionComboBox);
-
-        cs.gridy++;
-
-        mapperPanel = new JPanel();
-
-        String[] mapping = { "Direct", "Reverse", "Limit", "Linear 180\u00B0", "Linear 90\u00B0" };
-
-        mapperComboBox = new JComboBox<String>(mapping);
-        mapperComboBox.setToolTipText("Select the coordinate transformer");
-        mapperComboBox.addActionListener(this);
-
-        //mapperPanel.add(mapperComboBox);
-
-        mapperPanel.setBorder(BorderFactory.createTitledBorder("Mapping"));
-        //layout.setConstraints(mapperPanel, cs);
-        //add(mapperPanel);
-
-        layout.setConstraints(mapperComboBox, cs);
-        add(mapperComboBox);
-
-        cs.gridy++;
-
-        String currentPosition = Integer.toString(precision/2);
-        positionLabel = new JLabel(currentPosition + "/" + currentPosition, JLabel.CENTER);
-        positionLabel.setToolTipText("Current servo position (actual/requested)");
-        positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
-
-        layout.setConstraints(positionLabel, cs);
-        add(positionLabel);
+        layout.setConstraints(header, cs);
+        add(header);
     }
 
     private void createSliders(GridBagLayout layout, GridBagConstraints cs) {
@@ -303,140 +218,6 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     }
 
     /**
-     * React to the checkbox events.
-     */
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-
-        if ( e.getSource() == enableBox ) {
-
-            enabled = !enabled;
-
-            controlSlider.setEnabled(enabled);
-
-            transitionComboBox.setEnabled(enabled);
-            mapperComboBox.setEnabled(enabled);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
-        try {
-
-            Servo current = target;
-            Object source = e.getSource();
-            JComboBox<String> cb = null;
-
-            if ( source == transitionComboBox ) {
-
-                cb = (JComboBox<String>)source;
-
-                switch ( cb.getSelectedIndex() ) {
-
-                case 0:
-
-                    // No transition controller
-
-                    servo.attach(null);
-                    break;
-
-                case 1:
-
-                    // Crawler
-
-                    servo.attach(new CrawlTransitionController());
-                    break;
-
-                default:
-
-                    logger.error("Unknown transition controller: " + cb.getSelectedItem());
-                }
-
-            } else if ( source == mapperComboBox ) {
-
-                cb = (JComboBox<String>)source;
-
-                switch ( cb.getSelectedIndex() ) {
-
-                case 0:
-
-                    // No coordinate transformation
-
-                    target = servo;
-                    break;
-
-                case 1:
-
-                    // Reverser
-
-                    target = reverse;
-                    break;
-
-                case 2:
-
-                    // Limit 0.25..0.75
-
-                    target = limit;
-                    break;
-
-                case 3:
-
-                    // Linear 0-180
-
-                    target = linear180;
-                    break;
-
-                case 4:
-
-                    // Linear 0-90
-
-                    target = linear90;
-                    break;
-
-                default:
-
-                    logger.error("Unknown coordinate transformer: " + cb.getSelectedItem());
-                }
-            }
-
-            /*
-            if ( e.getSource() == normalBox ) {
-
-                target = servo;
-
-            } else if ( e.getSource() == reverseBox ) {
-
-                target = reverse;
-
-            } else if ( e.getSource() == linearBox ) {
-
-                target = linear;
-
-            } else if ( e.getSource() == transitionNoneBox ) {
-
-                servo.attach(null);
-
-            } else if ( e.getSource() == transitionCrawlBox ) {
-
-                servo.attach(new CrawlTransitionController());
-            } */
-
-            if ( current != target ) {
-
-                int position = controlSlider.getValue();
-
-                target.setPosition((double)position/(double)(precision - 1));
-            }
-
-        } catch ( Throwable t ) {
-
-            logger.error("Setting mapper:", t);
-        }
-    }
-
-    /**
      * Accept the notification about the change in the requested position.
      *
      * @param source The servo whose requested position has changed.
@@ -473,5 +254,222 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     public boolean isEnabled() {
 
         return enabled;
+    }
+
+    private class Header extends JPanel implements ItemListener, ActionListener {
+
+        /**
+         * Checkbox responsible for enabling and disabling the servo.
+         */
+        private final JCheckBox enableBox;
+
+        /**
+         * Combo box for selecting the transition controller.
+         */
+        private final JComboBox<String> transitionComboBox;
+
+        /**
+         * Combo box for selecting the mapper.
+         */
+        private final JComboBox<String> mapperComboBox;
+
+        Header() {
+
+            GridBagLayout layout = new GridBagLayout();
+            GridBagConstraints cs = new GridBagConstraints();
+
+            setLayout(layout);
+
+            cs.fill = GridBagConstraints.HORIZONTAL;
+
+            cs.gridx = 0;
+            cs.gridy = 0;
+            cs.gridwidth = 1;
+            cs.gridheight = 1;
+
+            JLabel servoLabel = new JLabel("ID: " + servo.getName(), JLabel.CENTER);
+            servoLabel.setToolTipText("The servo name");
+            servoLabel.setBorder(BorderFactory.createEtchedBorder());
+            servoLabel.setForeground(Color.black);
+
+            layout.setConstraints(servoLabel, cs);
+            add(servoLabel);
+
+            enableBox = new JCheckBox("Enabled", true);
+            enableBox.setToolTipText("Enable or disable this servo");
+            enableBox.addItemListener(this);
+
+            cs.gridy++;
+
+            layout.setConstraints(enableBox, cs);
+            add(enableBox);
+
+            String[] transition = { "Instant", "Crawl" };
+
+            transitionComboBox = new JComboBox<String>(transition);
+            transitionComboBox.setToolTipText("Select the transition controller");
+            transitionComboBox.addActionListener(this);
+
+            cs.gridy++;
+
+            layout.setConstraints(transitionComboBox, cs);
+            add(transitionComboBox);
+
+            cs.gridy++;
+
+            String[] mapping = { "Direct", "Reverse", "Limit", "Linear 180\u00B0", "Linear 90\u00B0" };
+
+            mapperComboBox = new JComboBox<String>(mapping);
+            mapperComboBox.setToolTipText("Select the coordinate transformer");
+            mapperComboBox.addActionListener(this);
+
+            layout.setConstraints(mapperComboBox, cs);
+            add(mapperComboBox);
+
+            cs.gridy++;
+            cs.gridheight = GridBagConstraints.REMAINDER;
+
+            String currentPosition = Integer.toString(precision/2);
+            positionLabel = new JLabel(currentPosition + "/" + currentPosition, JLabel.CENTER);
+            positionLabel.setToolTipText("Current servo position (actual/requested)");
+            positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
+
+            layout.setConstraints(positionLabel, cs);
+            add(positionLabel);
+        }
+
+        /**
+         * React to the checkbox events.
+         */
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+
+            if ( e.getSource() == enableBox ) {
+
+                enabled = !enabled;
+
+                controlSlider.setEnabled(enabled);
+
+                transitionComboBox.setEnabled(enabled);
+                mapperComboBox.setEnabled(enabled);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void actionPerformed(ActionEvent e) {
+
+            try {
+
+                Servo current = target;
+                Object source = e.getSource();
+                JComboBox<String> cb = null;
+
+                if ( source == transitionComboBox ) {
+
+                    cb = (JComboBox<String>)source;
+
+                    switch ( cb.getSelectedIndex() ) {
+
+                    case 0:
+
+                        // No transition controller
+
+                        servo.attach(null);
+                        break;
+
+                    case 1:
+
+                        // Crawler
+
+                        servo.attach(new CrawlTransitionController());
+                        break;
+
+                    default:
+
+                        logger.error("Unknown transition controller: " + cb.getSelectedItem());
+                    }
+
+                } else if ( source == mapperComboBox ) {
+
+                    cb = (JComboBox<String>)source;
+
+                    switch ( cb.getSelectedIndex() ) {
+
+                    case 0:
+
+                        // No coordinate transformation
+
+                        target = servo;
+                        break;
+
+                    case 1:
+
+                        // Reverser
+
+                        target = reverse;
+                        break;
+
+                    case 2:
+
+                        // Limit 0.25..0.75
+
+                        target = limit;
+                        break;
+
+                    case 3:
+
+                        // Linear 0-180
+
+                        target = linear180;
+                        break;
+
+                    case 4:
+
+                        // Linear 0-90
+
+                        target = linear90;
+                        break;
+
+                    default:
+
+                        logger.error("Unknown coordinate transformer: " + cb.getSelectedItem());
+                    }
+                }
+
+                /*
+                if ( e.getSource() == normalBox ) {
+
+                    target = servo;
+
+                } else if ( e.getSource() == reverseBox ) {
+
+                    target = reverse;
+
+                } else if ( e.getSource() == linearBox ) {
+
+                    target = linear;
+
+                } else if ( e.getSource() == transitionNoneBox ) {
+
+                    servo.attach(null);
+
+                } else if ( e.getSource() == transitionCrawlBox ) {
+
+                    servo.attach(new CrawlTransitionController());
+                } */
+
+                if ( current != target ) {
+
+                    int position = controlSlider.getValue();
+
+                    target.setPosition((double)position/(double)(precision - 1));
+                }
+
+            } catch ( Throwable t ) {
+
+                logger.error("Setting mapper:", t);
+            }
+        }
     }
 }

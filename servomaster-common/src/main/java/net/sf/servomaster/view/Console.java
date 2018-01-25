@@ -142,28 +142,21 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            try {
+            controller = instantiate(resolveClass(args));
 
-                controller = instantiate(resolveClass(args));
+            if ( args.length == 2 ) {
 
-                if ( args.length == 2 ) {
-
-                    portName = args[1];
-                }
-                
-                logger.debug("Instantiated " + controller.getClass().getName());
-
-                controller.init(portName);
-
-                // If the original port name wasn't specified, it is defined
-                // in the controller by now
-
-                portName = controller.getPort();
-
-            } catch ( Throwable t ) {
-
-                throw new IllegalArgumentException("Unable to initialize controller, cause:", t);
+                portName = args[1];
             }
+
+            logger.debug("Instantiated " + controller.getClass().getName());
+
+            controller.init(portName);
+
+            // If the original port name wasn't specified, it is defined
+            // in the controller by now
+
+            portName = controller.getPort();
 
             // Let's see if they support metadata
 

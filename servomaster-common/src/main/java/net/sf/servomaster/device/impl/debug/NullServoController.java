@@ -86,7 +86,7 @@ public class NullServoController extends AbstractServoController {
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
 
             // This is to make "crawl" work as expected
-            properties.put("controller/bandwidth", Integer.toString(2400 / 8));
+            properties.put("controller/bandwidth", Integer.toString(4800 / 8));
 
             properties.put("servo/range/min", "0");
             properties.put("servo/range/max", "1023");
@@ -142,9 +142,10 @@ public class NullServoController extends AbstractServoController {
                     // This is where you'd send the command to set the position to the actual hardware
 
                     // However, since we're not the actual hardware, and there's a legacy "crawl" mode where
-                    // the speed is determined by controller bandwidth, let's emulate a delay similar to one at 2400 baud.
+                    // the speed is determined by controller bandwidth, let's emulate a delay similar to one at
+                    // advertised controller/bandwidth baud.
 
-                    long delay = 1000 / (2400 / 8);
+                    long delay = 1000 / (Integer.parseInt((String) getController().getMeta().getProperty("controller/bandwidth")));
 
                     try {
 

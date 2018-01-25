@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.impl.debug.NullServoController;
 import net.sf.servomaster.device.model.Meta;
@@ -137,6 +138,8 @@ public class Console implements ActionListener, WindowListener {
      */
     public void run(String[] args) {
 
+        NDC.push("run");
+
         try {
 
             String targetClass;
@@ -180,17 +183,12 @@ public class Console implements ActionListener, WindowListener {
 
             } catch ( Throwable t ) {
 
-                // VT: FIXME: Need to verify if this actually gets printed - hopefully, log4j can
-                // properly flush the stream on System.exit()
-                
-                logger.info("Unable to initialize controller, cause:", t);
-
-                System.exit(1);
+                throw new IllegalArgumentException("Unable to initialize controller, cause:", t);
             }
 
             // Let's see if they support metadata
 
-            Meta controllerMeta = null;
+            Meta controllerMeta;
 
             try {
 
@@ -253,8 +251,7 @@ public class Console implements ActionListener, WindowListener {
 
             if ( servoCount == 0 ) {
 
-                logger.info("The controller doesn't seem to have any servos now");
-                System.exit(1);
+                throw new IllegalStateException("The controller doesn't seem to have any servos now");
             }
 
             GridBagLayout layout = new GridBagLayout();
@@ -423,6 +420,11 @@ public class Console implements ActionListener, WindowListener {
         } catch ( Throwable t ) {
 
             logger.warn("Unhandled exception", t);
+
+        } finally {
+
+            logger.warn("FIXME: park the servos");
+            NDC.pop();
         }
     }
 

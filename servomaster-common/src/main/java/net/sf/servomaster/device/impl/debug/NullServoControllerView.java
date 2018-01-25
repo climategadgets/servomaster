@@ -133,9 +133,12 @@ public class NullServoControllerView extends JPanel implements ServoControllerLi
             defaultRangeMin = Integer.parseInt(min);
             defaultRangeMax = Integer.parseInt(max);
 
-            rangeLabel = new JLabel(min + units + "/" + max + units);
+            this.min = defaultRangeMin;
+            this.max = defaultRangeMax;
+
+            rangeLabel = new JLabel(renderRange(defaultRangeMin, defaultRangeMax), JLabel.CENTER);
             rangeLabel.setToolTipText("Current minimum/maximum servo position");
-            rangeLabel.setBorder(BorderFactory.createTitledBorder("Range"));
+            rangeLabel.setBorder(BorderFactory.createTitledBorder("Range, " + units));
 
             layout.setConstraints(rangeLabel, cs);
             add(rangeLabel);
@@ -203,15 +206,26 @@ public class NullServoControllerView extends JPanel implements ServoControllerLi
                 min = minSlider.getValue();
 
                 servo.getMeta().setProperty("servo/range/min", Integer.toString(min));
-                rangeLabel.setText(Integer.toString(min) + units + "/" + max + units);
+                rangeLabel.setText(renderRange(min, max));
 
             } else if ( source == maxSlider ) {
 
                 max = maxSlider.getValue();
 
                 servo.getMeta().setProperty("servo/range/max", Integer.toString(max));
-                rangeLabel.setText(Integer.toString(min) + units + "/" + max + units);
+                rangeLabel.setText(renderRange(min, max));
             }
+        }
+
+        private String renderRange(int min, int max) {
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(Integer.toString(min));
+            sb.append(" - ");
+            sb.append(Integer.toString(max));
+
+            return sb.toString();
         }
 
         /**

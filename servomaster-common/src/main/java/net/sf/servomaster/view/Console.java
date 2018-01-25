@@ -290,7 +290,7 @@ public class Console implements ActionListener, WindowListener {
 
             for ( int idx = 0; idx < servoCount; idx++ ) {
 
-                servoPanel[idx] = new ServoView(controller, servoSet.get(idx).getName());
+                servoPanel[idx] = new ServoView(servoSet.get(idx));
 
                 cs.gridx = idx;
 

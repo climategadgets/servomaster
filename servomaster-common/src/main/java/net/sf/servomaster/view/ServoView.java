@@ -41,7 +41,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * The servo to display the status of and control.
      */
-    private Servo servo;
+    private final Servo servo;
 
     /**
      * The current target (may be the {@link #servo servo} itself, or the
@@ -123,40 +123,21 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * Number of steps the controller can provide for this servo.
      *
-     * Default is set to 256, however, this is absolutely not true for most
-     * controllers.
+     * Note that this value may change as servo range is adjusted.
      */
-    private int precision = 256;
+    private int precision;
 
     /**
      * Create an instance.
      *
-     * @param controller The controller to request the instance from.
-     *
-     * @param servoName Servo name.
+     * @param source Servo to create the view for.
      */
-    ServoView(ServoController controller, String servoName) {
+    ServoView(Servo source) {
 
-        try {
+        this.servo = source;
 
-            // VT: FIXME: Now, even the individual servos should support
-            // precision and this must only be a fallback
-
-            precision = Integer.parseInt((String)controller.getMeta().getProperty("controller/precision"));
-
-        } catch ( UnsupportedOperationException ignored ) {
-
-            logger.warn("Controller doesn't provide metadata, precision set to 256");
-        }
-
-        try {
-
-            servo = controller.getServo(servoName);
-
-        } catch ( Throwable t ) {
-
-            throw new Error("getServo() failed: " + t.toString());
-        }
+        // VT: NOTE: For some backwards implementations fallback to controller/precision may be necessary - or implementations need to be fixed
+        precision = Integer.parseInt((String)servo.getMeta().getProperty("servo/precision"));
 
         reverse = new Reverser(servo);
         limit = new LimitTransformer(servo, 0.25, 0.75);
@@ -177,7 +158,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         cs.gridy = 0;
         cs.gridwidth = 2;
 
-        JLabel servoLabel = new JLabel("ID: " + servoName, JLabel.CENTER);
+        JLabel servoLabel = new JLabel("ID: " + servo.getName(), JLabel.CENTER);
         servoLabel.setToolTipText("The servo name");
         servoLabel.setBorder(BorderFactory.createEtchedBorder());
         servoLabel.setForeground(Color.black);

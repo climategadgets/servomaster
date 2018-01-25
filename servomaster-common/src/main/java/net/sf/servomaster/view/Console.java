@@ -23,6 +23,7 @@ import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
+import net.sf.servomaster.device.impl.debug.NullServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -138,18 +139,28 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            if ( args.length < 1 ) {
+            String targetClass;
+
+            if ( args.length > 0 ) {
+
+                targetClass = args[0];
+
+            } else {
 
                 logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
                 logger.info("");
                 logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
                 logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
-                System.exit(1);
+                logger.info("");
+
+                targetClass = NullServoController.class.getName();
+
+                logger.warn("Starting a demo controller (" + targetClass + ") for now");
             }
 
             try {
 
-                Class<?> controllerClass = Class.forName(args[0]);
+                Class<?> controllerClass = Class.forName(targetClass);
                 Object controllerObject = controllerClass.newInstance();
                 controller = (ServoController)controllerObject;
 

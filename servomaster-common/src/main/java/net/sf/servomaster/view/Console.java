@@ -143,6 +143,112 @@ public class Console implements ActionListener, WindowListener {
             String portName = controller.getPort();
 
             displayMetadata(controller);
+            buildConsole(controller);
+
+            while ( true ) {
+
+                Thread.sleep(60000);
+            }
+
+        } catch ( Throwable t ) {
+
+            logger.warn("Unhandled exception", t);
+
+        } finally {
+
+            logger.warn("FIXME: park the servos");
+            NDC.pop();
+        }
+    }
+
+    private void displayMetadata(ServoController controller2) {
+
+        NDC.push("medatada");
+
+        try {
+
+            Meta controllerMeta = controller.getMeta();
+
+            logger.info("Features:");
+
+            for ( Iterator<String> i = controllerMeta.getFeatures(); i.hasNext(); ) {
+
+                String key = i.next();
+
+                logger.info("    " + key + ": " + controllerMeta.getFeature(key));
+            }
+
+            logger.info("Properties:");
+
+            for ( Iterator<String> i = controllerMeta.getProperties(); i.hasNext(); ) {
+
+                String key = i.next();
+
+                logger.info("    " + key + ": " + controllerMeta.getProperty(key));
+            }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            logger.info("Controller doesn't support metadata", ex);
+
+        } catch ( IllegalStateException ex ) {
+
+            throw new IllegalStateException("Controller is not yet connected?", ex);
+
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private String resolveClass(String[] args) {
+
+        if ( args.length > 0 ) {
+
+            return args[0];
+
+        } else {
+
+            logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
+            logger.info("");
+            logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
+            logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
+            logger.info("");
+
+            String targetClass = NullServoController.class.getName();
+
+            logger.warn("Starting a demo controller (" + targetClass + ") for now");
+
+            return targetClass;
+        }
+    }
+
+    private ServoController instantiate(String targetClass) {
+
+        NDC.push("instantiate");
+
+        try {
+
+            Class<?> controllerClass = Class.forName(targetClass);
+            Object controllerObject = controllerClass.newInstance();
+
+            logger.debug("Instantiated " + controllerObject.getClass().getName());
+
+            return (ServoController)controllerObject;
+
+        } catch (Throwable t) {
+
+            throw new IllegalStateException("Unable to instantiate " + targetClass, t);
+
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private void buildConsole(ServoController controller) throws IOException {
+
+        NDC.push("buildConsole");
+
+        try {
 
             // Figure out how many servos does the controller currently have
 
@@ -159,11 +265,11 @@ public class Console implements ActionListener, WindowListener {
 
                 throw new IllegalStateException("The controller doesn't seem to have any servos now");
             }
-
+            
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints cs = new GridBagConstraints();
 
-            mainFrame = new JFrame("Servo Controller Console, port " + portName);
+            mainFrame = new JFrame("Servo Controller Console, port " + controller.getPort());
             mainFrame.setSize(new Dimension(800, 600));
 
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -175,7 +281,6 @@ public class Console implements ActionListener, WindowListener {
             mainFrame.setContentPane(scroller);
 
             console.setLayout(layout);
-
 
             cs.fill = GridBagConstraints.BOTH;
             cs.gridx = 0;
@@ -319,100 +424,6 @@ public class Console implements ActionListener, WindowListener {
             mainFrame.pack();
 
             mainFrame.setVisible(true);
-
-            while ( true ) {
-
-                Thread.sleep(60000);
-            }
-
-        } catch ( Throwable t ) {
-
-            logger.warn("Unhandled exception", t);
-
-        } finally {
-
-            logger.warn("FIXME: park the servos");
-            NDC.pop();
-        }
-    }
-
-    private void displayMetadata(ServoController controller2) {
-
-        NDC.push("medatada");
-
-        try {
-
-            Meta controllerMeta = controller.getMeta();
-
-            logger.info("Features:");
-
-            for ( Iterator<String> i = controllerMeta.getFeatures(); i.hasNext(); ) {
-
-                String key = i.next();
-
-                logger.info("    " + key + ": " + controllerMeta.getFeature(key));
-            }
-
-            logger.info("Properties:");
-
-            for ( Iterator<String> i = controllerMeta.getProperties(); i.hasNext(); ) {
-
-                String key = i.next();
-
-                logger.info("    " + key + ": " + controllerMeta.getProperty(key));
-            }
-
-        } catch ( UnsupportedOperationException ex ) {
-
-            logger.info("Controller doesn't support metadata", ex);
-
-        } catch ( IllegalStateException ex ) {
-
-            throw new IllegalStateException("Controller is not yet connected?", ex);
-
-        } finally {
-            NDC.pop();
-        }
-    }
-
-    private String resolveClass(String[] args) {
-
-        if ( args.length > 0 ) {
-
-            return args[0];
-
-        } else {
-
-            logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
-            logger.info("");
-            logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
-            logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
-            logger.info("");
-
-            String targetClass = NullServoController.class.getName();
-
-            logger.warn("Starting a demo controller (" + targetClass + ") for now");
-
-            return targetClass;
-        }
-    }
-
-    private ServoController instantiate(String targetClass) {
-
-        NDC.push("instantiate");
-
-        try {
-
-            Class<?> controllerClass = Class.forName(targetClass);
-            Object controllerObject = controllerClass.newInstance();
-
-            logger.debug("Instantiated " + controllerObject.getClass().getName());
-
-            return (ServoController)controllerObject;
-
-        } catch (Throwable t) {
-
-            throw new IllegalStateException("Unable to instantiate " + targetClass, t);
 
         } finally {
             NDC.pop();

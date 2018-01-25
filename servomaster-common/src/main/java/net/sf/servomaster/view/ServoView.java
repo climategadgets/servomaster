@@ -275,6 +275,10 @@ public class ServoView extends JPanel implements ChangeListener, ServoListener {
 
         Header() {
 
+            // VT: NOTE: Swing layout management sucked in 2000, and it still sucks in 2018.
+            // GridLayout renders fat items and won't change aspect ratio unless you override paintComponent(),
+            // and working with GroupLayout is a pain similar or exceeding the one of working with GridBagLayout.
+
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints cs = new GridBagConstraints();
 

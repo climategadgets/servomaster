@@ -74,11 +74,6 @@ public class Console implements ActionListener, WindowListener {
     private ServoController controller;
 
     /**
-     * The controller port name.
-     */
-    private String portName;
-
-    /**
      * The main Swing frame.
      */
     private JFrame mainFrame;
@@ -144,19 +139,12 @@ public class Console implements ActionListener, WindowListener {
 
             controller = instantiate(resolveClass(args));
 
-            if ( args.length == 2 ) {
-
-                portName = args[1];
-            }
-
-            logger.debug("Instantiated " + controller.getClass().getName());
-
-            controller.init(portName);
+            controller.init(args.length == 2 ? args[1] : null);
 
             // If the original port name wasn't specified, it is defined
             // in the controller by now
 
-            portName = controller.getPort();
+            String portName = controller.getPort();
 
             // Let's see if they support metadata
 
@@ -430,6 +418,8 @@ public class Console implements ActionListener, WindowListener {
 
             Class<?> controllerClass = Class.forName(targetClass);
             Object controllerObject = controllerClass.newInstance();
+
+            logger.debug("Instantiated " + controllerObject.getClass().getName());
 
             return (ServoController)controllerObject;
 

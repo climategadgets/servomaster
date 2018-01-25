@@ -34,7 +34,7 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 @SuppressWarnings("serial")
-public class ServoView extends JPanel implements ChangeListener, ServoListener {
+public class ServoView extends JPanel {
 
     private Logger logger = Logger.getLogger(getClass());
 
@@ -130,8 +130,6 @@ public class ServoView extends JPanel implements ChangeListener, ServoListener {
 
         createHeader(layout, cs);
         createSliders(layout, cs);
-
-        servo.addListener(this);
     }
 
     private void createHeader(GridBagLayout layout, GridBagConstraints cs) {
@@ -150,32 +148,14 @@ public class ServoView extends JPanel implements ChangeListener, ServoListener {
 
     private void createSliders(GridBagLayout layout, GridBagConstraints cs) {
 
+        Sliders sliders = new Sliders();
+
+        servo.addListener(sliders);
+
         cs.gridy++;
-        cs.gridwidth = 1;
-        cs.gridheight = GridBagConstraints.REMAINDER;
-        cs.weighty = 1;
-        cs.fill = GridBagConstraints.VERTICAL;
 
-        viewSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
-        viewSlider.setToolTipText("The actual position of the servo");
-        viewSlider.setEnabled(false);
-
-        layout.setConstraints(viewSlider, cs);
-        add(viewSlider);
-
-        cs.gridx = 1;
-
-        controlSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
-        controlSlider.setToolTipText("Move this to make the servo move");
-        controlSlider.addChangeListener(this);
-        controlSlider.setMajorTickSpacing(precision/4);
-        controlSlider.setMinorTickSpacing(precision/32);
-        controlSlider.setPaintTicks(true);
-        controlSlider.setPaintLabels(true);
-        controlSlider.setSnapToTicks(false);
-
-        layout.setConstraints(controlSlider, cs);
-        add(controlSlider);
+        layout.setConstraints(sliders, cs);
+        add(sliders);
     }
 
     /**
@@ -192,53 +172,6 @@ public class ServoView extends JPanel implements ChangeListener, ServoListener {
         double requestedPosition = target.getPosition() * (precision - 1);
 
         positionLabel.setText(Integer.toString(iPosition) + "/" + Math.round(requestedPosition));
-    }
-
-    /**
-     * React to the slider events.
-     */
-    @Override
-    public void stateChanged(ChangeEvent e) {
-
-        Object source = e.getSource();
-
-        if ( source == controlSlider ) {
-
-            int position = controlSlider.getValue();
-
-            try {
-
-                target.setPosition((double)position/(double)(precision - 1));
-
-            } catch ( Throwable t ) {
-
-                logger.error("Servo#setPosition:", t);
-            }
-        }
-    }
-
-    /**
-     * Accept the notification about the change in the requested position.
-     *
-     * @param source The servo whose requested position has changed.
-     */
-    @Override
-    public void positionChanged(Servo source, double position) {
-
-        // This notification doesn't have to be visibly reflected
-
-        //logger.debug("Position requested: " + position);
-    }
-
-    /**
-     * Accept the notification about the change in the actual position.
-     *
-     * @param source The servo whose actual position has changed.
-     */
-    @Override
-    public void actualPositionChanged(Servo source, double position) {
-
-        setPosition(position);
     }
 
     /**
@@ -474,6 +407,91 @@ public class ServoView extends JPanel implements ChangeListener, ServoListener {
 
                 logger.error("Setting mapper:", t);
             }
+        }
+    }
+
+    private class Sliders extends JPanel implements ChangeListener, ServoListener {
+
+        Sliders() {
+
+            GridBagLayout layout = new GridBagLayout();
+            GridBagConstraints cs = new GridBagConstraints();
+
+            setLayout(layout);
+
+            cs.gridy++;
+            cs.gridwidth = 1;
+            cs.gridheight = GridBagConstraints.REMAINDER;
+            cs.weighty = 1;
+            cs.fill = GridBagConstraints.VERTICAL;
+
+            viewSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
+            viewSlider.setToolTipText("The actual position of the servo");
+            viewSlider.setEnabled(false);
+
+            layout.setConstraints(viewSlider, cs);
+            add(viewSlider);
+
+            cs.gridx = 1;
+
+            controlSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
+            controlSlider.setToolTipText("Move this to make the servo move");
+            controlSlider.addChangeListener(this);
+            controlSlider.setMajorTickSpacing(precision/4);
+            controlSlider.setMinorTickSpacing(precision/32);
+            controlSlider.setPaintTicks(true);
+            controlSlider.setPaintLabels(true);
+            controlSlider.setSnapToTicks(false);
+
+            layout.setConstraints(controlSlider, cs);
+            add(controlSlider);
+        }
+
+        /**
+         * React to the slider events.
+         */
+        @Override
+        public void stateChanged(ChangeEvent e) {
+
+            Object source = e.getSource();
+
+            if ( source == controlSlider ) {
+
+                int position = controlSlider.getValue();
+
+                try {
+
+                    target.setPosition((double)position/(double)(precision - 1));
+
+                } catch ( Throwable t ) {
+
+                    logger.error("Servo#setPosition:", t);
+                }
+            }
+        }
+
+        /**
+         * Accept the notification about the change in the requested position.
+         *
+         * @param source The servo whose requested position has changed.
+         */
+        @Override
+        public void positionChanged(Servo source, double position) {
+
+            // This notification doesn't have to be visibly reflected
+
+            //logger.debug("Position requested: " + position);
+        }
+
+        /**
+         * Accept the notification about the change in the actual position.
+         *
+         * @param source The servo whose actual position has changed.
+         */
+        @Override
+        public void actualPositionChanged(Servo source, double position) {
+
+            setPosition(position);
         }
     }
 }

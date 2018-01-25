@@ -241,8 +241,8 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         controlSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
         controlSlider.setToolTipText("Move this to make the servo move");
         controlSlider.addChangeListener(this);
-        controlSlider.setMajorTickSpacing(precision/8);
-        controlSlider.setMinorTickSpacing(precision/64);
+        controlSlider.setMajorTickSpacing(precision/4);
+        controlSlider.setMinorTickSpacing(precision/32);
         controlSlider.setPaintTicks(true);
         controlSlider.setPaintLabels(true);
         controlSlider.setSnapToTicks(false);

@@ -18,6 +18,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
@@ -130,6 +131,7 @@ public class ServoView extends JPanel {
 
         createHeader(layout, cs);
         createSliders(layout, cs);
+        createHandlers(layout, cs);
     }
 
     private void createHeader(GridBagLayout layout, GridBagConstraints cs) {
@@ -156,6 +158,40 @@ public class ServoView extends JPanel {
 
         layout.setConstraints(sliders, cs);
         add(sliders);
+    }
+
+    /**
+     * All the optional controls defined by {@link Servo#getMeta() servo metadata are displayed in this section.
+     */
+    private void createHandlers(GridBagLayout layout, GridBagConstraints cs) {
+
+        createRangeAdjuster(layout, cs);
+
+        // VT: NOTE: More to follow here
+        // ...
+    }
+
+    private void createRangeAdjuster(GridBagLayout layout, GridBagConstraints cs) {
+
+        NDC.push("createRangeAdjuster");
+
+        try {
+
+            ServoRangeControl src = new ServoRangeControl(servo);
+
+            cs.gridy++;
+
+            layout.setConstraints(src, cs);
+            add(src);
+
+        } catch (UnsupportedOperationException ex) {
+
+            // No big deal, we'll just don't provide this panel
+            logger.info("servo doesn't seem to support range adjustment: " + ex.getMessage());
+
+        } finally {
+            NDC.pop();
+        }
     }
 
     /**

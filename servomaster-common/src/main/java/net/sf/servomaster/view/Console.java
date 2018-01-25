@@ -142,30 +142,9 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            String targetClass;
-
-            if ( args.length > 0 ) {
-
-                targetClass = args[0];
-
-            } else {
-
-                logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
-                logger.info("");
-                logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
-                logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
-                logger.info("");
-
-                targetClass = NullServoController.class.getName();
-
-                logger.warn("Starting a demo controller (" + targetClass + ") for now");
-            }
-
             try {
 
-                Class<?> controllerClass = Class.forName(targetClass);
-                Object controllerObject = controllerClass.newInstance();
-                controller = (ServoController)controllerObject;
+                controller = instantiate(resolveClass(args));
 
                 if ( args.length == 2 ) {
 
@@ -424,6 +403,48 @@ public class Console implements ActionListener, WindowListener {
         } finally {
 
             logger.warn("FIXME: park the servos");
+            NDC.pop();
+        }
+    }
+
+    private String resolveClass(String[] args) {
+
+        if ( args.length > 0 ) {
+
+            return args[0];
+
+        } else {
+
+            logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
+            logger.info("");
+            logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
+            logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
+            logger.info("");
+
+            String targetClass = NullServoController.class.getName();
+
+            logger.warn("Starting a demo controller (" + targetClass + ") for now");
+
+            return targetClass;
+        }
+    }
+
+    private ServoController instantiate(String targetClass) {
+
+        NDC.push("instantiate");
+
+        try {
+
+            Class<?> controllerClass = Class.forName(targetClass);
+            Object controllerObject = controllerClass.newInstance();
+
+            return (ServoController)controllerObject;
+
+        } catch (Throwable t) {
+
+            throw new IllegalStateException("Unable to instantiate " + targetClass, t);
+
+        } finally {
             NDC.pop();
         }
     }

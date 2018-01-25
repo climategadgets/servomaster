@@ -71,7 +71,7 @@ public class NullServoControllerView extends JPanel implements ServoControllerLi
             logger.error("Can't get the servos, cause:", ioex);
         }
 
-        setBorder(BorderFactory.createTitledBorder("PCA9685 specific controls"));
+        setBorder(BorderFactory.createTitledBorder("NullServoController specific controls"));
     }
 
     @Override

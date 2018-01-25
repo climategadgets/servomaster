@@ -140,6 +140,9 @@ public class Console implements ActionListener, WindowListener {
             displayMetadata(controller);
             buildConsole(controller);
 
+            // VT: FIXME: Replace this by waiting for the semaphore, make window.close()
+            // (and other catastrophic things) trigger the semaphore, then park the servos right here
+
             while ( true ) {
 
                 Thread.sleep(60000);

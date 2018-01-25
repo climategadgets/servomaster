@@ -142,42 +142,7 @@ public class Console implements ActionListener, WindowListener {
 
             String portName = controller.getPort();
 
-            // Let's see if they support metadata
-
-            Meta controllerMeta;
-
-            try {
-
-                controllerMeta = controller.getMeta();
-
-                logger.info("Features:");
-
-                for ( Iterator<String> cif = controllerMeta.getFeatures(); cif.hasNext(); ) {
-
-                    String key = cif.next();
-
-                    logger.info("    " + key + ": " + controllerMeta.getFeature(key));
-                }
-
-                logger.info("Properties:");
-
-                for ( Iterator<String> cip = controllerMeta.getProperties(); cip.hasNext(); ) {
-
-                    String key = cip.next();
-
-                    logger.info("    " + key + ": " + controllerMeta.getProperty(key));
-                }
-
-            } catch ( UnsupportedOperationException ex ) {
-
-                logger.info("Controller doesn't support metadata", ex);
-
-            } catch ( IllegalStateException ex ) {
-
-                logger.info("Controller is not yet connected?", ex);
-
-                throw new IllegalStateException("Can't get controller metadata, can't build the console, good bye");
-            }
+            displayMetadata(controller);
 
             // Figure out how many servos does the controller currently have
 
@@ -367,6 +332,45 @@ public class Console implements ActionListener, WindowListener {
         } finally {
 
             logger.warn("FIXME: park the servos");
+            NDC.pop();
+        }
+    }
+
+    private void displayMetadata(ServoController controller2) {
+
+        NDC.push("medatada");
+
+        try {
+
+            Meta controllerMeta = controller.getMeta();
+
+            logger.info("Features:");
+
+            for ( Iterator<String> i = controllerMeta.getFeatures(); i.hasNext(); ) {
+
+                String key = i.next();
+
+                logger.info("    " + key + ": " + controllerMeta.getFeature(key));
+            }
+
+            logger.info("Properties:");
+
+            for ( Iterator<String> i = controllerMeta.getProperties(); i.hasNext(); ) {
+
+                String key = i.next();
+
+                logger.info("    " + key + ": " + controllerMeta.getProperty(key));
+            }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            logger.info("Controller doesn't support metadata", ex);
+
+        } catch ( IllegalStateException ex ) {
+
+            throw new IllegalStateException("Controller is not yet connected?", ex);
+
+        } finally {
             NDC.pop();
         }
     }

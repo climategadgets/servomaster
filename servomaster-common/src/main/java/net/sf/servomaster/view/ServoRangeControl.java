@@ -10,6 +10,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.log4j.Logger;
+
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -25,6 +27,8 @@ import net.sf.servomaster.device.model.ServoController;
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class ServoRangeControl extends JPanel implements ChangeListener {
+    
+    private final Logger logger = Logger.getLogger(getClass());
     
     private static final long serialVersionUID = -5085651276509068130L;
 
@@ -63,7 +67,18 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
         // we need the defaults.
 
         Meta meta = servo.getController().getMeta();
-        String units = meta.getProperty("servo/range/units").toString();
+        String units;
+        
+        try {
+            
+            units = meta.getProperty("servo/range/units").toString();
+            
+        } catch (UnsupportedOperationException ex) {
+            
+            units = "ticks";
+            
+            logger.warn("set range unit to default ('" + units + "')", ex);
+        }
         
         // Again, we need the defaults, so taking min/max from the controller,
         // not from the servo

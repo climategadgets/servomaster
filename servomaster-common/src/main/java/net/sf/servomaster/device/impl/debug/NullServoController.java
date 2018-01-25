@@ -90,6 +90,7 @@ public class NullServoController extends AbstractServoController {
 
             properties.put("servo/range/min", "0");
             properties.put("servo/range/max", "1023");
+            properties.put("servo/range/units", "μs");
             properties.put("controller/precision", "1024");
         }
     }

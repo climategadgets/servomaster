@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -19,7 +20,6 @@ import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
 
 import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.transform.LimitTransformer;
 import net.sf.servomaster.device.model.transform.LinearTransformer;
@@ -31,7 +31,7 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  *
  * Displays the servo status and allows to control it.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 @SuppressWarnings("serial")
 public class ServoView extends JPanel implements ActionListener, ChangeListener, ItemListener, ServoListener {
@@ -83,7 +83,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * Combo box for selecting the transition controller.
      */
-    private JComboBox transitionComboBox;
+    private JComboBox<String> transitionComboBox;
 
     /**
      * Panel containing the mapper selection radio buttons.
@@ -93,7 +93,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
     /**
      * Combo box for selecting the mapper.
      */
-    private JComboBox mapperComboBox;
+    private JComboBox<String> mapperComboBox;
 
     /**
      * The label displaying the current position.
@@ -179,7 +179,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         String[] transition = { "Instant", "Crawl" };
 
-        transitionComboBox = new JComboBox(transition);
+        transitionComboBox = new JComboBox<String>(transition);
         transitionComboBox.setToolTipText("Select the transition controller");
         transitionComboBox.addActionListener(this);
 
@@ -200,7 +200,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
         String[] mapping = { "Direct", "Reverse", "Limit", "Linear 180\u00B0", "Linear 90\u00B0" };
 
-        mapperComboBox = new JComboBox(mapping);
+        mapperComboBox = new JComboBox<String>(mapping);
         mapperComboBox.setToolTipText("Select the coordinate transformer");
         mapperComboBox.addActionListener(this);
 
@@ -309,6 +309,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void actionPerformed(ActionEvent e) {
 
@@ -316,11 +317,11 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
             Servo current = target;
             Object source = e.getSource();
-            JComboBox cb = null;
+            JComboBox<String> cb = null;
 
             if ( source == transitionComboBox ) {
 
-                cb = (JComboBox)source;
+                cb = (JComboBox<String>)source;
 
                 switch ( cb.getSelectedIndex() ) {
 
@@ -345,7 +346,7 @@ public class ServoView extends JPanel implements ActionListener, ChangeListener,
 
             } else if ( source == mapperComboBox ) {
 
-                cb = (JComboBox)source;
+                cb = (JComboBox<String>)source;
 
                 switch ( cb.getSelectedIndex() ) {
 

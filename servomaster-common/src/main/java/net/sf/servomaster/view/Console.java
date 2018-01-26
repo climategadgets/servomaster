@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,7 +23,9 @@ import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
+import net.sf.servomaster.device.impl.debug.NullServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -72,19 +75,9 @@ public class Console implements ActionListener, WindowListener {
     private ServoController controller;
 
     /**
-     * The controller port name.
-     */
-    private String portName;
-
-    /**
      * The main Swing frame.
      */
     private JFrame mainFrame;
-
-    /**
-     * The controller silent status display.
-     */
-    private SilencerPanel silencerPanel;
 
     /**
      * Pressing this button will reset the controller.
@@ -136,98 +129,124 @@ public class Console implements ActionListener, WindowListener {
      */
     public void run(String[] args) {
 
+        NDC.push("run");
+
         try {
 
-            if ( args.length < 1 ) {
+            controller = instantiate(resolveClass(args));
 
-                logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
-                logger.info("");
-                logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
-                logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
-                System.exit(1);
+            controller.init(args.length == 2 ? args[1] : null);
+
+            displayMetadata(controller);
+            buildConsole(controller);
+
+            // VT: FIXME: Replace this by waiting for the semaphore, make window.close()
+            // (and other catastrophic things) trigger the semaphore, then park the servos right here
+
+            while ( true ) {
+
+                Thread.sleep(60000);
             }
 
-            try {
+        } catch ( Throwable t ) {
 
-                Class<?> controllerClass = Class.forName(args[0]);
-                Object controllerObject = controllerClass.newInstance();
-                controller = (ServoController)controllerObject;
+            logger.warn("Unhandled exception", t);
 
-                if ( args.length == 2 ) {
+        } finally {
 
-                    portName = args[1];
-                }
-                
-                logger.debug("Instantiated " + controller.getClass().getName());
+            logger.warn("FIXME: park the servos");
+            NDC.pop();
+        }
+    }
 
-                controller.init(portName);
+    private void displayMetadata(ServoController controller2) {
 
-                // If the original port name wasn't specified, it is defined
-                // in the controller by now
+        NDC.push("medatada");
 
-                portName = controller.getPort();
+        try {
 
-            } catch ( Throwable t ) {
+            Meta controllerMeta = controller.getMeta();
 
-                // VT: FIXME: Need to verify if this actually gets printed - hopefully, log4j can
-                // properly flush the stream on System.exit()
-                
-                logger.info("Unable to initialize controller, cause:", t);
+            logger.info("Features:");
 
-                System.exit(1);
+            for ( Iterator<String> i = controllerMeta.getFeatures(); i.hasNext(); ) {
+
+                String key = i.next();
+
+                logger.info("    " + key + ": " + controllerMeta.getFeature(key));
             }
 
-            // Let's see if they support metadata
+            logger.info("Properties:");
 
-            Meta controllerMeta = null;
+            for ( Iterator<String> i = controllerMeta.getProperties(); i.hasNext(); ) {
 
-            try {
+                String key = i.next();
 
-                controllerMeta = controller.getMeta();
-
-                logger.info("Features:");
-
-                for ( Iterator<String> cif = controllerMeta.getFeatures(); cif.hasNext(); ) {
-
-                    String key = cif.next();
-
-                    logger.info("    " + key + ": " + controllerMeta.getFeature(key));
-                }
-
-                logger.info("Properties:");
-
-                for ( Iterator<String> cip = controllerMeta.getProperties(); cip.hasNext(); ) {
-
-                    String key = cip.next();
-
-                    logger.info("    " + key + ": " + controllerMeta.getProperty(key));
-                }
-
-                try {
-
-                    if ( controllerMeta.getFeature("controller/silent") ) {
-
-                        controller.setSilentMode(true);
-                        controller.setSilentTimeout(10000, 30000);
-                        silencerPanel = new SilencerPanel(controller);
-                    }
-
-                } catch ( UnsupportedOperationException ex ) {
-
-                    logger.warn("Controller doesn't support servo shutoff (" + ex.getMessage() + ")");
-                }
-
-
-            } catch ( UnsupportedOperationException ex ) {
-
-                logger.info("Controller doesn't support metadata", ex);
-
-            } catch ( IllegalStateException ex ) {
-
-                logger.info("Controller is not yet connected?", ex);
-
-                throw new IllegalStateException("Can't get controller metadata, can't build the console, good bye");
+                logger.info("    " + key + ": " + controllerMeta.getProperty(key));
             }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            logger.info("Controller doesn't support metadata", ex);
+
+        } catch ( IllegalStateException ex ) {
+
+            throw new IllegalStateException("Controller is not yet connected?", ex);
+
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private String resolveClass(String[] args) {
+
+        if ( args.length > 0 ) {
+
+            return args[0];
+
+        } else {
+
+            logger.info("Usage: <script> <servo controller class name> [<servo controller port name>]");
+            logger.info("");
+            logger.info("Example: console net.sf.servomaster.device.impl.serial.ft.FT639ServoController /dev/ttyS0");
+            logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
+            logger.info("");
+
+            String targetClass = NullServoController.class.getName();
+
+            logger.warn("Starting a demo controller (" + targetClass + ") for now");
+
+            return targetClass;
+        }
+    }
+
+    private ServoController instantiate(String targetClass) {
+
+        NDC.push("instantiate");
+
+        try {
+
+            Class<?> controllerClass = Class.forName(targetClass);
+            Object controllerObject = controllerClass.newInstance();
+
+            logger.debug("Instantiated " + controllerObject.getClass().getName());
+
+            return (ServoController)controllerObject;
+
+        } catch (Throwable t) {
+
+            throw new IllegalStateException("Unable to instantiate " + targetClass, t);
+
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private void buildConsole(ServoController controller) throws IOException {
+
+        NDC.push("buildConsole");
+
+        try {
 
             // Figure out how many servos does the controller currently have
 
@@ -242,14 +261,13 @@ public class Console implements ActionListener, WindowListener {
 
             if ( servoCount == 0 ) {
 
-                logger.info("The controller doesn't seem to have any servos now");
-                System.exit(1);
+                throw new IllegalStateException("The controller doesn't seem to have any servos now");
             }
-
+            
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints cs = new GridBagConstraints();
 
-            mainFrame = new JFrame("Servo Controller Console, port " + portName);
+            mainFrame = new JFrame("Servo Controller Console, port " + controller.getPort());
             mainFrame.setSize(new Dimension(800, 600));
 
             mainFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -262,7 +280,6 @@ public class Console implements ActionListener, WindowListener {
 
             console.setLayout(layout);
 
-
             cs.fill = GridBagConstraints.BOTH;
             cs.gridx = 0;
             cs.gridy = 0;
@@ -273,7 +290,7 @@ public class Console implements ActionListener, WindowListener {
 
             for ( int idx = 0; idx < servoCount; idx++ ) {
 
-                servoPanel[idx] = new ServoView(controller, servoSet.get(idx).getName());
+                servoPanel[idx] = new ServoView(servoSet.get(idx));
 
                 cs.gridx = idx;
 
@@ -332,6 +349,8 @@ public class Console implements ActionListener, WindowListener {
             // If the controller view has been instantiated, the constraint
             // Y coordinate has been advanced. If not, we didn't need it
             // anyway
+
+            SilencerPanel silencerPanel = createSilencerPanel(controller);
 
             if ( silencerPanel != null ) {
 
@@ -404,15 +423,31 @@ public class Console implements ActionListener, WindowListener {
 
             mainFrame.setVisible(true);
 
-            while ( true ) {
+        } finally {
+            NDC.pop();
+        }
+    }
 
-                Thread.sleep(60000);
+    private SilencerPanel createSilencerPanel(ServoController controller) throws IOException {
+
+        try {
+
+            if ( controller.getMeta().getFeature("controller/silent") ) {
+
+                controller.setSilentMode(true);
+                controller.setSilentTimeout(10000, 30000);
+
+                return new SilencerPanel(controller);
             }
 
-        } catch ( Throwable t ) {
+        } catch ( UnsupportedOperationException ex ) {
 
-            logger.warn("Unhandled exception", t);
+            logger.warn("Controller doesn't support servo shutoff (reason: " + ex.getMessage() + ")");
+            return null;
         }
+
+        // VT: NOTE: getMeta() will throw an exception if the feature is not supported
+        throw new IllegalStateException("We shouldn't have arrived here");
     }
 
     /**

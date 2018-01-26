@@ -106,28 +106,34 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         cs.weightx = 0.5;
         cs.weighty = 1;
 
-        JPanel rangePanel = new JPanel();
+        {
+            // VT: FIXME: Reorganize this in a way that is compatible with
+            // servo/range/* control so it can be reused - possibly,
+            // units need to be ° * 90, with range 1..2
 
-        rangePanel.setLayout(new GridLayout(2, 1));
-        rangePanel.setToolTipText("Select the servo range");
+            JPanel rangePanel = new JPanel();
 
-        range90 = new JRadioButton("90\u00B0", true);
-        range90.addActionListener(this);
-        range90.setToolTipText("Select the servo range");
+            rangePanel.setLayout(new GridLayout(2, 1));
+            rangePanel.setToolTipText("Select the servo range");
 
-        rangeGroup.add(range90);
-        rangePanel.add(range90);
+            range90 = new JRadioButton("90\u00B0", true);
+            range90.addActionListener(this);
+            range90.setToolTipText("Select the servo range");
 
-        range180 = new JRadioButton("180\u00B0");
-        range180.addActionListener(this);
-        range180.setToolTipText("Select the servo range");
+            rangeGroup.add(range90);
+            rangePanel.add(range90);
 
-        rangeGroup.add(range180);
-        rangePanel.add(range180);
+            range180 = new JRadioButton("180\u00B0");
+            range180.addActionListener(this);
+            range180.setToolTipText("Select the servo range");
 
-        rangePanel.setBorder(BorderFactory.createTitledBorder("Range"));
-        layout.setConstraints(rangePanel, cs);
-        add(rangePanel);
+            rangeGroup.add(range180);
+            rangePanel.add(range180);
+
+            rangePanel.setBorder(BorderFactory.createTitledBorder("Range"));
+            layout.setConstraints(rangePanel, cs);
+            add(rangePanel);
+        }
 
         cs.gridx = 1;
         cs.gridy = 0;

@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * Since this class is primitive, it will not tolerate any alien elements in
  * the input stream.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class dec2hex {
 
@@ -59,6 +59,8 @@ public class dec2hex {
                     System.out.print("(byte)0x" + hexValue + ", ");
                 }
             }
+            
+            br.close();
 
         } catch ( Throwable t ) {
 

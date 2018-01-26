@@ -135,35 +135,38 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
             add(rangePanel);
         }
 
-        cs.gridx = 1;
-        cs.gridy = 0;
-        cs.gridheight = 1;
+        {
+            // VT: FIXME: These two may need a metadata change to accommodate
 
-        modeLabel = new JLabel("SETUP", JLabel.CENTER);
-        modeLabel.setBorder(BorderFactory.createTitledBorder("Mode"));
-        modeLabel.setToolTipText("FT639 controller mode");
+            cs.gridx = 1;
+            cs.gridy = 0;
+            cs.gridheight = 1;
 
-        layout.setConstraints(modeLabel, cs);
-        add(modeLabel);
+            modeLabel = new JLabel("SETUP", JLabel.CENTER);
+            modeLabel.setBorder(BorderFactory.createTitledBorder("Mode"));
+            modeLabel.setToolTipText("FT639 controller mode");
 
-        cs.gridx = 2;
-        cs.weightx = 1;
+            layout.setConstraints(modeLabel, cs);
+            add(modeLabel);
 
-        trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
-        trimSlider.setToolTipText("Change the FT639 header length (UNDOCUMENTED, be careful)");
+            cs.gridx = 2;
+            cs.weightx = 1;
 
-        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
-        trimSlider.setMajorTickSpacing(4);
-        trimSlider.setMinorTickSpacing(1);
-        trimSlider.setPaintTicks(true);
-        trimSlider.setPaintLabels(true);
-        trimSlider.setSnapToTicks(true);
+            trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
+            trimSlider.setToolTipText("Change the FT639 header length (UNDOCUMENTED, be careful)");
 
-        layout.setConstraints(trimSlider, cs);
-        add(trimSlider);
+            trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
+            trimSlider.setMajorTickSpacing(4);
+            trimSlider.setMinorTickSpacing(1);
+            trimSlider.setPaintTicks(true);
+            trimSlider.setPaintLabels(true);
+            trimSlider.setSnapToTicks(true);
 
-        trimSlider.addChangeListener(this);
+            layout.setConstraints(trimSlider, cs);
+            add(trimSlider);
 
+            trimSlider.addChangeListener(this);
+        }
     }
 
     @Override

@@ -79,7 +79,9 @@ public class NullServoController extends AbstractServoController {
     protected class NullMeta extends AbstractMeta {
         
         protected NullMeta() {
-            
+ 
+            features.put("controller/allow_disconnect", Boolean.valueOf(false));
+
             properties.put("manufacturer/name", "DIY Zoning Project");
             properties.put("manufacturer/URL", "https://www.homeclimatecontrol.com/");
             properties.put("manufacturer/model", "8 Channel Demo Servo Controller");

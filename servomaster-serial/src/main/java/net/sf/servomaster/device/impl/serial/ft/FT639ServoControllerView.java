@@ -106,58 +106,67 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
         cs.weightx = 0.5;
         cs.weighty = 1;
 
-        JPanel rangePanel = new JPanel();
+        {
+            // VT: FIXME: Reorganize this in a way that is compatible with
+            // servo/range/* control so it can be reused - possibly,
+            // units need to be ° * 90, with range 1..2
 
-        rangePanel.setLayout(new GridLayout(2, 1));
-        rangePanel.setToolTipText("Select the servo range");
+            JPanel rangePanel = new JPanel();
 
-        range90 = new JRadioButton("90\u00B0", true);
-        range90.addActionListener(this);
-        range90.setToolTipText("Select the servo range");
+            rangePanel.setLayout(new GridLayout(2, 1));
+            rangePanel.setToolTipText("Select the servo range");
 
-        rangeGroup.add(range90);
-        rangePanel.add(range90);
+            range90 = new JRadioButton("90\u00B0", true);
+            range90.addActionListener(this);
+            range90.setToolTipText("Select the servo range");
 
-        range180 = new JRadioButton("180\u00B0");
-        range180.addActionListener(this);
-        range180.setToolTipText("Select the servo range");
+            rangeGroup.add(range90);
+            rangePanel.add(range90);
 
-        rangeGroup.add(range180);
-        rangePanel.add(range180);
+            range180 = new JRadioButton("180\u00B0");
+            range180.addActionListener(this);
+            range180.setToolTipText("Select the servo range");
 
-        rangePanel.setBorder(BorderFactory.createTitledBorder("Range"));
-        layout.setConstraints(rangePanel, cs);
-        add(rangePanel);
+            rangeGroup.add(range180);
+            rangePanel.add(range180);
 
-        cs.gridx = 1;
-        cs.gridy = 0;
-        cs.gridheight = 1;
+            rangePanel.setBorder(BorderFactory.createTitledBorder("Range"));
+            layout.setConstraints(rangePanel, cs);
+            add(rangePanel);
+        }
 
-        modeLabel = new JLabel("SETUP", JLabel.CENTER);
-        modeLabel.setBorder(BorderFactory.createTitledBorder("Mode"));
-        modeLabel.setToolTipText("FT639 controller mode");
+        {
+            // VT: FIXME: These two may need a metadata change to accommodate
 
-        layout.setConstraints(modeLabel, cs);
-        add(modeLabel);
+            cs.gridx = 1;
+            cs.gridy = 0;
+            cs.gridheight = 1;
 
-        cs.gridx = 2;
-        cs.weightx = 1;
+            modeLabel = new JLabel("SETUP", JLabel.CENTER);
+            modeLabel.setBorder(BorderFactory.createTitledBorder("Mode"));
+            modeLabel.setToolTipText("FT639 controller mode");
 
-        trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
-        trimSlider.setToolTipText("Change the FT639 header length (UNDOCUMENTED, be careful)");
+            layout.setConstraints(modeLabel, cs);
+            add(modeLabel);
 
-        trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
-        trimSlider.setMajorTickSpacing(4);
-        trimSlider.setMinorTickSpacing(1);
-        trimSlider.setPaintTicks(true);
-        trimSlider.setPaintLabels(true);
-        trimSlider.setSnapToTicks(true);
+            cs.gridx = 2;
+            cs.weightx = 1;
 
-        layout.setConstraints(trimSlider, cs);
-        add(trimSlider);
+            trimSlider = new JSlider(JSlider.HORIZONTAL, 0, 15, 0);
+            trimSlider.setToolTipText("Change the FT639 header length (UNDOCUMENTED, be careful)");
 
-        trimSlider.addChangeListener(this);
+            trimSlider.setBorder(BorderFactory.createTitledBorder("Header Length"));
+            trimSlider.setMajorTickSpacing(4);
+            trimSlider.setMinorTickSpacing(1);
+            trimSlider.setPaintTicks(true);
+            trimSlider.setPaintLabels(true);
+            trimSlider.setSnapToTicks(true);
 
+            layout.setConstraints(trimSlider, cs);
+            add(trimSlider);
+
+            trimSlider.addChangeListener(this);
+        }
     }
 
     @Override

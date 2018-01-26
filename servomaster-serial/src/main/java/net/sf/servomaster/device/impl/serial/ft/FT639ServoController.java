@@ -481,6 +481,32 @@ public class FT639ServoController extends AbstractSerialServoController implemen
                 properties.put("servo/precision", "256");
             }
         }
+
+        private final String NOT_SUPPORTED = "Hardware doesn't support silent operation on per-servo basis";
+
+        @Override
+        public void setSilentMode(boolean silent) throws IOException {
+
+            throw new UnsupportedOperationException(NOT_SUPPORTED);
+        }
+
+        @Override
+        public void setSilentTimeout(long timeout, long heartbeat) {
+
+            throw new UnsupportedOperationException(NOT_SUPPORTED);
+        }
+
+        @Override
+        public boolean isSilentNow() {
+
+            throw new UnsupportedOperationException(NOT_SUPPORTED);
+        }
+
+        @Override
+        public boolean getSilentMode() {
+
+            throw new UnsupportedOperationException(NOT_SUPPORTED);
+        }
     }
 
     /**

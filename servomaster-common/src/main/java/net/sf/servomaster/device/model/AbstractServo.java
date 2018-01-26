@@ -470,4 +470,40 @@ public abstract class AbstractServo implements Servo {
             notifyAll();
         }
     }
+
+    /**
+     * Default behavior is not to support silent operation.
+     */
+    @Override
+    public void setSilentMode(boolean silent) throws IOException {
+
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    /**
+     * Default behavior is not to support silent operation.
+     */
+    @Override
+    public void setSilentTimeout(long timeout, long heartbeat) {
+
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    /**
+     * Default behavior is not to support silent operation.
+     */
+    @Override
+    public boolean isSilentNow() {
+
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    /**
+     * Default behavior is not to support silent operation.
+     */
+    @Override
+    public boolean getSilentMode() {
+
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 }

@@ -125,7 +125,8 @@ public abstract class AbstractServoController implements ServoController {
 
         } catch ( UnsupportedOperationException ex ) {
 
-            logger.info("controller doesn't support silent operation", ex);
+            // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
+            logger.info("controller doesn't support silent operation, reason: " + ex.getMessage());
 
         } catch ( IllegalStateException ex ) {
 

@@ -3,7 +3,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     group = 'net.sf.servomaster'
-    version = '0.8.2.5-SNAPSHOT'
+    version = '0.8.2.5'
 
     apply plugin: 'findbugs'
 

@@ -5,7 +5,7 @@
 
 # Gotta do 'mvn install' before this can be run.
 
-SERVOMASTER_VERSION=0.8.2.5-SNAPSHOT
+SERVOMASTER_VERSION=0.8.2.5
 LIBDIR=${HOME}/.m2/repository
 
 APACHE_COMMONS_LANG3="${LIBDIR}/org/apache/commons/commons-lang3/3.2.1/commons-lang3-3.2.1.jar"

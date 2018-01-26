@@ -8,7 +8,7 @@ import net.sf.servomaster.device.model.SilentDevice;
 /**
  * Provides the functionality required to support the silent mode.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
  */
 public class SilentHelper extends Thread implements SilentDevice {
 
@@ -117,13 +117,13 @@ public class SilentHelper extends Thread implements SilentDevice {
     }
 
     @Override
-    public boolean isSilentNow() {
+    public synchronized boolean isSilentNow() {
 
         return stateHandler instanceof Passive;
     }
 
     @Override
-    public boolean getSilentMode() {
+    public synchronized boolean getSilentMode() {
 
         return silent;
     }

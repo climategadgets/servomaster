@@ -2,6 +2,7 @@ package net.sf.servomaster.device.impl;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import net.sf.servomaster.device.model.Meta;
@@ -23,12 +24,12 @@ public abstract class AbstractMeta implements Meta {
      *
      * The key is the feature supported, and the value is the current value of it.
      */
-    protected Map<String, Boolean> features = new TreeMap<String, Boolean>();
+    protected SortedMap<String, Boolean> features = new TreeMap<String, Boolean>();
 
     /**
      * Property map.
      */
-    protected Map<String, Object> properties = new TreeMap<String, Object>();
+    protected SortedMap<String, Object> properties = new TreeMap<String, Object>();
 
     /**
      * Feature writer map.
@@ -43,13 +44,13 @@ public abstract class AbstractMeta implements Meta {
     @Override
     public final Map<String, Boolean> getFeatures() {
 
-        return Collections.unmodifiableMap(features);
+        return Collections.unmodifiableSortedMap(features);
     }
 
     @Override
     public final Map<String, Object> getProperties() {
 
-        return Collections.unmodifiableMap(properties);
+        return Collections.unmodifiableSortedMap(properties);
     }
 
     @Override

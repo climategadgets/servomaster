@@ -170,6 +170,11 @@ public abstract class AbstractServo implements Servo {
             throw new IllegalStateException("Not enabled");
         }
 
+        // VT: FIXME: Currently, there's no check whether the position is the same as the servo is already set to.
+        // This will cause a flood of false listener notifications in case when lazy code keeps setting the same position.
+        // Since the position is defined as double, it will require some sleuth of hand to calculate whether
+        // the hardware coordinates for two doubles sufficiently close to each other are the same, and skip the request altogether.
+
         // The reason it is synchronized on the controller is that the
         // setActualPosition() calls the controller's synchronized methods
         // and the deadlock can occur if *this* method was made synchronized

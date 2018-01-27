@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -46,14 +47,14 @@ public abstract class AbstractServo implements Servo {
      * 
      * It doesn't make sense for this pool to have more than one thread.
      */
-    private final ThreadPoolExecutor transitionDriverExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, driverQueue);
+    private final ExecutorService transitionDriverExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, driverQueue);
 
     /**
      * Thread pool for transition listeners.
      * 
      * It doesn't make sense for this pool to have more than one thread.
      */
-    private final ThreadPoolExecutor listenerExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, listenerQueue);
+    private final ExecutorService listenerExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, listenerQueue);
 
     /**
      * The actual servo to control.

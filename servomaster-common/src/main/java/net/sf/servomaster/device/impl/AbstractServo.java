@@ -179,34 +179,35 @@ public abstract class AbstractServo implements Servo {
         // setActualPosition() calls the controller's synchronized methods
         // and the deadlock can occur if *this* method was made synchronized
 
-        TransitionCompletionToken token;
+        try {
 
-        synchronized (servoController) {
+            synchronized (servoController) {
 
-            this.position = position;
+                this.position = position;
 
-            if (transitionController != null) {
+                if (transitionController == null) {
+
+                    setActualPosition(position);
+
+                    return new TCT(true);
+                }
 
                 if (transitionDriver != null) {
 
                     transitionDriver.stop();
                 }
 
-                token = new TCT(false);
+                TransitionCompletionToken token = new TCT(false);
                 transitionDriver = new TransitionDriver(this, position, (TCT)token);
                 transitionDriverExecutor.execute(transitionDriver);
 
-            } else {
-
-                setActualPosition(position);
-
-                token = new TCT(true);
+                return token;
             }
+
+        } finally {
+
+            positionChanged();
         }
-
-        positionChanged();
-
-        return token;
     }
 
     /**

@@ -174,7 +174,7 @@ public abstract class AbstractServo implements Servo {
         // setActualPosition() calls the controller's synchronized methods
         // and the deadlock can occur if *this* method was made synchronized
 
-        TransitionCompletionToken token = null;
+        TransitionCompletionToken token;
 
         synchronized (servoController) {
 

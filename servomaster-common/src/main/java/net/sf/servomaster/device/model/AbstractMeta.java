@@ -1,35 +1,25 @@
 package net.sf.servomaster.device.model;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.sf.servomaster.util.ImmutableIterator;
-
 /**
- * Abstract metadata.
+ * Basic metadata support.
  *
- * The keys in the {@link #features feature map} and {@link #properties
- * property map} are short names.
+ * Implementation note: tree based structures are generally slower than hash based, but these collections
+ * are small and infrequently accessed - and when they are, it's most often for human eyes, which like things sorted.
  *
- * <p>
- *
- * The feature and property values are extracted ({@link #getFeature
- * getFeature()} and {@link #getProperty getProperty()} as the map values
- * ({@link #features feature map}, {@link #properties property map}),
- * however, it is only possible to store the values into the corresponding
- * maps if the handlers succeed. The handlers must be put into the
- * corresponding maps ({@link #featureWriters featureWriters}, {@link
- * #propertyWriters propertyWriters}) in the derived class constructor.
- *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractMeta implements Meta {
 
     public static final String metaPrefix = "http://servomaster.sourceforge.net/meta/";
 
     /**
-     * Feature map.
+     * Features.
+     *
+     * The key is the feature supported, and the value is the current value of it.
      */
     protected Map<String, Boolean> features = new TreeMap<String, Boolean>();
 
@@ -44,20 +34,20 @@ public abstract class AbstractMeta implements Meta {
     protected Map<String, FeatureWriter> featureWriters = new TreeMap<String, FeatureWriter>();
 
     /**
-     * Property map.
+     * Property writer map.
      */
     protected Map<String, PropertyWriter> propertyWriters = new TreeMap<String, PropertyWriter>();
 
     @Override
-    public final Iterator<String> getFeatures() {
+    public final Map<String, Boolean> getFeatures() {
 
-        return new ImmutableIterator<String>(features.keySet().iterator());
+        return Collections.unmodifiableMap(features);
     }
 
     @Override
-    public final Iterator<String> getProperties() {
+    public final Map<String, Object> getProperties() {
 
-        return new ImmutableIterator<String>(properties.keySet().iterator());
+        return Collections.unmodifiableMap(properties);
     }
 
     @Override
@@ -136,16 +126,23 @@ public abstract class AbstractMeta implements Meta {
         sb.append("]");
         
         return sb.toString();
-        
     }
 
-    protected abstract class FeatureWriter {
+    /**
+     * Setting feature values will most probably involve talking to hardware, and changing driver internal state.
+     * This interface is the entry point for that.
+     */
+    protected interface FeatureWriter {
 
-        public abstract void set(String key, boolean value);
+        void set(String key, boolean value);
     }
 
-    protected abstract class PropertyWriter {
+    /**
+     * Setting property values will most probably involve talking to hardware, and changing driver internal state.
+     * This interface is the entry point for that.
+     */
+    protected interface PropertyWriter {
 
-        public abstract void set(String key, Object value);
+        void set(String key, Object value);
     }
 }

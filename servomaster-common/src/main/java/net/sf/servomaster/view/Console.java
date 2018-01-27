@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -169,20 +170,20 @@ public class Console implements ActionListener, WindowListener {
 
             logger.info("Features:");
 
-            for ( Iterator<String> i = controllerMeta.getFeatures(); i.hasNext(); ) {
+            for ( Iterator<Entry<String, Boolean>> i = controllerMeta.getFeatures().entrySet().iterator(); i.hasNext(); ) {
 
-                String key = i.next();
+                Entry<String, Boolean> entry = i.next();
 
-                logger.info("    " + key + ": " + controllerMeta.getFeature(key));
+                logger.info("    " + entry.getKey() + ": " + entry.getValue());
             }
 
             logger.info("Properties:");
 
-            for ( Iterator<String> i = controllerMeta.getProperties(); i.hasNext(); ) {
+            for ( Iterator<Entry<String, Object>> i = controllerMeta.getProperties().entrySet().iterator(); i.hasNext(); ) {
 
-                String key = i.next();
+                Entry<String, Object> entry = i.next();
 
-                logger.info("    " + key + ": " + controllerMeta.getProperty(key));
+                logger.info("    " + entry.getKey() + ": " + entry.getValue());
             }
 
         } catch ( UnsupportedOperationException ex ) {

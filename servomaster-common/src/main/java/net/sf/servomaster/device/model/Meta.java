@@ -1,6 +1,8 @@
 package net.sf.servomaster.device.model;
 
-import java.util.Iterator;
+import java.util.Map;
+
+import net.sf.servomaster.device.model.AbstractMeta.FeatureWriter;
 
 /**
  * Describes an object capable of providing and adjusting the metadata.
@@ -21,49 +23,48 @@ import java.util.Iterator;
  *
  * <p>
  *
- * An example of a feature: whether the controller is able to support the
- * silent mode.
+ * An example of a feature: whether the controller is able to support the silent
+ * mode.
  *
- * An example of a property: how long the controller will stay inactive
- * before going into silent mode.
+ * An example of a property: how long the controller will stay inactive before
+ * going into silent mode.
  *
  * <p>
  *
- * If the feature is not supported or the property is not present, the
- * attempt to get or set it will result in
- * <code>UnsupportedOperationException</code>. If the feature or property
- * value can't be changed because it's read-only, the attempt to set it will
- * result in <code>IllegalAccessError</code>. For hardware related problems,
- * <code>IOException</code> will be thrown.
+ * If the feature is not supported or the property is not present, the attempt
+ * to get or set it will result in {@code UnsupportedOperationException}. If the
+ * feature or property value can't be changed because it's read-only, the
+ * attempt to set it will result in {@code IllegalAccessError}. For hardware
+ * related problems, {@code IOException} will be thrown.
  *
  * <p>
  *
  * The feature or property identifier is normally a full or partial URL. The
  * full URL points to the page containing the support documentation for this
- * feature or property, for example, <a
- * href="http://servomaster.sourceforge.net/meta/controller/precision"
- * target="_top">http://servomaster.sourceforge.net/meta/controller/precision</a>.
- * Since this is quite cumbersome, partial URLs will be accepted as well.
- * For this particular example, the identifier will look like
- * <code>controller/precision</code>.
+ * feature or property, for example,
+ * <a href="http://servomaster.sourceforge.net/meta/controller/precision" target
+ * ="_top">http://servomaster.sourceforge.net/meta/controller/precision</a>.
+ * Since this is quite cumbersome, partial URLs will be accepted as well. For
+ * this particular example, the identifier will look like
+ * {@code controller/precision}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
  */
 public interface Meta {
 
     /**
-     * Get the iterator on the supported features.
+     * Get supported features.
      *
-     * @return Iterator on the set of feature names.
+     * @return Immutable map of feature names to their current values.
      */
-    Iterator<String> getFeatures();
+    Map<String, Boolean> getFeatures();
 
     /**
-     * Get the iterator on the supported properties.
+     * Get supported properties.
      *
-     * @return Iterator on the set of property names.
+     * @return Immutable map of property names to property values.
      */
-    Iterator<String> getProperties();
+    Map<String, Object> getProperties();
 
     /**
      * Look up the value of the feature.
@@ -72,22 +73,24 @@ public interface Meta {
      *
      * @return the value of the feature.
      *
-     * @exception UnsupportedOperationException if this feature is not
-     * supported.
+     * @throws UnsupportedOperationException if this feature is not supported.
+     *
+     * @see #supportsFeature(String)
      */
     boolean getFeature(String id);
 
     /**
      * Set the feature.
      *
+     * This method is a bit more complicated than it seems - see
+     * {@link AbstractMeta#setFeature(String, boolean)} for details.
+     *
      * @param id Feature name.
      *
      * @param value Feature value.
      *
-     * @exception UnsupportedOperationException if this feature is not
-     * supported.
-     *
-     * @exception IllegalAccessError if this feature is read only.
+     * @throws UnsupportedOperationException if this feature is not supported.
+     * @throws IllegalAccessError if this feature is read only.
      */
     void setFeature(String id, boolean value);
 
@@ -98,8 +101,7 @@ public interface Meta {
      *
      * @return the property value.
      *
-     * @exception UnsupportedOperationException if this property is not
-     * supported.
+     * @throws UnsupportedOperationException if this property is not supported.
      */
     Object getProperty(String id);
 
@@ -110,10 +112,8 @@ public interface Meta {
      *
      * @param value Feature value.
      *
-     * @exception UnsupportedOperationException if this property is not
-     * supported.
-     *
-     * @exception IllegalAccessError if this property is read only.
+     * @throws UnsupportedOperationException if this property is not supported.
+     * @throws IllegalAccessError if this property is read only.
      */
     void setProperty(String id, Object value);
 }

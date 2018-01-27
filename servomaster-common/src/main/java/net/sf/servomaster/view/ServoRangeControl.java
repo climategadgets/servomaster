@@ -77,6 +77,9 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
             
             units = "ticks";
             
+            // This should be annoyoing enough so the developer sets the units.
+            // In case there's no per servo range adjustment at all, shame on them and let the log be verbose.
+            
             logger.warn("set range unit to default ('" + units + "')", ex);
         }
         

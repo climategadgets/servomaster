@@ -7,9 +7,9 @@ import java.io.IOException;
  *
  * Allows instant and controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface Servo {
+public interface Servo extends SilentDevice {
 
     /**
      * Get the name.

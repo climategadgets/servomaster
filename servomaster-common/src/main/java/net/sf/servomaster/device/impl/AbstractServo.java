@@ -23,8 +23,8 @@ import net.sf.servomaster.device.model.TransitionToken;
 /**
  * Basic support for servo abstraction.
  *
- * Supports the transition controller functionality. Allows instant and
- * controlled positioning and feedback.
+ * Supports the transition controller functionality. Allows instant as well as
+ * time controlled positioning and feedback.
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */

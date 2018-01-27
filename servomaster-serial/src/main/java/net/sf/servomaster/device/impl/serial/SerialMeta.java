@@ -1,6 +1,6 @@
 package net.sf.servomaster.device.impl.serial;
 
-import net.sf.servomaster.device.model.AbstractMeta;
+import net.sf.servomaster.device.impl.AbstractMeta;
 
 /**
  * Serial controller metadata.

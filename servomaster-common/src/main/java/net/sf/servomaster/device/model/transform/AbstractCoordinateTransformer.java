@@ -2,7 +2,7 @@ package net.sf.servomaster.device.model.transform;
 
 import java.io.IOException;
 
-import net.sf.servomaster.device.model.AbstractServo;
+import net.sf.servomaster.device.impl.AbstractServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;

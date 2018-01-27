@@ -8,7 +8,7 @@ import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
-import net.sf.servomaster.device.model.AbstractServoController;
+import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.model.Servo;
 
 /**

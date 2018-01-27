@@ -1,4 +1,4 @@
-package net.sf.servomaster.device.model;
+package net.sf.servomaster.device.impl;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -9,6 +9,10 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import net.sf.servomaster.device.model.ServoControllerListener;
 import net.sf.servomaster.device.model.silencer.SilentHelper;
 import net.sf.servomaster.device.model.silencer.SilentProxy;
 

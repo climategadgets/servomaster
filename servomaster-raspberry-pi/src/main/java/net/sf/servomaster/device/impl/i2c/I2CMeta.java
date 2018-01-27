@@ -1,6 +1,6 @@
 package net.sf.servomaster.device.impl.i2c;
 
-import net.sf.servomaster.device.model.AbstractMeta;
+import net.sf.servomaster.device.impl.AbstractMeta;
 
 /**
  * I2C controller metadata.

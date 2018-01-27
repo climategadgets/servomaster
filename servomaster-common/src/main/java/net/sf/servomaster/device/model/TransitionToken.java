@@ -3,6 +3,8 @@ package net.sf.servomaster.device.model;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
+import net.sf.servomaster.device.impl.AbstractServo;
+
 /**
  * Exchange between the {@link AbstractServo} and {@link TransitionController}.
  *

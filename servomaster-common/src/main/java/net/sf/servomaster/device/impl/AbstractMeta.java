@@ -1,8 +1,10 @@
-package net.sf.servomaster.device.model;
+package net.sf.servomaster.device.impl;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+
+import net.sf.servomaster.device.model.Meta;
 
 /**
  * Basic metadata support.

@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
+import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
-import net.sf.servomaster.device.model.AbstractMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;

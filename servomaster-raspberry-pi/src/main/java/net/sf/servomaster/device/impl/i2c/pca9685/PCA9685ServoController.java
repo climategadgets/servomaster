@@ -6,10 +6,10 @@ import org.apache.log4j.NDC;
 
 import com.pi4j.io.i2c.I2CBus;
 
+import net.sf.servomaster.device.impl.AbstractMeta;
+import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.impl.i2c.AbstractI2CServoController;
 import net.sf.servomaster.device.impl.i2c.I2CMeta;
-import net.sf.servomaster.device.model.AbstractMeta;
-import net.sf.servomaster.device.model.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.silencer.SilentProxy;

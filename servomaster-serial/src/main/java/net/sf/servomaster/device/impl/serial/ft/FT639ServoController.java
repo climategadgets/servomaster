@@ -3,11 +3,11 @@ package net.sf.servomaster.device.impl.serial.ft;
 import java.io.IOException;
 import java.util.Iterator;
 
+import net.sf.servomaster.device.impl.AbstractMeta;
+import net.sf.servomaster.device.impl.AbstractServoController;
+import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
-import net.sf.servomaster.device.model.AbstractMeta;
-import net.sf.servomaster.device.model.AbstractServoController;
-import net.sf.servomaster.device.model.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;

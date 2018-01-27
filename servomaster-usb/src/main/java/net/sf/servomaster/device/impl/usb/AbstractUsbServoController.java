@@ -20,8 +20,8 @@ import javax.usb.event.UsbServicesListener;
 
 import org.apache.log4j.NDC;
 
-import net.sf.servomaster.device.model.AbstractServoController;
-import net.sf.servomaster.device.model.HardwareServo;
+import net.sf.servomaster.device.impl.AbstractServoController;
+import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;

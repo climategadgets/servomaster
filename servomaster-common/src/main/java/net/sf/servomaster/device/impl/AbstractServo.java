@@ -1,4 +1,4 @@
-package net.sf.servomaster.device.model;
+package net.sf.servomaster.device.impl;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -11,6 +11,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
+
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import net.sf.servomaster.device.model.ServoListener;
+import net.sf.servomaster.device.model.TransitionCompletionToken;
+import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.TransitionToken;
 
 /**
  * Basic support for servo abstraction.

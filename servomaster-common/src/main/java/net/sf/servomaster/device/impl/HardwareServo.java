@@ -1,4 +1,7 @@
-package net.sf.servomaster.device.model;
+package net.sf.servomaster.device.impl;
+
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.ServoController;
 
 /**
  * A hardware servo abstraction.

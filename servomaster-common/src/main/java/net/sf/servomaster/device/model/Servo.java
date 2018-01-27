@@ -92,9 +92,11 @@ public interface Servo extends SilentDevice {
     /**
      * Enable or disable the servo.
      *
-     * @param enabled <code>true</code> to enable.
+     * @param enabled {@code true} enables the servo, {@code false} disables it and (IMPORTANT!)
+     * puts it into a silent mode if the servo (not the controller) supports {@code servo/silent} feature,
+     * and its value is currently set to {@code true}.
      *
-     * @exception IOException if ther was a problem communicating with the
+     * @exception IOException if there was a problem communicating with the
      * hardware controller.
      */
     void setEnabled(boolean enabled) throws IOException;

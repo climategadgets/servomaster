@@ -13,12 +13,12 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 /**
- * A servo abstraction.
+ * Basic support for servo abstraction.
  *
  * Supports the transition controller functionality. Allows instant and
  * controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2010
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractServo implements Servo {
 
@@ -52,7 +52,7 @@ public abstract class AbstractServo implements Servo {
      * The actual servo to control.
      *
      * If <strong>this</strong> is the servo to control, then this variable
-     * is set to <code>null</code>.
+     * is set to {@code null}.
      */
     private Servo target;
 
@@ -64,7 +64,7 @@ public abstract class AbstractServo implements Servo {
     /**
      * The transition controller attached to the servo.
      *
-     * If the value is <code>null</code>, then there is no transition - the
+     * If the value is {@code null}, then there is no transition - the
      * {@link #actualPosition actual position} is identical to {@link
      * #position requested position}.
      */
@@ -78,7 +78,7 @@ public abstract class AbstractServo implements Servo {
     /**
      * Requested position.
      *
-     * Changes immediately after {@link #setPosition setPosition()} call.
+     * Changes immediately after {@link #setPosition setPosition()} call, unlike {@link #actualPosition}.
      */
     private double position;
 
@@ -91,7 +91,7 @@ public abstract class AbstractServo implements Servo {
     protected double actualPosition;
 
     /**
-     * Enabled mode.
+     * {@code true} if this servo is enabled.
      */
     private boolean enabled = true;
 

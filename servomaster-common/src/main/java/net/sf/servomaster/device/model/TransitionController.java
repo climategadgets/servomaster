@@ -3,31 +3,22 @@ package net.sf.servomaster.device.model;
 /**
  * The transition controller abstraction.
  *
- * <p>
+ * The movement of the servo may sometimes be more complicated than just a simple immediate positioning.
+ * This interface provides a unified way to control the motion.
  *
- * The movement of the servo should sometimes be more complicated than just
- * a simple positioning. This interface provides a unified way to control
- * the motion.
- *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public interface TransitionController {
 
     /**
-     * Move the servo to the target position according to the specified
-     * transition pattern.
+     * Move the servo to the target position according to the specified transition pattern.
      *
-     * <p>
-     *
-     * The implementation of this method <strong>must</strong> be thread safe.
+     * Unlike in {@code v.0.x}, there are no restrictions on thread safety of the implementation - it will be invoked in a thread safe manner.
+     * In fact, there are no restrictions on the implementation at all except for being interruptable.
      *
      * @param target Servo to move.
      *
-     * @param token Transition control token.
-     *
-     * @param targetPosition Position to set the servo to at the end of the
-     * transition.
-     *
+     * @param targetPosition Position to set the servo to at the end of the transition.
      */
-    void move(Servo target, TransitionToken token, double targetPosition);
+    void move(Servo target, double targetPosition);
 }

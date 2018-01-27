@@ -13,12 +13,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
+import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.TransitionCompletionToken;
 import net.sf.servomaster.device.model.TransitionController;
-import net.sf.servomaster.device.model.TransitionToken;
 
 /**
  * Basic support for servo abstraction.
@@ -38,23 +38,11 @@ public abstract class AbstractServo implements Servo {
     private final BlockingQueue<Runnable> driverQueue = new LinkedBlockingQueue<Runnable>();
     
     /**
-     * Worker queue for transition listeners.
-     */
-    private final BlockingQueue<Runnable> listenerQueue = new LinkedBlockingQueue<Runnable>();
-    
-    /**
      * Thread pool for transition drivers.
      * 
-     * It doesn't make sense for this pool to have more than one thread.
+     * This pool requires exactly one thread.
      */
     private final ExecutorService transitionDriverExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, driverQueue);
-
-    /**
-     * Thread pool for transition listeners.
-     * 
-     * It doesn't make sense for this pool to have more than one thread.
-     */
-    private final ExecutorService listenerExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, listenerQueue);
 
     /**
      * The actual servo to control.
@@ -77,11 +65,6 @@ public abstract class AbstractServo implements Servo {
      * #position requested position}.
      */
     private TransitionController transitionController;
-
-    /**
-     * The transition driver for the current transition.
-     */
-    private TransitionDriver transitionDriver;
 
     /**
      * Requested position.
@@ -192,13 +175,11 @@ public abstract class AbstractServo implements Servo {
                     return new TCT(true);
                 }
 
-                if (transitionDriver != null) {
-
-                    transitionDriver.stop();
-                }
+                // VT: FIXME: Decide whether to stop the currently running transition (probably yes)
 
                 TransitionCompletionToken token = new TCT(false);
-                transitionDriver = new TransitionDriver(this, position, (TCT)token);
+                TransitionDriver transitionDriver = new TransitionDriver(new TransitionProxy(), position, (TCT)token);
+
                 transitionDriverExecutor.execute(transitionDriver);
 
                 return token;
@@ -320,7 +301,6 @@ public abstract class AbstractServo implements Servo {
 
         private Servo target;
         private double targetPosition;
-        private TransitionToken token = new TransitionToken();
         private TCT completionToken;
 
         TransitionDriver(Servo target, double targetPosition, TCT completionToken) {
@@ -332,67 +312,29 @@ public abstract class AbstractServo implements Servo {
 
         @Override
         public void run() {
-
-            logger.debug("Transition: " + getActualPosition() + " => " + targetPosition);
-
-            listenerExecutor.execute(new Listener());
-
-            transitionController.move(target, token, targetPosition);
             
-            // This will help when thread pool executor is used
-            NDC.clear(); 
+            NDC.push("run");
             
-            // Without this, memory leaks like a sieve in DZ3
-            NDC.remove();
-        }
+            try {
 
-        public void stop() {
+                logger.debug("Transition: " + getActualPosition() + " => " + targetPosition);
 
-            token.stop();
-        }
+                transitionController.move(target, targetPosition);
 
-        private class Listener implements Runnable {
+            } finally {
 
-            @Override
-            public void run() {
-                
-                NDC.push("run");
+                // No matter what's the cause, we're done - even though sometimes the actual position
+                // may be different from desired.
 
-                try {
+                // VT: FIXME: Make sure that gets taken care of.
 
-                    while ( true ) {
+                completionToken.done();
 
-                        try {
+                // This will help when thread pool executor is used
+                NDC.clear();
 
-                            setActualPosition(token.consume());
-
-                        } catch (IllegalStateException ex) {
-
-                            logger.debug("Controller stopped the transition", ex);
-
-                            return;
-
-                        } catch (Throwable t) {
-
-                            logger.error("Unexpected transition problem", t);
-
-                            return;
-                        }
-                    }
-
-                } finally {
-
-                    completionToken.done();
-                    
-                    // Just in case
-                    NDC.pop();
-
-                    // This will help when thread pool executor is used
-                    NDC.clear(); 
-                    
-                    // Without this, memory leaks like a sieve in DZ3
-                    NDC.remove();
-                }
+                // Without this, memory leaks like a sieve in DZ3
+                NDC.remove();
             }
         }
     }
@@ -519,5 +461,121 @@ public abstract class AbstractServo implements Servo {
     public boolean getSilentMode() {
 
         throw new UnsupportedOperationException("Not Implemented");
+    }
+
+    /**
+     * Gives {@link TransitionController} implementations direct access to {@link AbstractServo#setActualPosition(double)}
+     * without them knowing about that.
+     *
+     * Generally speaking, transition controllers have no business doing a lot of things with a servo, so that will be disallowed as well.
+     */
+    private class TransitionProxy implements Servo {
+
+        private static final String NONO = "Transition controller shouldn't be accessing this functionality";
+
+        @Override
+        public void setSilentMode(boolean silent) throws IOException {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void setSilentTimeout(long timeout, long heartbeat) {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public boolean isSilentNow() {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public boolean getSilentMode() {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public String getName() {
+
+            return AbstractServo.this.getName();
+        }
+
+        @Override
+        public TransitionCompletionToken setPosition(double position) throws IOException {
+
+            NDC.push("wrap");
+
+            try {
+
+                AbstractServo.this.setActualPosition(position);
+                return null;
+
+            } finally {
+                NDC.pop();
+            }
+        }
+
+        @Override
+        public double getPosition() {
+
+            return AbstractServo.this.getActualPosition();
+        }
+
+        @Override
+        public double getActualPosition() {
+
+            return AbstractServo.this.getActualPosition();
+        }
+
+        @Override
+        public void addListener(ServoListener listener) {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void removeListener(ServoListener listener) {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) throws IOException {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public Meta getMeta() {
+
+            return AbstractServo.this.getMeta();
+        }
+
+        @Override
+        public ServoController getController() {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void attach(TransitionController transitionController) {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public TransitionController getTransitionController() {
+
+            throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public Servo getTarget() {
+
+            throw new IllegalAccessError(NONO);
+        }
     }
 }

@@ -6,7 +6,6 @@ import org.apache.log4j.NDC;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.TransitionController;
-import net.sf.servomaster.device.model.TransitionToken;
 
 /**
  * Makes the servo crawl as fast as the servo controller and I/O allows,
@@ -27,11 +26,11 @@ public class CrawlTransitionController implements TransitionController {
     }
 
     @Override
-    public void move(Servo target, TransitionToken token, double targetPosition) {
+    public void move(Servo target, double targetPosition) {
 
-        if (target == null || token == null) {
+        if (target == null) {
 
-            throw new IllegalArgumentException("Neither target nor token can be null");
+            throw new IllegalArgumentException("target can't be null");
         }
 
         NDC.push("move");
@@ -70,7 +69,6 @@ public class CrawlTransitionController implements TransitionController {
 
                     // We came close enough
 
-                    token.stop();
                     return;
                 }
 
@@ -89,29 +87,25 @@ public class CrawlTransitionController implements TransitionController {
 
                     // We hit the limit
 
-                    token.stop();
                     return;
                 }
 
-                token.supply(newPosition);
+                target.setPosition(newPosition);
             }
 
         } catch (IllegalStateException ex) {
 
             logger.debug("Ignored, stopping", ex);
 
-            token.stop();
-
         } catch (Throwable t) {
 
             // If we haven't caught it, we didn't think about it
 
             logger.error("Unexpected exception, stopping", t);
-
-            token.stop();
             
         } finally {
             
+            logger.info("done");
             NDC.pop();
         }
     }

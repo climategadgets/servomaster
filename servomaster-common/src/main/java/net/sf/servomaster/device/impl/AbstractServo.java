@@ -131,9 +131,9 @@ public abstract class AbstractServo implements Servo {
 
         Servo s = getTarget();
 
-        while ( s != null ) {
+        while (s != null) {
 
-            if ( s.getTransitionController() != null ) {
+            if (s.getTransitionController() != null) {
 
                 throw new IllegalStateException("Can't attach more than one transition controller in a stack");
             }
@@ -165,7 +165,7 @@ public abstract class AbstractServo implements Servo {
     @Override
     public TransitionCompletionToken setPosition(double position) throws IOException {
 
-        if ( !enabled ) {
+        if (!enabled) {
 
             throw new IllegalStateException("Not enabled");
         }
@@ -176,13 +176,13 @@ public abstract class AbstractServo implements Servo {
 
         TransitionCompletionToken token = null;
 
-        synchronized ( servoController ) {
+        synchronized (servoController) {
 
             this.position = position;
 
-            if ( transitionController != null ) {
+            if (transitionController != null) {
 
-                if ( transitionDriver != null ) {
+                if (transitionDriver != null) {
 
                     transitionDriver.stop();
                 }
@@ -228,7 +228,7 @@ public abstract class AbstractServo implements Servo {
         // This operation can safely be made synchronized because it doesn't
         // use the controller's synchronized methods
 
-        for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
+        for (Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext();) {
 
             i.next().positionChanged(this, position);
         }
@@ -244,7 +244,7 @@ public abstract class AbstractServo implements Servo {
 
         // VT: FIXME: it may make sense to make this private and change the logic
 
-        for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
+        for (Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext();) {
 
             i.next().actualPositionChanged(this, actualPosition);
         }
@@ -283,7 +283,7 @@ public abstract class AbstractServo implements Servo {
         // This operation can safely be made synchronized because it doesn't
         // use the controller's synchronized methods
 
-        if ( !listenerSet.contains(listener) ) {
+        if (!listenerSet.contains(listener)) {
 
             throw new IllegalArgumentException("Not a registered listener: "
                     + listener.getClass().getName()
@@ -304,7 +304,7 @@ public abstract class AbstractServo implements Servo {
      */
     protected final void checkPosition(double position) {
 
-        if ( position < 0 || position > 1.0 ) {
+        if (position < 0 || position > 1.0) {
 
             throw new IllegalArgumentException("Position out of 0...1.0 range: " + position);
         }
@@ -360,13 +360,13 @@ public abstract class AbstractServo implements Servo {
 
                             setActualPosition(token.consume());
 
-                        } catch ( IllegalStateException ex ) {
+                        } catch (IllegalStateException ex) {
 
                             logger.debug("Controller stopped the transition", ex);
 
                             return;
 
-                        } catch ( Throwable t ) {
+                        } catch (Throwable t) {
 
                             logger.error("Unexpected transition problem", t);
 

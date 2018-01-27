@@ -18,7 +18,7 @@ import net.sf.servomaster.device.model.Servo;
  * cumbersome, plus adds unnecessary overhead, so it was decided to provide
  * a separate implementation.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class LinearTransformer extends AbstractCoordinateTransformer {
 
@@ -84,17 +84,17 @@ public class LinearTransformer extends AbstractCoordinateTransformer {
 
         super(target);
 
-        if ( startAngle < 0 || startAngle > 180 ) {
+        if (startAngle < 0 || startAngle > 180) {
 
             throw new IllegalArgumentException("Start angle is outside of 0...180 range");
         }
 
-        if ( endAngle < 0 || endAngle > 180 ) {
+        if (endAngle < 0 || endAngle > 180) {
 
             throw new IllegalArgumentException("End angle is outside of 0...180 range");
         }
 
-        if ( endAngle <= startAngle ) {
+        if (endAngle <= startAngle) {
 
             throw new IllegalArgumentException("End angle is less or equal than start angle");
         }

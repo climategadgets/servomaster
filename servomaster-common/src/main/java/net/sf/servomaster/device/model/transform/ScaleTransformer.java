@@ -10,7 +10,7 @@ import net.sf.servomaster.device.model.Servo;
  * Be careful with this transformer, because the output values may be
  * outside of 0...1.0 range.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class ScaleTransformer extends AbstractCoordinateTransformer {
 
@@ -21,7 +21,7 @@ public class ScaleTransformer extends AbstractCoordinateTransformer {
 
         super(target);
 
-        if ( scale == 0 ) {
+        if (scale == 0) {
 
             throw new IllegalArgumentException("Scale can't be 0");
         }

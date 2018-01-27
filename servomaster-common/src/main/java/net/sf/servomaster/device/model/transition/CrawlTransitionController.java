@@ -13,7 +13,7 @@ import net.sf.servomaster.device.model.TransitionToken;
  * incrementing or decrementing position one step at a time, with no regard
  * to the timing.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class CrawlTransitionController implements TransitionController {
 
@@ -29,7 +29,7 @@ public class CrawlTransitionController implements TransitionController {
     @Override
     public void move(Servo target, TransitionToken token, double targetPosition) {
 
-        if ( target == null || token == null ) {
+        if (target == null || token == null) {
 
             throw new IllegalArgumentException("Neither target nor token can be null");
         }
@@ -52,21 +52,21 @@ public class CrawlTransitionController implements TransitionController {
                 throw new IllegalArgumentException("Expected precision >1, got this: " + meta);
             }
 
-            final double step = 1/(double)(precision - 1);
+            final double step = 1 / (double) (precision - 1);
 
             logger.debug("precision=" + precision + ", step=" + step);
 
-            while ( true ) {
+            while (true) {
 
                 double actualPosition = target.getActualPosition();
                 double diff = targetPosition - actualPosition;
 
-                if ( diff < 0 ) {
+                if (diff < 0) {
 
                     diff = -diff;
                 }
 
-                if ( diff <= step/2 ) {
+                if (diff <= step / 2) {
 
                     // We came close enough
 
@@ -76,7 +76,7 @@ public class CrawlTransitionController implements TransitionController {
 
                 double newPosition = 0;
 
-                if ( actualPosition > targetPosition ) {
+                if (actualPosition > targetPosition) {
 
                     newPosition = actualPosition - step;
 
@@ -85,7 +85,7 @@ public class CrawlTransitionController implements TransitionController {
                     newPosition = actualPosition + step;
                 }
 
-                if ( newPosition < 0.0 || newPosition > 1.0 ) {
+                if (newPosition < 0.0 || newPosition > 1.0) {
 
                     // We hit the limit
 
@@ -96,13 +96,13 @@ public class CrawlTransitionController implements TransitionController {
                 token.supply(newPosition);
             }
 
-        } catch ( IllegalStateException ex ) {
+        } catch (IllegalStateException ex) {
 
             logger.debug("Ignored, stopping", ex);
 
             token.stop();
 
-        } catch ( Throwable t ) {
+        } catch (Throwable t) {
 
             // If we haven't caught it, we didn't think about it
 

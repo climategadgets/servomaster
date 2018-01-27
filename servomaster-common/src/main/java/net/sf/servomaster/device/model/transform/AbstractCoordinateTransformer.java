@@ -14,7 +14,7 @@ import net.sf.servomaster.device.model.TransitionCompletionToken;
  * Provides the 'wrapper' for the servo being controlled, as well as the
  * means to perform the actual coordinate transformation.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractCoordinateTransformer extends AbstractServo {
 
@@ -28,7 +28,7 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
 
         super(null, target);
 
-        if ( getTarget() == null ) {
+        if (getTarget() == null) {
 
             throw new IllegalArgumentException("target can't be null");
         }

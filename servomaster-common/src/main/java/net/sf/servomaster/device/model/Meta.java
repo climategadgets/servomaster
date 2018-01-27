@@ -2,8 +2,6 @@ package net.sf.servomaster.device.model;
 
 import java.util.Map;
 
-import net.sf.servomaster.device.model.AbstractMeta.FeatureWriter;
-
 /**
  * Describes an object capable of providing and adjusting the metadata.
  *

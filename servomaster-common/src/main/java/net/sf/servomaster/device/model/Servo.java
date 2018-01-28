@@ -127,6 +127,9 @@ public interface Servo extends SilentDevice {
      * (if any), and start the new transition starting from the actual position the servo
      * resides at at the moment.
      *
+     * Likewise, if there is any transition in progress when this method is called, whether it is
+     * canceled or completed depends on the value of this argument.
+     *
      * @throws UnsupportedOperationException if the particular hardware
      * or software implementation conflicts with the transition controller
      * being attached. This may be the case with the servo controllers

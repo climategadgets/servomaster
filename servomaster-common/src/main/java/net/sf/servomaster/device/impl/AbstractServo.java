@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -33,16 +30,11 @@ public abstract class AbstractServo implements Servo {
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
-     * Worker queue for transition drivers.
-     */
-    private final BlockingQueue<Runnable> driverQueue = new LinkedBlockingQueue<Runnable>();
-    
-    /**
      * Thread pool for transition drivers.
      * 
      * This pool requires exactly one thread.
      */
-    private final ExecutorService transitionDriverExecutor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS, driverQueue);
+    private final ExecutorService transitionDriverExecutor = Executors.newFixedThreadPool(1);
 
     /**
      * The actual servo to control.

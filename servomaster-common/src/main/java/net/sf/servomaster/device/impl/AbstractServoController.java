@@ -443,4 +443,9 @@ public abstract class AbstractServoController implements ServoController {
      * hardware controller.
      */
     protected abstract Servo createServo(int id) throws IOException;
+    
+    public void close() throws IOException {
+        
+        throw new IllegalStateException("Not Implemented. See https://github.com/climategadgets/servomaster/issues/12");
+    }
 }

@@ -1,5 +1,6 @@
 package net.sf.servomaster.device.model;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -9,9 +10,9 @@ import java.util.Iterator;
  * Provides the encapsulation of the actual hardware controller into a
  * platform-independent entity.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface ServoController extends SilentDevice {
+public interface ServoController extends SilentDevice, Closeable {
 
     /**
      * Initialize the controller.

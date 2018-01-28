@@ -116,10 +116,10 @@ public class NullServoController extends AbstractServoController {
 
             try {
 
-                Thread.sleep(delay);
+                wait(delay);
 
             } catch (Throwable t) {
-                logger.error("sleep interrupted???", t);
+                logger.error("wait interrupted???", t);
             }
 
         } finally {

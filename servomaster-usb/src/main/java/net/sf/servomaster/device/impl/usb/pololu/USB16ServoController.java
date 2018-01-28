@@ -175,9 +175,6 @@ public class USB16ServoController extends AbstractUsbServoController {
                 super(sc, id);
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected Meta createMeta() {
 

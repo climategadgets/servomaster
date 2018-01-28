@@ -22,7 +22,7 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  * Serial</a>, and <a href="http://www.pololu.com/products/pololu/0390/"
  * target="_top">16-Servo USB</a> connected via serial interface.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  */
 abstract public class PololuSerialServoController extends AbstractSerialServoController {
 
@@ -38,14 +38,13 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
         super(portName);
     }
 
+    @Override
     public final Meta getMeta() {
 
         return meta;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public synchronized final void reset() throws IOException {
 
         for (Iterator<Servo> i = getServos(); i.hasNext(); ) {
@@ -60,17 +59,13 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected final SilentProxy createSilentProxy() {
 
         throw new UnsupportedOperationException("Not Implemented");
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected final synchronized Servo createServo(int id) throws IOException {
 
         return new PololuServo(this, id);
@@ -138,14 +133,12 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             super(sc, id);
         }
 
+        @Override
         public final Meta createMeta() {
 
             return new PololuServoMeta();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         protected final void sendPosition(double position) throws IOException {
 
             // This method doesn't need to be synchronized because send() is

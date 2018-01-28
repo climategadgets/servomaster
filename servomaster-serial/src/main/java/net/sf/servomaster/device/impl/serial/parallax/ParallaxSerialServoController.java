@@ -42,9 +42,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         return meta;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final synchronized void reset() throws IOException {
 
         for (Iterator<Servo> i = getServos(); i.hasNext();) {
@@ -59,18 +57,12 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final SilentProxy createSilentProxy() {
 
         throw new UnsupportedOperationException("Not Implemented");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final synchronized Servo createServo(int id) throws IOException {
 
@@ -166,9 +158,6 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             return new ParallaxServoMeta();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected void sendPosition(double position) throws IOException {
 

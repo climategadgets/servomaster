@@ -29,35 +29,31 @@ public class MiniSSC2 extends AbstractSerialServoController {
         super(portName);
     }
     
+    @Override
     public final Meta getMeta() {
     
         return meta;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final void reset() throws IOException {
     
         // This controller doesn't require reset
     }
     
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected final SilentProxy createSilentProxy() {
     
         throw new UnsupportedOperationException("This controller doesn't support silent operation");
     }
     
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected final synchronized Servo createServo(int id) throws IOException {
     
         return new MiniSSC2Servo(this, id);
     }
     
+    @Override
     public final int getServoCount() {
     
         return 8;
@@ -98,14 +94,13 @@ public class MiniSSC2 extends AbstractSerialServoController {
             super(sc, id);
         }
         
+        @Override
         public final Meta createMeta() {
         
             return new MiniSSC2ServoMeta();
         }
         
-        /**
-         * {@inheritDoc}
-         */
+        @Override
         protected final void sendPosition(double position) throws IOException {
 
             byte bPosition = (byte)(position * 255);

@@ -41,18 +41,12 @@ public class LimitTransformer extends AbstractCoordinateTransformer {
         this.max = max;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected double transform(double value) {
 
         return min + (max - min) * value;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected double resolve(double value) {
 

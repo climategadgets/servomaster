@@ -367,18 +367,12 @@ public abstract class AbstractServo implements Servo {
             this.complete = complete;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public synchronized boolean isComplete() {
 
             return complete;
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public synchronized void waitFor() throws InterruptedException {
 
@@ -388,9 +382,6 @@ public abstract class AbstractServo implements Servo {
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public synchronized void waitFor(long millis) throws InterruptedException {
 

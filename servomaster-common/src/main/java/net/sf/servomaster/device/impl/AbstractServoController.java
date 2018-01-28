@@ -31,7 +31,7 @@ import net.sf.servomaster.device.model.silencer.SilentProxy;
  *
  * </ul>
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
  */
 public abstract class AbstractServoController implements ServoController {
 
@@ -97,9 +97,6 @@ public abstract class AbstractServoController implements ServoController {
         init(portName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public final String getPort() {
 

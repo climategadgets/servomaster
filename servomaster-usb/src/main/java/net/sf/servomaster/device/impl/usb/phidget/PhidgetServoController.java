@@ -394,9 +394,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 super(sc, id);
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected Meta createMeta() {
 
@@ -756,9 +753,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 acceleration = 2000;
             }
 
-            /**
-             * {@inheritDoc}
-             */
             @Override
             protected Meta createMeta() {
 

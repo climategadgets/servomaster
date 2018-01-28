@@ -8,7 +8,7 @@ import net.sf.servomaster.device.model.Meta;
  * <a href="http://pololu.com/products/pololu/0290/" target="_top">Pololu
  * Serial 8-Servo Controller</a> controller.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  */
 public class Serial8ServoController extends PololuSerialServoController {
 
@@ -22,17 +22,13 @@ public class Serial8ServoController extends PololuSerialServoController {
         super(portName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getServoCount() {
 
         return 8;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected final Meta createMeta() {
 
         return new Serial8Meta();

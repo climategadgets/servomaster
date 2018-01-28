@@ -7,7 +7,7 @@ import net.sf.servomaster.device.model.Meta;
 /**
  * <a href="http://parallax.com/" target="_top">Parallax</a> controller.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public class Serial16ServoController extends ParallaxSerialServoController {
@@ -22,17 +22,12 @@ public class Serial16ServoController extends ParallaxSerialServoController {
         super(portName);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getServoCount() {
 
         return 16;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected final Meta createMeta() {
 

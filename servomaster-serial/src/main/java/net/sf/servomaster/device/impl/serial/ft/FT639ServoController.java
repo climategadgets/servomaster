@@ -179,9 +179,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         repositionServos();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public int getServoCount() {
 
         return 5;
@@ -412,9 +410,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             setPosition((255 >> 1)/255.0);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         protected Meta createMeta() {
 

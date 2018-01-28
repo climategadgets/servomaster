@@ -1,12 +1,12 @@
 package net.sf.servomaster.device.model.transform;
 
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 import net.sf.servomaster.device.impl.AbstractServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
-import net.sf.servomaster.device.model.TransitionCompletionToken;
 
 /**
  * The coordinate transformer skeleton.
@@ -58,7 +58,7 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      * #setEnabled disabled}.
      */
     @Override
-    public TransitionCompletionToken setPosition(double position) throws IOException {
+    public Future<Throwable> setPosition(double position) throws IOException {
 
         return getTarget().setPosition(transform(position));
     }

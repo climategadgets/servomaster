@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -14,7 +18,6 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
-import net.sf.servomaster.device.model.TransitionCompletionToken;
 import net.sf.servomaster.device.model.TransitionController;
 
 /**
@@ -138,7 +141,7 @@ public abstract class AbstractServo implements Servo {
     }
 
     @Override
-    public TransitionCompletionToken setPosition(double position) throws IOException {
+    public Future<Throwable> setPosition(double position) throws IOException {
 
         if (!enabled) {
 
@@ -164,17 +167,14 @@ public abstract class AbstractServo implements Servo {
 
                     setActualPosition(position);
 
-                    return new TCT(true);
+                    return new Done();
                 }
 
-                // VT: FIXME: Decide whether to stop the currently running transition (probably yes)
+                // VT: FIXME: cancel the previous transition if so instructed: https://github.com/climategadgets/servomaster/issues/22
 
-                TransitionCompletionToken token = new TCT(false);
-                TransitionDriver transitionDriver = new TransitionDriver(new TransitionProxy(), position, (TCT)token);
+                TransitionDriver transitionDriver = new TransitionDriver(new TransitionProxy(), position);
 
-                transitionDriverExecutor.execute(transitionDriver);
-
-                return token;
+                return transitionDriverExecutor.submit(transitionDriver, new Throwable());
             }
 
         } finally {
@@ -291,15 +291,13 @@ public abstract class AbstractServo implements Servo {
 
     private class TransitionDriver implements Runnable {
 
-        private Servo target;
-        private double targetPosition;
-        private TCT completionToken;
+        private final Servo target;
+        private final double targetPosition;
 
-        TransitionDriver(Servo target, double targetPosition, TCT completionToken) {
+        TransitionDriver(Servo target, double targetPosition) {
 
             this.target = target;
             this.targetPosition = targetPosition;
-            this.completionToken = completionToken;
         }
 
         @Override
@@ -315,98 +313,12 @@ public abstract class AbstractServo implements Servo {
 
             } finally {
 
-                // No matter what's the cause, we're done - even though sometimes the actual position
-                // may be different from desired.
-
-                // VT: FIXME: Make sure that gets taken care of.
-
-                completionToken.done();
-
                 // This will help when thread pool executor is used
                 NDC.clear();
 
                 // Without this, memory leaks like a sieve in DZ3
                 NDC.remove();
             }
-        }
-    }
-
-    /**
-     * Implementation for the {@link TransitionCompletionToken
-     * TrasitionCompletionToken} interface.
-     *
-     * The difference between the interface and the implementation is the
-     * {@link #done done()} method the API user should have no business
-     * knowing about.
-     */
-    protected static class TCT implements TransitionCompletionToken {
-
-        /**
-         * Completion state.
-         */
-        private boolean complete;
-
-        /**
-         * Create an instance.
-         *
-         * @param complete Completion state. If this argument is
-         * <code>true</code>, the token will be considered complete upon
-         * creation - this is required for the case when no transition
-         * controller is attached.
-         */
-        protected TCT(boolean complete) {
-
-            this.complete = complete;
-        }
-
-        @Override
-        public synchronized boolean isComplete() {
-
-            return complete;
-        }
-
-        @Override
-        public synchronized void waitFor() throws InterruptedException {
-
-            while (!complete) {
-
-                wait();
-            }
-        }
-
-        @Override
-        public synchronized void waitFor(long millis) throws InterruptedException {
-
-            long start = System.currentTimeMillis();
-
-            while (!complete) {
-
-                long timeout = millis - (System.currentTimeMillis() - start);
-
-                if (timeout <= 0) {
-
-                    // VT: FIXME: This is a wrong kind of exception...
-
-                    throw new InterruptedException("Timeout expired: " + millis + "ms");
-                }
-
-                wait(timeout);
-            }
-        }
-
-        /**
-         * Mark the token as complete.
-         */
-        public synchronized void done() {
-
-            if (complete) {
-
-                throw new IllegalStateException("Already done");
-            }
-
-            complete = true;
-
-            notifyAll();
         }
     }
 
@@ -487,14 +399,14 @@ public abstract class AbstractServo implements Servo {
         }
 
         @Override
-        public TransitionCompletionToken setPosition(double position) throws IOException {
+        public Future<Throwable> setPosition(double position) throws IOException {
 
             NDC.push("wrap");
 
             try {
 
                 AbstractServo.this.setActualPosition(position);
-                return null;
+                return new Done();
 
             } finally {
                 NDC.pop();
@@ -559,6 +471,52 @@ public abstract class AbstractServo implements Servo {
         public Servo getTarget() {
 
             throw new IllegalAccessError(NONO);
+        }
+    }
+
+    /**
+     * This future has already come.
+     *
+     * This object is returned by {@link AbstractServo#setPosition(double)} in absence of a transition controller.
+     */
+    public static class Done implements Future<Throwable> {
+
+        /**
+         * @return {@code false}. We're already done.
+         */
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return false;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return false;
+        }
+
+        /**
+         * @return {@code true}. We were done before we started.
+         */
+        @Override
+        public boolean isDone() {
+            return true;
+        }
+
+        /**
+         * @return {@code null}.
+         */
+        @Override
+        public Throwable get() throws InterruptedException, ExecutionException {
+            return null;
+        }
+
+        /**
+         * @return {@code null}.
+         */
+        @Override
+        public Throwable get(long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException, TimeoutException {
+            return null;
         }
     }
 }

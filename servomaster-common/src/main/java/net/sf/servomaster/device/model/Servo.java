@@ -1,6 +1,7 @@
 package net.sf.servomaster.device.model;
 
 import java.io.IOException;
+import java.util.concurrent.Future;
 
 /**
  * The servo abstraction.
@@ -29,17 +30,15 @@ public interface Servo extends SilentDevice {
      * @return A token that allows to track the completion of the servo
      * movement. If the servo has a transition controller {@link #attach
      * attached}, then the token wil track the servo movement. Otherwise,
-     * its {@link TransitionCompletionToken#isComplete isComplete()} method
-     * will always return {@code true}, and its {@link
-     * TransitionCompletionToken#waitFor waitFor()} method will return
-     * immediately.
+     * its {@link Future#isDone()} method will always return {@code true},
+     * and its {@link Future#get()} method will return immediately.
      *
      * @throws IOException if there was a problem communicating with the
      * device, or the device was unable to complete the operation.
      *
      * @throws IllegalStateException if the servo is currently {@link #setEnabled disabled}.
      */
-    TransitionCompletionToken setPosition(double position) throws IOException;
+    Future<Throwable> setPosition(double position) throws IOException;
 
     /**
      * Get the position.

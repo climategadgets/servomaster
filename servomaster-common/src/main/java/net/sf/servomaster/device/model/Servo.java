@@ -30,15 +30,14 @@ public interface Servo extends SilentDevice {
      * movement. If the servo has a transition controller {@link #attach
      * attached}, then the token wil track the servo movement. Otherwise,
      * its {@link TransitionCompletionToken#isComplete isComplete()} method
-     * will always return <code>true</code>, and its {@link
+     * will always return {@code true}, and its {@link
      * TransitionCompletionToken#waitFor waitFor()} method will return
      * immediately.
      *
-     * @exception IOException if there was a problem communicating with the
+     * @throws IOException if there was a problem communicating with the
      * device, or the device was unable to complete the operation.
      *
-     * @exception IllegalStateException if the servo is currently {@link
-     * #setEnabled disabled}.
+     * @throws IllegalStateException if the servo is currently {@link #setEnabled disabled}.
      */
     TransitionCompletionToken setPosition(double position) throws IOException;
 
@@ -47,16 +46,13 @@ public interface Servo extends SilentDevice {
      *
      * @return The position that has previously been {@link #setPosition
      * set}. Note that this may not be the actual position of the servo at
-     * the time, if the transition controller is attached. Use {@link
-     * #getActualPosition getActualPosition()} to obtain the actual servo
-     * position.
+     * the time, if the {@link #getTransitionController() transition controller} is attached.
+     * Use {@link #getActualPosition getActualPosition()} to obtain the actual servo position.
      */
     double getPosition();
 
     /**
      * Get the actual position.
-     *
-     * <p>
      *
      * This position may be provided at software (most probably) or hardware
      * level. Since the servo abstraction supports the controlled
@@ -72,8 +68,7 @@ public interface Servo extends SilentDevice {
      *
      * @param listener The listener to notify when the position changes.
      *
-     * @exception UnsupportedOperationException if the implementation
-     * doesn't support listeners.
+     * @throws UnsupportedOperationException if the implementation doesn't support listeners.
      */
     void addListener(ServoListener listener);
 
@@ -82,22 +77,20 @@ public interface Servo extends SilentDevice {
      *
      * @param listener The listener to remove from notification list.
      *
-     * @exception IllegalArgumentException if the listener wasn't there.
+     * @throws IllegalArgumentException if the listener wasn't there.
      *
-     * @exception UnsupportedOperationException if the implementation
-     * doesn't support listeners.
+     * @throws UnsupportedOperationException if the implementation doesn't support listeners.
      */
     void removeListener(ServoListener listener);
 
     /**
      * Enable or disable the servo.
      *
-     * @param enabled {@code true} enables the servo, {@code false} disables it and (IMPORTANT!)
+     * @param enabled {@code true} enables the servo, {@code false} disables it and (<strong>IMPORTANT!</strong>)
      * puts it into a silent mode if the servo (not the controller) supports {@code servo/silent} feature,
      * and its value is currently set to {@code true}.
      *
-     * @exception IOException if there was a problem communicating with the
-     * hardware controller.
+     * @throws IOException if there was a problem communicating with the hardware controller.
      */
     void setEnabled(boolean enabled) throws IOException;
 
@@ -116,7 +109,7 @@ public interface Servo extends SilentDevice {
      * get it.
      *
      * @return The reference to the controller that controls this servo. The
-     * return value can not be <code>null</code>, if the servo instance is a
+     * return value can not be {@code null}, if the servo instance is a
      * wrapper, it must get the original servo controller reference.
      */
     ServoController getController();
@@ -126,30 +119,32 @@ public interface Servo extends SilentDevice {
      *
      * @param transitionController The transition controller to use.
      *
-     * @exception UnsupportedOperationException if the particular hardware
+     * @throws UnsupportedOperationException if the particular hardware
      * or software implementation conflicts with the transition controller
      * being attached. This may be the case with the servo controllers
      * supporting the controlled transitions at the hardware level.
      *
-     * @exception IllegalStateException if the transition controller is
+     * @throws IllegalStateException if the transition controller is
      * already installed at the lower level of the coordinate transformation
      * stack - the transition controllers are not stackable.
+     * 
+     * @see #getTransitionController()
      */
     void attach(TransitionController transitionController);
 
     /**
      * Get the transition controller attached to this servo.
      *
-     * @return Transition controller reference, or <code>null</code> if
-     * there is none.
+     * @return Transition controller reference, or {@code null} if there is none.
+     * 
+     * @see #attach(TransitionController)
      */
     TransitionController getTransitionController();
 
     /**
      * Get the servo that is stacked right under this servo.
      *
-     * @return The next servo in the stack, or <code>null</code> if this
-     * servo is at the top of the stack.
+     * @return The next servo in the stack, or {@code null} if this servo is at the top of the stack.
      */
     Servo getTarget();
 }

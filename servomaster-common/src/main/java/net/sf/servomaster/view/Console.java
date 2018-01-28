@@ -546,7 +546,7 @@ public class Console implements ActionListener, WindowListener {
                     trans.put(s, s.getTransitionController());
                     position.put(s, new Double(s.getPosition()));
 
-                    s.attach(null);
+                    s.attach(null, true);
                 }
 
                 prepare();
@@ -556,7 +556,7 @@ public class Console implements ActionListener, WindowListener {
 
                     Servo s = i.next();
 
-                    s.attach(trans.get(s));
+                    s.attach(trans.get(s), true);
 
                     s.setPosition((position.get(s)).doubleValue());
                 }

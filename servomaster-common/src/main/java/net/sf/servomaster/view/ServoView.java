@@ -348,14 +348,14 @@ public class ServoView extends JPanel {
 
                         // No transition controller
 
-                        servo.attach(null);
+                        servo.attach(null, false);
                         break;
 
                     case 1:
 
                         // Crawler
 
-                        servo.attach(new CrawlTransitionController());
+                        servo.attach(new CrawlTransitionController(), true);
                         break;
 
                     default:

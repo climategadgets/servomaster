@@ -119,6 +119,15 @@ public interface Servo extends SilentDevice {
      *
      * @param transitionController The transition controller to use.
      *
+     * @param queueTransitions if set to {@code true}, the current transition (as defined by
+     * previously called {@link #setPosition(double)} and attached transition controller)
+     * will always be completed, and only then the next transition (initiated by next
+     * {@code setPosition()} call will take place. The transition queue depth is unlimited.
+     *
+     * If set to {@code false}, every {@code setPosition() call will interrupt the current transition
+     * (if any), and start the new transition starting from the actual position the servo
+     * resides at at the moment.
+     *
      * @throws UnsupportedOperationException if the particular hardware
      * or software implementation conflicts with the transition controller
      * being attached. This may be the case with the servo controllers
@@ -130,7 +139,7 @@ public interface Servo extends SilentDevice {
      * 
      * @see #getTransitionController()
      */
-    void attach(TransitionController transitionController);
+    void attach(TransitionController transitionController, boolean queueTransitions);
 
     /**
      * Get the transition controller attached to this servo.

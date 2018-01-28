@@ -107,7 +107,7 @@ public abstract class AbstractServo implements Servo {
     }
 
     @Override
-    public final synchronized void attach(TransitionController transitionController) {
+    public final synchronized void attach(TransitionController transitionController, boolean queueTransitions) {
 
         // This operation can safely be made synchronized because it doesn't
         // use the controller's synchronized methods
@@ -561,7 +561,7 @@ public abstract class AbstractServo implements Servo {
         }
 
         @Override
-        public void attach(TransitionController transitionController) {
+        public void attach(TransitionController transitionController, boolean queueTransitions) {
 
             throw new IllegalAccessError(NONO);
         }

@@ -13,7 +13,7 @@ import java.io.IOException;
  * Some controllers support deenergizing the servos on per-controller, some
  * on per-servo basis.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public interface SilentDevice {
 
@@ -35,14 +35,12 @@ public interface SilentDevice {
      *
      * The default mode of operation is left to the implementation.
      *
-     * @param silent <code>true</code> if silent operation is required,
-     * <code>false</code> otherwise.
+     * @param silent {@code true} if silent operation is required, {@code false} otherwise.
      *
-     * @exception UnsupportedOperationException if the hardware controller
+     * @throws UnsupportedOperationException if the hardware controller
      * is not capable of suspending the control pulse.
      *
-     * @exception IOException if there was a problem communicating to the
-     * hardware controller.
+     * @throws IOException if there was a problem communicating to the hardware controller.
      */
     void setSilentMode(boolean silent) throws IOException;
 
@@ -68,8 +66,7 @@ public interface SilentDevice {
      * control signal, in milliseconds. If this is 0, the servos will be
      * without a signal indefinitely, or until next positioning operation.
      *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
+     * @throws UnsupportedOperationException if the hardware controller is not capable of suspending the control pulse.
      */
     void setSilentTimeout(long timeout, long heartbeat);
 
@@ -78,8 +75,7 @@ public interface SilentDevice {
      *
      * @return true if the device is silent now.
      *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
+     * @throws UnsupportedOperationException if the hardware controller is not capable of suspending the control pulse.
      */
     boolean isSilentNow();
 
@@ -88,8 +84,7 @@ public interface SilentDevice {
      *
      * @return true if the device is in the silent mode.
      *
-     * @exception UnsupportedOperationException if the hardware controller
-     * is not capable of suspending the control pulse.
+     * @throws UnsupportedOperationException if the hardware controller is not capable of suspending the control pulse.
      */
     boolean getSilentMode();
 }

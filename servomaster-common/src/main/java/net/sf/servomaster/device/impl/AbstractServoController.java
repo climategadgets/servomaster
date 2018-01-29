@@ -120,7 +120,7 @@ public abstract class AbstractServoController implements ServoController {
 
             if ( getMeta().getFeature("controller/silent") ) {
 
-                silencerProxy = createSilentProxy();
+                silencerProxy = new SilentGuard();
                 silencer = new SilentHelper(silencerProxy);
                 silencer.start();
             }
@@ -356,11 +356,6 @@ public abstract class AbstractServoController implements ServoController {
 
             silencer.touch();
         }
-    }
-
-    protected final SilentProxy createSilentProxy() {
-
-        return new SilentGuard();
     }
 
     /**

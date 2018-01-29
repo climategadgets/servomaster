@@ -2,6 +2,7 @@ package net.sf.servomaster.device.impl.usb.phidget;
 
 import java.io.IOException;
 import java.util.Iterator;
+
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbConst;
 import javax.usb.UsbControlIrp;
@@ -15,10 +16,9 @@ import javax.usb.UsbPipe;
 
 import org.apache.log4j.Logger;
 
-import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
 import net.sf.servomaster.device.impl.AbstractMeta;
-import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
+import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -73,19 +73,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
         return new PhidgetSilentProxy();
     }
 
-    private void _silentStatusChanged(boolean mode) {
-
-        silentStatusChanged(mode);
-    }
-
-    /**
-     * Wrapper for {@link AbstractServoController#exception exception()}
-     */
-    private void _exception(Throwable t) {
-
-        exception(t);
-    }
-
     protected class PhidgetSilentProxy implements SilentProxy {
 
         @Override
@@ -94,11 +81,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
             try {
 
                 protocolHandler.silence();
-                _silentStatusChanged(false);
+                PhidgetServoController.this.silentStatusChanged(false);
 
             } catch ( UsbException usbex ) {
 
-                _exception(usbex);
+                PhidgetServoController.this.exception(usbex);
             }
         }
 
@@ -110,11 +97,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
             try {
 
                 reset();
-                _silentStatusChanged(true);
+                PhidgetServoController.this.silentStatusChanged(true);
 
             } catch ( IOException ioex ) {
 
-                _exception(ioex);
+                PhidgetServoController.this.exception(ioex);
             }
         }
     }

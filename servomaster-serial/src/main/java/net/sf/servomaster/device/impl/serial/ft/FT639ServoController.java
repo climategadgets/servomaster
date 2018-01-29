@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
-import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
@@ -549,21 +548,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         return new FT639SilentProxy();
     }
 
-    private void _silentStatusChanged(boolean mode) {
-
-        silentStatusChanged(mode);
-    }
-
-    /**
-     * Wrapper for {@link AbstractServoController#exception(Throwable)}.
-     *
-     * @param t Exception to rethrow.
-     */
-    private void _exception(Throwable t) {
-
-        exception(t);
-    }
-
     protected class FT639SilentProxy implements SilentProxy {
 
         @Override
@@ -572,11 +556,11 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             try {
 
                 setSetupMode();
-                _silentStatusChanged(false);
+                FT639ServoController.this.silentStatusChanged(false);
 
             } catch ( IOException ioex ) {
 
-                _exception(ioex);
+                FT639ServoController.this.exception(ioex);
             }
         }
 
@@ -588,12 +572,12 @@ public class FT639ServoController extends AbstractSerialServoController implemen
                 if ( !activeMode ) {
 
                     reset();
-                    _silentStatusChanged(true);
+                    FT639ServoController.this.silentStatusChanged(true);
                 }
 
             } catch ( IOException ioex ) {
 
-                _exception(ioex);
+                FT639ServoController.this.exception(ioex);
             }
         }
     }

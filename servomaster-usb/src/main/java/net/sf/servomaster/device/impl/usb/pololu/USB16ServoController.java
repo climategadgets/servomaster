@@ -2,6 +2,7 @@ package net.sf.servomaster.device.impl.usb.pololu;
 
 import java.io.IOException;
 import java.util.Iterator;
+
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbEndpoint;
 import javax.usb.UsbEndpointDescriptor;
@@ -13,7 +14,6 @@ import javax.usb.UsbPipe;
 import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
-import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
@@ -21,10 +21,9 @@ import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
- * <a href="http://pololu.com/products/pololu/0390/" target="_top">Pololu
- * USB 16-Servo Controller</a> controller.
+ * <a href="http://pololu.com/products/pololu/0390/" target="_top">Pololu USB 16-Servo Controller</a> controller.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  */
 public class USB16ServoController extends AbstractUsbServoController {
 
@@ -50,19 +49,6 @@ public class USB16ServoController extends AbstractUsbServoController {
         return new PololuSilentProxy();
     }
 
-    private void _silentStatusChanged(boolean mode) {
-
-        silentStatusChanged(mode);
-    }
-
-    /**
-     * Wrapper for {@link AbstractServoController#exception exception()}
-     */
-    private void _exception(Throwable t) {
-
-        exception(t);
-    }
-
     protected class PololuSilentProxy implements SilentProxy {
 
         @Override
@@ -71,11 +57,11 @@ public class USB16ServoController extends AbstractUsbServoController {
             try {
 
                 protocolHandler.silence();
-                _silentStatusChanged(false);
+                USB16ServoController.this.silentStatusChanged(false);
 
             } catch ( UsbException usbex ) {
 
-                _exception(usbex);
+                USB16ServoController.this.exception(usbex);
             }
         }
 
@@ -88,11 +74,11 @@ public class USB16ServoController extends AbstractUsbServoController {
             try {
 
                 reset();
-                _silentStatusChanged(true);
+                USB16ServoController.this.silentStatusChanged(true);
 
             } catch ( IOException ioex ) {
 
-                _exception(ioex);
+                USB16ServoController.this.exception(ioex);
             }
         }
     }

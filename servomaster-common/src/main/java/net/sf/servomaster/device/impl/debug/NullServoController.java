@@ -178,6 +178,8 @@ public class NullServoController extends AbstractServoController {
         protected class NullServoMeta extends AbstractMeta {
             
             protected NullServoMeta() {
+
+                features.put("servo/silent", Boolean.valueOf(true));
             
                 properties.put("servo/precision", Integer.toString(position_max - position_min));
     

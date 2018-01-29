@@ -529,5 +529,17 @@ public class ServoView extends JPanel {
 
             setPosition(position);
         }
+
+        @Override
+        public void exception(Servo source, Throwable t) {
+
+            logger.error("Oops: " + source, t);
+        }
+
+        @Override
+        public void silentStatusChanged(Servo source, boolean silent) {
+
+            logger.info("silent status changed to " + silent + ": " + source);
+        }
     }
 }

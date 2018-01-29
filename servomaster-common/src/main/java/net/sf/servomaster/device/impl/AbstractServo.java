@@ -19,6 +19,8 @@ import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.silencer.SilentHelper;
+import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * Basic support for servo abstraction.
@@ -87,6 +89,16 @@ public abstract class AbstractServo implements Servo {
     private Set<ServoListener> listenerSet = new HashSet<ServoListener>();
 
     /**
+     * The silencer.
+     */
+    private SilentHelper silencer;
+
+    /**
+     * The silencer proxy.
+     */
+    private SilentProxy silencerProxy;
+
+    /**
      * Create the stacked instance.
      *
      * @param servoController The controller this servo belongs to.
@@ -99,6 +111,34 @@ public abstract class AbstractServo implements Servo {
 
         this.servoController = servoController;
         this.target = target;
+
+        try {
+
+            // VT: FIXME: It's a mess with instantiation of these two - they can't be made final.
+            // Will be fixed in the next iteration.
+
+            if ( getMeta().getFeature("servo/silent") ) {
+
+                silencerProxy = new SilentGuard();
+                silencer = new SilentHelper(silencerProxy);
+                silencer.start();
+            }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
+            // There will be more servos than controllers, some of them transients and proxies,
+            // let's identify them better to avoid confusion
+
+            // VT: FIXME: This message may be gone altogether after https://github.com/climategadgets/servomaster/issues/16
+            // is fully implemented
+
+            logger.info(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": servo doesn't support silent operation, reason: " + ex.getMessage());
+
+        } catch ( IllegalStateException ex ) {
+
+            logger.warn("unexpected exception", ex);
+        }
     }
 
     @Override
@@ -517,6 +557,90 @@ public abstract class AbstractServo implements Servo {
         public Throwable get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
             return null;
+        }
+    }
+
+    /**
+     * Notify the listeners about the change in the silent status.
+     *
+     * @param mode The new silent status. {@code false} means device is
+     * sleeping, {@code true} means device is active.
+     */
+    protected final void silentStatusChanged(boolean mode) {
+
+        for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
+
+            i.next().silentStatusChanged(this, mode);
+        }
+    }
+
+    /**
+     * Notify the listeners about the problem that occured.
+     *
+     * @param t The exception to broadcast.
+     */
+    protected final void exception(Throwable t) {
+
+        for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
+
+            i.next().exception(this, t);
+        }
+    }
+
+    protected void sleep() throws IOException {
+
+        // Do absolutely nothing
+        logger.debug("sleep: not implemented");
+    }
+
+    protected void wakeUp() throws IOException {
+
+        // Do absolutely nothing
+        logger.debug("wakeUp: not implemented");
+    }
+
+    /**
+     * The reason for existence of this class is that {@link AbstractServo#sleep()} and {@link AbstractServo#wakeUp()}
+     * operations can't be exposed via implemented interface without violating the target integrity. 
+     */
+    private class SilentGuard implements SilentProxy {
+
+        @Override
+        public void sleep() {
+
+            NDC.push("sleep");
+
+            try {
+
+                AbstractServo.this.sleep();
+                AbstractServo.this.silentStatusChanged(false);
+
+            } catch (IOException ioex) {
+
+                AbstractServo.this.exception(ioex);
+
+            } finally {
+                NDC.pop();
+            }
+        }
+
+        @Override
+        public void wakeUp() {
+
+            NDC.push("wakeUp");
+
+            try {
+
+                AbstractServo.this.wakeUp();
+                AbstractServo.this.silentStatusChanged(true);
+
+            } catch (IOException ioex) {
+
+                AbstractServo.this.exception(ioex);
+
+            } finally {
+                NDC.pop();
+            }
         }
     }
 }

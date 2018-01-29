@@ -8,9 +8,9 @@ package net.sf.servomaster.device.model;
  * Tracking may be expensive for the servo implementation. Be sure to make
  * sending notifications asynchronous from the servo operation itself.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface ServoListener {
+public interface ServoListener extends ProblemListener<Servo>, SilentDeviceListener<Servo>{
 
     /**
      * Accept the requested servo position change notification.

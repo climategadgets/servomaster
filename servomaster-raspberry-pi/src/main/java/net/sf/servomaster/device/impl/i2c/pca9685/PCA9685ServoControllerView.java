@@ -97,7 +97,7 @@ public class PCA9685ServoControllerView extends JPanel implements ServoControlle
     }
 
     @Override
-    public void exception(Object source, Throwable t) {
+    public void exception(ServoController source, Throwable t) {
 
         logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);
     }

@@ -7,9 +7,9 @@ package net.sf.servomaster.device.model;
  * thrown in the places where it is not possible to properly handle, rethrow
  * and/or log them.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
  */
-public interface ProblemListener {
+public interface ProblemListener<T> {
 
     /**
      * Accept the notification about the exception.
@@ -18,5 +18,5 @@ public interface ProblemListener {
      *
      * @param t The exception.
      */
-    void exception(Object source, Throwable t);
+    void exception(T source, Throwable t);
 }

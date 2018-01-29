@@ -12,7 +12,6 @@ import net.sf.servomaster.device.impl.i2c.AbstractI2CServoController;
 import net.sf.servomaster.device.impl.i2c.I2CMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * Implementation based on {@link Raspberry Pi PWM HAT https://www.adafruit.com/product/2327}
@@ -202,12 +201,6 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         logger.warn("FIXME: isConnected() returning unconditional true");
         return true;
-    }
-
-    @Override
-    protected SilentProxy createSilentProxy() {
-
-        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override

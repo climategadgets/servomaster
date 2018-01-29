@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
@@ -190,8 +191,8 @@ public abstract class AbstractServoController implements ServoController {
     /**
      * Notify the listeners about the change in the silent status.
      *
-     * @param mode The new silent status. <code>false</code> means device is
-     * sleeping, <code>true</code> means device is active.
+     * @param mode The new silent status. {@code false} means device is
+     * sleeping, {@code true} means device is active.
      */
     protected final void silentStatusChanged(boolean mode) {
 
@@ -357,15 +358,10 @@ public abstract class AbstractServoController implements ServoController {
         }
     }
 
-    /**
-     * Create the silencer proxy.
-     *
-     * This is a template method because the specific means of controlling
-     * the sleep mode are controller-specific.
-     *
-     * @return The proxy object.
-     */
-    protected abstract SilentProxy createSilentProxy();
+    protected final SilentProxy createSilentProxy() {
+
+        return new SilentGuard();
+    }
 
     /**
      * @exception IllegalStateException if the controller wasn't previously
@@ -447,5 +443,62 @@ public abstract class AbstractServoController implements ServoController {
     public void close() throws IOException {
         
         throw new IllegalStateException("Not Implemented. See https://github.com/climategadgets/servomaster/issues/12");
+    }
+
+    protected void sleep() throws IOException {
+
+        // Do absolutely nothing
+        logger.debug("sleep: not implemented");
+    }
+
+    protected void wakeUp() throws IOException {
+
+        // Do absolutely nothing
+        logger.debug("wakeUp: not implemented");
+    }
+
+    /**
+     * The reason for existence of this class is that {@link AbstractServoController#sleep()} and {@link AbstractServoController#wakeUp()}
+     * operations can't be exposed via implemented interface without violating the target integrity. 
+     */
+    private class SilentGuard implements SilentProxy {
+
+        @Override
+        public void sleep() {
+
+            NDC.push("sleep");
+
+            try {
+
+                AbstractServoController.this.sleep();
+                AbstractServoController.this.silentStatusChanged(false);
+
+            } catch (IOException ioex) {
+
+                AbstractServoController.this.exception(ioex);
+
+            } finally {
+                NDC.pop();
+            }
+        }
+
+        @Override
+        public void wakeUp() {
+
+            NDC.push("wakeUp");
+
+            try {
+
+                AbstractServoController.this.wakeUp();
+                AbstractServoController.this.silentStatusChanged(true);
+
+            } catch (IOException ioex) {
+
+                AbstractServoController.this.exception(ioex);
+
+            } finally {
+                NDC.pop();
+            }
+        }
     }
 }

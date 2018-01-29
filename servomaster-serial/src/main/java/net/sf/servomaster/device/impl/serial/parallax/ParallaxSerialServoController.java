@@ -11,12 +11,11 @@ import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * Generic driver for <a href="http://www.parallax.com/" target="_top">Parallax Serial Servo Controllers</a>.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public abstract class ParallaxSerialServoController extends AbstractSerialServoController {
@@ -55,12 +54,6 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             // Default is move the servo instantly
             servo.setSpeed((byte) 0x00);
         }
-    }
-
-    @Override
-    protected final SilentProxy createSilentProxy() {
-
-        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override

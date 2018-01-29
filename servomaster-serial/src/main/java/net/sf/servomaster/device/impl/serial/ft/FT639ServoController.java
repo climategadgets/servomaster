@@ -10,7 +10,6 @@ import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
@@ -543,42 +542,18 @@ public class FT639ServoController extends AbstractSerialServoController implemen
     }
 
     @Override
-    protected SilentProxy createSilentProxy() {
+    public synchronized void sleep() throws IOException {
 
-        return new FT639SilentProxy();
+        setSetupMode();
     }
 
-    protected class FT639SilentProxy implements SilentProxy {
+    @Override
+    public synchronized void wakeUp() throws IOException {
 
-        @Override
-        public synchronized void sleep() {
+        if (!activeMode) {
 
-            try {
-
-                setSetupMode();
-                FT639ServoController.this.silentStatusChanged(false);
-
-            } catch ( IOException ioex ) {
-
-                FT639ServoController.this.exception(ioex);
-            }
-        }
-
-        @Override
-        public synchronized void wakeUp() {
-
-            try {
-
-                if ( !activeMode ) {
-
-                    reset();
-                    FT639ServoController.this.silentStatusChanged(true);
-                }
-
-            } catch ( IOException ioex ) {
-
-                FT639ServoController.this.exception(ioex);
-            }
+            reset();
+            FT639ServoController.this.silentStatusChanged(true);
         }
     }
 }

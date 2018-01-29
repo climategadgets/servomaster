@@ -18,7 +18,6 @@ import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * <a href="http://pololu.com/products/pololu/0390/" target="_top">Pololu USB 16-Servo Controller</a> controller.
@@ -42,44 +41,34 @@ public class USB16ServoController extends AbstractUsbServoController {
         registerHandler("10c4:803b", new PololuProtocolHandler());
     }
 
-
     @Override
-    protected SilentProxy createSilentProxy() {
+    public synchronized void sleep() throws IOException {
 
-        return new PololuSilentProxy();
+        try {
+
+            protocolHandler.silence();
+            USB16ServoController.this.silentStatusChanged(false);
+
+        } catch ( UsbException ex ) {
+
+            throw new IOException(ex);
+        }
     }
 
-    protected class PololuSilentProxy implements SilentProxy {
+    @Override
+    public synchronized void wakeUp() throws IOException {
 
-        @Override
-        public synchronized void sleep() {
+        // VT: FIXME: Do I really have to do anything? The packet with
+        // the proper data gets sent anyway...
 
-            try {
+        try {
 
-                protocolHandler.silence();
-                USB16ServoController.this.silentStatusChanged(false);
+            reset();
+            USB16ServoController.this.silentStatusChanged(true);
 
-            } catch ( UsbException usbex ) {
+        } catch ( IOException ioex ) {
 
-                USB16ServoController.this.exception(usbex);
-            }
-        }
-
-        @Override
-        public synchronized void wakeUp() {
-
-            // VT: FIXME: Do I really have to do anything? The packet with
-            // the proper data gets sent anyway...
-
-            try {
-
-                reset();
-                USB16ServoController.this.silentStatusChanged(true);
-
-            } catch ( IOException ioex ) {
-
-                USB16ServoController.this.exception(ioex);
-            }
+            USB16ServoController.this.exception(ioex);
         }
     }
 

@@ -9,7 +9,6 @@ import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * Generic driver for <a
@@ -57,12 +56,6 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             // Default is move the servo instantly
             servo.setSpeed((byte) 0x00);
         }
-    }
-
-    @Override
-    protected final SilentProxy createSilentProxy() {
-
-        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override

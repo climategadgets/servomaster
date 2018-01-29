@@ -10,7 +10,6 @@ import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * A servo controller implementation requiring no hardware and producing no effect other than debug statements.
@@ -56,12 +55,6 @@ public class NullServoController extends AbstractServoController {
     @Override
     public boolean isConnected() {
         return true;
-    }
-
-    @Override
-    protected SilentProxy createSilentProxy() {
-        
-        throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override

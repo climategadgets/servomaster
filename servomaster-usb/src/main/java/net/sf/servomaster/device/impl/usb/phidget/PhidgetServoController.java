@@ -22,7 +22,6 @@ import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * <a
@@ -66,44 +65,25 @@ public class PhidgetServoController extends AbstractUsbServoController {
         registerHandler("6c2:60", new ProtocolHandler0x60());
     }
 
-
     @Override
-    protected SilentProxy createSilentProxy() {
+    protected synchronized void sleep() throws IOException {
 
-        return new PhidgetSilentProxy();
+        try {
+
+            protocolHandler.silence();
+
+        } catch (UsbException ex) {
+
+            throw new IOException(ex);
+        }
     }
 
-    protected class PhidgetSilentProxy implements SilentProxy {
+    @Override
+    protected synchronized void wakeUp() throws IOException {
 
-        @Override
-        public synchronized void sleep() {
+        // VT: FIXME: Do I really have to do anything? The packet with the proper data gets sent anyway...
 
-            try {
-
-                protocolHandler.silence();
-                PhidgetServoController.this.silentStatusChanged(false);
-
-            } catch ( UsbException usbex ) {
-
-                PhidgetServoController.this.exception(usbex);
-            }
-        }
-
-        @Override
-        public synchronized void wakeUp() {
-
-            // VT: FIXME: Do I really have to do anything? The packet with the proper data gets sent anyway...
-
-            try {
-
-                reset();
-                PhidgetServoController.this.silentStatusChanged(true);
-
-            } catch ( IOException ioex ) {
-
-                PhidgetServoController.this.exception(ioex);
-            }
-        }
+        reset();
     }
 
     /**

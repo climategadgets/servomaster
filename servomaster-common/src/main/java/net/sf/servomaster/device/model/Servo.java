@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface Servo extends SilentDevice {
+public interface Servo extends SilentDevice, Comparable<Servo> {
 
     /**
      * Get the name.

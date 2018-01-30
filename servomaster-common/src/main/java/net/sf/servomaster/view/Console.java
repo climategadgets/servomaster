@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -269,14 +270,7 @@ public class Console implements ActionListener, WindowListener {
 
             // Figure out how many servos does the controller currently have
 
-            List<Servo> servoSet = new LinkedList<Servo>();
-
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
-
-                servoSet.add(i.next());
-            }
-
-            int servoCount = servoSet.size();
+            int servoCount = controller.getServoCount();
 
             if ( servoCount == 0 ) {
 
@@ -309,7 +303,7 @@ public class Console implements ActionListener, WindowListener {
 
             for ( int idx = 0; idx < servoCount; idx++ ) {
 
-                servoPanel[idx] = new ServoView(servoSet.get(idx));
+                servoPanel[idx] = new ServoView(controller.getServo(Integer.toString(idx)));
 
                 cs.gridx = idx;
 
@@ -557,7 +551,7 @@ public class Console implements ActionListener, WindowListener {
                 Map<Servo, TransitionController> trans = new HashMap<Servo, TransitionController>();
                 Map<Servo, Double> position = new HashMap<Servo, Double>();
 
-                for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+                for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                     Servo s = i.next();
 
@@ -570,7 +564,7 @@ public class Console implements ActionListener, WindowListener {
                 prepare();
                 execute();
 
-                for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+                for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                     Servo s = i.next();
 
@@ -628,21 +622,21 @@ public class Console implements ActionListener, WindowListener {
         @Override
         protected void execute() throws Throwable {
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(0);
             }
 
             Thread.sleep(1000);
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(1);
             }
 
             Thread.sleep(1000);
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(0.5);
             }
@@ -671,21 +665,21 @@ public class Console implements ActionListener, WindowListener {
         @Override
         protected void execute() throws Throwable {
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(0);
             }
 
             Thread.sleep(1000);
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(1);
             }
 
             Thread.sleep(1000);
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(0.5);
             }
@@ -701,7 +695,7 @@ public class Console implements ActionListener, WindowListener {
 
             resetButton.setText("Reset Controller");
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 i.next().setPosition(0.5);
             }
@@ -769,7 +763,7 @@ public class Console implements ActionListener, WindowListener {
 
             List<Servo> servos = new LinkedList<Servo>();
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
 
                 Servo s = i.next();
 

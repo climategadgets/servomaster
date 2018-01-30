@@ -1,11 +1,14 @@
 package net.sf.servomaster.device.impl;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -414,23 +417,19 @@ public abstract class AbstractServoController implements ServoController {
         }
     }
 
-    /**
-     * @exception IllegalStateException if the controller wasn't previously
-     * initialized.
-     */
     @Override
-    public final Iterator<Servo> getServos() throws IOException {
+    public final SortedSet<Servo> getServos() throws IOException {
 
         checkInit();
 
-        List<Servo> servos = new LinkedList<Servo>();
+        SortedSet<Servo> servos = new TreeSet<Servo>();
 
         for ( int idx = 0; idx < getServoCount(); idx++ ) {
 
             servos.add(getServo(Integer.toString(idx)));
         }
 
-        return servos.iterator();
+        return Collections.unmodifiableSortedSet(servos);
     }
 
     /**

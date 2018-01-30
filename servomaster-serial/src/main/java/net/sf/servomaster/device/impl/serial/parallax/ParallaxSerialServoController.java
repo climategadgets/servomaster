@@ -35,7 +35,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
         checkInit();
 
-        for (Iterator<Servo> i = getServos(); i.hasNext();) {
+        for (Iterator<Servo> i = getServos().iterator(); i.hasNext();) {
 
             ParallaxServo servo = (ParallaxServo) i.next();
 

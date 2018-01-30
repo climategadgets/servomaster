@@ -494,7 +494,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         try {
 
-            for (Iterator<Servo> i = getServos(); i.hasNext();) {
+            for (Iterator<Servo> i = getServos().iterator(); i.hasNext();) {
 
                 FT639Servo s = (FT639Servo) i.next();
 

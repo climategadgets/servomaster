@@ -34,7 +34,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
         checkInit();
 
-        for (Iterator<Servo> i = getServos(); i.hasNext(); ) {
+        for (Iterator<Servo> i = getServos().iterator(); i.hasNext();) {
 
             PololuServo servo = (PololuServo) i.next();
 

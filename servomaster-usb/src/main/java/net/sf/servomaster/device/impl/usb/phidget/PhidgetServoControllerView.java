@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -53,23 +54,18 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
 
         controller.addListener(this);
 
-        List<Servo> servos = new LinkedList<Servo>();
-
         try {
 
-            for ( Iterator<Servo> i = controller.getServos(); i.hasNext(); ) {
-
-                servos.add(i.next());
-            }
+            Set<Servo> servos = controller.getServos();
 
             setLayout(new GridLayout(1, servos.size()));
 
-            for ( Iterator<Servo> i = servos.iterator(); i.hasNext(); ) {
+            for (Iterator<Servo> i = servos.iterator(); i.hasNext();) {
 
                 add(new ServoRangeControl(i.next()));
             }
 
-        } catch ( IOException ioex ) {
+        } catch (IOException ioex) {
 
             // We're probably screwed, this shouldn't have really happened
 

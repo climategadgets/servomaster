@@ -574,6 +574,11 @@ public abstract class AbstractServo implements Servo {
 
             // Do absolutely nothing
         }
+
+        @Override
+        public int compareTo(Servo o) {
+            return getName().compareTo(o.getName());
+        }
     }
 
     /**
@@ -704,5 +709,10 @@ public abstract class AbstractServo implements Servo {
                 NDC.pop();
             }
         }
+    }
+
+    @Override
+    public int compareTo(Servo o) {
+        return getName().compareTo(o.getName());
     }
 }

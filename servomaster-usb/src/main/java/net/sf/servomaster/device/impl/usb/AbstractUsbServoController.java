@@ -603,7 +603,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         // FIXME: set the servos to 0.5 now...
 
-        for (Iterator<Servo> i = getServos(); i.hasNext(); ) {
+        for (Iterator<Servo> i = getServos().iterator(); i.hasNext(); ) {
 
             Servo s = i.next();
 

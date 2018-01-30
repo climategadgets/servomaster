@@ -2,7 +2,7 @@ package net.sf.servomaster.device.model;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.SortedSet;
 
 /**
  * The servo controller abstraction.
@@ -90,15 +90,13 @@ public interface ServoController extends SilentDevice, Closeable {
      * determine whether the servo is connected, and it is not, it must not
      * be included in the iterator.
      *
-     * @return An iterator on all the servos physically present on the
-     * controller.
+     * @return An immutable set of all the servos physically present on the controller.
      *
      * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
      *
-     * @throws IOException if there was a problem communicating to the
-     * hardware controller.
+     * @throws IOException if there was a problem communicating to the hardware controller.
      */
-    Iterator<Servo> getServos() throws IOException;
+    SortedSet<Servo> getServos() throws IOException;
 
     /**
      * Reset the controller.

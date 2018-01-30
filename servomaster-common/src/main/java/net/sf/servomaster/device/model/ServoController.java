@@ -17,23 +17,26 @@ public interface ServoController extends SilentDevice, Closeable {
     /**
      * Initialize the controller.
      *
-     * <p>
-     *
      * If the controller was created uninitialized, this method has to be
      * called to initialize it.
      *
      * @param portName The controller port name composed in such a way that
      * controller will become operable upon parsing it.
      *
-     * @exception IllegalArgumentException if the port name didn't contain
-     * enough information to initialize the controller.
+     * @throws IllegalArgumentException if the port name is not {@code null}.
      *
-     * @exception IllegalStateException if the controller is already initialized.
-     *
-     * @exception IOException if there was a problem communicating with the
-     * hardware controller.
+     * @deprecated Use {@link #open()} instead. This method is only retained here temporarily
+     * until https://github.com/climategadgets/servomaster/issues/2 is done.
      */
+    @Deprecated
     void init(String portName) throws IOException;
+
+    /**
+     * Start working with the controller.
+     *
+     * @throws IOException if there was a problem communicating with the hardware controller.
+     */
+    void open() throws IOException;
 
     /**
      * Get the servo instance.
@@ -52,13 +55,14 @@ public interface ServoController extends SilentDevice, Closeable {
      *
      * @return A servo abstraction instance.
      *
-     * @exception IllegalArgumentException if the ID supplied doesn't map to
+     * @throws IllegalArgumentException if the ID supplied doesn't map to
      * a physical device. In particular, this exception should be thrown if
      * the controller is able to determine whether the servo is connected,
      * and it is not.
      *
-     * @exception IOException if there was a problem communicating to the
-     * hardware controller.
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
+     *
+     * @throws IOException if there was a problem communicating to the hardware controller.
      */
     Servo getServo(String id) throws IOException;
 
@@ -71,6 +75,8 @@ public interface ServoController extends SilentDevice, Closeable {
      * <code>controller/maxservos</code> meta property.
      *
      * @return Number of servos supported by this controller.
+     *
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
      */
     int getServoCount();
 
@@ -87,7 +93,9 @@ public interface ServoController extends SilentDevice, Closeable {
      * @return An iterator on all the servos physically present on the
      * controller.
      *
-     * @exception IOException if there was a problem communicating to the
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
+     *
+     * @throws IOException if there was a problem communicating to the
      * hardware controller.
      */
     Iterator<Servo> getServos() throws IOException;
@@ -101,18 +109,20 @@ public interface ServoController extends SilentDevice, Closeable {
      * need a reset. The controller is deemed faulty if the reset throws the
      * exception.
      *
-     * @exception IOException when the controller is beyond repair.
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
+     *
+     * @throws IOException when the controller is beyond repair.
      */
     void reset() throws IOException;
 
     /**
      * Add the servo controller listener.
      *
-     * @param listener The listener to notify when the controller status
-     * changes.
+     * @param listener The listener to notify when the controller status changes.
      *
-     * @exception UnsupportedOperationException if the implementation
-     * doesn't support listeners.
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
+     *
+     * @throws UnsupportedOperationException if the implementation doesn't support listeners.
      */
     void addListener(ServoControllerListener listener);
 
@@ -121,10 +131,11 @@ public interface ServoController extends SilentDevice, Closeable {
      *
      * @param listener The listener to remove from notification list.
      *
-     * @exception IllegalArgumentException if the listener wasn't there.
+     * @throws IllegalArgumentException if the listener wasn't there.
      *
-     * @exception UnsupportedOperationException if the implementation
-     * doesn't support listeners.
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
+     *
+     * @throws UnsupportedOperationException if the implementation doesn't support listeners.
      */
     void removeListener(ServoControllerListener listener);
 
@@ -139,9 +150,6 @@ public interface ServoController extends SilentDevice, Closeable {
      * Get the port name.
      *
      * @return the port name.
-     *
-     * @exception IllegalStateException if the controller hasn't been {@link
-     * #init initialized} yet.
      */
     String getPort();
 
@@ -158,6 +166,8 @@ public interface ServoController extends SilentDevice, Closeable {
      * positioning commands. This will cause less I/O. If set to
      * <code>false</code>, even redundant commands will be sent to the
      * controller.
+     *
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
      */
     void setLazyMode(boolean enable);
 
@@ -167,6 +177,8 @@ public interface ServoController extends SilentDevice, Closeable {
      * @return <code>true</code> if the redundant positioning commands are
      * <strong>not</strong> sent to the controller, <code>false</code>
      * otherwise.
+     *
+     * @throws IllegalStateException if {@link #open()} hasn't been called yet, or {@link Closeable#close()} was already called.
      */
     boolean isLazy();
 }

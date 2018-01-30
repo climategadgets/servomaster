@@ -14,8 +14,6 @@ import javax.usb.UsbInterface;
 import javax.usb.UsbIrp;
 import javax.usb.UsbPipe;
 
-import org.apache.log4j.Logger;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
@@ -30,30 +28,17 @@ import net.sf.servomaster.device.model.ServoController;
  *
  * Detailed documentation to follow.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2005
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
-    private Logger logger = Logger.getLogger(getClass());
-
-    /**
-     * Default constructor.
-     *
-     * Provided for {@code Class.newInstance()} to be happy.
-     */
-    public PhidgetServoController() {
-
-    }
-    
     /**
      * Create an instance connected to the device with the given serial number.
      * 
      * @param serialNumber Serial number of the device to connect to.
-     * 
-     * @throws IOException if things go wrong. See {@link #init(String)}.
      */
-    public PhidgetServoController(String serialNumber) throws IOException {
-        init(serialNumber);
+    public PhidgetServoController(String serialNumber) {
+        super(serialNumber);
     }
 
     @Override
@@ -206,11 +191,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
         }
 
         @Override
-        public void setPosition(int id, double position) throws UsbException {
+        public void setPosition(int id, double position) throws IOException, UsbException {
 
             // Tough stuff, we're dealing with timing now...
 
-            PhidgetServo003 servo = (PhidgetServo003)servoSet[id];
+            PhidgetServo003 servo = (PhidgetServo003) PhidgetServoController.this.getServo(Integer.toString(id));
 
             int microseconds = (int)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
 
@@ -491,14 +476,14 @@ public class PhidgetServoController extends AbstractUsbServoController {
         }
 
         @Override
-        public synchronized void setPosition(int id, double position) throws UsbException {
+        public synchronized void setPosition(int id, double position) throws UsbException, IOException {
 
-            if ( servoSet[id] == null ) {
+            PhidgetServo0x3B servo = (PhidgetServo0x3B) PhidgetServoController.this.getServo(Integer.toString(id));
+
+            if ( servo == null ) {
 
                 throw new IllegalStateException("servoSet[" + id + "] is still null");
             }
-
-            PhidgetServo0x3B servo = (PhidgetServo0x3B)servoSet[id];
 
             send(servo.renderPosition(position));
         }

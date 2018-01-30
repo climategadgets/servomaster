@@ -20,29 +20,20 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public abstract class ParallaxSerialServoController extends AbstractSerialServoController {
 
-    private final Meta meta = createMeta();
-    
     /**
      * Byte buffer being used for all communications without exception
      * in order to minimize chances of causing memory leaks.
      */
     private final byte[] serialBuffer = new byte[8];
 
-    protected ParallaxSerialServoController() {
-        // Can't invoke this(null) because this will blow up in doInit()
-    }
-
-    protected ParallaxSerialServoController(String portName) throws IOException {
+    protected ParallaxSerialServoController(String portName) {
         super(portName);
     }
 
     @Override
-    public final Meta getMeta() {
-        return meta;
-    }
-
-    @Override
     public final synchronized void reset() throws IOException {
+
+        checkInit();
 
         for (Iterator<Servo> i = getServos(); i.hasNext();) {
 
@@ -65,9 +56,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
     //TODO: this should really go into the properties and be used in the AbstractSerialServoController
     @Override
-    protected void doInit(String portName) throws IOException {
-
-        super.doInit(portName);
+    protected void doInit() throws IOException {
 
         try {
 

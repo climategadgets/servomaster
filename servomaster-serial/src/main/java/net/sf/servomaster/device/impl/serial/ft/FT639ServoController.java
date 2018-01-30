@@ -73,7 +73,7 @@ import net.sf.servomaster.device.model.ServoController;
  * subclassing a {@link #createServo template method}, thus allowing to
  * extend the functionality without rewriting half of the code.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2006
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -103,27 +103,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
     private boolean repositioningNow = false;
 
     /**
-     * Metadata instance.
-     */
-    private Meta meta;
-
-    /**
-     * Create the controller instance.
-     *
-     * <p>
-     *
-     * The reason the no-argument constructor is here is to allow
-     * instantiating the controller with <code>Class.newInstance()</code>.
-     * The instance created in such a manner is not functional, and {@link
-     * #init(String) init(portName)} has to be called to make it
-     * functional. Otherwise, <code>IllegalStateException</code> will be
-     * thrown on every method call.
-     */
-    public FT639ServoController() {
-
-    }
-
-    /**
      * Create the controller instance.
      *
      * <p>
@@ -141,13 +120,9 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      *
      * @param portName The name of the serial port the controller is
      * connected to.
-     *
-     * @exception IOException if there was a problem with getting access to
-     * the port.
      */
-    public FT639ServoController(String portName) throws IOException {
-
-        init(portName);
+    public FT639ServoController(String portName) {
+        super(portName);
     }
 
     /**
@@ -341,14 +316,9 @@ public class FT639ServoController extends AbstractSerialServoController implemen
     }
 
     @Override
-    public synchronized Meta getMeta() {
+    protected Meta createMeta() {
 
-        if ( meta == null ) {
-
-            meta = new FT639Meta();
-        }
-
-        return meta;
+        return new FT639Meta();
     }
 
     protected static class FT639Meta extends SerialMeta {

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -44,11 +45,10 @@ public abstract class AbstractServoController implements ServoController {
     public static final String META_SILENT = "controller/silent";
 
     /**
-     * The port the controller is connected to.
-     *
-     * This variable contains the device-specific port name.
+     * The device-specific name of the port the controller is connected to.
+     * May be {@code null}.
      */
-    protected String portName;
+    protected final String portName;
 
     /**
      * The listener set.
@@ -86,35 +86,74 @@ public abstract class AbstractServoController implements ServoController {
 
     /**
      * Physical servo representation.
+     *
+     * VT: FIXME: Do we really need it like this? It is possible to have controllers
+     * with dynamically changing servo set (and, {@link #getServoCount()} is also affected.
      */
-    protected Servo[] servoSet;
+    private Servo[] servoSet;
+    
+    /**
+     * Initialization state.
+     * 
+     * Currently, calling {@link #clone()} makes an instance unusable. In the
+     * future, it may be possible to bring all implementations into a state where
+     * they can be opened again after having been closed.
+     */
+    private final AtomicInteger initState = new AtomicInteger(0);
 
-    protected AbstractServoController() {
+    /**
+     * @see #getMeta()
+     */
+    private Meta meta;
 
-    }
-
-    protected AbstractServoController(String portName) throws IOException {
-
-        init(portName);
+    /**
+     * Create an instance.
+     *
+     * @param portName See {@link #portName}.
+     */
+    protected AbstractServoController(String portName) {
+        this.portName = portName;
     }
 
     @Override
     public final String getPort() {
-
-        checkInit();
-
         return portName;
     }
 
     @Override
     public final synchronized void init(String portName) throws IOException {
 
-        if ( this.portName != null ) {
-
-            throw new IllegalStateException("Already initialized");
+        if (portName != null) {
+            throw new IllegalArgumentException("Deprecated method, wrong argument, see the code");
         }
 
-        doInit(portName);
+        open();
+    }
+
+    @Override
+    public final synchronized void open() throws IOException {
+        
+        // Now that we know we're instantiated, we can finally get it
+        meta = createMeta();
+
+        if (initState.get() != 0) {
+
+            throw new IllegalStateException("state 0 expected, actual is " + initState.get());
+        }
+
+        doInit();
+
+        // Controller is initialized, now it's time to go get the servos
+        initState.incrementAndGet();
+
+        servoSet = new Servo[getServoCount()];
+
+        startSilencer();
+
+        reset();
+    }
+
+    private void startSilencer() {
 
         try {
 
@@ -137,12 +176,11 @@ public abstract class AbstractServoController implements ServoController {
     }
 
     /**
-     * Perform the actual initialization.
+     * Perform the controller initialization. Don't touch the servos yet.
      *
-     * @param portName Port to initialize with.
      * @throws IOException if there was a hardware error.
      */
-    protected abstract void doInit(String portName) throws IOException;
+    protected abstract void doInit() throws IOException;
 
     /**
      * Check if the controller is initialized.
@@ -150,17 +188,20 @@ public abstract class AbstractServoController implements ServoController {
      * @exception IllegalStateException if the controller is not yet
      * initialized.
      */
-    protected abstract void checkInit();
+    protected final synchronized void checkInit() {
+        
+        if (initState.get() != 1) {
+            throw new IllegalStateException("state 1 expected, actual is " + initState.get());
+        }
+    }
 
     @Override
     public void setLazyMode(boolean enable) {
-
         throw new UnsupportedOperationException("Lazy mode is not supported");
     }
 
     @Override
     public boolean isLazy() {
-
         return false;
     }
 
@@ -278,17 +319,30 @@ public abstract class AbstractServoController implements ServoController {
 
     public final boolean getSilentMode() {
 
+        checkInit();
         return (silencer == null) ? false : silencer.getSilentMode();
     }
 
     public final boolean isSilentNow() {
 
+        checkInit();
         return (silencer == null) ? false : silencer.isSilentNow();
     }
 
     @Override
-    public Meta getMeta() {
+    public final synchronized Meta getMeta() {
 
+        // Meta will be created the first thing after the instance is created, in open().
+        // If it hasn't been, something is wrong
+
+        if (meta == null) {
+            throw new IllegalStateException("null meta found, is everything all right?");
+        }
+
+        return meta;
+    }
+
+    protected Meta createMeta() {
         throw new UnsupportedOperationException("This driver class doesn't provide metadata (most probably oversight on developer's part)");
     }
 
@@ -307,6 +361,7 @@ public abstract class AbstractServoController implements ServoController {
      */
     public void allowDisconnect(boolean disconnected) {
 
+        checkInit();
         this.disconnected = disconnected;
     }
 
@@ -317,6 +372,7 @@ public abstract class AbstractServoController implements ServoController {
      */
     public boolean isDisconnectAllowed() {
 
+        checkInit();
         return disconnected;
     }
 
@@ -435,7 +491,11 @@ public abstract class AbstractServoController implements ServoController {
      */
     protected abstract Servo createServo(int id) throws IOException;
     
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+
+        if (initState.get() != 1) {
+            throw new IllegalStateException("state 1 expected, actual is " + initState.get());
+        }
         
         throw new IllegalStateException("Not Implemented. See https://github.com/climategadgets/servomaster/issues/12");
     }

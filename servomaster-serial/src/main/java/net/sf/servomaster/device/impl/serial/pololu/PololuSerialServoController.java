@@ -25,26 +25,14 @@ import net.sf.servomaster.device.model.ServoController;
  */
 abstract public class PololuSerialServoController extends AbstractSerialServoController {
 
-    private final Meta meta = createMeta();
-
-    public PololuSerialServoController() {
-
-        // Can't invoke this(null) because this will blow up in doInit()
-    }
-
-    public PololuSerialServoController(String portName) throws IOException {
-
+    public PololuSerialServoController(String portName) {
         super(portName);
     }
 
     @Override
-    public final Meta getMeta() {
-
-        return meta;
-    }
-
-    @Override
     public synchronized final void reset() throws IOException {
+
+        checkInit();
 
         for (Iterator<Servo> i = getServos(); i.hasNext(); ) {
 

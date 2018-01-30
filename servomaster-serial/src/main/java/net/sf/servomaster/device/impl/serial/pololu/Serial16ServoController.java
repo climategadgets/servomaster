@@ -1,7 +1,5 @@
 package net.sf.servomaster.device.impl.serial.pololu;
 
-import java.io.IOException;
-
 import net.sf.servomaster.device.model.Meta;
 
 /**
@@ -16,19 +14,15 @@ import net.sf.servomaster.device.model.Meta;
  */
 public class Serial16ServoController extends PololuSerialServoController {
 
-    public Serial16ServoController() {
-    
-        // Can't invoke this(null) because this will blow up in doInit()
-    }
-    
-    public Serial16ServoController(String portName) throws IOException {
-    
+    public Serial16ServoController(String portName) {
         super(portName);
     }
 
     @Override
     public int getServoCount() {
     
+        checkInit();
+
         return 16;
     }
     

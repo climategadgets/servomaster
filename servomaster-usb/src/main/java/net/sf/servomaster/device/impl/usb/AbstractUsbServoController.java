@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
 import javax.usb.UsbDeviceDescriptor;
@@ -29,7 +30,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * Base class for all USB servo controllers.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractUsbServoController extends AbstractServoController implements UsbServicesListener {
 
@@ -75,11 +76,19 @@ public abstract class AbstractUsbServoController extends AbstractServoController
     private long lastDetect;
 
     /**
+     * VT: FIXME: A hack to help solving https://github.com/climategadgets/servomaster/issues/2
+     * Will need to be verified against all known USB devices.
+     */
+    private String serial;
+
+    /**
      * The USB device corresponding to the servo controller.
      */
     protected UsbDevice theServoController;
 
-    protected AbstractUsbServoController() {
+    protected AbstractUsbServoController(String portName) {
+
+        super(portName);
 
         fillProtocolHandlerMap();
 
@@ -89,7 +98,6 @@ public abstract class AbstractUsbServoController extends AbstractServoController
             // of a device. Good.
 
             protocolHandler = (UsbProtocolHandler)protocolHandlerMap.values().toArray()[0];
-            servoSet = new Servo[getServoCount()];
         }
 
         // VT: FIXME: This really belongs to init(), but at this point
@@ -483,7 +491,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      * Initialize the controller.
      *
      * @param portName The controller board unique serial number in a string
-     * representation. If this is null, then all the PhidgetServo devices
+     * representation. If this is null, then all the matching devices
      * connected will be found. If the only device is found, then it is
      * used, and its serial number will be assigned to
      * <code>portName</code>.
@@ -497,7 +505,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      * not supported by this driver.
      */
     @Override
-    protected void doInit(String portName) throws IOException {
+    protected void doInit() throws IOException {
 
         try {
 
@@ -517,7 +525,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
             // At this point, we've either flying by on the wings of
             // IllegalArgumentException (null portName, none or more than
-            // one device), or the phidget serial contains the same value as
+            // one device), or the controller serial contains the same value as
             // the requested portName. However, in disconnected mode we can
             // safely assume that the device portName is the same passed
             // from the caller, and just assign it - we don't care if they
@@ -547,9 +555,13 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 throw new UnsupportedOperationException("Vendor/product ID '" + signature + "' is not supported");
             }
 
-            servoSet = new Servo[getServoCount()];
+            {
+                // VT: FIXME: https://github.com/climategadgets/servomaster/issues/2
 
-            this.portName = serial;
+                // this.portName = serial;
+                this.serial = serial;
+            }
+
             connected = true;
 
         } catch ( Throwable t ) {
@@ -560,7 +572,12 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
                     // No big deal, let's just continue
 
-                    this.portName = portName;
+                    {
+                        // VT: FIXME: https://github.com/climategadgets/servomaster/issues/2
+                        //this.portName = portName;
+
+                        this.serial = portName;
+                    }
 
                     logger.error("Working in the disconnected mode, cause:", t);
 
@@ -595,7 +612,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
     }
 
     @Override
-    public synchronized Meta getMeta() {
+    protected synchronized Meta createMeta() {
 
         checkInit();
 
@@ -607,8 +624,9 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         return protocolHandler.getMeta();
     }
 
-    @Override
-    protected synchronized void checkInit() {
+    // VT: FIXME: This needs to be revisited after https://github.com/climategadgets/servomaster/issues/2 is done
+    //@Override
+    protected synchronized void checkInit_FIXME() {
 
         // VT: NOTE: Checking for initialization is quite complicated in
         // this case. Here are following scenarios:
@@ -947,7 +965,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
          * @exception UsbException if there was a problem sending data to
          * the USB device.
          */
-        public abstract void setPosition(int id, double position) throws UsbException;
+        public abstract void setPosition(int id, double position) throws UsbException, IOException;
 
         /**
          * Silence the controller.

@@ -181,7 +181,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     }
 
     @Override
-    protected void doInit(String portName) throws IOException {
+    protected void doInit() throws IOException {
 
         // Do absolutely nothing.
 
@@ -189,14 +189,9 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     }
 
     @Override
-    protected void checkInit() {
-
-        // Do nothing. This controller is initialized in the constructor.
-    }
-
-    @Override
     public boolean isConnected() {
 
+        checkInit();
         // VT: FIXME: It remains to be seen how this check can be performed [reliably].
 
         logger.warn("FIXME: isConnected() returning unconditional true");
@@ -210,7 +205,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     }
     
     @Override
-    public Meta getMeta() {
+    protected Meta createMeta() {
 
         return new PCA9685Meta();
     }

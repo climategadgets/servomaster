@@ -13,13 +13,12 @@ import gnu.io.UnsupportedCommOperationException;
 import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 
 /**
  * Base class for all serial servo controllers.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractSerialServoController extends AbstractServoController {
 
@@ -47,13 +46,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
      */
     private OutputStream serialOut;
 
-    protected AbstractSerialServoController() {
-
-        // Can't invoke this(null) because this will blow up in doInit()
-    }
-
-    protected AbstractSerialServoController(String portName) throws IOException {
-
+    protected AbstractSerialServoController(String portName) {
         super(portName);
     }
 
@@ -67,16 +60,12 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
      * @exception IllegalStateException if the controller has already been initialized.
      */
     @Override
-    protected void doInit(String portName) throws IOException {
+    protected void doInit() throws IOException {
 
-        this.portName = portName;
-
-        if ( this.portName == null ) {
+        if (this.portName == null) {
 
             throw new IllegalArgumentException("null portName is invalid: serial controllers don't support automated discovery");
         }
-
-        servoSet = new Servo[getServoCount()];
 
         try {
 
@@ -84,7 +73,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
 
             List<String> portsTried = new LinkedList<String>();
 
-            for ( Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers(); ports.hasMoreElements(); ) {
+            for (Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers(); ports.hasMoreElements();) {
 
                 CommPortIdentifier id = (CommPortIdentifier)ports.nextElement();
 
@@ -93,15 +82,15 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
 
                 portsTried.add(id.getName());
 
-                if ( id.getPortType() == CommPortIdentifier.PORT_SERIAL ) {
+                if (id.getPortType() == CommPortIdentifier.PORT_SERIAL) {
 
-                    if ( id.getName().equals(portName) ) {
+                    if (id.getName().equals(portName)) {
 
                         try {
 
                             port = (SerialPort)id.open(getClass().getName(), OPEN_TIMEOUT);
 
-                        } catch ( PortInUseException ex ) {
+                        } catch (PortInUseException ex) {
 
                             // If the exception is thrown here, we won't be
                             // able to enumerate the rest of the ports - all
@@ -115,7 +104,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                 }
             }
 
-            if ( port == null ) {
+            if (port == null) {
 
                 throw new IllegalArgumentException("No suitable port found, tried: " + portsTried);
             }
@@ -174,20 +163,9 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
 
-        } catch ( UnsupportedCommOperationException ucoex ) {
+        } catch (UnsupportedCommOperationException ucoex) {
 
             throw (IOException) new IOException("Unsupported comm operation").initCause(ucoex);
-        }
-
-        reset();
-    }
-
-    @Override
-    protected void checkInit() {
-
-        if ( portName == null ) {
-
-            throw new IllegalStateException("Not initialized");
         }
     }
 
@@ -203,6 +181,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
     @Override
     public final boolean isConnected() {
 
+        checkInit();
         return true;
     }
 

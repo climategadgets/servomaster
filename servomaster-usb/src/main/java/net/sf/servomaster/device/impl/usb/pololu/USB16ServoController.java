@@ -15,6 +15,7 @@ import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
+import net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -26,13 +27,8 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public class USB16ServoController extends AbstractUsbServoController {
 
-    /**
-     * Default constructor.
-     *
-     * Provided for {@code Class.newInstance()} to be happy.
-     */
-    public USB16ServoController() {
-
+    protected USB16ServoController(String portName) {
+        super(portName);
     }
 
     @Override
@@ -289,11 +285,11 @@ public class USB16ServoController extends AbstractUsbServoController {
         }
 
         @Override
-        public void setPosition(int id, double position) throws UsbException {
+        public void setPosition(int id, double position) throws UsbException, IOException {
 
             // Tough stuff, we're dealing with timing now...
 
-            PololuServo servo = (PololuServo)servoSet[id];
+            PololuServo servo = (PololuServo) USB16ServoController.this.getServo(Integer.toString(id));
 
             // One unit is 1/2 of a microsecond
 

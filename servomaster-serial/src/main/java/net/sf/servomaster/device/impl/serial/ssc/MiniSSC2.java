@@ -16,27 +16,20 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public class MiniSSC2 extends AbstractSerialServoController {
 
-    private final Meta meta = new MiniSSC2Meta();
-    
-    public MiniSSC2() {
-    
-        // Can't invoke this(null) because this will blow up in doInit()
-    }
-    
     public MiniSSC2(String portName) throws IOException {
-    
         super(portName);
     }
     
     @Override
-    public final Meta getMeta() {
+    protected final Meta createMeta() {
     
-        return meta;
+        return new MiniSSC2Meta();
     }
 
     @Override
     public final void reset() throws IOException {
-    
+
+        checkInit();
         // This controller doesn't require reset
     }
     
@@ -49,6 +42,7 @@ public class MiniSSC2 extends AbstractSerialServoController {
     @Override
     public final int getServoCount() {
     
+        checkInit();
         return 8;
     }
     

@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -134,9 +135,9 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            controller = instantiate(resolveClass(args));
+            controller = instantiate(resolveClass(args), args.length == 2 ? args[1] : null);
 
-            controller.init(args.length == 2 ? args[1] : null);
+            controller.open();
 
             displayMetadata(controller);
             buildConsole(controller);
@@ -155,7 +156,18 @@ public class Console implements ActionListener, WindowListener {
 
         } finally {
 
-            logger.warn("FIXME: park the servos");
+            if (controller != null) {
+
+                try {
+
+                    controller.close();
+
+                } catch (IOException e) {
+
+                    logger.error("can't close() the controller, nor can do anything about it now", e);
+                }
+            }
+
             NDC.pop();
         }
     }
@@ -221,16 +233,22 @@ public class Console implements ActionListener, WindowListener {
         }
     }
 
-    private ServoController instantiate(String targetClass) {
+    private ServoController instantiate(String targetClass, String portName) {
 
         NDC.push("instantiate");
 
         try {
 
             Class<?> controllerClass = Class.forName(targetClass);
-            Object controllerObject = controllerClass.newInstance();
 
-            logger.debug("Instantiated " + controllerObject.getClass().getName());
+            // newInstance() will not work because all descendants of AbstractServoController
+            // take a String portName argument
+
+            Constructor<?> c = controllerClass.getDeclaredConstructor(String.class);
+
+            Object controllerObject = c.newInstance(portName);
+
+            logger.debug(controllerObject.getClass().getName() + ", portName=" + portName);
 
             return (ServoController)controllerObject;
 

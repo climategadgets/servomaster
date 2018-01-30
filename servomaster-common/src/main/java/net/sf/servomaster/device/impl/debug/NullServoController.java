@@ -24,8 +24,6 @@ public class NullServoController extends AbstractServoController {
 
     public NullServoController(String portName) throws IOException {
         super(portName);
-
-        servoSet = new Servo[getServoCount()];
     }
 
     @Override
@@ -37,17 +35,14 @@ public class NullServoController extends AbstractServoController {
 
     @Override
     public void reset() throws IOException {
+
+        checkInit();
+
         logger.info("reset()");
     }
 
     @Override
-    protected void doInit(String portName) throws IOException {
-
-        // Do absolutely nothing.
-    }
-
-    @Override
-    protected void checkInit() {
+    protected void doInit() throws IOException {
 
         // Do absolutely nothing.
     }
@@ -59,13 +54,11 @@ public class NullServoController extends AbstractServoController {
 
     @Override
     protected Servo createServo(int id) throws IOException {
-
         return new NullServo(this, id);
     }
     
     @Override
-    public Meta getMeta() {
-    
+    protected Meta createMeta() {
         return new NullMeta();
     }
     

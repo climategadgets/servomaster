@@ -9,12 +9,11 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 
 import net.sf.servomaster.device.impl.AbstractServoController;
-import net.sf.servomaster.device.model.Servo;
 
 /**
  * Base class for I2C based servo controllers.
  * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2017
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractI2CServoController extends AbstractServoController {
 
@@ -42,8 +41,6 @@ public abstract class AbstractI2CServoController extends AbstractServoController
 
             bus = I2CFactory.getInstance(busId);
             device = bus.getDevice(deviceAddress);
-
-            servoSet = new Servo[getServoCount()];
 
         } catch (Throwable t) {
 

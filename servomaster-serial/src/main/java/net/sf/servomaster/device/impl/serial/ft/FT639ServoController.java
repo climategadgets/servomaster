@@ -188,7 +188,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         checkInit();
 
-        if ( !activeMode ) {
+        if (!activeMode) {
 
             // We're already in setup mode
 
@@ -218,7 +218,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         checkInit();
 
-        if ( activeMode ) {
+        if (activeMode) {
 
             // We're already in active mode
 
@@ -283,7 +283,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         checkInit();
 
-        if ( headerLength < 0 || headerLength > 15 ) {
+        if (headerLength < 0 || headerLength > 15) {
 
             throw new IllegalArgumentException("Header length outside of 0...15 range: " + headerLength);
         }
@@ -375,7 +375,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             super(sc, id);
 
             // Reset the servo position
-            setPosition((255 >> 1)/255.0);
+            setPosition((255 >> 1) / 255.0);
         }
 
         @Override
@@ -392,11 +392,11 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
             int requestedPosition = double2int(position);
 
-            if ( isLazy() && !repositioningNow ) {
+            if (isLazy() && !repositioningNow) {
 
                 // Let's see if we really have to do it
 
-                if ( double2int(this.actualPosition) == requestedPosition ) {
+                if (double2int(this.actualPosition) == requestedPosition) {
 
                     // Nah, we don't have to bother.
 
@@ -409,7 +409,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
                 }
             }
 
-            synchronized ( getController() ) {
+            synchronized (getController()) {
 
                 // The reason it is synchronized on the controller is that the
                 // setActualPosition() calls the controller's synchronized methods
@@ -417,6 +417,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
                 setActiveMode();
                 send(renderPositionCommand(id, requestedPosition));
+
                 this.actualPosition = position;
             }
 
@@ -493,9 +494,9 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
         try {
 
-            for ( Iterator<Servo> i = getServos(); i.hasNext(); ) {
+            for (Iterator<Servo> i = getServos(); i.hasNext();) {
 
-                FT639Servo s = (FT639Servo)i.next();
+                FT639Servo s = (FT639Servo) i.next();
 
                 s.setActualPosition(s.getPosition());
             }
@@ -508,7 +509,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
     private static int double2int(double value) {
 
-        return (int)(value * 255);
+        return (int) (value * 255);
     }
 
     @Override

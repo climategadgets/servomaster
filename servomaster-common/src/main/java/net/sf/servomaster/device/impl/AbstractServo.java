@@ -47,12 +47,12 @@ public abstract class AbstractServo implements Servo {
      * If <strong>this</strong> is the servo to control, then this variable
      * is set to {@code null}.
      */
-    private Servo target;
+    private final Servo target;
 
     /**
      * The controller reference.
      */
-    private ServoController servoController;
+    private final ServoController servoController;
 
     /**
      * The transition controller attached to the servo.
@@ -99,6 +99,18 @@ public abstract class AbstractServo implements Servo {
     private SilentProxy silencerProxy;
 
     /**
+     * @see #getMeta()
+     */
+    private Meta meta;
+
+    /**
+     * Whether this instance is initialized.
+     *
+     * Becomes {@code true} in {@link #open()}.
+     */
+    private boolean initialized = false;
+
+    /**
      * Create the stacked instance.
      *
      * @param servoController The controller this servo belongs to.
@@ -111,47 +123,64 @@ public abstract class AbstractServo implements Servo {
 
         this.servoController = servoController;
         this.target = target;
+    }
 
-        if (false) {
+    public final synchronized void open() {
 
-            // VT: FIXME: Just like the FIXME below says, it's a mess.
-            // getMeta() called ahead of final construction completion will produce
-            // a malfunctioning object.
+        // Now that we know we're instantiated, we can finally get it
+        meta = createMeta();
 
-            // Will need to get back to this when https://github.com/climategadgets/servomaster/issues/2 is done.
+        initialized = true;
 
-            try {
+        startSilencer();
+    }
 
-                // VT: FIXME: It's a mess with instantiation of these two - they can't be made final.
-                // Will be fixed in the next iteration.
+    protected Meta createMeta() {
+        throw new UnsupportedOperationException("This driver class doesn't provide metadata (most probably oversight on developer's part)");
+    }
 
-                if ( getMeta().getFeature("servo/silent") ) {
+    private void startSilencer() {
 
-                    silencerProxy = new SilentGuard();
-                    silencer = new SilentHelper(silencerProxy);
-                    silencer.start();
-                }
+        try {
 
-            } catch ( UnsupportedOperationException ex ) {
+            // VT: FIXME: It's a mess with instantiation of these two - they can't be made final.
+            // Will be fixed in the next iteration.
 
-                // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
-                // There will be more servos than controllers, some of them transients and proxies,
-                // let's identify them better to avoid confusion
+            if ( getMeta().getFeature("servo/silent") ) {
 
-                // VT: FIXME: This message may be gone altogether after https://github.com/climategadgets/servomaster/issues/16
-                // is fully implemented
-
-                logger.info(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": servo doesn't support silent operation, reason: " + ex.getMessage());
-
-            } catch ( IllegalStateException ex ) {
-
-                logger.warn("unexpected exception", ex);
+                silencerProxy = new SilentGuard();
+                silencer = new SilentHelper(silencerProxy);
+                silencer.start();
             }
+
+        } catch ( UnsupportedOperationException ex ) {
+
+            // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
+            // There will be more servos than controllers, some of them transients and proxies,
+            // let's identify them better to avoid confusion
+
+            // VT: FIXME: This message may be gone altogether after https://github.com/climategadgets/servomaster/issues/16
+            // is fully implemented
+
+            logger.info(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": servo doesn't support silent operation, reason: " + ex.getMessage());
+
+        } catch ( IllegalStateException ex ) {
+
+            logger.warn("unexpected exception", ex);
+        }
+    }
+
+    private synchronized void checkInit() {
+
+        if (!initialized) {
+            throw new IllegalStateException("not initialized");
         }
     }
 
     @Override
     public final synchronized void attach(TransitionController transitionController, boolean queueTransitions) {
+
+        checkInit();
 
         // This operation can safely be made synchronized because it doesn't
         // use the controller's synchronized methods
@@ -338,6 +367,24 @@ public abstract class AbstractServo implements Servo {
         }
     }
 
+    @Override
+    public final synchronized Meta getMeta() {
+
+        // Meta will be created the first thing after the instance is created, in open().
+        // If it hasn't been, something is wrong
+
+        if (meta == null) {
+
+            if (initialized) {
+                throw new IllegalStateException("initialized but meta is still null, is everything all right?");
+            }
+
+            throw new IllegalStateException("calling getMeta() before open()?");
+        }
+
+        return meta;
+    }
+
     private class TransitionDriver implements Runnable {
 
         private final Servo target;
@@ -520,6 +567,12 @@ public abstract class AbstractServo implements Servo {
         public Servo getTarget() {
 
             throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void open() {
+
+            // Do absolutely nothing
         }
     }
 

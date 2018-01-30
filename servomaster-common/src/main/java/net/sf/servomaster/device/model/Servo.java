@@ -158,4 +158,9 @@ public interface Servo extends SilentDevice {
      * @return The next servo in the stack, or {@code null} if this servo is at the top of the stack.
      */
     Servo getTarget();
+
+    /**
+     * Start working with the servo.
+     */
+    void open();
 }

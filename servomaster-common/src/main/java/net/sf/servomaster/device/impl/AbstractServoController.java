@@ -466,6 +466,7 @@ public abstract class AbstractServoController implements ServoController {
             if ( servoSet[iID] == null ) {
 
                 servoSet[iID] = createServo(iID);
+                servoSet[iID].open();
             }
 
             return servoSet[iID];

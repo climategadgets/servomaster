@@ -117,7 +117,7 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
     }
 
     @Override
-    public Meta getMeta() {
+    protected Meta createMeta() {
 
         return getTarget().getMeta();
     }

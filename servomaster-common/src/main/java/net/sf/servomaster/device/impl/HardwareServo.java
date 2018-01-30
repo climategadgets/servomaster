@@ -56,27 +56,4 @@ abstract public class HardwareServo extends AbstractServo {
 
         return Integer.toString(id);
     }
-
-    /**
-     * Create a metadata instance.
-     *
-     * @return A class specific metadata instance.
-     */
-    abstract protected Meta createMeta();
-
-    /**
-     * Get a metadata instance.
-     *
-     * @return Servo metadata.
-     */
-    @Override
-    public final synchronized Meta getMeta() {
-
-        if (meta == null) {
-
-            meta = createMeta();
-        }
-
-        return meta;
-    }
 }

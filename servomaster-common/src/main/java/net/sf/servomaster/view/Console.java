@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -140,7 +139,7 @@ public class Console implements ActionListener, WindowListener {
 
             controller.open();
 
-            displayMetadata(controller);
+            displayMetadata("controller", controller.getMeta());
             buildConsole(controller);
 
             // VT: FIXME: Replace this by waiting for the semaphore, make window.close()
@@ -173,17 +172,15 @@ public class Console implements ActionListener, WindowListener {
         }
     }
 
-    private void displayMetadata(ServoController controller2) {
+    private void displayMetadata(String type, Meta meta) {
 
-        NDC.push("medatada");
+        NDC.push("meta/" + type);
 
         try {
 
-            Meta controllerMeta = controller.getMeta();
-
             logger.info("Features:");
 
-            for ( Iterator<Entry<String, Boolean>> i = controllerMeta.getFeatures().entrySet().iterator(); i.hasNext(); ) {
+            for ( Iterator<Entry<String, Boolean>> i = meta.getFeatures().entrySet().iterator(); i.hasNext(); ) {
 
                 Entry<String, Boolean> entry = i.next();
 
@@ -192,7 +189,7 @@ public class Console implements ActionListener, WindowListener {
 
             logger.info("Properties:");
 
-            for ( Iterator<Entry<String, Object>> i = controllerMeta.getProperties().entrySet().iterator(); i.hasNext(); ) {
+            for ( Iterator<Entry<String, Object>> i = meta.getProperties().entrySet().iterator(); i.hasNext(); ) {
 
                 Entry<String, Object> entry = i.next();
 
@@ -201,11 +198,11 @@ public class Console implements ActionListener, WindowListener {
 
         } catch ( UnsupportedOperationException ex ) {
 
-            logger.info("Controller doesn't support metadata", ex);
+            logger.info("Source doesn't support metadata", ex);
 
         } catch ( IllegalStateException ex ) {
 
-            throw new IllegalStateException("Controller is not yet connected?", ex);
+            throw new IllegalStateException("Source is not yet connected?", ex);
 
         } finally {
             NDC.pop();
@@ -303,7 +300,15 @@ public class Console implements ActionListener, WindowListener {
 
             for ( int idx = 0; idx < servoCount; idx++ ) {
 
-                servoPanel[idx] = new ServoView(controller.getServo(Integer.toString(idx)));
+                Servo servo = controller.getServo(Integer.toString(idx));
+
+                if (idx == 0) {
+
+                    // Print servo metadata just once
+                    displayMetadata("servo", servo.getMeta());
+                }
+
+                servoPanel[idx] = new ServoView(servo);
 
                 cs.gridx = idx;
 
@@ -445,15 +450,15 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            if ( controller.getMeta().getFeature("controller/silent") ) {
+            if (controller.getMeta().getFeature("controller/silent")) {
 
                 controller.setSilentMode(true);
-                controller.setSilentTimeout(10000, 30000);
+                controller.setSilentTimeout(5000, 10000);
 
                 return new SilencerPanel(controller);
             }
 
-        } catch ( UnsupportedOperationException ex ) {
+        } catch (UnsupportedOperationException ex) {
 
             logger.warn("Controller doesn't support servo shutoff (reason: " + ex.getMessage() + ")");
             return null;

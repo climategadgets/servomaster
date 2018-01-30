@@ -5,14 +5,14 @@ package net.sf.servomaster.device.model;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface SilentDeviceListener<T extends SilentDevice> {
+public interface SilentDeviceListener {
 
     /**
      * Accept the notification about the silent status change.
      *
-     * @param target The device whose silent status has changed.
+     * @param source The device whose silent status has changed.
      *
      * @param silent The new mode.
      */
-    void silentStatusChanged(T target, boolean silent);
+    void silentStatusChanged(SilentDevice source, boolean silent);
 }

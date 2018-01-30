@@ -459,18 +459,6 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
             throw new UnsupportedOperationException(NOT_SUPPORTED);
         }
-
-        @Override
-        public boolean isSilentNow() {
-
-            throw new UnsupportedOperationException(NOT_SUPPORTED);
-        }
-
-        @Override
-        public boolean getSilentMode() {
-
-            throw new UnsupportedOperationException(NOT_SUPPORTED);
-        }
     }
 
     /**

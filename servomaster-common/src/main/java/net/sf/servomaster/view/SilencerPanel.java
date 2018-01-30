@@ -2,25 +2,29 @@ package net.sf.servomaster.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.IOException;
+
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import javax.swing.BorderFactory;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-
+import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
+import net.sf.servomaster.device.model.ServoListener;
+import net.sf.servomaster.device.model.SilentDevice;
+import net.sf.servomaster.device.model.SilentDeviceListener;
 
 @SuppressWarnings("serial")
-public class SilencerPanel extends JPanel implements ServoControllerListener, ItemListener, ChangeListener {
+public class SilencerPanel extends JPanel implements SilentDeviceListener, ItemListener, ChangeListener {
     
     private final Logger logger = Logger.getLogger(getClass());
 
@@ -57,18 +61,18 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
     private JSlider heartbeatSlider;
 
     /**
-     * The controller.
+     * The device to be silenced.
      */
-    private ServoController controller;
+    private SilentDevice device;
 
-    public SilencerPanel(ServoController controller) {
+    public SilencerPanel(SilentDevice device) {
 
-        this(controller, true);
+        this(device, true);
     }
 
-    public SilencerPanel(ServoController controller, boolean horizontal) {
+    public SilencerPanel(SilentDevice device, boolean horizontal) {
 
-        this.controller = controller;
+        this.device = device;
 
         // If the controller doesn't support the silent mode and this object
         // is being created, that's not my fault
@@ -86,7 +90,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         heartbeatLabel = new JLabel("Heartbeat", JLabel.CENTER);
         //heartbeatLabel.setToolTipText("Heartbeat timeout, seconds");
 
-        timeoutSlider = new JSlider(horizontal ? JSlider.HORIZONTAL : JSlider.VERTICAL, 5, 30, 10);
+        timeoutSlider = new JSlider(horizontal ? JSlider.HORIZONTAL : JSlider.VERTICAL, 5, 30, 5);
         //timeoutSlider.setToolTipText("");
         timeoutSlider.addChangeListener(this);
         timeoutSlider.setMajorTickSpacing(5);
@@ -94,9 +98,9 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         timeoutSlider.setPaintTicks(true);
         timeoutSlider.setPaintLabels(true);
         timeoutSlider.setSnapToTicks(true);
-        timeoutSlider.setBorder(BorderFactory.createTitledBorder("Timeout: 10"));
+        timeoutSlider.setBorder(BorderFactory.createTitledBorder("Timeout"));
 
-        heartbeatSlider = new JSlider(horizontal ? JSlider.HORIZONTAL : JSlider.VERTICAL, 30, 90, 30);
+        heartbeatSlider = new JSlider(horizontal ? JSlider.HORIZONTAL : JSlider.VERTICAL, 10, 60, 10);
         //heartbeatSlider.setToolTipText("");
         heartbeatSlider.addChangeListener(this);
         heartbeatSlider.setMajorTickSpacing(10);
@@ -104,13 +108,13 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         heartbeatSlider.setPaintTicks(true);
         heartbeatSlider.setPaintLabels(true);
         heartbeatSlider.setSnapToTicks(true);
-        heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat: 30"));
+        heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat"));
 
         doLayout(horizontal);
 
-        controller.addListener(this);
-
         setBorder(BorderFactory.createTitledBorder("Silent Mode"));
+
+        addListeners(device);
     }
 
     private void doLayout(boolean horizontal) {
@@ -155,34 +159,105 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
 
         } else {
 
-            throw new Error("Not Implemented");
+            cs.fill = GridBagConstraints.HORIZONTAL;
+            cs.gridx = 0;
+            cs.gridy = 0;
+            cs.weightx = 0;
+            cs.weighty = 0;
+            cs.gridwidth = 2;
+            cs.gridheight = 1;
+
+            layout.setConstraints(silentBox, cs);
+            add(silentBox);
+
+            cs.gridy++;
+
+            layout.setConstraints(silentLabel, cs);
+            add(silentLabel);
+
+            cs.gridy++;
+            cs.gridwidth = 1;
+            cs.weighty = 1;
+
+            layout.setConstraints(timeoutSlider, cs);
+            add(timeoutSlider);
+
+            cs.gridx++;
+
+            layout.setConstraints(heartbeatSlider, cs);
+            add(heartbeatSlider);
+        }
+    }
+
+    private void addListeners(SilentDevice device) {
+
+        if (device instanceof ServoController) {
+
+            ((ServoController) device).addListener(new ServoControllerListener() {
+
+                @Override
+                public void silentStatusChanged(SilentDevice source, boolean mode) {
+                    SilencerPanel.this.silentStatusChanged(source, mode);
+                }
+
+                @Override
+                public void exception(ServoController source, Throwable t) {
+                    // We don't care
+                }
+
+                @Override
+                public void deviceDeparted(ServoController device) {
+                    // We don't care
+                }
+
+                @Override
+                public void deviceArrived(ServoController device) {
+                    // We don't care
+                }
+            });
+
+        } else if (device instanceof Servo) {
+
+            ((Servo) device).addListener(new ServoListener() {
+
+                @Override
+                public void silentStatusChanged(SilentDevice source, boolean mode) {
+                    SilencerPanel.this.silentStatusChanged(source, mode);
+                }
+
+                @Override
+                public void exception(Servo source, Throwable t) {
+                    // We don't care
+                }
+
+                @Override
+                public void positionChanged(Servo source, double position) {
+                    // We don't care
+                }
+
+                @Override
+                public void actualPositionChanged(Servo source, double position) {
+                    // We don't care
+                }
+            });
+
+        } else {
+            throw new IllegalStateException("Don't know what to do with " + device.getClass().getName());
         }
     }
 
     /**
-     * React to the notification from the {@link #controller controller}
+     * React to the notification from the {@link #device controller}
      * about the silent status change.
      *
-     * @param controller The controller which sent the message.
+     * @param source The device which sent the message.
      *
-     * @param mode The silent mode if <code>true</code>.
+     * @param mode The silent mode if {@code true}.
      */
     @Override
-    public void silentStatusChanged(ServoController controller, boolean mode) {
+    public void silentStatusChanged(SilentDevice source, boolean mode) {
 
         silentLabel.setText(mode ? "Active" : "Sleeping");
-    }
-
-    @Override
-    public void deviceArrived(ServoController device) {
-
-        logger.warn("deviceArrived is not implemented by " + getClass().getName());
-    }
-
-    @Override
-    public void deviceDeparted(ServoController device) {
-
-        logger.warn("deviceDeparted is not implemented by " + getClass().getName());
     }
 
     /**
@@ -197,7 +272,7 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
 
             try {
 
-                controller.setSilentMode(selected);
+                device.setSilentMode(selected);
 
             } catch ( IOException ioex ) {
 
@@ -228,15 +303,6 @@ public class SilencerPanel extends JPanel implements ServoControllerListener, It
         int timeout = timeoutSlider.getValue();
         int heartbeat = heartbeatSlider.getValue();
 
-        controller.setSilentTimeout(timeout * 1000, heartbeat * 1000);
-
-        timeoutSlider.setBorder(BorderFactory.createTitledBorder("Timeout: " + timeout));
-        heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat: " + heartbeat));
-    }
-
-    @Override
-    public void exception(ServoController source, Throwable t) {
-
-        logger.error("Problem with " + Integer.toHexString(source.hashCode()) + ":", t);
+        device.setSilentTimeout(timeout * 1000, heartbeat * 1000);
     }
 }

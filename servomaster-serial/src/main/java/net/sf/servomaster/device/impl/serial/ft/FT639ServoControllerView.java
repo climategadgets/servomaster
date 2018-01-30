@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
+import net.sf.servomaster.device.model.SilentDevice;
 import net.sf.servomaster.view.ServoControllerView;
 
 /**
@@ -211,7 +212,7 @@ public class FT639ServoControllerView extends JPanel implements ActionListener, 
      * @param mode The silent mode if <code>true</code>.
      */
     @Override
-    public void silentStatusChanged(ServoController controller, boolean mode) {
+    public void silentStatusChanged(SilentDevice controller, boolean mode) {
 
         modeLabel.setText(mode ? "Active" : "Setup");
     }

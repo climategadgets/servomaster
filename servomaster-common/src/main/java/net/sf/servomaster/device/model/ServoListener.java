@@ -10,7 +10,7 @@ package net.sf.servomaster.device.model;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface ServoListener extends ProblemListener<Servo>, SilentDeviceListener<Servo>{
+public interface ServoListener extends ProblemListener<Servo>, SilentDeviceListener {
 
     /**
      * Accept the requested servo position change notification.

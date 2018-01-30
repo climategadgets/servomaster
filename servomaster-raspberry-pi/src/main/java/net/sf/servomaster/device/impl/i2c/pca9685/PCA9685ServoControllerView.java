@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
+import net.sf.servomaster.device.model.SilentDevice;
 import net.sf.servomaster.view.ServoControllerView;
 import net.sf.servomaster.view.ServoRangeControl;
 
@@ -71,7 +72,7 @@ public class PCA9685ServoControllerView extends JPanel implements ServoControlle
     }
 
     @Override
-    public void silentStatusChanged(ServoController controller, boolean mode) {
+    public void silentStatusChanged(SilentDevice controller, boolean mode) {
 
         // FIXME
 

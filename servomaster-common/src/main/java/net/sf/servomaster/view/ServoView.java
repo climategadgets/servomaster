@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
@@ -22,6 +23,7 @@ import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
+import net.sf.servomaster.device.model.SilentDevice;
 import net.sf.servomaster.device.model.transform.LimitTransformer;
 import net.sf.servomaster.device.model.transform.LinearTransformer;
 import net.sf.servomaster.device.model.transform.Reverser;
@@ -108,7 +110,7 @@ public class ServoView extends JPanel {
      *
      * @param source Servo to create the view for.
      */
-    ServoView(Servo source) {
+    ServoView(Servo source) throws IOException {
 
         this.servo = source;
 
@@ -163,9 +165,10 @@ public class ServoView extends JPanel {
     /**
      * All the optional controls defined by {@link Servo#getMeta() servo metadata are displayed in this section.
      */
-    private void createHandlers(GridBagLayout layout, GridBagConstraints cs) {
+    private void createHandlers(GridBagLayout layout, GridBagConstraints cs) throws IOException {
 
         createRangeAdjuster(layout, cs);
+        createSilencerPanel(layout, cs);
 
         // VT: NOTE: More to follow here
         // ...
@@ -188,6 +191,35 @@ public class ServoView extends JPanel {
 
             // No big deal, we'll just don't provide this panel
             logger.info("servo doesn't seem to support range adjustment: " + ex.getMessage());
+
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    private void createSilencerPanel(GridBagLayout layout, GridBagConstraints cs) throws IOException {
+
+        NDC.push("createSilencerPanel");
+
+        try {
+
+            servo.getMeta().getFeature("servo/silent");
+
+            servo.setSilentMode(true);
+            servo.setSilentTimeout(5000, 10000);
+
+            SilencerPanel sp = new SilencerPanel(servo, false);
+
+            cs.gridy++;
+
+            layout.setConstraints(sp, cs);
+            add(sp);
+
+        } catch (UnsupportedOperationException ex) {
+
+            // No big deal, we'll just don't provide this panel
+            logger.info("servo doesn't seem to support silent operation: " + ex.getMessage());
+            logger.error("Oops", ex);
 
         } finally {
             NDC.pop();
@@ -537,7 +569,7 @@ public class ServoView extends JPanel {
         }
 
         @Override
-        public void silentStatusChanged(Servo source, boolean silent) {
+        public void silentStatusChanged(SilentDevice source, boolean silent) {
 
             logger.info("silent status changed to " + silent + ": " + source);
         }

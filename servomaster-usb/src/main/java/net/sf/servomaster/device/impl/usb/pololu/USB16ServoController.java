@@ -15,7 +15,6 @@ import org.apache.log4j.NDC;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
-import net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;

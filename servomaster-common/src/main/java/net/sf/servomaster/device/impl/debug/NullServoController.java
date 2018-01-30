@@ -161,6 +161,8 @@ public class NullServoController extends AbstractServoController {
                 this.actualPosition = position;
                 
                 actualPositionChanged();
+                
+                touch();
 
             } finally {
                 NDC.pop();

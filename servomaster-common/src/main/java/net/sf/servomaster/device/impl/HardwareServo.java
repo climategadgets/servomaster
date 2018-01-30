@@ -1,6 +1,5 @@
 package net.sf.servomaster.device.impl;
 
-import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.ServoController;
 
 /**
@@ -12,10 +11,9 @@ import net.sf.servomaster.device.model.ServoController;
  *
  * <p>
  *
- * Note that this class doesn't support the {@link AbstractServo#target
- * target} directly.
+ * Note that this class doesn't support the {@link AbstractServo#target target} directly.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  */
 abstract public class HardwareServo extends AbstractServo {
 
@@ -23,11 +21,6 @@ abstract public class HardwareServo extends AbstractServo {
      * Servo identifier.
      */
     protected final int id;
-
-    /**
-     * Servo metadata.
-     */
-    private Meta meta;
 
     /**
      * Create an instance.
@@ -41,16 +34,8 @@ abstract public class HardwareServo extends AbstractServo {
         super(servoController, null);
 
         this.id = id;
-
-        // Doing so will cause this bug: https://github.com/climategadgets/servomaster/issues/9
-        // meta = createMeta();
     }
 
-    /**
-     * Get the servo name.
-     *
-     * @return Servo name.
-     */
     @Override
     public final String getName() {
 

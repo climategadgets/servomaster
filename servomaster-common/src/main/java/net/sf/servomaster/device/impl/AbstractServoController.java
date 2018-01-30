@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -262,7 +260,6 @@ public abstract class AbstractServoController implements ServoController {
     public void setSilentTimeout(long timeout, long heartbeat) {
 
         checkInit();
-
         checkSilencer();
 
         silencer.setSilentTimeout(timeout, heartbeat);
@@ -271,7 +268,6 @@ public abstract class AbstractServoController implements ServoController {
     public final void setSilentMode(boolean silent) {
 
         checkInit();
-
         checkSilencer();
 
         boolean oldMode = getSilentMode();
@@ -323,12 +319,20 @@ public abstract class AbstractServoController implements ServoController {
     public final boolean getSilentMode() {
 
         checkInit();
+        
+        // Blow up if we don't support it
+        getMeta().getFeature(META_SILENT);
+
         return (silencer == null) ? false : silencer.getSilentMode();
     }
 
     public final boolean isSilentNow() {
 
         checkInit();
+        
+        // Blow up if we don't support it
+        getMeta().getFeature(META_SILENT);
+
         return (silencer == null) ? false : silencer.isSilentNow();
     }
 

@@ -35,6 +35,11 @@ public abstract class AbstractServo implements Servo {
     private final Logger logger = Logger.getLogger(getClass());
 
     /**
+     * String key to retrieve the silent support feature.
+     */
+    public static final String META_SILENT = "servo/silent";
+
+    /**
      * Thread pool for transition drivers.
      * 
      * This pool requires exactly one thread.
@@ -146,7 +151,7 @@ public abstract class AbstractServo implements Servo {
             // VT: FIXME: It's a mess with instantiation of these two - they can't be made final.
             // Will be fixed in the next iteration.
 
-            if ( getMeta().getFeature("servo/silent") ) {
+            if ( getMeta().getFeature(META_SILENT) ) {
 
                 silencerProxy = new SilentGuard();
                 silencer = new SilentHelper(silencerProxy);
@@ -419,39 +424,98 @@ public abstract class AbstractServo implements Servo {
     }
 
     /**
+     * Check if the silent operation is supported <strong>and</strong>
+     * implemented.
+     *
+     * @exception UnsupportedOperationException if the silent operation is
+     * either not supported or not implemented.
+     */
+    private synchronized void checkSilencer() {
+
+        Meta meta = getMeta();
+
+        // This will throw the exception if it is not declared
+
+        boolean silentSupport = meta.getFeature(META_SILENT);
+
+        if (!silentSupport) {
+
+            // Oh well...
+
+            throw new UnsupportedOperationException("Silent operation is not supported");
+        }
+
+        // Then see if it is implemented
+
+        if ( silencer == null ) {
+
+            throw new UnsupportedOperationException("Silent operation seems to be supported, but not implemented");
+        }
+    }
+
+    /**
      * Default behavior is not to support silent operation.
      */
     @Override
     public void setSilentMode(boolean silent) throws IOException {
 
-        throw new UnsupportedOperationException("Not Implemented");
+        checkInit();
+        checkSilencer();
+        
+        boolean oldMode = getSilentMode();
+
+        silencer.setSilentMode(silent);
+
+        if ( silent != oldMode ) {
+
+            silentStatusChanged(isSilentNow());
+        }
+
+        touch();
     }
 
     /**
-     * Default behavior is not to support silent operation.
+     * Update the silent helper timestamp.
+     *
+     * This method is critical to properly support the silent mode. It
+     * should be called every time the operation that should keep the
+     * servo energized for some more ({@link #setPosition(double)}) is performed.
      */
-    @Override
+    protected final void touch() {
+
+        if ( silencer != null ) {
+
+            silencer.touch();
+        }
+    }
+
     public void setSilentTimeout(long timeout, long heartbeat) {
 
-        throw new UnsupportedOperationException("Not Implemented");
+        checkInit();
+
+        checkSilencer();
+
+        silencer.setSilentTimeout(timeout, heartbeat);
     }
 
-    /**
-     * Default behavior is not to support silent operation.
-     */
-    @Override
-    public boolean isSilentNow() {
+    public final boolean getSilentMode() {
 
-        throw new UnsupportedOperationException("Not Implemented");
+        checkInit();
+        
+        // Blow up if we don't support it
+        getMeta().getFeature(META_SILENT);
+        
+        return (silencer == null) ? false : silencer.getSilentMode();
     }
 
-    /**
-     * Default behavior is not to support silent operation.
-     */
-    @Override
-    public boolean getSilentMode() {
+    public final boolean isSilentNow() {
 
-        throw new UnsupportedOperationException("Not Implemented");
+        checkInit();
+
+        // Blow up if we don't support it
+        getMeta().getFeature(META_SILENT);
+
+        return (silencer == null) ? false : silencer.isSilentNow();
     }
 
     /**
@@ -571,7 +635,6 @@ public abstract class AbstractServo implements Servo {
 
         @Override
         public void open() {
-
             // Do absolutely nothing
         }
 

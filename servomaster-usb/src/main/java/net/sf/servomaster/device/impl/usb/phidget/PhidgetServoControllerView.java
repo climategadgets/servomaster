@@ -3,8 +3,6 @@ package net.sf.servomaster.device.impl.usb.phidget;
 import java.awt.GridLayout;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -15,6 +13,7 @@ import org.apache.log4j.Logger;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
+import net.sf.servomaster.device.model.SilentDevice;
 import net.sf.servomaster.view.ServoControllerView;
 import net.sf.servomaster.view.ServoRangeControl;
 
@@ -76,7 +75,7 @@ public class PhidgetServoControllerView extends JPanel implements ServoControlle
     }
 
     @Override
-    public void silentStatusChanged(ServoController controller, boolean mode) {
+    public void silentStatusChanged(SilentDevice controller, boolean mode) {
 
         // FIXME
 

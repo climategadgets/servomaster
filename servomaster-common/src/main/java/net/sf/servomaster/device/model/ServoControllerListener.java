@@ -5,6 +5,6 @@ package net.sf.servomaster.device.model;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface ServoControllerListener extends DisconnectListener, ProblemListener<ServoController>, SilentDeviceListener<ServoController> {
+public interface ServoControllerListener extends DisconnectListener, ProblemListener<ServoController>, SilentDeviceListener {
 
 }

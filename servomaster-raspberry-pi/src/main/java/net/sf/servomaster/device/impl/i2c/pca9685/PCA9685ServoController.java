@@ -281,6 +281,8 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
                 actualPositionChanged();
 
+                touch();
+
             } finally {
                 NDC.pop();
             }

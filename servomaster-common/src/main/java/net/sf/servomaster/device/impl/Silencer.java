@@ -205,7 +205,14 @@ public abstract class Silencer extends Thread {
             }
 
         } finally {
+
+            logger.debug("stopped");
+
+            executor.shutdownNow();
+
             NDC.pop();
+            NDC.clear();
+            NDC.remove();
         }
     }
 

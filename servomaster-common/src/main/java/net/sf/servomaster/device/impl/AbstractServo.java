@@ -720,6 +720,8 @@ public abstract class AbstractServo implements Servo {
             silencer.interrupt();
         }
 
+        transitionDriverExecutor.shutdownNow();
+
         if (getMeta().getFeatures().containsKey(Feature.SILENT.name) && getMeta().getFeature(Feature.SILENT.name)) {
 
             // Instruct the servo to go to sleep directly, we won't be using it anymore

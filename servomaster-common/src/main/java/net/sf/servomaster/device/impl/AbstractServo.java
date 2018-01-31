@@ -19,6 +19,7 @@ import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.ServoController.Feature;
 
 /**
  * Basic support for servo abstraction.
@@ -610,6 +611,11 @@ public abstract class AbstractServo implements Servo {
         public int compareTo(Servo o) {
             return getName().compareTo(o.getName());
         }
+
+        @Override
+        public void close() throws IOException {
+            // Do absolutely nothing
+        }
     }
 
     /**
@@ -705,6 +711,18 @@ public abstract class AbstractServo implements Servo {
 
         // Do absolutely nothing
         logger.debug("wakeUp: not implemented");
+    }
+
+    @Override
+    public void close() throws IOException {
+
+        if (getMeta().getFeatures().containsKey(Feature.SILENT.name) && getMeta().getFeature(Feature.SILENT.name)) {
+
+            // Instruct the servo to go to sleep directly, we won't be using it anymore
+            sleep();
+        }
+
+        initialized = false;
     }
 
     /**

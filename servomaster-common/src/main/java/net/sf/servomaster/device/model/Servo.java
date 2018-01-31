@@ -1,5 +1,6 @@
 package net.sf.servomaster.device.model;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
@@ -10,7 +11,7 @@ import java.util.concurrent.Future;
  *
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
-public interface Servo extends SilentDevice, Comparable<Servo> {
+public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
 
     /**
      * Get the name.

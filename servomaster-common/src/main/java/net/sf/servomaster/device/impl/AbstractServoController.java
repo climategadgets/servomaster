@@ -475,8 +475,18 @@ public abstract class AbstractServoController implements ServoController {
         if (initState.get() != 1) {
             throw new IllegalStateException("state 1 expected, actual is " + initState.get());
         }
-        
-        throw new IllegalStateException("Not Implemented. See https://github.com/climategadgets/servomaster/issues/12");
+
+        for (Iterator<Servo> i = getServos().iterator(); i.hasNext(); ) {
+
+            // This will put the servos to sleep if they support silent operation
+            i.next().close();
+        }
+
+        if (getMeta().getFeatures().containsKey(Feature.SILENT.name) && getMeta().getFeature(Feature.SILENT.name)) {
+
+            // Instruct the controller to go to sleep directly, we won't be using it anymore
+            sleep();
+        }
     }
 
     protected void sleep() throws IOException {

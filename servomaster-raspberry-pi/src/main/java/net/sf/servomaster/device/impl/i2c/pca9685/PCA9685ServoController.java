@@ -2,6 +2,7 @@ package net.sf.servomaster.device.impl.i2c.pca9685;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import com.pi4j.io.i2c.I2CBus;
@@ -39,6 +40,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
      */
     private static final int pwmFrequency = 60;
 
+    private static final String PCA9685_DEFAULT_PORT = "1:0x40";
     private static final int PCA9685_DEFAULT_ADDRESS = 0x40;
 
     private static final int MODE1 = 0x0;
@@ -56,6 +58,21 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     public PCA9685ServoController(int busId, int deviceAddress) throws IOException {
 
         super(busId, deviceAddress);
+    }
+
+    public PCA9685ServoController(String portName) throws IOException {
+        super(normalize(portName));
+    }
+
+    private static String normalize(String portName) {
+
+        if (portName == null || "".equals(portName)) {
+
+            Logger.getLogger(PCA9685ServoController.class).warn("null or empty port given, using default " + PCA9685_DEFAULT_PORT);
+            return PCA9685_DEFAULT_PORT;
+        }
+
+        return portName;
     }
 
     /**

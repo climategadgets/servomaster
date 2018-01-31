@@ -50,4 +50,28 @@ public abstract class AbstractI2CServoController extends AbstractServoController
             NDC.pop();
         }
     }
+
+    protected AbstractI2CServoController(String portName) throws IOException {
+
+        this(parseBusId(portName), parseDeviceAddress(portName));
+    }
+
+    private static int parseBusId(String portName) {
+
+        return Integer.decode(split(portName)[0]);
+    }
+
+    private static int parseDeviceAddress(String portName) {
+
+        return Integer.decode(split(portName)[1]);
+    }
+
+    private static String[] split(String source) {
+
+        if (source == null || "".equals(source) || source.indexOf(':') == -1) {
+            throw new IllegalArgumentException("malformed port name: '" + source + "'");
+        }
+
+        return source.split(":");
+    }
 }

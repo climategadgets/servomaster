@@ -17,9 +17,9 @@ public class SilentHelper extends Thread implements SilentDevice {
     /**
      * Device silence mode.
      *
-     * Set to <code>true</code> if the silent mode is on. Default is off.
-     * The reason for that is that the default silent timeout and heartbeat
-     * are application specific and better be consciously set.
+     * Set to {@code true} if the silent mode is on. Default is off. The reason for
+     * that is that the default silent timeout and heartbeat are application
+     * specific and better be consciously set.
      */
     private boolean silent = false;
 

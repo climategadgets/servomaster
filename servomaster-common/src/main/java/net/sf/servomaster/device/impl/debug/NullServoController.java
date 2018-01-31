@@ -169,7 +169,19 @@ public class NullServoController extends AbstractServoController {
             }
             
         }
-        
+
+        @Override
+        protected void sleep() throws IOException {
+
+            logger.info("sleep()");
+        }
+
+        @Override
+        protected void wakeUp() throws IOException {
+
+            logger.info("wakeUp()");
+        }
+
         protected class NullServoMeta extends AbstractMeta {
             
             protected NullServoMeta() {

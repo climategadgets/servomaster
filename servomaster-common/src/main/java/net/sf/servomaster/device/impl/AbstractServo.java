@@ -277,8 +277,7 @@ public abstract class AbstractServo implements Servo {
      *
      * @param position Position to set.
      *
-     * @exception IOException if there was a problem communicating with the
-     * hardware controller.
+     * @throws IOException if there was a problem communicating with the hardware controller.
      */
     protected abstract void setActualPosition(double position) throws IOException;
 
@@ -361,8 +360,7 @@ public abstract class AbstractServo implements Servo {
      *
      * @param position Value to check.
      *
-     * @exception IllegalArgumentException if the position is out of 0...1.0
-     * range.
+     * @throws IllegalArgumentException if the position is out of 0...1.0 range.
      */
     protected final void checkPosition(double position) {
 
@@ -427,8 +425,7 @@ public abstract class AbstractServo implements Servo {
      * Check if the silent operation is supported <strong>and</strong>
      * implemented.
      *
-     * @exception UnsupportedOperationException if the silent operation is
-     * either not supported or not implemented.
+     * @throws UnsupportedOperationException if the silent operation is either not supported or not implemented.
      */
     private synchronized void checkSilencer() {
 
@@ -717,12 +714,22 @@ public abstract class AbstractServo implements Servo {
         }
     }
 
+    /**
+     * Put the servo to sleep.
+     *
+     * @throws IOException if there was a problem communicating with the hardware controller.
+     */
     protected void sleep() throws IOException {
 
         // Do absolutely nothing
         logger.debug("sleep: not implemented");
     }
 
+    /**
+     * Wake up the servo.
+     *
+     * @throws IOException if there was a problem communicating with the hardware controller.
+     */
     protected void wakeUp() throws IOException {
 
         // Do absolutely nothing

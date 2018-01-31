@@ -153,7 +153,7 @@ public abstract class AbstractServo implements Servo {
 
             if ( getMeta().getFeature(META_SILENT) ) {
 
-                silencerProxy = new SilentGuard();
+                silencerProxy = new ServoSilencer();
                 silencer = new SilentHelper(silencerProxy);
                 silencer.start();
             }
@@ -740,7 +740,7 @@ public abstract class AbstractServo implements Servo {
      * The reason for existence of this class is that {@link AbstractServo#sleep()} and {@link AbstractServo#wakeUp()}
      * operations can't be exposed via implemented interface without violating the target integrity. 
      */
-    private class SilentGuard implements SilentProxy {
+    private class ServoSilencer implements SilentProxy {
 
         @Override
         public void sleep() {

@@ -160,7 +160,7 @@ public abstract class AbstractServoController implements ServoController {
 
             if ( getMeta().getFeature("controller/silent") ) {
 
-                silencerProxy = new SilentGuard();
+                silencerProxy = new ControllerSilencer();
                 silencer = new SilentHelper(silencerProxy);
                 silencer.start();
             }
@@ -520,7 +520,7 @@ public abstract class AbstractServoController implements ServoController {
      * The reason for existence of this class is that {@link AbstractServoController#sleep()} and {@link AbstractServoController#wakeUp()}
      * operations can't be exposed via implemented interface without violating the target integrity. 
      */
-    private class SilentGuard implements SilentProxy {
+    private class ControllerSilencer implements SilentProxy {
 
         @Override
         public void sleep() {

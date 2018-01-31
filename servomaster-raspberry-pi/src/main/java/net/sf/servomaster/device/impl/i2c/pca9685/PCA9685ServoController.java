@@ -246,11 +246,6 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             properties.put("servo/range/min", Integer.toString(MIN_PULSE));
             properties.put("servo/range/max", Integer.toString(MAX_PULSE));
             properties.put("controller/precision", Integer.toString(MAX_PULSE - MIN_PULSE));
-
-            // Silent timeout is five seconds
-
-            properties.put("controller/silent", "5000");
-            features.put(META_SILENT, Boolean.valueOf(true));
         }
     }
 
@@ -294,6 +289,11 @@ public class PCA9685ServoController extends AbstractI2CServoController {
         protected final class PCA9685ServoMeta extends AbstractMeta {
 
             protected PCA9685ServoMeta() {
+
+                // Silent timeout is five seconds
+
+                properties.put("servo/silent", "5000");
+                features.put(META_SILENT, Boolean.valueOf(true));
 
                 properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
 

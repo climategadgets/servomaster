@@ -716,6 +716,10 @@ public abstract class AbstractServo implements Servo {
     @Override
     public void close() throws IOException {
 
+        if (silencer != null) {
+            silencer.interrupt();
+        }
+
         if (getMeta().getFeatures().containsKey(Feature.SILENT.name) && getMeta().getFeature(Feature.SILENT.name)) {
 
             // Instruct the servo to go to sleep directly, we won't be using it anymore

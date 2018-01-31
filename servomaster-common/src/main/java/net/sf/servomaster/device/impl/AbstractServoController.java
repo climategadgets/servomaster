@@ -476,6 +476,10 @@ public abstract class AbstractServoController implements ServoController {
             throw new IllegalStateException("state 1 expected, actual is " + initState.get());
         }
 
+        if (silencer != null) {
+            silencer.interrupt();
+        }
+
         for (Iterator<Servo> i = getServos().iterator(); i.hasNext(); ) {
 
             // This will put the servos to sleep if they support silent operation

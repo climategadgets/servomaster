@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JButton;
@@ -120,6 +121,9 @@ public class Console implements ActionListener, WindowListener {
      */
     private ServoView[] servoPanel = new ServoView[50];
 
+    private final CountDownLatch exitFlag = new CountDownLatch(1);
+    private final CountDownLatch closedFlag = new CountDownLatch(1);
+
     public static void main(String[] args) {
 
         new Console().run(args);
@@ -143,13 +147,29 @@ public class Console implements ActionListener, WindowListener {
             displayMetadata("controller", controller.getMeta());
             buildConsole(controller);
 
-            // VT: FIXME: Replace this by waiting for the semaphore, make window.close()
-            // (and other catastrophic things) trigger the semaphore, then park the servos right here
+            Runtime.getRuntime().addShutdownHook(new Thread() {
 
-            while ( true ) {
+                public void run() {
 
-                Thread.sleep(60000);
-            }
+                    logger.info("Ctrl-Break intercepted");
+                    exitFlag.countDown();
+
+                    logger.info("awaiting shutdown...");
+
+                    try {
+
+                        closedFlag.await();
+                        logger.info("shut down");
+
+                    } catch (InterruptedException e) {
+                        logger.warn("interrupted, can't do anything about it", e);
+                    }
+                }
+            });
+
+            exitFlag.await();
+
+            logger.debug("clear to exit");
 
         } catch ( Throwable t ) {
 
@@ -161,7 +181,16 @@ public class Console implements ActionListener, WindowListener {
 
                 try {
 
+                    logger.info("closing the controller");
                     controller.close();
+                    logger.info("closed the controller");
+
+                    closedFlag.countDown();
+
+                    // If an X was clicked on the console window, all sorts of AWT threads are
+                    // still hanging around - the hell with them.
+
+                    System.exit(0);
 
                 } catch (IOException e) {
 
@@ -512,7 +541,7 @@ public class Console implements ActionListener, WindowListener {
     @Override
     public void windowClosing(WindowEvent e) {
 
-        System.exit(0);
+        exitFlag.countDown();
     }
 
 

@@ -198,14 +198,19 @@ public abstract class Silencer extends Thread {
                 } catch (InterruptedException ex) {
 
                     // Most probably, we were stopped
-
-                    logger.info("Interrupted", ex);
                     return;
                 }
             }
 
         } finally {
+
+            logger.debug("stopped");
+
+            executor.shutdownNow();
+
             NDC.pop();
+            NDC.clear();
+            NDC.remove();
         }
     }
 

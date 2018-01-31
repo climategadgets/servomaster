@@ -67,7 +67,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
             properties.put("controller/protocol/serial/speed", "38400");
 
-            features.put("controller/silent", Boolean.valueOf(true));
+            features.put(Feature.SILENT.name, Boolean.valueOf(true));
 
             // VT: FIXME
 
@@ -76,7 +76,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
             // Silent timeout is five seconds
 
-            properties.put("controller/silent", "5000");
+            properties.put(Feature.SILENT.name, "5000");
 
             // Half milliseconds are default servo range units for the
             // protocol

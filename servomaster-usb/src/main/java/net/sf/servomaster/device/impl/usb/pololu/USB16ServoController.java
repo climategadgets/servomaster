@@ -95,7 +95,7 @@ public class USB16ServoController extends AbstractUsbServoController {
 
                 features.put("controller/allow_disconnect", new Boolean(true));
 
-                features.put("controller/silent", new Boolean(true));
+                features.put(Feature.SILENT.name, new Boolean(true));
                 features.put("controller/protocol/serial", new Boolean(true));
                 features.put("controller/protocol/USB", new Boolean(true));
 
@@ -106,7 +106,7 @@ public class USB16ServoController extends AbstractUsbServoController {
 
                 // Silent timeout is five seconds
 
-                properties.put("controller/silent", "5000");
+                properties.put(Feature.SILENT.name, "5000");
 
                 // Half milliseconds are default servo range units for the
                 // protocol

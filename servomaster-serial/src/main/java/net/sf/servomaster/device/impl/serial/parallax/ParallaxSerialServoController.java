@@ -86,7 +86,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             properties.put(META_SPEED, "2400");
 
 
-            features.put(META_SILENT, Boolean.valueOf(true));
+            features.put(Feature.SILENT.name, Boolean.valueOf(true));
 
             // VT: FIXME
 
@@ -96,7 +96,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
             // Silent timeout is five seconds
 
-            properties.put("controller/silent", "5000");
+            properties.put(Feature.SILENT.name, "5000");
 
             // Half milliseconds are default servo range units for the
             // protocol

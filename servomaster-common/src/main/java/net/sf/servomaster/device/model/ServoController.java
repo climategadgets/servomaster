@@ -14,6 +14,17 @@ import java.util.SortedSet;
  */
 public interface ServoController extends SilentDevice, Closeable {
 
+    public static enum Feature {
+
+        SILENT("controller/silent");
+
+        public final String name;
+
+        private Feature(String name) {
+            this.name = name;
+        }
+    }
+
     /**
      * Initialize the controller.
      *

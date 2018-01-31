@@ -312,7 +312,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             PhidgetMeta003() {
 
-                features.put("controller/silent", new Boolean(true));
+                features.put(Feature.SILENT.name, new Boolean(true));
                 features.put("controller/protocol/USB", new Boolean(true));
 
                 // VT: FIXME
@@ -322,7 +322,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 // Silent timeout is five seconds
 
-                properties.put("controller/silent", "5000");
+                properties.put(Feature.SILENT.name, "5000");
 
                 // Milliseconds are default servo range units for v3
                 // protocol
@@ -819,7 +819,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             PhidgetMeta0x3B() {
 
-                features.put("controller/silent", new Boolean(true));
+                features.put(Feature.SILENT.name, new Boolean(true));
                 features.put("controller/protocol/USB", new Boolean(true));
 
                 // NOTE: This controller does indeed have the 'serial' feature,
@@ -829,7 +829,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 // Silent timeout is five seconds
 
-                properties.put("controller/silent", "5000");
+                properties.put(Feature.SILENT.name, "5000");
 
                 // VT: FIXME
 

@@ -41,11 +41,6 @@ public abstract class AbstractServoController implements ServoController {
     protected final Logger logger = Logger.getLogger(getClass());
 
     /**
-     * String key to retrieve the silent support feature.
-     */
-    public static final String META_SILENT = "controller/silent";
-
-    /**
      * The device-specific name of the port the controller is connected to.
      * May be {@code null}.
      */
@@ -153,7 +148,7 @@ public abstract class AbstractServoController implements ServoController {
 
         try {
 
-            if ( getMeta().getFeature("controller/silent") ) {
+            if ( getMeta().getFeature(Feature.SILENT.name) ) {
 
                 silencer = new SilentHelper(new ControllerSilencer());
                 silencer.start();
@@ -293,7 +288,7 @@ public abstract class AbstractServoController implements ServoController {
 
         // This will throw the exception if it is not declared
 
-        boolean silentSupport = controllerMeta.getFeature(META_SILENT);
+        boolean silentSupport = controllerMeta.getFeature(Feature.SILENT.name);
 
         if (!silentSupport) {
 
@@ -315,7 +310,7 @@ public abstract class AbstractServoController implements ServoController {
         checkInit();
         
         // Blow up if we don't support it
-        getMeta().getFeature(META_SILENT);
+        getMeta().getFeature(Feature.SILENT.name);
 
         return (silencer == null) ? false : silencer.getSilentMode();
     }
@@ -325,7 +320,7 @@ public abstract class AbstractServoController implements ServoController {
         checkInit();
         
         // Blow up if we don't support it
-        getMeta().getFeature(META_SILENT);
+        getMeta().getFeature(Feature.SILENT.name);
 
         return (silencer == null) ? false : silencer.isSilentNow();
     }

@@ -329,7 +329,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
             properties.put("manufacturer/URL", "http://www.ferrettronics.com/");
             properties.put("manufacturer/model", "FT639");
 
-            features.put("controller/silent", Boolean.valueOf(true));
+            features.put(Feature.SILENT.name, Boolean.valueOf(true));
 
             properties.put("controller/maxservos", "5");
 
@@ -341,7 +341,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
 
             // Silent timeout is five seconds
 
-            properties.put("controller/silent", "5000");
+            properties.put(Feature.SILENT.name, "5000");
 
             // Default range is 90 degrees
             // Warning: this is an FT639 specific property

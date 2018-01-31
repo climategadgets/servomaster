@@ -32,6 +32,7 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.ServoController.Feature;
 
 /**
  * The console.
@@ -450,7 +451,7 @@ public class Console implements ActionListener, WindowListener {
 
         try {
 
-            if (controller.getMeta().getFeature("controller/silent")) {
+            if (controller.getMeta().getFeature(Feature.SILENT.name)) {
 
                 controller.setSilentMode(true);
                 controller.setSilentTimeout(5000, 10000);

@@ -16,8 +16,6 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
-import net.sf.servomaster.device.model.silencer.SilentHelper;
-import net.sf.servomaster.device.model.silencer.SilentProxy;
 
 /**
  * Abstract servo controller.
@@ -73,7 +71,7 @@ public abstract class AbstractServoController implements ServoController {
     /**
      * The silencer.
      */
-    private SilentHelper silencer;
+    private Silencer silencer;
 
     /**
      * Physical servo representation.
@@ -148,7 +146,7 @@ public abstract class AbstractServoController implements ServoController {
 
         if ( getMeta().getFeatures().containsKey(Feature.SILENT.name) ) {
 
-            silencer = new SilentHelper(new ControllerSilencer());
+            silencer = new ControllerSilencer(5000, 30000);
             silencer.start();
         }
     }
@@ -497,7 +495,11 @@ public abstract class AbstractServoController implements ServoController {
      * The reason for existence of this class is that {@link AbstractServoController#sleep()} and {@link AbstractServoController#wakeUp()}
      * operations can't be exposed via implemented interface without violating the target integrity. 
      */
-    private class ControllerSilencer implements SilentProxy {
+    private class ControllerSilencer extends Silencer {
+
+        protected ControllerSilencer(long timeout, long heartbeat) {
+            super(timeout, heartbeat);
+        }
 
         @Override
         public void sleep() {

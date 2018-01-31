@@ -81,11 +81,6 @@ public abstract class AbstractServoController implements ServoController {
     private SilentHelper silencer;
 
     /**
-     * The silencer proxy.
-     */
-    private SilentProxy silencerProxy;
-
-    /**
      * Physical servo representation.
      *
      * VT: FIXME: Do we really need it like this? It is possible to have controllers
@@ -160,8 +155,7 @@ public abstract class AbstractServoController implements ServoController {
 
             if ( getMeta().getFeature("controller/silent") ) {
 
-                silencerProxy = new ControllerSilencer();
-                silencer = new SilentHelper(silencerProxy);
+                silencer = new SilentHelper(new ControllerSilencer());
                 silencer.start();
             }
 

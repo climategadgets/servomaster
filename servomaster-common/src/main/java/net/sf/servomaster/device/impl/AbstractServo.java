@@ -99,11 +99,6 @@ public abstract class AbstractServo implements Servo {
     private SilentHelper silencer;
 
     /**
-     * The silencer proxy.
-     */
-    private SilentProxy silencerProxy;
-
-    /**
      * @see #getMeta()
      */
     private Meta meta;
@@ -153,8 +148,7 @@ public abstract class AbstractServo implements Servo {
 
             if ( getMeta().getFeature(META_SILENT) ) {
 
-                silencerProxy = new ServoSilencer();
-                silencer = new SilentHelper(silencerProxy);
+                silencer = new SilentHelper(new ServoSilencer());
                 silencer.start();
             }
 

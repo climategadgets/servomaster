@@ -100,12 +100,12 @@ public class SilentHelper extends Thread implements SilentDevice {
     @Override
     public synchronized void setSilentTimeout(long timeout, long heartbeat) {
 
-        if ( timeout <= 0 ) {
+        if (timeout <= 0) {
 
             throw new IllegalArgumentException("Timeout must be positive");
         }
 
-        if ( heartbeat < 0 ) {
+        if (heartbeat < 0) {
 
             throw new IllegalArgumentException("Heartbeat must be positive");
         }
@@ -138,7 +138,7 @@ public class SilentHelper extends Thread implements SilentDevice {
 
         try {
 
-            while ( true ) {
+            while (true) {
 
                 logger.debug("run:" + silent);
 
@@ -146,7 +146,7 @@ public class SilentHelper extends Thread implements SilentDevice {
 
                     int s = silent ? 1 : 0;
 
-                    switch ( s ) {
+                    switch (s) {
 
                     case 0:
 
@@ -165,14 +165,14 @@ public class SilentHelper extends Thread implements SilentDevice {
                         stateHandler.handleWait();
                     }
 
-                } catch ( InterruptedException iex ) {
+                } catch (InterruptedException iex) {
 
                     // Most probably, we were stopped
 
                     logger.info("Interrupted", iex);
                     return;
 
-                } catch ( Throwable t ) {
+                } catch (Throwable t) {
 
                     logger.warn("Screwed up, ignored", t);
                 }
@@ -219,21 +219,21 @@ public class SilentHelper extends Thread implements SilentDevice {
 
             long left = left();
 
-            if ( left <= 0 ) {
+            if (left <= 0) {
 
                 return;
             }
 
             _wait(left);
 
-            if ( !silent ) {
+            if (!silent) {
 
                 // Damn!
 
                 return;
             }
 
-            if ( left() <= 0 ) {
+            if (left() <= 0) {
 
                 // VT: FIXME: Verify the order
 
@@ -254,7 +254,7 @@ public class SilentHelper extends Thread implements SilentDevice {
         @Override
         void handleWait() throws InterruptedException {
 
-            if ( heartbeat == 0 ) {
+            if (heartbeat == 0) {
 
                 _wait();
 
@@ -262,7 +262,7 @@ public class SilentHelper extends Thread implements SilentDevice {
 
                 long left = left();
 
-                if ( left <= 0 ) {
+                if (left <= 0) {
 
                     return;
                 }
@@ -270,7 +270,7 @@ public class SilentHelper extends Thread implements SilentDevice {
                 _wait(left);
             }
 
-            if ( !silent ) {
+            if (!silent) {
 
                 // Damn!
 

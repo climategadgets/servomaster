@@ -141,31 +141,10 @@ public abstract class AbstractServo implements Servo {
 
     private void startSilencer() {
 
-        try {
+        if ( getMeta().getFeatures().containsKey(META_SILENT) ) {
 
-            // VT: FIXME: It's a mess with instantiation of these two - they can't be made final.
-            // Will be fixed in the next iteration.
-
-            if ( getMeta().getFeature(META_SILENT) ) {
-
-                silencer = new SilentHelper(new ServoSilencer());
-                silencer.start();
-            }
-
-        } catch ( UnsupportedOperationException ex ) {
-
-            // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
-            // There will be more servos than controllers, some of them transients and proxies,
-            // let's identify them better to avoid confusion
-
-            // VT: FIXME: This message may be gone altogether after https://github.com/climategadgets/servomaster/issues/16
-            // is fully implemented
-
-            logger.info(getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + ": servo doesn't support silent operation, reason: " + ex.getMessage());
-
-        } catch ( IllegalStateException ex ) {
-
-            logger.warn("unexpected exception", ex);
+            silencer = new SilentHelper(new ServoSilencer());
+            silencer.start();
         }
     }
 

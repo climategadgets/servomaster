@@ -138,6 +138,8 @@ public class SilentHelper extends Thread implements SilentDevice {
 
         try {
 
+            logger.info("hello " + proxy);
+
             while (true) {
 
                 logger.debug("run:" + silent);

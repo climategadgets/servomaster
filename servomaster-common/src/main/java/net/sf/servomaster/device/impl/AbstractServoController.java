@@ -146,22 +146,10 @@ public abstract class AbstractServoController implements ServoController {
 
     private void startSilencer() {
 
-        try {
+        if ( getMeta().getFeatures().containsKey(Feature.SILENT.name) ) {
 
-            if ( getMeta().getFeature(Feature.SILENT.name) ) {
-
-                silencer = new SilentHelper(new ControllerSilencer());
-                silencer.start();
-            }
-
-        } catch ( UnsupportedOperationException ex ) {
-
-            // VT: NOTE: In this particular case, it's OK to suppress the exception trace - it's a part of the contract
-            logger.info("controller doesn't support silent operation, reason: " + ex.getMessage());
-
-        } catch ( IllegalStateException ex ) {
-
-            logger.warn("unexpected exception", ex);
+            silencer = new SilentHelper(new ControllerSilencer());
+            silencer.start();
         }
     }
 

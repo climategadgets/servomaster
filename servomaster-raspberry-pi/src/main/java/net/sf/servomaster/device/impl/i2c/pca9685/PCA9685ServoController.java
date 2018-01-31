@@ -288,6 +288,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             }
         }
 
+        @Override
         protected void sleep() throws IOException {
 
             NDC.push("sleep:" + id);
@@ -304,6 +305,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             }
         }
 
+        @Override
         protected void wakeUp() throws IOException {
 
             NDC.push("wakeUp:" + id);

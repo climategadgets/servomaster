@@ -82,7 +82,7 @@ public class SilencerPanel extends JPanel implements SilentDeviceListener, ItemL
         silentBox.addItemListener(this);
 
         silentLabel = new JLabel("Active");
-        silentLabel.setBorder(BorderFactory.createTitledBorder("Status"));
+        silentLabel.setBorder(BorderFactory.createTitledBorder(horizontal ? "Status" : ""));
 
         timeoutLabel = new JLabel("Timeout", JLabel.CENTER);
         //timeoutLabel.setToolTipText("Silent timeout, seconds");
@@ -98,7 +98,8 @@ public class SilencerPanel extends JPanel implements SilentDeviceListener, ItemL
         timeoutSlider.setPaintTicks(true);
         timeoutSlider.setPaintLabels(true);
         timeoutSlider.setSnapToTicks(true);
-        timeoutSlider.setBorder(BorderFactory.createTitledBorder("Timeout"));
+        timeoutSlider.setBorder(BorderFactory.createTitledBorder(horizontal ? "Timeout" : ""));
+        timeoutSlider.setToolTipText("Servo goes to silent mode after this many seconds");
 
         heartbeatSlider = new JSlider(horizontal ? JSlider.HORIZONTAL : JSlider.VERTICAL, 10, 60, 10);
         //heartbeatSlider.setToolTipText("");
@@ -108,7 +109,8 @@ public class SilencerPanel extends JPanel implements SilentDeviceListener, ItemL
         heartbeatSlider.setPaintTicks(true);
         heartbeatSlider.setPaintLabels(true);
         heartbeatSlider.setSnapToTicks(true);
-        heartbeatSlider.setBorder(BorderFactory.createTitledBorder("Heartbeat"));
+        heartbeatSlider.setBorder(BorderFactory.createTitledBorder(horizontal ? "Heartbeat" : ""));
+        heartbeatSlider.setToolTipText("Servo will wake up once in this many seconds");
 
         doLayout(horizontal);
 

@@ -288,6 +288,35 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             }
         }
 
+        protected void sleep() throws IOException {
+
+            NDC.push("sleep:" + id);
+
+            try {
+
+                // Just disable the pulse and be done with it
+                setPWM(id, 0, 0);
+
+                logger.debug("sleeping now");
+
+            } finally {
+                NDC.pop();
+            }
+        }
+
+        protected void wakeUp() throws IOException {
+
+            NDC.push("wakeUp:" + id);
+
+            try {
+
+                setActualPosition(getPosition());
+
+            } finally {
+                NDC.pop();
+            }
+        }
+
         protected final class PCA9685ServoMeta extends AbstractMeta {
 
             protected PCA9685ServoMeta() {

@@ -357,6 +357,16 @@ public class ServoView extends JPanel {
 
                 transitionComboBox.setEnabled(enabled);
                 mapperComboBox.setEnabled(enabled);
+
+                try {
+
+                    servo.setEnabled(enabled);
+
+                } catch (IOException ex) {
+
+                    // Not much we can do other than complain
+                    logger.error("can't change enabled state", ex);
+                }
             }
         }
 

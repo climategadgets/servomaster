@@ -294,7 +294,16 @@ public abstract class AbstractServo implements Servo {
 
         for (Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext();) {
 
-            i.next().actualPositionChanged(this, actualPosition);
+            ServoListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"actualPositionChanged") {
+
+                @Override
+                protected void doRun() {
+
+                    l.actualPositionChanged(AbstractServo.this, actualPosition);
+                }
+            });
         }
     }
 

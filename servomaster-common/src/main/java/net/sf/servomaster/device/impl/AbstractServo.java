@@ -286,7 +286,25 @@ public abstract class AbstractServo implements Servo {
     @Override
     public void setEnabled(boolean enabled) throws IOException {
 
-        this.enabled = enabled;
+        // Can't make the method synchronized, it'll result in a deadlock
+
+        synchronized (servoController) {
+
+            this.enabled = enabled;
+
+            if (!enabled) {
+
+                sleep();
+                touch();
+
+                silentStatusChanged(false);
+
+            } else {
+
+                // That'll wake them up
+                setPosition(position);
+            }
+        }
     }
 
     @Override
@@ -454,7 +472,7 @@ public abstract class AbstractServo implements Servo {
 
         if ( silencer != null ) {
 
-            silencer.touch();
+            silencer.touch(enabled);
         }
     }
 

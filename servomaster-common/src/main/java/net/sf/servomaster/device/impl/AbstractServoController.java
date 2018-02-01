@@ -392,7 +392,7 @@ public abstract class AbstractServoController implements ServoController {
 
         if ( silencer != null ) {
 
-            silencer.touch();
+            silencer.touch(true);
         }
     }
 

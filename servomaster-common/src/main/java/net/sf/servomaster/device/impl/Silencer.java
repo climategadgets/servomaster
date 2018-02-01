@@ -25,6 +25,14 @@ public abstract class Silencer extends Thread {
     private boolean enabled = false;
 
     /**
+     * Whether the device is enabled.
+     *
+     * Upon instantiation, it is. We should be notfied via {@link #touch(boolean)}
+     * if/when it becomes disabled.
+     */
+    private boolean targetEnabled = true;
+
+    /**
      * Silent timeout, in milliseconds.
      *
      * Defines how long the device stays active after the last operation in
@@ -105,7 +113,7 @@ public abstract class Silencer extends Thread {
         this.heartbeat = heartbeat;
 
         // This recalculates the wait intervals
-        touch();
+        touch(targetEnabled);
     }
 
     public synchronized boolean isSilentNow() {
@@ -113,26 +121,34 @@ public abstract class Silencer extends Thread {
         return enabled && heartbeatAt != null;
     }
 
-    public synchronized void touch() {
+    public synchronized void touch(boolean targetEnabled) {
 
-        if (!enabled) {
+        try {
 
-            // nothing to do
-            return;
+            this.targetEnabled = targetEnabled;
+
+            if (!enabled || !targetEnabled) {
+
+                // nothing to do here - run() will figure out what it needs to do upon notify()
+
+                return;
+            }
+
+            if (silenceAt != null) {
+
+                // We were active, let's keep it that way
+                silenceAt = System.currentTimeMillis() + timeout;
+
+            } else {
+
+                // We were sleeping, time to wake up
+                heartbeatAt = System.currentTimeMillis();
+            }
+
+        } finally {
+
+            notify();
         }
-
-        if (silenceAt != null) {
-
-            // We were active, let's keep it that way
-            silenceAt = System.currentTimeMillis() + timeout;
-
-        } else {
-
-            // We were sleeping, time to wake up
-            heartbeatAt = System.currentTimeMillis();
-        }
-
-        notify();
     }
 
     @Override
@@ -148,9 +164,9 @@ public abstract class Silencer extends Thread {
 
                 try {
 
-                    if (!enabled) {
+                    if (!enabled || !targetEnabled) {
 
-                        logger.debug("not silent, waiting indefinitely");
+                        logger.debug("not silent or not enabled, waiting indefinitely");
                         wait();
 
                         // Wait is over, let's see what's going on

@@ -242,7 +242,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                 actualPosition = position;
             }
 
-            actualPositionChanged();
+            actualPositionChanged(actualPosition);
 
             AbstractSerialServoController.this.touch();
         }

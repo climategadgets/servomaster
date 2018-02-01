@@ -158,9 +158,9 @@ public class NullServoController extends AbstractServoController {
 
                 delay();
 
-                this.actualPosition = position;
+                actualPosition = position;
                 
-                actualPositionChanged();
+                actualPositionChanged(actualPosition);
                 
                 touch();
 

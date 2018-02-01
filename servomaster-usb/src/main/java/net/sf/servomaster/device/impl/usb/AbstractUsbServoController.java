@@ -997,7 +997,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                     protocolHandler.setPosition(id, position);
 
                     actualPosition = position;
-                    actualPositionChanged();
+                    actualPositionChanged(actualPosition);
 
                 } catch ( UsbException usbex ) {
 

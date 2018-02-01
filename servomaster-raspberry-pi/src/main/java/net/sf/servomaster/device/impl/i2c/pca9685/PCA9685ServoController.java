@@ -277,9 +277,9 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
                 setPWM(id, 0, (int) (min_pulse + position * (max_pulse - min_pulse)));
 
-                this.actualPosition = position;
+                actualPosition = position;
 
-                actualPositionChanged();
+                actualPositionChanged(actualPosition);
 
                 touch();
 

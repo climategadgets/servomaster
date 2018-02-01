@@ -418,10 +418,10 @@ public class FT639ServoController extends AbstractSerialServoController implemen
                 setActiveMode();
                 send(renderPositionCommand(id, requestedPosition));
 
-                this.actualPosition = position;
+                actualPosition = position;
             }
 
-            actualPositionChanged();
+            actualPositionChanged(actualPosition);
 
             // FIXME: Again, this stupid problem I forgot the solution of:
             // can't access the outer class. Oh well.

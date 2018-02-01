@@ -285,11 +285,10 @@ public abstract class AbstractServo implements Servo {
 
     /**
      * Notify the listeners about the change in actual position.
+     *
+     * @param actualPosition Position to broadcast.
      */
-    protected final synchronized void actualPositionChanged() {
-
-        // This operation can safely be made synchronized because it doesn't
-        // use the controller's synchronized methods
+    protected final void actualPositionChanged(double actualPosition) {
 
         // VT: FIXME: it may make sense to make this private and change the logic
 

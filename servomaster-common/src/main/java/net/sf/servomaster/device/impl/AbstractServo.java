@@ -46,6 +46,14 @@ public abstract class AbstractServo implements Servo {
     private final ExecutorService transitionDriverExecutor = Executors.newFixedThreadPool(1);
 
     /**
+     * Thread pool for sending notifications.
+     *
+     * We don't care how many threads send notifications. The order of notifications
+     * sent is undefined and irrelevant.
+     */
+    private final ExecutorService broadcaster = Executors.newCachedThreadPool();
+
+    /**
      * The actual servo to control.
      *
      * If <strong>this</strong> is the servo to control, then this variable
@@ -234,7 +242,7 @@ public abstract class AbstractServo implements Servo {
 
         } finally {
 
-            positionChanged();
+            positionChanged(position);
         }
     }
 
@@ -255,15 +263,23 @@ public abstract class AbstractServo implements Servo {
 
     /**
      * Notify the listeners about the change in requested position.
+     *
+     * @param position Position to broadcast.
      */
-    private synchronized void positionChanged() {
-
-        // This operation can safely be made synchronized because it doesn't
-        // use the controller's synchronized methods
+    private void positionChanged(final double position) {
 
         for (Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext();) {
 
-            i.next().positionChanged(this, position);
+            ServoListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"positionChanged") {
+
+                @Override
+                protected void doRun() {
+
+                    l.positionChanged(AbstractServo.this, position);
+                }
+            });
         }
     }
 

@@ -714,9 +714,18 @@ public abstract class AbstractServo implements Servo {
      */
     protected final void silentStatusChanged(boolean mode) {
 
-        for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
+        for (Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext();) {
 
-            i.next().silentStatusChanged(this, mode);
+            ServoListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"silentStatusChanged") {
+
+                @Override
+                protected void doRun() {
+
+                    l.silentStatusChanged(AbstractServo.this, mode);
+                }
+            });
         }
     }
 
@@ -729,7 +738,16 @@ public abstract class AbstractServo implements Servo {
 
         for ( Iterator<ServoListener> i = listenerSet.iterator(); i.hasNext(); ) {
 
-            i.next().exception(this, t);
+            ServoListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"exception") {
+
+                @Override
+                protected void doRun() {
+
+                    l.exception(AbstractServo.this, t);
+                }
+            });
         }
     }
 

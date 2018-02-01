@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -16,6 +18,7 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
+import net.sf.servomaster.device.model.ServoListener;
 
 /**
  * Abstract servo controller.
@@ -94,6 +97,14 @@ public abstract class AbstractServoController implements ServoController {
      * @see #getMeta()
      */
     private Meta meta;
+
+    /**
+     * Thread pool for sending notifications.
+     *
+     * We don't care how many threads send notifications. The order of notifications
+     * sent is undefined and irrelevant.
+     */
+    private final ExecutorService broadcaster = Executors.newCachedThreadPool();
 
     /**
      * Create an instance.
@@ -213,14 +224,23 @@ public abstract class AbstractServoController implements ServoController {
      */
     protected final void silentStatusChanged(boolean mode) {
 
-        for ( Iterator<ServoControllerListener> i = listenerSet.iterator(); i.hasNext(); ) {
+        for (Iterator<ServoControllerListener> i = listenerSet.iterator(); i.hasNext();) {
 
-            i.next().silentStatusChanged(this, mode);
+            ServoControllerListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"silentStatusChanged") {
+
+                @Override
+                protected void doRun() {
+
+                    l.silentStatusChanged(AbstractServoController.this, mode);
+                }
+            });
         }
     }
 
     /**
-     * Notify the listeners about the problem that occured.
+     * Notify the listeners about the problem that occurred.
      *
      * @param t The exception to broadcast.
      */
@@ -228,7 +248,16 @@ public abstract class AbstractServoController implements ServoController {
 
         for ( Iterator<ServoControllerListener> i = listenerSet.iterator(); i.hasNext(); ) {
 
-            i.next().exception(this, t);
+            ServoControllerListener l = i.next();
+
+            broadcaster.execute(new RunnableWrapper(logger,"exception") {
+
+                @Override
+                protected void doRun() {
+
+                    l.exception(AbstractServoController.this, t);
+                }
+            });
         }
     }
 

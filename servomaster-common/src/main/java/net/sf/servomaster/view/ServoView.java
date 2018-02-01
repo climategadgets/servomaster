@@ -44,7 +44,7 @@ public class ServoView extends JPanel {
     /**
      * The servo to display the status of and control.
      */
-    private final Servo servo;
+    final Servo servo;
 
     /**
      * The current target (may be the {@link #servo servo} itself, or the
@@ -94,7 +94,7 @@ public class ServoView extends JPanel {
     /**
      * Enabled status.
      *
-     * @see #enableBox
+     * @see Header#enableBox
      */
     private boolean enabled = true;
 
@@ -115,8 +115,8 @@ public class ServoView extends JPanel {
         this.servo = source;
 
         // VT: NOTE: For some backwards implementations fallback to controller/precision may be necessary - or implementations need to be fixed
-        // VT: FIXME: this has to be dynamic: https://github.com/climategadgets/servomaster/issues/15
-        precision = Integer.parseInt((String)servo.getMeta().getProperty("servo/precision"));
+
+        precision = Integer.parseInt((String) servo.getMeta().getProperty("servo/precision"));
 
         reverse = new Reverser(servo);
         limit = new LimitTransformer(servo, 0.25, 0.75);
@@ -163,7 +163,7 @@ public class ServoView extends JPanel {
     }
 
     /**
-     * All the optional controls defined by {@link Servo#getMeta() servo metadata are displayed in this section.
+     * All the optional controls defined by {@link Servo#getMeta()} servo metadata are displayed in this section.
      */
     private void createHandlers(GridBagLayout layout, GridBagConstraints cs) throws IOException {
 
@@ -180,7 +180,7 @@ public class ServoView extends JPanel {
 
         try {
 
-            ServoRangeControl src = new ServoRangeControl(servo);
+            ServoRangeControl src = new ServoRangeControl(this);
 
             cs.gridy++;
 
@@ -583,5 +583,20 @@ public class ServoView extends JPanel {
 
             logger.info("silent status changed to " + silent + ": " + source);
         }
+    }
+
+    /**
+     * Update the {@link #controlSlider} and {@link #viewSlider} to reflect the
+     * current value of {@code servo/precision} servo property.
+     */
+    public void updateRange() {
+
+        precision = Integer.parseInt((String) servo.getMeta().getProperty("servo/precision"));
+
+        viewSlider.setMaximum(precision - 1);
+
+        controlSlider.setMaximum(precision - 1);
+        controlSlider.setMajorTickSpacing(precision/4);
+        controlSlider.setMinorTickSpacing(precision/32);
     }
 }

@@ -13,7 +13,6 @@ import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
 
 import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 
 /**
@@ -32,7 +31,7 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
     
     private static final long serialVersionUID = -5085651276509068130L;
 
-    private Servo servo;
+    private ServoView servoView;
 
     private JLabel rangeLabel;
     private JSlider minSlider;
@@ -43,9 +42,9 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
     private int min;
     private int max;
 
-    public ServoRangeControl(Servo servo) {
+    public ServoRangeControl(ServoView servoView) {
 
-        this.servo = servo;
+        this.servoView = servoView;
 
         GridBagLayout layout = new GridBagLayout();
         GridBagConstraints cs = new GridBagConstraints();
@@ -66,7 +65,7 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
         // we're taking the controller meta, not the servo meta, 'cause
         // we need the defaults.
 
-        Meta meta = servo.getController().getMeta();
+        Meta meta = servoView.servo.getController().getMeta();
         String units;
         
         try {
@@ -164,16 +163,20 @@ public class ServoRangeControl extends JPanel implements ChangeListener {
 
             min = minSlider.getValue();
 
-            servo.getMeta().setProperty("servo/range/min", Integer.toString(min));
+            servoView.servo.getMeta().setProperty("servo/range/min", Integer.toString(min));
             rangeLabel.setText(renderRange(min, max));
 
         } else if ( source == maxSlider ) {
 
             max = maxSlider.getValue();
 
-            servo.getMeta().setProperty("servo/range/max", Integer.toString(max));
+            servoView.servo.getMeta().setProperty("servo/range/max", Integer.toString(max));
             rangeLabel.setText(renderRange(min, max));
         }
+
+        // It is expected that property writers will correctly update the servo/precision property
+
+        servoView.updateRange();
     }
 
     private String renderRange(int min, int max) {

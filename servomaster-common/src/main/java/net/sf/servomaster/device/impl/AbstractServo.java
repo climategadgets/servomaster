@@ -213,7 +213,7 @@ public abstract class AbstractServo implements Servo {
 
         // VT: FIXME: Currently, there's no check whether the position is the same as the servo is already set to.
         // This will cause a flood of false listener notifications in case when lazy code keeps setting the same position.
-        // Since the position is defined as double, it will require some sleuth of hand to calculate whether
+        // Since the position is defined as double, it will require some sleight of hand to calculate whether
         // the hardware coordinates for two doubles sufficiently close to each other are the same, and skip the request altogether.
 
         // The reason it is synchronized on the controller is that the
@@ -730,7 +730,7 @@ public abstract class AbstractServo implements Servo {
     }
 
     /**
-     * Notify the listeners about the problem that occured.
+     * Notify the listeners about the problem that occurred.
      *
      * @param t The exception to broadcast.
      */

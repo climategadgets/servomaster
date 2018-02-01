@@ -788,6 +788,9 @@ public abstract class AbstractServo implements Servo {
             sleep();
         }
 
+        // We may get lucky and send notifications out before it's too late
+        broadcaster.shutdown();
+
         initialized = false;
     }
 

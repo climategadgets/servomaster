@@ -520,6 +520,9 @@ public abstract class AbstractServoController implements ServoController {
             // Instruct the controller to go to sleep directly, we won't be using it anymore
             sleep();
         }
+
+        // We may get lucky and send notifications out before it's too late
+        broadcaster.shutdown();
     }
 
     protected void sleep() throws IOException {

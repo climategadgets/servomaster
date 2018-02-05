@@ -46,6 +46,17 @@ public abstract class AbstractServo implements Servo {
     private final ExecutorService transitionDriverExecutor = Executors.newFixedThreadPool(1);
 
     /**
+     * {@code true} if a previous transition should complete before starting the next one,
+     * {@code false} if it needs to be interrrupted.
+     */
+    private boolean queueTransitions = false;
+
+    /**
+     * Last transition known to be running, or {@code null} if there was none.
+     */
+    private Future<Throwable> lastTransition = null;
+
+    /**
      * Thread pool for sending notifications.
      *
      * We don't care how many threads send notifications. The order of notifications
@@ -170,6 +181,12 @@ public abstract class AbstractServo implements Servo {
         // This operation can safely be made synchronized because it doesn't
         // use the controller's synchronized methods
 
+        // First check if we were to cancel running transitions before
+
+        if (!this.queueTransitions) {
+            cancelLastTransition();
+        }
+
         Servo s = getTarget();
 
         while (s != null) {
@@ -183,6 +200,7 @@ public abstract class AbstractServo implements Servo {
         }
 
         this.transitionController = transitionController;
+        this.queueTransitions = queueTransitions;
     }
 
     @Override
@@ -230,19 +248,61 @@ public abstract class AbstractServo implements Servo {
 
                     setActualPosition(position);
 
+                    // There's no need to bother canceling the last transition because it was instantaneous
+
                     return new Done();
                 }
 
-                // VT: FIXME: cancel the previous transition if so instructed: https://github.com/climategadgets/servomaster/issues/22
+                if (!this.queueTransitions) {
+                    cancelLastTransition();
+                }
 
                 TransitionDriver transitionDriver = new TransitionDriver(new TransitionProxy(), position);
 
-                return transitionDriverExecutor.submit(transitionDriver, new Throwable());
+                lastTransition = transitionDriverExecutor.submit(transitionDriver, new Throwable());
+
+                return lastTransition;
             }
 
         } finally {
 
             positionChanged(position);
+        }
+    }
+
+    /**
+     * Cancel the {@link #lastTransition last transition} that may still possibly be incomplete.
+     *
+     * This method doesn't check whether the transitions are {@link #queueTransitions allowed to be queued}
+     * on purpose, so the surrounding code makes a visible check.
+     */
+    private synchronized void cancelLastTransition() {
+
+        if (lastTransition == null) {
+
+            // Nothing to do
+            return;
+        }
+
+        NDC.push("cancelTransition");
+
+        try {
+
+            if (lastTransition.isDone()) {
+
+                logger.debug("already done");
+                return;
+            }
+
+            // VT: NOTE: This doesn't mean the transition will be automatically canceled right away.
+            // See how transition controller has to be implemented to honor this, here's a good starting point:
+            //
+            // https://stackoverflow.com/questions/1418033/java-executors-how-can-i-stop-submitted-tasks
+
+            logger.debug("cancel: " + lastTransition.cancel(true));
+
+        } finally {
+            NDC.pop();
         }
     }
 

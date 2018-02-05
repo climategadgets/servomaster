@@ -265,6 +265,11 @@ public class ServoView extends JPanel {
         private final JCheckBox enableBox;
 
         /**
+         * Checkbox determining whether the transitions are supposed to be queued.
+         */
+        private final JCheckBox queueBox;
+
+        /**
          * Combo box for selecting the transition controller.
          */
         private final JComboBox<String> transitionComboBox;
@@ -308,6 +313,15 @@ public class ServoView extends JPanel {
 
             layout.setConstraints(enableBox, cs);
             add(enableBox);
+
+            queueBox = new JCheckBox("Queue", true);
+            queueBox.setToolTipText("Enable or disable transition queuing");
+            queueBox.addItemListener(this);
+
+            cs.gridy++;
+
+            layout.setConstraints(queueBox, cs);
+            add(queueBox);
 
             String[] transition = { "Instant", "Crawl" };
 
@@ -355,6 +369,7 @@ public class ServoView extends JPanel {
 
                 controlSlider.setEnabled(enabled);
 
+                queueBox.setEnabled(enabled);
                 transitionComboBox.setEnabled(enabled);
                 mapperComboBox.setEnabled(enabled);
 
@@ -367,6 +382,21 @@ public class ServoView extends JPanel {
                     // Not much we can do other than complain
                     logger.error("can't change enabled state", ex);
                 }
+            }
+
+            if (e.getSource() == queueBox) {
+
+                if (transitionComboBox.getSelectedIndex() == 0) {
+
+                    // No action required, there isn't a transition controller attached
+                    return;
+                }
+
+                logger.debug("queue: " + (e.getStateChange() == ItemEvent.SELECTED));
+
+                // VT: FIXME: This will only work correctly as long as there's one transition controller choice
+
+                servo.attach(new CrawlTransitionController(), e.getStateChange() == ItemEvent.SELECTED);
             }
         }
 
@@ -397,7 +427,7 @@ public class ServoView extends JPanel {
 
                         // Crawler
 
-                        servo.attach(new CrawlTransitionController(), true);
+                        servo.attach(new CrawlTransitionController(), queueBox.isSelected());
                         break;
 
                     default:

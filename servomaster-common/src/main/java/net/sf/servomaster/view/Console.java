@@ -25,8 +25,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.WindowConstants;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.impl.debug.NullServoController;
 import net.sf.servomaster.device.model.Meta;
@@ -67,11 +68,11 @@ import net.sf.servomaster.device.model.ServoController.Feature;
  *
  * </ol>
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public class Console implements ActionListener, WindowListener {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LogManager.getLogger(getClass());
     
     /**
      * The controller to watch and control.
@@ -136,7 +137,7 @@ public class Console implements ActionListener, WindowListener {
      */
     public void run(String[] args) {
 
-        NDC.push("run");
+        ThreadContext.push("run");
 
         try {
 
@@ -198,13 +199,13 @@ public class Console implements ActionListener, WindowListener {
                 }
             }
 
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
     private void displayMetadata(String type, Meta meta) {
 
-        NDC.push("meta/" + type);
+        ThreadContext.push("meta/" + type);
 
         try {
 
@@ -235,7 +236,7 @@ public class Console implements ActionListener, WindowListener {
             throw new IllegalStateException("Source is not yet connected?", ex);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -263,7 +264,7 @@ public class Console implements ActionListener, WindowListener {
 
     private ServoController instantiate(String targetClass, String portName) {
 
-        NDC.push("instantiate");
+        ThreadContext.push("instantiate");
 
         try {
 
@@ -285,13 +286,13 @@ public class Console implements ActionListener, WindowListener {
             throw new IllegalStateException("Unable to instantiate " + targetClass, t);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
     private void buildConsole(ServoController controller) throws IOException {
 
-        NDC.push("buildConsole");
+        ThreadContext.push("buildConsole");
 
         try {
 
@@ -472,7 +473,7 @@ public class Console implements ActionListener, WindowListener {
             mainFrame.setVisible(true);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 

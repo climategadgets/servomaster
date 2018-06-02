@@ -19,7 +19,7 @@ import javax.usb.UsbServices;
 import javax.usb.event.UsbServicesEvent;
 import javax.usb.event.UsbServicesListener;
 
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.HardwareServo;
@@ -204,7 +204,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
     protected final UsbDevice findUSB(String portName) throws IOException {
         
-        NDC.push("findUsb");
+        ThreadContext.push("findUsb");
         
         logger.info("Looking for device '" + portName + "'");
         
@@ -297,7 +297,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
             throw (IOException) new IOException("USB failure").initCause(usbex);
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -324,7 +324,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                       Set<UsbDevice> found,
                       boolean boot) throws IOException, UsbException, BootException {
         
-        NDC.push("find" + (boot ? "&boot" : "!boot"));
+        ThreadContext.push("find" + (boot ? "&boot" : "!boot"));
         
         try {
 
@@ -458,7 +458,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
             }
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 

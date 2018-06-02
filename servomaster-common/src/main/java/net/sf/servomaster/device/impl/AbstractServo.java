@@ -11,8 +11,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
@@ -31,7 +32,7 @@ import net.sf.servomaster.device.model.ServoController.Feature;
  */
 public abstract class AbstractServo implements Servo {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * String key to retrieve the silent support feature.
@@ -284,7 +285,7 @@ public abstract class AbstractServo implements Servo {
             return;
         }
 
-        NDC.push("cancelTransition");
+        ThreadContext.push("cancelTransition");
 
         try {
 
@@ -302,7 +303,7 @@ public abstract class AbstractServo implements Servo {
             logger.debug("cancel: " + lastTransition.cancel(true));
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -476,7 +477,7 @@ public abstract class AbstractServo implements Servo {
         @Override
         public void run() {
             
-            NDC.push("run");
+            ThreadContext.push("run");
             
             try {
 
@@ -487,10 +488,12 @@ public abstract class AbstractServo implements Servo {
             } finally {
 
                 // This will help when thread pool executor is used
-                NDC.clear();
+                ThreadContext.clearStack();
+
+                // VT: FIXME: See if the memory leaks now, if it does, figure out the solution
 
                 // Without this, memory leaks like a sieve in DZ3
-                NDC.remove();
+                //NDC.remove();
             }
         }
     }
@@ -632,7 +635,7 @@ public abstract class AbstractServo implements Servo {
         @Override
         public Future<Throwable> setPosition(double position) throws IOException {
 
-            NDC.push("wrap");
+            ThreadContext.push("wrap");
 
             try {
 
@@ -640,7 +643,7 @@ public abstract class AbstractServo implements Servo {
                 return new Done();
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 
@@ -867,7 +870,7 @@ public abstract class AbstractServo implements Servo {
         @Override
         public void sleep() {
 
-            NDC.push("sleep");
+            ThreadContext.push("sleep");
 
             try {
 
@@ -879,14 +882,14 @@ public abstract class AbstractServo implements Servo {
                 AbstractServo.this.exception(ioex);
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 
         @Override
         public void wakeUp() {
 
-            NDC.push("wakeUp");
+            ThreadContext.push("wakeUp");
 
             try {
 
@@ -898,7 +901,7 @@ public abstract class AbstractServo implements Servo {
                 AbstractServo.this.exception(ioex);
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
     }

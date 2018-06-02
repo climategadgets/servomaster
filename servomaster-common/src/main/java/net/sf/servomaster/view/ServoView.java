@@ -18,8 +18,9 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
@@ -39,7 +40,7 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
 @SuppressWarnings("serial")
 public class ServoView extends JPanel {
 
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The servo to display the status of and control.
@@ -176,7 +177,7 @@ public class ServoView extends JPanel {
 
     private void createRangeAdjuster(GridBagLayout layout, GridBagConstraints cs) {
 
-        NDC.push("createRangeAdjuster");
+        ThreadContext.push("createRangeAdjuster");
 
         try {
 
@@ -193,13 +194,13 @@ public class ServoView extends JPanel {
             logger.info("servo doesn't seem to support range adjustment: " + ex.getMessage());
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
     private void createSilencerPanel(GridBagLayout layout, GridBagConstraints cs) throws IOException {
 
-        NDC.push("createSilencerPanel");
+        ThreadContext.push("createSilencerPanel");
 
         try {
 
@@ -222,7 +223,7 @@ public class ServoView extends JPanel {
             logger.error("Oops", ex);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 

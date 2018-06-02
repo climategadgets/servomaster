@@ -2,8 +2,8 @@ package net.sf.servomaster.device.impl.i2c.pca9685;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.pi4j.io.i2c.I2CBus;
 
@@ -68,7 +68,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         if (portName == null || "".equals(portName)) {
 
-            Logger.getLogger(PCA9685ServoController.class).warn("null or empty port given, using default " + PCA9685_DEFAULT_PORT);
+            LogManager.getLogger(PCA9685ServoController.class).warn("null or empty port given, using default " + PCA9685_DEFAULT_PORT);
             return PCA9685_DEFAULT_PORT;
         }
 
@@ -87,7 +87,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
     @Override
     public void reset() throws IOException {
 
-        NDC.push("reset");
+        ThreadContext.push("reset");
 
         try {
 
@@ -99,7 +99,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             setPwmFrequency(pwmFrequency);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -108,7 +108,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
     private void setPwmFrequency(int hz) throws IOException {
 
-        NDC.push("setPwmFrequency");
+        ThreadContext.push("setPwmFrequency");
 
         try {
 
@@ -146,7 +146,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             logger.debug(hz + "Hz");
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -159,7 +159,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
      */
     private void setPWM(int channel, int onAt, int offAt) throws IOException {
         
-        NDC.push("setPWM");
+        ThreadContext.push("setPWM");
         
         try {
             
@@ -180,7 +180,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             device.write(LED0_OFF_H + 4 * channel, (byte) (offAt >> 8));
         
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -269,7 +269,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
         @Override
         protected void setActualPosition(double position) throws IOException {
 
-            NDC.push("setActualPosition id=" + id);
+            ThreadContext.push("setActualPosition id=" + id);
 
             try {
 
@@ -284,14 +284,14 @@ public class PCA9685ServoController extends AbstractI2CServoController {
                 touch();
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 
         @Override
         protected void sleep() throws IOException {
 
-            NDC.push("sleep:" + id);
+            ThreadContext.push("sleep:" + id);
 
             try {
 
@@ -301,21 +301,21 @@ public class PCA9685ServoController extends AbstractI2CServoController {
                 logger.debug("sleeping now");
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 
         @Override
         protected void wakeUp() throws IOException {
 
-            NDC.push("wakeUp:" + id);
+            ThreadContext.push("wakeUp:" + id);
 
             try {
 
                 setActualPosition(getPosition());
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 

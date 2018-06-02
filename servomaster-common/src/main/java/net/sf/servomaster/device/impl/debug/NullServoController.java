@@ -2,7 +2,7 @@ package net.sf.servomaster.device.impl.debug;
 
 import java.io.IOException;
 
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.AbstractServoController;
@@ -88,7 +88,7 @@ public class NullServoController extends AbstractServoController {
      */
     private synchronized void delay() {
 
-        NDC.push("delay");
+        ThreadContext.push("delay");
 
         try {
 
@@ -109,7 +109,7 @@ public class NullServoController extends AbstractServoController {
             }
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 
@@ -145,7 +145,7 @@ public class NullServoController extends AbstractServoController {
         @Override
         protected void setActualPosition(double position) throws IOException {
             
-            NDC.push("setActualPosition id=" + id);
+            ThreadContext.push("setActualPosition id=" + id);
             
             try {
                 
@@ -165,7 +165,7 @@ public class NullServoController extends AbstractServoController {
                 touch();
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
             
         }

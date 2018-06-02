@@ -10,7 +10,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.ServoController;
@@ -27,7 +28,7 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public class ServoRangeControl extends JPanel implements ChangeListener {
     
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
     
     private static final long serialVersionUID = -5085651276509068130L;
 

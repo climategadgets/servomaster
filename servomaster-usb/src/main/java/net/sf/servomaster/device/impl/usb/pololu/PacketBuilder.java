@@ -1,6 +1,7 @@
 package net.sf.servomaster.device.impl.usb.pololu;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Packet builder for Pololu {@link USB16ServoController USB} and (later)
@@ -31,11 +32,11 @@ import org.apache.log4j.Logger;
  * 
  * If you are making any changes here, propagate them over.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  */
 public class PacketBuilder {
 
-    private static final Logger logger = Logger.getLogger(PacketBuilder.class);
+    private static final Logger logger = LogManager.getLogger(PacketBuilder.class);
 
     private static int rq = 0;
     private static int size = 0;

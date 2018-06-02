@@ -1,7 +1,7 @@
 package net.sf.servomaster.device.impl;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 public abstract class RunnableWrapper implements Runnable {
 
@@ -17,7 +17,7 @@ public abstract class RunnableWrapper implements Runnable {
     @Override
     public void run() {
         
-        NDC.push(marker);
+        ThreadContext.push(marker);
         
         try {
             
@@ -30,9 +30,8 @@ public abstract class RunnableWrapper implements Runnable {
             
         } finally {
             
-            NDC.pop();
-            NDC.clear();
-            NDC.remove();
+            ThreadContext.pop();
+            ThreadContext.clearStack();
         }
     }
 

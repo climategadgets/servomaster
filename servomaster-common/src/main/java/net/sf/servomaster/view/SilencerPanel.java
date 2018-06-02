@@ -14,7 +14,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
@@ -26,7 +27,7 @@ import net.sf.servomaster.device.model.SilentDeviceListener;
 @SuppressWarnings("serial")
 public class SilencerPanel extends JPanel implements SilentDeviceListener, ItemListener, ChangeListener {
     
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The checkbox responsible for controlling the silent mode.

@@ -11,7 +11,7 @@ import javax.usb.UsbInterface;
 import javax.usb.UsbIrp;
 import javax.usb.UsbPipe;
 
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
@@ -348,7 +348,7 @@ public class USB16ServoController extends AbstractUsbServoController {
 
         private synchronized void setAbsolutePosition(byte servoId, short units) throws UsbException {
 
-            NDC.push("setAbsolutePosition");
+            ThreadContext.push("setAbsolutePosition");
 
             try {
 
@@ -382,7 +382,7 @@ public class USB16ServoController extends AbstractUsbServoController {
                 logger.debug("done");
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 

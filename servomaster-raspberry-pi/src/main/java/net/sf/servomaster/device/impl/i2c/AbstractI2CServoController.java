@@ -2,7 +2,7 @@ package net.sf.servomaster.device.impl.i2c;
 
 import java.io.IOException;
 
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.ThreadContext;
 
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
@@ -32,7 +32,7 @@ public abstract class AbstractI2CServoController extends AbstractServoController
 
         super(Integer.toHexString(busId) + ":" + Integer.toHexString(deviceAddress));
 
-        NDC.push("I2C()");
+        ThreadContext.push("I2C()");
 
         try {
 
@@ -47,7 +47,7 @@ public abstract class AbstractI2CServoController extends AbstractServoController
             throw new IOException("Oops", t);
 
         } finally {
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 

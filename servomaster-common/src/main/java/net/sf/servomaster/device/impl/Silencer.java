@@ -3,8 +3,9 @@ package net.sf.servomaster.device.impl;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  * Provides the functionality required to support the silent mode.
@@ -13,7 +14,7 @@ import org.apache.log4j.NDC;
  */
 public abstract class Silencer extends Thread {
 
-    protected Logger logger = Logger.getLogger(getClass());
+    protected Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Device silence mode.
@@ -154,7 +155,7 @@ public abstract class Silencer extends Thread {
     @Override
     public synchronized final void run() {
 
-        NDC.push("run");
+        ThreadContext.push("run");
 
         try {
 
@@ -224,9 +225,8 @@ public abstract class Silencer extends Thread {
 
             executor.shutdownNow();
 
-            NDC.pop();
-            NDC.clear();
-            NDC.remove();
+            ThreadContext.pop();
+            ThreadContext.clearStack();
         }
     }
 

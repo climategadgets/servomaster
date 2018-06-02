@@ -1,7 +1,8 @@
 package net.sf.servomaster.device.model.transition;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
@@ -16,7 +17,7 @@ import net.sf.servomaster.device.model.TransitionController;
  */
 public class CrawlTransitionController implements TransitionController {
 
-    private final Logger logger = Logger.getLogger(getClass());
+    private final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * Exists to make {@code Class.newInstance()} happy.
@@ -33,7 +34,7 @@ public class CrawlTransitionController implements TransitionController {
             throw new IllegalArgumentException("target can't be null");
         }
 
-        NDC.push("move");
+        ThreadContext.push("move");
         
         try {
 
@@ -106,7 +107,7 @@ public class CrawlTransitionController implements TransitionController {
         } finally {
             
             logger.info("done");
-            NDC.pop();
+            ThreadContext.pop();
         }
     }
 }

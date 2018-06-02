@@ -2,7 +2,8 @@ package net.sf.servomaster.device.impl.serial.parallax;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Packet builder for Parallax controller.
@@ -17,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public class PacketBuilder {
 
-    private static final Logger logger = Logger.getLogger(PacketBuilder.class);
+    private static final Logger logger = LogManager.getLogger(PacketBuilder.class);
 
     /**
      * Protocol preamble - literal string "!SC".

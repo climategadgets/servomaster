@@ -2,19 +2,20 @@ package net.sf.servomaster.device.impl.serial.parallax;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Packet builder for Parallax controller.
  * <p/>
  * Based on {@link net.sf.servomaster.device.impl.pololu.PacketBuilder}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
  * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public class PacketBuilderNG {
 
-    private static final Logger logger = Logger.getLogger(PacketBuilderNG.class);
+    private static final Logger logger = LogManager.getLogger(PacketBuilderNG.class);
 
     /**
      * Protocol preamble - literal string "!SC".

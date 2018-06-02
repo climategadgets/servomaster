@@ -11,14 +11,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
 
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoControllerListener;
-import net.sf.servomaster.device.model.ServoListener;
 
 /**
  * Abstract servo controller.
@@ -39,7 +39,7 @@ import net.sf.servomaster.device.model.ServoListener;
  */
 public abstract class AbstractServoController implements ServoController {
 
-    protected final Logger logger = Logger.getLogger(getClass());
+    protected final Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The device-specific name of the port the controller is connected to.
@@ -550,7 +550,7 @@ public abstract class AbstractServoController implements ServoController {
         @Override
         public void sleep() {
 
-            NDC.push("sleep");
+            ThreadContext.push("sleep");
 
             try {
 
@@ -562,14 +562,14 @@ public abstract class AbstractServoController implements ServoController {
                 AbstractServoController.this.exception(ioex);
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
 
         @Override
         public void wakeUp() {
 
-            NDC.push("wakeUp");
+            ThreadContext.push("wakeUp");
 
             try {
 
@@ -581,7 +581,7 @@ public abstract class AbstractServoController implements ServoController {
                 AbstractServoController.this.exception(ioex);
 
             } finally {
-                NDC.pop();
+                ThreadContext.pop();
             }
         }
     }

@@ -34,12 +34,9 @@ public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
      * its {@link Future#isDone()} method will always return {@code true},
      * and its {@link Future#get()} method will return immediately.
      *
-     * @throws IOException if there was a problem communicating with the
-     * device, or the device was unable to complete the operation.
-     *
      * @throws IllegalStateException if the servo is currently {@link #setEnabled disabled}.
      */
-    Future<Throwable> setPosition(double position) throws IOException;
+    Future<TransitionStatus> setPosition(double position);
 
     /**
      * Get the position.

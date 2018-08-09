@@ -7,6 +7,7 @@ import net.sf.servomaster.device.impl.AbstractServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
+import net.sf.servomaster.device.model.TransitionStatus;
 
 /**
  * The coordinate transformer skeleton.
@@ -51,14 +52,11 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      *
      * @param position Position to set, between 0 and 1.0.
      *
-     * @exception IOException if there was a problem communicating with the
-     * device, or the device was unable to complete the operation.
-     *
      * @exception IllegalStateException if the servo is currently {@link
      * #setEnabled disabled}.
      */
     @Override
-    public Future<Throwable> setPosition(double position) throws IOException {
+    public Future<TransitionStatus> setPosition(double position) {
 
         return getTarget().setPosition(transform(position));
     }

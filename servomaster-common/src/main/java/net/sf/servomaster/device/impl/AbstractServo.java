@@ -1,8 +1,10 @@
 package net.sf.servomaster.device.impl;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +22,7 @@ import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.TransitionStatus;
 import net.sf.servomaster.device.model.ServoController.Feature;
 
 /**
@@ -31,6 +34,8 @@ import net.sf.servomaster.device.model.ServoController.Feature;
  * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractServo implements Servo {
+
+    private static final Random rg = new SecureRandom();
 
     private final Logger logger = LogManager.getLogger(getClass());
 
@@ -48,14 +53,14 @@ public abstract class AbstractServo implements Servo {
 
     /**
      * {@code true} if a previous transition should complete before starting the next one,
-     * {@code false} if it needs to be interrrupted.
+     * {@code false} if it needs to be interrupted.
      */
     private boolean queueTransitions = false;
 
     /**
      * Last transition known to be running, or {@code null} if there was none.
      */
-    private Future<Throwable> lastTransition = null;
+    private Future<TransitionStatus> lastTransition = null;
 
     /**
      * Thread pool for sending notifications.
@@ -223,7 +228,7 @@ public abstract class AbstractServo implements Servo {
     }
 
     @Override
-    public Future<Throwable> setPosition(double position) throws IOException {
+    public Future<TransitionStatus> setPosition(double position) {
 
         if (!enabled) {
 
@@ -247,20 +252,37 @@ public abstract class AbstractServo implements Servo {
 
                 if (transitionController == null) {
 
-                    setActualPosition(position);
-
                     // There's no need to bother canceling the last transition because it was instantaneous
 
-                    return new Done();
+                    try {
+
+                        setActualPosition(position);
+
+                        return new Done(null);
+
+                    } catch (IOException ex) {
+                        return new Done(ex);
+                    }
                 }
 
                 if (!this.queueTransitions) {
                     cancelLastTransition();
                 }
 
+                // VT: FIXME: transition driver needs to be aware of the status object.
+                //
+                // https://github.com/climategadgets/servomaster/issues/30
+                // https://github.com/climategadgets/servomaster/issues/31
+                //
+                // It is unreasonably complex to implement everything in one commit,
+                // so this is left hanging - transition driver will not properly handle
+                // an exception at this point. Need to get back to this ASAP.
+
+                long authToken = rg.nextLong();
+                TransitionStatus status = new TransitionStatus(authToken);
                 TransitionDriver transitionDriver = new TransitionDriver(new TransitionProxy(), position);
 
-                lastTransition = transitionDriverExecutor.submit(transitionDriver, new Throwable());
+                lastTransition = transitionDriverExecutor.submit(transitionDriver, status);
 
                 return lastTransition;
             }
@@ -633,14 +655,18 @@ public abstract class AbstractServo implements Servo {
         }
 
         @Override
-        public Future<Throwable> setPosition(double position) throws IOException {
+        public Future<TransitionStatus> setPosition(double position) {
 
             ThreadContext.push("wrap");
 
             try {
 
                 AbstractServo.this.setActualPosition(position);
-                return new Done();
+                return new Done(null);
+
+            } catch (IOException ex) {
+
+                return new Done(ex);
 
             } finally {
                 ThreadContext.pop();
@@ -728,7 +754,20 @@ public abstract class AbstractServo implements Servo {
      *
      * This object is returned by {@link AbstractServo#setPosition(double)} in absence of a transition controller.
      */
-    public static class Done implements Future<Throwable> {
+    public static class Done implements Future<TransitionStatus> {
+
+        private final TransitionStatus done;
+
+        /**
+         * @param cause {@code null} if transition has completed successfully, and the failure cause otherwise.
+         */
+        public Done(Throwable cause) {
+
+            long authToken = rg.nextLong();
+
+            done = new TransitionStatus(authToken);
+            done.complete(authToken, cause);
+        }
 
         /**
          * @return {@code false}. We're already done.
@@ -752,20 +791,20 @@ public abstract class AbstractServo implements Servo {
         }
 
         /**
-         * @return {@code null}.
+         * @return successful transition status.
          */
         @Override
-        public Throwable get() throws InterruptedException, ExecutionException {
-            return null;
+        public TransitionStatus get() throws InterruptedException, ExecutionException {
+            return done;
         }
 
         /**
-         * @return {@code null}.
+         * @return successful transition status.
          */
         @Override
-        public Throwable get(long timeout, TimeUnit unit)
+        public TransitionStatus get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
-            return null;
+            return done;
         }
     }
 

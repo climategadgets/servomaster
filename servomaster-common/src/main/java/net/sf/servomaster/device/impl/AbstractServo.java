@@ -179,6 +179,7 @@ public abstract class AbstractServo implements Servo {
         }
     }
 
+    @SuppressWarnings("resource")
     @Override
     public final synchronized void attach(TransitionController transitionController, boolean queueTransitions) {
 

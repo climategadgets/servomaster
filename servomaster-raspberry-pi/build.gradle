@@ -1,5 +1,5 @@
 dependencies {
 
-    compile project(':servomaster-common')
-    compile 'com.pi4j:pi4j-core:1.1'
+    implementation project(':servomaster-common')
+    implementation 'com.pi4j:pi4j-core:1.1'
 }

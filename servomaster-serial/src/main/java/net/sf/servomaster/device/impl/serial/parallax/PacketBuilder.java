@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
  * @deprecated There is a good chance that this class causes a memory leak.
  * Being replaced with {@link PacketBuilderNG}.
  */
+@Deprecated
 public class PacketBuilder {
 
     private static final Logger logger = LogManager.getLogger(PacketBuilder.class);

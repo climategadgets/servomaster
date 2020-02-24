@@ -4,7 +4,7 @@ subprojects {
     apply plugin: 'maven'
     group = 'net.sf.servomaster'
     version = '2.0.0-SNAPSHOT'
-
+/*
     apply plugin: 'findbugs'
 
     findbugs {
@@ -12,7 +12,7 @@ subprojects {
         excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
         ignoreFailures = true
     }
-
+ */
     repositories {
 
         jcenter()

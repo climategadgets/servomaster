@@ -1,4 +1,7 @@
 # servomaster
+
+[![Build Status](https://travis-ci.com/climategadgets/servomaster.svg?branch=master)](https://travis-ci.com/climategadgets/servomaster)
+
 ## Platform and Hardware Independent Servo Controller Driver ##
 
 Servos are commonly used in radio controlled modeling and robotics applications.

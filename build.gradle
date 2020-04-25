@@ -2,12 +2,18 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+    apply plugin: 'jacoco'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     group = 'net.sf.servomaster'
     version = '2.0.0-SNAPSHOT'
+
+    jacoco {
+        toolVersion = "0.8.5"
+    }
+
 /*
     apply plugin: 'findbugs'
 

@@ -25,4 +25,4 @@ This can and is being fixed, right here, since 2000.
 
 ## How To Stay In Touch ##
 
-Come and join [DIY Zoning & Home Climate Control Forum](groups.google.com/group/home-climate-control/).
+Come and join [DIY Zoning & Home Climate Control Forum](https://groups.google.com/group/home-climate-control/).

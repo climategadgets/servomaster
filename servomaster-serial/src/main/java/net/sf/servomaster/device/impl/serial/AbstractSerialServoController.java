@@ -18,7 +18,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * Base class for all serial servo controllers.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public abstract class AbstractSerialServoController extends AbstractServoController {
 
@@ -53,11 +53,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
     /**
      * Initialize the controller.
      *
-     * @param portName Serial port name recognized by <a
-     * href="http://java.sun.com/products/javacomm/" target="_top">Java
-     * Communications API</a>.
-     *
-     * @exception IllegalStateException if the controller has already been initialized.
+     * @throws IllegalStateException if the controller has already been initialized.
      */
     @Override
     protected void doInit() throws IOException {

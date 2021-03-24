@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
  *
  * Allows instant and controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
 
@@ -121,7 +121,7 @@ public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
      * will always be completed, and only then the next transition (initiated by next
      * {@code setPosition()} call will take place. The transition queue depth is unlimited.
      *
-     * If set to {@code false}, every {@code setPosition() call will interrupt the current transition
+     * If set to {@code false}, every {@code setPosition()} call will interrupt the current transition
      * (if any), and start the new transition starting from the actual position the servo
      * resides at at the moment.
      *
@@ -136,7 +136,7 @@ public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
      * @throws IllegalStateException if the transition controller is
      * already installed at the lower level of the coordinate transformation
      * stack - the transition controllers are not stackable.
-     * 
+     *
      * @see #getTransitionController()
      */
     void attach(TransitionController transitionController, boolean queueTransitions);
@@ -145,8 +145,8 @@ public interface Servo extends SilentDevice, Comparable<Servo>, Closeable {
      * Get the transition controller attached to this servo.
      *
      * @return Transition controller reference, or {@code null} if there is none.
-     * 
-     * @see #attach(TransitionController)
+     *
+     * @see #attach(TransitionController, boolean)
      */
     TransitionController getTransitionController();
 

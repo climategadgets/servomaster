@@ -7,10 +7,10 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Packet builder for Parallax controller.
- * <p/>
- * Based on {@link net.sf.servomaster.device.impl.pololu.PacketBuilder}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * Based on {@link net.sf.servomaster.device.impl.serial.pololu.PacketBuilder}.
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  * @author Copyright &copy; Scott L'Hommedieu 2006
  */
 public class PacketBuilderNG {

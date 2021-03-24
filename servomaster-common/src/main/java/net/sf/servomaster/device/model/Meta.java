@@ -48,7 +48,7 @@ import net.sf.servomaster.device.impl.AbstractMeta;
  * this particular example, the identifier will look like
  * {@code controller/precision}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2021
  */
 public interface Meta {
 
@@ -74,8 +74,6 @@ public interface Meta {
      * @return the value of the feature.
      *
      * @throws UnsupportedOperationException if this feature is not supported.
-     *
-     * @see #supportsFeature(String)
      */
     boolean getFeature(String id);
 

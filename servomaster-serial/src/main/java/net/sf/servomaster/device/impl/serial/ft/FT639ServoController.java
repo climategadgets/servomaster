@@ -17,8 +17,9 @@ import net.sf.servomaster.device.model.ServoController;
  *
  * <p>
  *
- * The product itself is long gone (though the data sheet is {@link http://dalalven.dtdns.net/linux/servo/FT639_PDN639_Datasheet.pdf
- * still available}), however, this code is still usable as a demo, hence it stays in source control, along with all [dead] links.
+ * The product itself is long gone (though the data sheet is
+ * <a href="http://dalalven.dtdns.net/linux/servo/FT639_PDN639_Datasheet.pdf">still available</a>),
+ * however, this code is still usable as a demo, hence it stays in source control, along with all [dead] links.
  *
  * <p>
  *
@@ -73,7 +74,7 @@ import net.sf.servomaster.device.model.ServoController;
  * subclassing a {@link #createServo template method}, thus allowing to
  * extend the functionality without rewriting half of the code.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class FT639ServoController extends AbstractSerialServoController implements FT639Constants {
 
@@ -259,7 +260,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         byte upper = (byte)((((position >> 4) & 0x0F) | 0x80) | servo);
         byte lower = (byte)((position & 0x0F) | servo);
 
-        logger.debug(Integer.toHexString(servo) + " [" + Integer.toHexString((int)lower) + ", " + Integer.toHexString(((int)upper) & 0xFF) + "]");
+        logger.debug(Integer.toHexString(servo) + " [" + Integer.toHexString(lower) + ", " + Integer.toHexString((upper) & 0xFF) + "]");
 
         byte[] result = { lower, upper };
 
@@ -301,6 +302,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         repositionServos();
     }
 
+    @Override
     public void reset() throws IOException {
 
         checkInit();

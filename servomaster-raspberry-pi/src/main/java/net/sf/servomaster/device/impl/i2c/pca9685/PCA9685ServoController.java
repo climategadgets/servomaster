@@ -15,9 +15,9 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 
 /**
- * Implementation based on {@link Raspberry Pi PWM HAT https://www.adafruit.com/product/2327}
- * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * Implementation based on <a href="https://www.adafruit.com/product/2327">Raspberry Pi PWM HAT</a>
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class PCA9685ServoController extends AbstractI2CServoController {
 
@@ -116,7 +116,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             // is important enough, and exact enough
             // hz *= 0.9;
 
-            double preScale = Math.floor((preScaleFactor / (double) hz) - 0.5);
+            double preScale = Math.floor((preScaleFactor / hz) - 0.5);
 
             byte oldmode = (byte) device.read(MODE1);
 
@@ -158,27 +158,27 @@ public class PCA9685ServoController extends AbstractI2CServoController {
      * @param offAt Turn the signal off this many μs after the start of the pulse  (0..4095, 2^12 values).
      */
     private void setPWM(int channel, int onAt, int offAt) throws IOException {
-        
+
         ThreadContext.push("setPWM");
-        
+
         try {
-            
+
             logger.debug("channel=" + channel + ", on=" + onAt + ", off=" + offAt);
 
             // VT: NOTE: Arguments are calculation results, sanity checks are needed
-    
+
             if (channel < 0 || channel > getServoCount()) {
                 throw new IllegalArgumentException("servo channel (" + channel + ") out of range, valid values are 0.." + getServoCount());
             }
-    
+
             checkOffset("on", onAt);
             checkOffset("of", offAt);
-    
+
             device.write(LED0_ON_L + 4 * channel, (byte) (onAt & 0xFF));
             device.write(LED0_ON_H + 4 * channel, (byte) (onAt >> 8));
             device.write(LED0_OFF_L + 4 * channel, (byte) (offAt & 0xFF));
             device.write(LED0_OFF_H + 4 * channel, (byte) (offAt >> 8));
-        
+
         } finally {
             ThreadContext.pop();
         }
@@ -220,7 +220,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         return new PCA9685Servo(this, id);
     }
-    
+
     @Override
     protected Meta createMeta() {
 

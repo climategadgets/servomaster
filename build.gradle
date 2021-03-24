@@ -11,6 +11,20 @@ subprojects {
     group = 'net.sf.servomaster'
     version = '2.0.0-SNAPSHOT'
 
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives javadocJar, sourcesJar
+    }
+
     jacoco {
         toolVersion = "0.8.5"
     }

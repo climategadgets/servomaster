@@ -7,26 +7,18 @@ import org.apache.logging.log4j.Logger;
  * Packet builder for Pololu {code USB16ServoController} and (later)
  * serial controllers.
  *
- * <p/>
- *
  * Since the original Pololu driver for the USB controller is just a USB to
  * serial bridge, it is possible (hopefully --vt) to reuse protocol packet
  * building code between USB and serial controller drivers.
- *
- * <p/>
  *
  * Unfortunately, it's not possible to provide an abstract Pololu controller
  * driver class and then extend it to support USB and serial controllers
  * because USB and serial support has already been implemented in abstract
  * classes, so this solution (for the time being) seems to be better.
  *
- * <p/>
- *
  * This class doesn't implement the complete command set because the only
  * method used to set the servo position is {@link #setAbsolutePosition set
  * absolute position}.
- * 
- * <p/>
  * 
  * IMPORTANT: THIS CLASS IS A DUPLICATE OF {@code net.sf.servomaster.device.impl.usb.pololu.PacketBuilder}.
  * 
@@ -43,8 +35,6 @@ public class PacketBuilder {
 
     /**
      * Build a byte buffer for "set parameters" command (0x00).
-     *
-     * <p/>
      *
      * This call ignores the "reverse" and "range" parameters because the
      * only method used to set the servo position is {@link #setAbsolutePosition set absolute position}.
@@ -156,7 +146,7 @@ public class PacketBuilder {
 
     /**
      * Check if the value is valid.
-     * <p/>
+     *
      * High bit should be off. If it is not,
      * <code>IllegalArgumentException</code> is thrown.
      *

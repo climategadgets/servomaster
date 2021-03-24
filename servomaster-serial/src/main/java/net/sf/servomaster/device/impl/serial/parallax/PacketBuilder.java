@@ -8,11 +8,11 @@ import org.apache.logging.log4j.Logger;
 /**
  * Packet builder for Parallax controller.
  * <p/>
- * Based on {@link net.sf.servomaster.device.impl.pololu.PacketBuilder}.
+ * Based on {@link net.sf.servomaster.device.impl.serial.pololu.PacketBuilder}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  * @author Copyright &copy; Scott L'Hommedieu 2006
- * 
+ *
  * @deprecated There is a good chance that this class causes a memory leak.
  * Being replaced with {@link PacketBuilderNG}.
  */

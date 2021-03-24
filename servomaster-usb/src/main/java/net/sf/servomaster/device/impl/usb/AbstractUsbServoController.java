@@ -30,7 +30,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * Base class for all USB servo controllers.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public abstract class AbstractUsbServoController extends AbstractServoController implements UsbServicesListener {
 
@@ -490,18 +490,12 @@ public abstract class AbstractUsbServoController extends AbstractServoController
     /**
      * Initialize the controller.
      *
-     * @param portName The controller board unique serial number in a string
-     * representation. If this is null, then all the matching devices
-     * connected will be found. If the only device is found, then it is
-     * used, and its serial number will be assigned to
-     * <code>portName</code>.
-     *
-     * @exception IllegalArgumentException if the <code>portName</code> is
+     * @throws IllegalArgumentException if the <code>portName</code> is
      * null and none or more than one device were found, or the device
      * corresponding to the name specified is not currently connected and
      * {@link #allowDisconnect disconnected mode} is not enabled.
      *
-     * @exception UnsupportedOperationException if the device revision is
+     * @throws UnsupportedOperationException if the device revision is
      * not supported by this driver.
      */
     @Override

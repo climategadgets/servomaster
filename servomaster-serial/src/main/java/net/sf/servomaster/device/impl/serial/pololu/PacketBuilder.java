@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Packet builder for Pololu {@link USB16ServoController USB} and (later)
+ * Packet builder for Pololu {code USB16ServoController} and (later)
  * serial controllers.
  *
  * <p/>
@@ -28,11 +28,11 @@ import org.apache.logging.log4j.Logger;
  * 
  * <p/>
  * 
- * IMPORTANT: THIS CLASS IS A DUPLICATE OF {@link net.sf.servomaster.device.impl.usb.pololu.PacketBuilder}.
+ * IMPORTANT: THIS CLASS IS A DUPLICATE OF {@code net.sf.servomaster.device.impl.usb.pololu.PacketBuilder}.
  * 
  * If you are making any changes here, propagate them over.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class PacketBuilder {
 

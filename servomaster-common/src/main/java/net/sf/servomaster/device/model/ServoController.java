@@ -10,7 +10,7 @@ import java.util.SortedSet;
  * Provides the encapsulation of the actual hardware controller into a
  * platform-independent entity.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public interface ServoController extends SilentDevice, Closeable {
 
@@ -38,6 +38,8 @@ public interface ServoController extends SilentDevice, Closeable {
      *
      * @deprecated Use {@link #open()} instead. This method is only retained here temporarily
      * until https://github.com/climategadgets/servomaster/issues/2 is done.
+     *
+     * @throws IOException if there was a problem communicating with the hardware controller.
      */
     @Deprecated
     void init(String portName) throws IOException;

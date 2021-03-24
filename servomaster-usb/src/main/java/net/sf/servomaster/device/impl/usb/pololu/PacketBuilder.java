@@ -28,11 +28,11 @@ import org.apache.logging.log4j.Logger;
  * 
  * <p/>
  * 
- * IMPORTANT: THIS CLASS IS A DUPLICATE OF {@link net.sf.servomaster.device.impl.serial.pololu.PacketBuilder}.
+ * IMPORTANT: THIS CLASS IS A DUPLICATE OF {code net.sf.servomaster.device.impl.serial.pololu.PacketBuilder}.
  * 
  * If you are making any changes here, propagate them over.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class PacketBuilder {
 

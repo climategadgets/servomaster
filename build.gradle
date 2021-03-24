@@ -50,4 +50,50 @@ subprojects {
 
         testImplementation 'junit:junit:4.12'
     }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                // VT: FIXME: Later
+                //beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+                }
+
+                snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: findProperty('ossrhUsername'), password: findProperty('ossrhPassword'))
+                }
+
+                pom.project {
+                    name 'Servomaster'
+                    packaging 'jar'
+                    description 'Platform and hardware Independent servo controller driver'
+                    url 'https://github.com/climategadgets/servomaster'
+
+                    scm {
+                        connection 'scm:git:https://github.com/climategadgets/servomaster.git'
+                        developerConnection 'scm:git:https://github.com/climategadgets/servomaster.git'
+                        url 'https://github.com/climategadgets/servomaster.git'
+                    }
+
+                    licenses {
+                        license {
+                            name 'GNU General Public License v3.0'
+                            url 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id 'vt'
+                            name 'Vadim Tkachenko'
+                            email 'vt@homeclimatecontrol.com'
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

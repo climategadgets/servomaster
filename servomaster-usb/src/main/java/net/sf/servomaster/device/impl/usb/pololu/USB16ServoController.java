@@ -22,7 +22,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * <a href="http://pololu.com/products/pololu/0390/" target="_top">Pololu USB 16-Servo Controller</a> controller.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
  */
 public class USB16ServoController extends AbstractUsbServoController {
 

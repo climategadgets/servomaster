@@ -21,7 +21,7 @@ import net.sf.servomaster.device.model.ServoController;
  * Serial</a>, and <a href="http://www.pololu.com/products/pololu/0390/"
  * target="_top">16-Servo USB</a> connected via serial interface.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
  */
 abstract public class PololuSerialServoController extends AbstractSerialServoController {
 

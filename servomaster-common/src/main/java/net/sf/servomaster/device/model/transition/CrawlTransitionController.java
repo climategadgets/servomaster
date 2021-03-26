@@ -13,7 +13,7 @@ import net.sf.servomaster.device.model.TransitionController;
  * incrementing or decrementing position one step at a time, with no regard
  * to the timing.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public class CrawlTransitionController implements TransitionController {
 

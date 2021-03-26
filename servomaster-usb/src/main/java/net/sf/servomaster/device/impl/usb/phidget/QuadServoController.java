@@ -8,7 +8,7 @@ package net.sf.servomaster.device.impl.usb.phidget;
  * that the device <strong>is a</strong> Quad Servo, we can safely
  * instantiate it and put it into disconnected mode right away.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2018
  */
 public class QuadServoController extends PhidgetServoController {
 

@@ -12,7 +12,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * <a href="http://www.seetron.com/ssc.htm" target="_top">Mini SSC II</a> servo controller driver.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
  */
 public class MiniSSC2 extends AbstractSerialServoController {
 

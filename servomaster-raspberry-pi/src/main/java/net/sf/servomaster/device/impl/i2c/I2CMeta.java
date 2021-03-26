@@ -10,7 +10,7 @@ import net.sf.servomaster.device.impl.AbstractMeta;
  * All I2C controllers share at least two features: they are not
  * disconnectable and they support {@code controller/protocol/i2c}.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class I2CMeta extends AbstractMeta {
 

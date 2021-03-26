@@ -18,7 +18,7 @@ import net.sf.servomaster.device.model.Servo;
  * cumbersome, plus adds unnecessary overhead, so it was decided to provide
  * a separate implementation.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public class LinearTransformer extends AbstractCoordinateTransformer {
 

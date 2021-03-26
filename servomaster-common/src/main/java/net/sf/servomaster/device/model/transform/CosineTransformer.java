@@ -10,7 +10,7 @@ import net.sf.servomaster.device.model.Servo;
  * scale transformer} together with this object to achieve the desired
  * result.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2009
  */
 public class CosineTransformer extends AbstractCoordinateTransformer {
 

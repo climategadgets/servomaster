@@ -4,7 +4,7 @@ package net.sf.servomaster.device.impl.serial.ft;
  * <a href="http://www.ferrettronics.com/product639.html">FerretTronics
  * FT639</a> servo controller constants.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2009
  */
 public interface FT639Constants {
 

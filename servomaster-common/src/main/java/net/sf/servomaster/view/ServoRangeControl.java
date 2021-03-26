@@ -24,7 +24,7 @@ import net.sf.servomaster.device.model.ServoController;
  * This control will not appear on the {@link Console} if {@code servo/range/min} or {@code servo/range/max}
  * property is not available from the controller (NOTE: the controller, not the servo. Read the code for details).
  * 
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public class ServoRangeControl extends JPanel implements ChangeListener {
     

@@ -7,7 +7,7 @@ package net.sf.servomaster.device.model;
  * thrown in the places where it is not possible to properly handle, rethrow
  * and/or log them.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2018
  */
 public interface ProblemListener<T> {
 

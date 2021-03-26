@@ -14,7 +14,7 @@ import net.sf.servomaster.device.model.ServoController;
 /**
  * A servo controller implementation requiring no hardware and producing no effect other than debug statements.
  *  
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public class NullServoController extends AbstractServoController {
 

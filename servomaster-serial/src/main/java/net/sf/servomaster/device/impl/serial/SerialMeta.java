@@ -21,7 +21,7 @@ import net.sf.servomaster.device.impl.AbstractMeta;
  * this implementation will not break it - all you have to do is override
  * the feature in the device meta class.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2005
  */
 public abstract class SerialMeta extends AbstractMeta {
 

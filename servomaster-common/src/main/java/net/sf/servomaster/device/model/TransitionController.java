@@ -6,7 +6,7 @@ package net.sf.servomaster.device.model;
  * The movement of the servo may sometimes be more complicated than just a simple immediate positioning.
  * This interface provides a unified way to control the motion.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public interface TransitionController {
 

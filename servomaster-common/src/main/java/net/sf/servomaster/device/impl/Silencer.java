@@ -10,7 +10,7 @@ import org.apache.logging.log4j.ThreadContext;
 /**
  * Provides the functionality required to support the silent mode.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2018
  */
 public abstract class Silencer extends Thread {
 

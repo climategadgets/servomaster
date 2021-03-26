@@ -13,7 +13,7 @@ import net.sf.servomaster.device.model.Meta;
  * Implementation note: tree based structures are generally slower than hash based, but these collections
  * are small and infrequently accessed - and when they are, it's most often for human eyes, which like things sorted.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractMeta implements Meta {
 

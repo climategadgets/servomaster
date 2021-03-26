@@ -6,7 +6,7 @@ package net.sf.servomaster.device.model;
  * This interface allows to receive notifications about the disconnectable
  * device arrivals and departures.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2002-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2009
  */
 public interface DisconnectListener {
 

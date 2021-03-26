@@ -10,7 +10,7 @@ import net.sf.servomaster.device.model.Servo;
  * movement. This transfomer addresses the problem. The input range will
  * still be 0..1, but the servo range will be limited to preset values.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2009
  */
 public class LimitTransformer extends AbstractCoordinateTransformer {
 

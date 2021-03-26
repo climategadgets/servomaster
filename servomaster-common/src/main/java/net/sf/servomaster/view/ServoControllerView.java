@@ -16,7 +16,7 @@ import net.sf.servomaster.device.model.ServoController;
  * This functionality is not mandatory, but recommended (all in all, how
  * else would people know how smart your controller is???).
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2005
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2005
  */
 public interface ServoControllerView {
 

@@ -13,7 +13,7 @@ import net.sf.servomaster.device.model.ServoController;
  *
  * Note that this class doesn't support the {@link AbstractServo#target target} directly.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
  */
 abstract public class HardwareServo extends AbstractServo {
 

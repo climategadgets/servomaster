@@ -6,7 +6,7 @@ import net.sf.servomaster.device.model.Meta;
  * <a href="http://pololu.com/products/pololu/0290/" target="_top">Pololu
  * Serial 8-Servo Controller</a> controller.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
  */
 public class Serial8ServoController extends PololuSerialServoController {
 

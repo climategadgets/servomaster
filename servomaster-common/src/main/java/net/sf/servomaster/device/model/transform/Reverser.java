@@ -5,7 +5,7 @@ import net.sf.servomaster.device.model.Servo;
 /**
  * Reverses the servo input.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2009
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2009
  */
 public class Reverser extends AbstractCoordinateTransformer {
 

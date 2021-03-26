@@ -31,7 +31,7 @@ import net.sf.servomaster.device.model.ServoController.Feature;
  * Supports the transition controller functionality. Allows instant as well as
  * time controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractServo implements Servo {
 

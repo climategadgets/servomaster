@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
  * In the future, will be also returned by {@link TransitionController#move(Servo, double)}
  * (see https://github.com/climategadgets/servomaster/issues/30 for details).
  *
- * @author Copyright &copy; <a href="mailto:vt@freehold.crocodile.org">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public class TransitionStatus {
 

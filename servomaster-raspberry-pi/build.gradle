@@ -1,5 +1,10 @@
 dependencies {
 
-    implementation project(':servomaster-common')
+    if (rootProject.getName().equals("servomaster")) {
+        implementation project(':servomaster-common')
+    } else {
+        implementation project(':servomaster:servomaster-common')
+    }
+
     implementation 'com.pi4j:pi4j-core:1.1'
 }

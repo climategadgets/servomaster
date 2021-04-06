@@ -1,5 +1,10 @@
 dependencies {
 
-    implementation project(':servomaster-common')
+    if (rootProject.getName().equals("servomaster")) {
+        implementation project(':servomaster-common')
+    } else {
+        implementation project(':servomaster:servomaster-common')
+    }
+
     implementation 'org.usb4java:usb4java-javax:1.2.0'
 }

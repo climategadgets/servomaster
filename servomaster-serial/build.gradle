@@ -1,5 +1,10 @@
 dependencies {
 
-    implementation project(':servomaster-common')
+    if (rootProject.getName().equals("servomaster")) {
+        implementation project(':servomaster-common')
+    } else {
+        implementation project(':servomaster:servomaster-common')
+    }
+
     implementation 'org.rxtx:rxtx:2.1.7'
 }

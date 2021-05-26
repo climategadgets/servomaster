@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/climategadgets/servomaster.svg?branch=master)](https://travis-ci.com/climategadgets/servomaster)
 [![Build Status](https://github.com/climategadgets/servomaster/actions/workflows/gradle.yml/badge.svg)](https://github.com/climategadgets/servomaster/actions/workflows/gradle.yml)
 [![Build Status](https://github.com/climategadgets/servomaster/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/climategadgets/servomaster/actions/workflows/codeql-analysis.yml)
+[![SonarCloud](https://github.com/climategadgets/servomaster/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/climategadgets/servomaster/actions/workflows/sonarcloud.yml)
 
 ## Platform and Hardware Independent Servo Controller Driver ##
 

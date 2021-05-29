@@ -1,5 +1,13 @@
 package net.sf.servomaster.device.impl;
 
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import net.sf.servomaster.device.model.ServoControllerListener;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,15 +18,6 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
-
-import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.ServoControllerListener;
 
 /**
  * Abstract servo controller.
@@ -83,10 +82,10 @@ public abstract class AbstractServoController implements ServoController {
      * with dynamically changing servo set (and, {@link #getServoCount()} is also affected.
      */
     private Servo[] servoSet;
-    
+
     /**
      * Initialization state.
-     * 
+     *
      * Currently, calling {@link #close()} makes an instance unusable. In the
      * future, it may be possible to bring all implementations into a state where
      * they can be opened again after having been closed.
@@ -132,7 +131,7 @@ public abstract class AbstractServoController implements ServoController {
 
     @Override
     public final synchronized void open() throws IOException {
-        
+
         // Now that we know we're instantiated, we can finally get it
         meta = createMeta();
 
@@ -176,9 +175,9 @@ public abstract class AbstractServoController implements ServoController {
      * initialized.
      */
     protected final synchronized void checkInit() {
-        
+
         if (initState.get() != 1) {
-            throw new IllegalStateException("state 1 expected, actual is " + initState.get());
+            throw new IllegalStateException("state 1 expected, actual is " + initState.get() + " (did you call open()?)");
         }
     }
 
@@ -261,6 +260,7 @@ public abstract class AbstractServoController implements ServoController {
         }
     }
 
+    @Override
     public void setSilentTimeout(long timeout, long heartbeat) {
 
         checkInit();
@@ -269,6 +269,7 @@ public abstract class AbstractServoController implements ServoController {
         silencer.setSilentTimeout(timeout, heartbeat);
     }
 
+    @Override
     public final void setSilentMode(boolean silent) {
 
         checkInit();
@@ -320,20 +321,22 @@ public abstract class AbstractServoController implements ServoController {
         }
     }
 
+    @Override
     public final boolean getSilentMode() {
 
         checkInit();
-        
+
         // Blow up if we don't support it
         getMeta().getFeature(Feature.SILENT.name);
 
         return (silencer == null) ? false : silencer.getSilentMode();
     }
 
+    @Override
     public final boolean isSilentNow() {
 
         checkInit();
-        
+
         // Blow up if we don't support it
         getMeta().getFeature(Feature.SILENT.name);
 
@@ -457,6 +460,7 @@ public abstract class AbstractServoController implements ServoController {
      * @exception IllegalStateException if the controller wasn't previously
      * initialized.
      */
+    @Override
     public final synchronized Servo getServo(String id) throws IOException {
 
         checkInit();
@@ -493,12 +497,13 @@ public abstract class AbstractServoController implements ServoController {
      * @param id Servo ID to create.
      *
      * @return The servo instance.
-     * 
+     *
      * @exception IOException if there was a problem communicating with the
      * hardware controller.
      */
     protected abstract Servo createServo(int id) throws IOException;
-    
+
+    @Override
     public synchronized void close() throws IOException {
 
         if (initState.get() != 1) {
@@ -539,7 +544,7 @@ public abstract class AbstractServoController implements ServoController {
 
     /**
      * The reason for existence of this class is that {@link AbstractServoController#sleep()} and {@link AbstractServoController#wakeUp()}
-     * operations can't be exposed via implemented interface without violating the target integrity. 
+     * operations can't be exposed via implemented interface without violating the target integrity.
      */
     private class ControllerSilencer extends Silencer {
 

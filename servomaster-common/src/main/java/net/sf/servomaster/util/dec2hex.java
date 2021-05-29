@@ -20,27 +20,26 @@ public class dec2hex {
 
     public static void main(String[] args) {
 
-        try {
+        if ( args.length == 0 ) {
 
-            if ( args.length == 0 ) {
+            System.err.println("Usage: dec2hex <input file>");
+            return;
+        }
 
-                System.err.println("Usage: dec2hex <input file>");
-            }
-
-            BufferedReader br = new BufferedReader(new FileReader(args[0]));
+        try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
 
             int offset = 0;
 
-            while ( true ) {
+            while (true) {
 
                 String line = br.readLine();
 
-                if ( line == null ) {
+                if (line == null) {
 
                     break;
                 }
 
-                for ( StringTokenizer st = new StringTokenizer(line, ",\n"); st.hasMoreTokens(); ) {
+                for (StringTokenizer st = new StringTokenizer(line, ",\n"); st.hasMoreTokens(); ) {
 
                     if (offset++ % 8 == 0) {
 
@@ -51,7 +50,7 @@ public class dec2hex {
                     int value = Integer.parseInt(token);
                     String hexValue = Integer.toHexString(value);
 
-                    if ( hexValue.length() == 1 ) {
+                    if (hexValue.length() == 1) {
 
                         hexValue = "0" + hexValue;
                     }
@@ -59,8 +58,6 @@ public class dec2hex {
                     System.out.print("(byte)0x" + hexValue + ", ");
                 }
             }
-            
-            br.close();
 
         } catch ( Throwable t ) {
 

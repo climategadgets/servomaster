@@ -1,5 +1,16 @@
 package net.sf.servomaster.device.impl;
 
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import net.sf.servomaster.device.model.ServoController.Feature;
+import net.sf.servomaster.device.model.ServoListener;
+import net.sf.servomaster.device.model.TransitionController;
+import net.sf.servomaster.device.model.TransitionStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.HashSet;
@@ -13,25 +24,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
-
-import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.ServoListener;
-import net.sf.servomaster.device.model.TransitionController;
-import net.sf.servomaster.device.model.TransitionStatus;
-import net.sf.servomaster.device.model.ServoController.Feature;
-
 /**
  * Basic support for servo abstraction.
  *
  * Supports the transition controller functionality. Allows instant as well as
  * time controlled positioning and feedback.
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public abstract class AbstractServo implements Servo {
 
@@ -46,7 +45,7 @@ public abstract class AbstractServo implements Servo {
 
     /**
      * Thread pool for transition drivers.
-     * 
+     *
      * This pool requires exactly one thread.
      */
     private final ExecutorService transitionDriverExecutor = Executors.newFixedThreadPool(1);
@@ -149,6 +148,7 @@ public abstract class AbstractServo implements Servo {
         this.target = target;
     }
 
+    @Override
     public final synchronized void open() {
 
         // Now that we know we're instantiated, we can finally get it
@@ -499,9 +499,9 @@ public abstract class AbstractServo implements Servo {
 
         @Override
         public void run() {
-            
+
             ThreadContext.push("run");
-            
+
             try {
 
                 logger.debug("Transition: " + getActualPosition() + " => " + targetPosition);
@@ -558,7 +558,7 @@ public abstract class AbstractServo implements Servo {
 
         checkInit();
         checkSilencer();
-        
+
         boolean oldMode = getSilentMode();
 
         silencer.setSilentMode(silent);
@@ -586,6 +586,7 @@ public abstract class AbstractServo implements Servo {
         }
     }
 
+    @Override
     public void setSilentTimeout(long timeout, long heartbeat) {
 
         checkInit();
@@ -595,16 +596,18 @@ public abstract class AbstractServo implements Servo {
         silencer.setSilentTimeout(timeout, heartbeat);
     }
 
+    @Override
     public final boolean getSilentMode() {
 
         checkInit();
-        
+
         // Blow up if we don't support it
         getMeta().getFeature(META_SILENT);
-        
+
         return (silencer == null) ? false : silencer.getSilentMode();
     }
 
+    @Override
     public final boolean isSilentNow() {
 
         checkInit();
@@ -899,7 +902,7 @@ public abstract class AbstractServo implements Servo {
 
     /**
      * The reason for existence of this class is that {@link AbstractServo#sleep()} and {@link AbstractServo#wakeUp()}
-     * operations can't be exposed via implemented interface without violating the target integrity. 
+     * operations can't be exposed via implemented interface without violating the target integrity.
      */
     private class ServoSilencer extends Silencer {
 

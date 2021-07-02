@@ -15,6 +15,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -35,44 +36,44 @@ import net.sf.servomaster.device.model.transition.CrawlTransitionController;
  *
  * Displays the servo status and allows to control it.
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 @SuppressWarnings("serial")
 public class ServoView extends JPanel {
 
-    private Logger logger = LogManager.getLogger(getClass());
+    private final transient Logger logger = LogManager.getLogger(getClass());
 
     /**
      * The servo to display the status of and control.
      */
-    final Servo servo;
+    final transient Servo servo;
 
     /**
      * The current target (may be the {@link #servo servo} itself, or the
      * {@link #reverse reversed mapping}, or the {@link #linear180 linear
      * mapping}.
      */
-    private Servo target;
+    private transient Servo target;
 
     /**
      * The reverse mapping of the {@link #servo servo}.
      */
-    private Servo reverse;
+    private final transient Servo reverse;
 
     /**
      * The limit 0.25..0.75 mapping of the {@link #servo servo}.
      */
-    private Servo limit;
+    private final transient Servo limit;
 
     /**
      * The linear 0\u00B0-180\u00B0 mapping of the {@link #servo servo}.
      */
-    private Servo linear180;
+    private final transient Servo linear180;
 
     /**
      * The linear 0\u00B0-90\u00B0 mapping of the {@link #servo servo}.
      */
-    private Servo linear90;
+    private final transient Servo linear90;
 
     /**
      * The label displaying the current position.
@@ -127,8 +128,8 @@ public class ServoView extends JPanel {
 
         setBorder(BorderFactory.createEtchedBorder());
 
-        GridBagLayout layout = new GridBagLayout();
-        GridBagConstraints cs = new GridBagConstraints();
+        var layout = new GridBagLayout();
+        var cs = new GridBagConstraints();
 
         setLayout(layout);
 
@@ -145,7 +146,7 @@ public class ServoView extends JPanel {
         cs.gridy = 0;
         cs.gridwidth = 2;
 
-        Header header = new Header();
+        var header = new Header();
 
         layout.setConstraints(header, cs);
         add(header);
@@ -153,7 +154,7 @@ public class ServoView extends JPanel {
 
     private void createSliders(GridBagLayout layout, GridBagConstraints cs) {
 
-        Sliders sliders = new Sliders();
+        var sliders = new Sliders();
 
         servo.addListener(sliders);
 
@@ -181,7 +182,7 @@ public class ServoView extends JPanel {
 
         try {
 
-            ServoRangeControl src = new ServoRangeControl(this);
+            var src = new ServoRangeControl(this);
 
             cs.gridy++;
 
@@ -191,7 +192,7 @@ public class ServoView extends JPanel {
         } catch (UnsupportedOperationException ex) {
 
             // No big deal, we'll just don't provide this panel
-            logger.info("servo doesn't seem to support range adjustment: " + ex.getMessage());
+            logger.info("servo doesn't seem to support range adjustment: {}", ex.getMessage());
 
         } finally {
             ThreadContext.pop();
@@ -209,7 +210,7 @@ public class ServoView extends JPanel {
             servo.setSilentMode(true);
             servo.setSilentTimeout(5000, 10000);
 
-            SilencerPanel sp = new SilencerPanel(servo, false);
+            var sp = new SilencerPanel(servo, false);
 
             cs.gridy++;
 
@@ -219,7 +220,7 @@ public class ServoView extends JPanel {
         } catch (UnsupportedOperationException ex) {
 
             // No big deal, we'll just don't provide this panel
-            logger.info("servo doesn't seem to support silent operation: " + ex.getMessage());
+            logger.info("servo doesn't seem to support silent operation: {}", ex.getMessage());
             logger.error("Oops", ex);
 
         } finally {
@@ -229,7 +230,7 @@ public class ServoView extends JPanel {
 
     /**
      * Reflect the change in actual position.
-     * 
+     *
      * @param position The actual position.
      */
     private void setPosition(double position) {
@@ -253,6 +254,7 @@ public class ServoView extends JPanel {
         controlSlider.setValue(precision/2);
     }
 
+    @Override
     public boolean isEnabled() {
 
         return enabled;
@@ -286,8 +288,8 @@ public class ServoView extends JPanel {
             // GridLayout renders fat items and won't change aspect ratio unless you override paintComponent(),
             // and working with GroupLayout is a pain similar or exceeding the one of working with GridBagLayout.
 
-            GridBagLayout layout = new GridBagLayout();
-            GridBagConstraints cs = new GridBagConstraints();
+            var layout = new GridBagLayout();
+            var cs = new GridBagConstraints();
 
             setLayout(layout);
 
@@ -298,7 +300,7 @@ public class ServoView extends JPanel {
             cs.gridwidth = 1;
             cs.gridheight = 1;
 
-            JLabel servoLabel = new JLabel("ID: " + servo.getName(), JLabel.CENTER);
+            var servoLabel = new JLabel("ID: " + servo.getName(), JLabel.CENTER);
             servoLabel.setToolTipText("The servo name");
             servoLabel.setBorder(BorderFactory.createEtchedBorder());
             servoLabel.setForeground(Color.black);
@@ -349,7 +351,7 @@ public class ServoView extends JPanel {
             cs.gridy++;
             cs.gridheight = GridBagConstraints.REMAINDER;
 
-            String currentPosition = Integer.toString(precision/2);
+            var currentPosition = Integer.toString(precision/2);
             positionLabel = new JLabel(currentPosition + "/" + currentPosition, JLabel.CENTER);
             positionLabel.setToolTipText("Current servo position (actual/requested)");
             positionLabel.setBorder(BorderFactory.createTitledBorder("Position"));
@@ -393,7 +395,7 @@ public class ServoView extends JPanel {
                     return;
                 }
 
-                logger.debug("queue: " + (e.getStateChange() == ItemEvent.SELECTED));
+                logger.debug("queue: {}", (e.getStateChange() == ItemEvent.SELECTED));
 
                 // VT: FIXME: This will only work correctly as long as there's one transition controller choice
 
@@ -433,7 +435,7 @@ public class ServoView extends JPanel {
 
                     default:
 
-                        logger.error("Unknown transition controller: " + cb.getSelectedItem());
+                        logger.error("Unknown transition controller: {}", cb.getSelectedItem());
                     }
 
                 } else if ( source == mapperComboBox ) {
@@ -479,31 +481,9 @@ public class ServoView extends JPanel {
 
                     default:
 
-                        logger.error("Unknown coordinate transformer: " + cb.getSelectedItem());
+                        logger.error("Unknown coordinate transformer: {}", cb.getSelectedItem());
                     }
                 }
-
-                /*
-                if ( e.getSource() == normalBox ) {
-
-                    target = servo;
-
-                } else if ( e.getSource() == reverseBox ) {
-
-                    target = reverse;
-
-                } else if ( e.getSource() == linearBox ) {
-
-                    target = linear;
-
-                } else if ( e.getSource() == transitionNoneBox ) {
-
-                    servo.attach(null);
-
-                } else if ( e.getSource() == transitionCrawlBox ) {
-
-                    servo.attach(new CrawlTransitionController());
-                } */
 
                 if ( current != target ) {
 
@@ -512,7 +492,7 @@ public class ServoView extends JPanel {
                     target.setPosition((double)position/(double)(precision - 1));
                 }
 
-            } catch ( Throwable t ) {
+            } catch ( Throwable t ) { // NOSONAR Consequences have been considered
 
                 logger.error("Setting mapper:", t);
             }
@@ -523,8 +503,8 @@ public class ServoView extends JPanel {
 
         Sliders() {
 
-            GridBagLayout layout = new GridBagLayout();
-            GridBagConstraints cs = new GridBagConstraints();
+            var layout = new GridBagLayout();
+            var cs = new GridBagConstraints();
 
             setLayout(layout);
 
@@ -534,7 +514,7 @@ public class ServoView extends JPanel {
             cs.weighty = 1;
             cs.fill = GridBagConstraints.VERTICAL;
 
-            viewSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
+            viewSlider = new JSlider(SwingConstants.VERTICAL, 0, precision - 1, precision/2);
             viewSlider.setToolTipText("The actual position of the servo");
             viewSlider.setEnabled(false);
 
@@ -543,7 +523,7 @@ public class ServoView extends JPanel {
 
             cs.gridx = 1;
 
-            controlSlider = new JSlider(JSlider.VERTICAL, 0, precision - 1, precision/2);
+            controlSlider = new JSlider(SwingConstants.VERTICAL, 0, precision - 1, precision/2);
             controlSlider.setToolTipText("Move this to make the servo move");
             controlSlider.addChangeListener(this);
             controlSlider.setMajorTickSpacing(precision/4);
@@ -572,7 +552,7 @@ public class ServoView extends JPanel {
 
                     target.setPosition((double)position/(double)(precision - 1));
 
-                } catch ( Throwable t ) {
+                } catch ( Throwable t ) { // NOSONAR Consequences have been considered
 
                     logger.error("Servo#setPosition:", t);
                 }
@@ -589,7 +569,7 @@ public class ServoView extends JPanel {
 
             // This notification doesn't have to be visibly reflected
 
-            //logger.debug("Position requested: " + position);
+            //logger.debug("Position requested: {}", position); // NOSONAR
         }
 
         /**
@@ -599,20 +579,17 @@ public class ServoView extends JPanel {
          */
         @Override
         public void actualPositionChanged(Servo source, double position) {
-
             setPosition(position);
         }
 
         @Override
         public void exception(Servo source, Throwable t) {
-
-            logger.error("Oops: " + source, t);
+            logger.error("Oops: {}", source, t);
         }
 
         @Override
         public void silentStatusChanged(SilentDevice source, boolean silent) {
-
-            logger.info("silent status changed to " + silent + ": " + source);
+            logger.info("silent status changed to {}: {}", silent, source);
         }
     }
 

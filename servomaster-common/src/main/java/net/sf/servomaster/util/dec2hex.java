@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * Since this class is primitive, it will not tolerate any alien elements in
  * the input stream.
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class dec2hex {
 

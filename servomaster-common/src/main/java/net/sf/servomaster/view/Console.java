@@ -1,5 +1,20 @@
 package net.sf.servomaster.view;
 
+import net.sf.servomaster.device.impl.debug.NullServoController;
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import net.sf.servomaster.device.model.ServoController.Feature;
+import net.sf.servomaster.device.model.TransitionController;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.ThreadContext;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,31 +25,11 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.WindowConstants;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.ThreadContext;
-
-import net.sf.servomaster.device.impl.debug.NullServoController;
-import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.ServoController;
-import net.sf.servomaster.device.model.TransitionController;
-import net.sf.servomaster.device.model.ServoController.Feature;
 
 /**
  * The console.
@@ -68,12 +63,12 @@ import net.sf.servomaster.device.model.ServoController.Feature;
  *
  * </ol>
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class Console implements ActionListener, WindowListener {
 
     private Logger logger = LogManager.getLogger(getClass());
-    
+
     /**
      * The controller to watch and control.
      */
@@ -150,6 +145,7 @@ public class Console implements ActionListener, WindowListener {
 
             Runtime.getRuntime().addShutdownHook(new Thread() {
 
+                @Override
                 public void run() {
 
                     logger.info("Ctrl-Break intercepted");
@@ -211,20 +207,14 @@ public class Console implements ActionListener, WindowListener {
 
             logger.info("Features:");
 
-            for ( Iterator<Entry<String, Boolean>> i = meta.getFeatures().entrySet().iterator(); i.hasNext(); ) {
-
-                Entry<String, Boolean> entry = i.next();
-
-                logger.info("    " + entry.getKey() + ": " + entry.getValue());
+            for (Entry<String, Boolean> entry : meta.getFeatures().entrySet()) {
+                logger.info("    {}: {}", entry.getKey(), entry.getValue());
             }
 
             logger.info("Properties:");
 
-            for ( Iterator<Entry<String, Object>> i = meta.getProperties().entrySet().iterator(); i.hasNext(); ) {
-
-                Entry<String, Object> entry = i.next();
-
-                logger.info("    " + entry.getKey() + ": " + entry.getValue());
+            for (Entry<String, Object> entry : meta.getProperties().entrySet()) {
+                logger.info("    {}: {}", entry.getKey(), entry.getValue());
             }
 
         } catch ( UnsupportedOperationException ex ) {
@@ -254,9 +244,9 @@ public class Console implements ActionListener, WindowListener {
             logger.info("Example: java -jar servomaster.jar net.sf.servomaster.device.impl.usb.phidget.PhidgetServoController");
             logger.info("");
 
-            String targetClass = NullServoController.class.getName();
+            var targetClass = NullServoController.class.getName();
 
-            logger.warn("Starting a demo controller (" + targetClass + ") for now");
+            logger.warn("Starting a demo controller ({}) for now", targetClass);
 
             return targetClass;
         }
@@ -277,11 +267,11 @@ public class Console implements ActionListener, WindowListener {
 
             Object controllerObject = c.newInstance(portName);
 
-            logger.debug(controllerObject.getClass().getName() + ", portName=" + portName);
+            logger.debug("{}, portName={}", controllerObject.getClass().getName(), portName);
 
             return (ServoController)controllerObject;
 
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOSONAR Consequences have been considered
 
             throw new IllegalStateException("Unable to instantiate " + targetClass, t);
 
@@ -304,7 +294,7 @@ public class Console implements ActionListener, WindowListener {
 
                 throw new IllegalStateException("The controller doesn't seem to have any servos now");
             }
-            
+
             GridBagLayout layout = new GridBagLayout();
             GridBagConstraints cs = new GridBagConstraints();
 
@@ -388,18 +378,19 @@ public class Console implements ActionListener, WindowListener {
 
                 cs.gridy++;
 
-            } catch ( Throwable t ) {
+            } catch ( Throwable t ) { // NOSONAR Consequences have been considered
 
-                logger.info("Couldn't instantiate the servo controller view ("
-                        + controllerViewClassName
-                        + ", so it will not be available. Cause:", t);
+                logger.info(
+                        "Couldn't instantiate the servo controller view ({}), so it will not be available. Cause:",
+                        controllerViewClassName,
+                        t);
             }
 
             // If the controller view has been instantiated, the constraint
             // Y coordinate has been advanced. If not, we didn't need it
             // anyway
 
-            SilencerPanel silencerPanel = createSilencerPanel(controller);
+            var silencerPanel = createSilencerPanel(controller);
 
             if ( silencerPanel != null ) {
 
@@ -467,7 +458,6 @@ public class Console implements ActionListener, WindowListener {
             layout.setConstraints(buttonContainer, cs);
             console.add(buttonContainer);
 
-            //console.invalidate();
             mainFrame.pack();
 
             mainFrame.setVisible(true);
@@ -491,7 +481,7 @@ public class Console implements ActionListener, WindowListener {
 
         } catch (UnsupportedOperationException ex) {
 
-            logger.warn("Controller doesn't support servo shutoff (reason: " + ex.getMessage() + ")");
+            logger.warn("Controller doesn't support servo shutoff (reason: {})", ex.getMessage());
             return null;
         }
 
@@ -536,19 +526,18 @@ public class Console implements ActionListener, WindowListener {
 
     @Override
     public void windowOpened(WindowEvent e) {
-
+        // No special handling
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
-
         exitFlag.countDown();
     }
 
 
     @Override
     public void windowClosed(WindowEvent e) {
-
+        // No special handling
     }
 
     @Override
@@ -558,17 +547,17 @@ public class Console implements ActionListener, WindowListener {
 
     @Override
     public void windowDeiconified(WindowEvent e) {
-
+        // No special handling
     }
 
     @Override
     public void windowActivated(WindowEvent e) {
-
+        // No special handling
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-
+        // No special handling
     }
 
     protected abstract class exec implements Runnable {
@@ -584,15 +573,13 @@ public class Console implements ActionListener, WindowListener {
 
                 controller.reset();
 
-                Map<Servo, TransitionController> trans = new HashMap<Servo, TransitionController>();
-                Map<Servo, Double> position = new HashMap<Servo, Double>();
+                var trans = new HashMap<Servo, TransitionController>();
+                var position = new HashMap<Servo, Double>();
 
-                for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                    Servo s = i.next();
+                for (Servo s : controller.getServos()) {
 
                     trans.put(s, s.getTransitionController());
-                    position.put(s, new Double(s.getPosition()));
+                    position.put(s, s.getPosition());
 
                     s.attach(null, true);
                 }
@@ -600,13 +587,11 @@ public class Console implements ActionListener, WindowListener {
                 prepare();
                 execute();
 
-                for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                    Servo s = i.next();
+                for (Servo s : controller.getServos()) {
 
                     s.attach(trans.get(s), true);
 
-                    s.setPosition((position.get(s)).doubleValue());
+                    s.setPosition(position.get(s));
                 }
             } catch (InterruptedException iex) {
 
@@ -658,26 +643,23 @@ public class Console implements ActionListener, WindowListener {
         @Override
         protected void execute() throws Throwable {
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(0);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(0);
             }
 
             Thread.sleep(1000);
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(1);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(1);
             }
 
             Thread.sleep(1000);
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(0.5);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(0.5);
             }
 
-            for ( int idx = 0; servoPanel[idx] != null; idx++ ) {
+            for ( var idx = 0; servoPanel[idx] != null; idx++ ) {
 
                 servoPanel[idx].reset();
             }
@@ -685,7 +667,6 @@ public class Console implements ActionListener, WindowListener {
 
         @Override
         protected void cleanup() {
-
             resetButton.setEnabled(true);
         }
     }
@@ -694,34 +675,29 @@ public class Console implements ActionListener, WindowListener {
 
         @Override
         protected final void prepare() {
-
             resetButton.setText("Stop Demo");
         }
 
         @Override
         protected void execute() throws Throwable {
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(0);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(0);
             }
 
             Thread.sleep(1000);
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(1);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(1);
             }
 
             Thread.sleep(1000);
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(0.5);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(0.5);
             }
 
-            for ( int idx = 0; servoPanel[idx] != null; idx++ ) {
-
+            for ( var idx = 0; servoPanel[idx] != null; idx++ ) {
                 servoPanel[idx].reset();
             }
         }
@@ -731,9 +707,8 @@ public class Console implements ActionListener, WindowListener {
 
             resetButton.setText("Reset Controller");
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                i.next().setPosition(0.5);
+            for (Servo servo : controller.getServos()) {
+                servo.setPosition(0.5);
             }
         }
     }
@@ -743,17 +718,17 @@ public class Console implements ActionListener, WindowListener {
         @Override
         protected void execute() throws Throwable {
 
-            List<Servo> servos = new LinkedList<Servo>();
+            var servos = new ArrayList<Servo>();
 
-            for (int offset = 0; offset < controller.getServoCount(); offset++) {
+            for (var offset = 0; offset < controller.getServoCount(); offset++) {
 
                 if (!servoPanel[offset].isEnabled()) {
 
-                    logger.info("skipped: @" + offset);
+                    logger.info("skipped: @{}", offset);
                     continue;
                 }
 
-                Servo s = controller.getServo(Integer.toString(offset));
+                var s = controller.getServo(Integer.toString(offset));
 
                 servos.add(s);
 
@@ -762,18 +737,18 @@ public class Console implements ActionListener, WindowListener {
 
             Thread.sleep(1000);
 
-            int max = servos.size();
+            var max = servos.size();
 
             // VT: NOTE: Bold assumption: controller contains more than one
             // servo
 
-            int current = 0;
-            int trailer = ((current - 1) + max) % max;
+            var current = 0;
+            var trailer = ((current - 1) + max) % max;
 
             while ( true ) {
 
-                Servo currentServo = servos.get(current);
-                Servo trailerServo = servos.get(trailer);
+                var currentServo = servos.get(current);
+                var trailerServo = servos.get(trailer);
 
                 currentServo.setPosition(1);
                 trailerServo.setPosition(0);
@@ -797,22 +772,18 @@ public class Console implements ActionListener, WindowListener {
         @Override
         protected void execute() throws Throwable {
 
-            List<Servo> servos = new LinkedList<Servo>();
+            var servos = new ArrayList<Servo>();
 
-            for (Iterator<Servo> i = controller.getServos().iterator(); i.hasNext();) {
-
-                Servo s = i.next();
-
+            for (Servo s : controller.getServos()) {
                 servos.add(s);
-
                 s.setPosition(0);
             }
 
             // Bold assumption: the controller supports at least 3 servos
 
-            Servo servoSecond = servos.get(0);
-            Servo servoMinute = servos.get(1);
-            Servo servoHour = servos.get(2);
+            var servoSecond = servos.get(0);
+            var servoMinute = servos.get(1);
+            var servoHour = servos.get(2);
 
             // With some bad luck, we might start the clock right about the top of the second,
             // with drift making the demo skip seconds (). Believe it or not, this is guaranteed to happen
@@ -820,11 +791,11 @@ public class Console implements ActionListener, WindowListener {
 
             while ( true ) {
 
-                LocalTime now = syncSecond();
+                var now = syncSecond();
 
-                int seconds = now.getSecond();
-                int minutes = now.getMinute();
-                int hours   = now.getHour();
+                var seconds = now.getSecond();
+                var minutes = now.getMinute();
+                var hours   = now.getHour();
 
                 servoSecond.setPosition((double)seconds/(double)60);
                 servoMinute.setPosition((double)minutes/(double)60);
@@ -837,9 +808,9 @@ public class Console implements ActionListener, WindowListener {
             // To avoid skipping the beats, let's synchronize right after
             // the top of the second so the clock drift within the demo period won't affect the presentation
 
-            LocalTime now = LocalTime.now();
+            var now = LocalTime.now();
 
-            long timeout = 999999999 - now.getNano() + 99999999;
+            var timeout = 999999999 - now.getNano() + 99999999;
 
             TimeUnit.NANOSECONDS.sleep(timeout);
 
@@ -848,7 +819,7 @@ public class Console implements ActionListener, WindowListener {
             now = LocalTime.now();
             now = LocalTime.of(now.getHour(), now.getMinute(), now.getSecond());
 
-            logger.info("now: " + now);
+            logger.info("now: {}", now);
 
             return now;
         }

@@ -1,12 +1,11 @@
 package net.sf.servomaster.device.impl.usb;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import net.sf.servomaster.device.impl.AbstractServoController;
+import net.sf.servomaster.device.impl.HardwareServo;
+import net.sf.servomaster.device.model.Meta;
+import net.sf.servomaster.device.model.Servo;
+import net.sf.servomaster.device.model.ServoController;
+import org.apache.logging.log4j.ThreadContext;
 
 import javax.usb.UsbConfiguration;
 import javax.usb.UsbDevice;
@@ -15,17 +14,15 @@ import javax.usb.UsbException;
 import javax.usb.UsbHostManager;
 import javax.usb.UsbHub;
 import javax.usb.UsbInterface;
-import javax.usb.UsbServices;
 import javax.usb.event.UsbServicesEvent;
 import javax.usb.event.UsbServicesListener;
-
-import org.apache.logging.log4j.ThreadContext;
-
-import net.sf.servomaster.device.impl.AbstractServoController;
-import net.sf.servomaster.device.impl.HardwareServo;
-import net.sf.servomaster.device.model.Meta;
-import net.sf.servomaster.device.model.Servo;
-import net.sf.servomaster.device.model.ServoController;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Base class for all USB servo controllers.
@@ -34,7 +31,7 @@ import net.sf.servomaster.device.model.ServoController;
  */
 public abstract class AbstractUsbServoController extends AbstractServoController implements UsbServicesListener {
 
-  private UsbHub virtualRootHub;
+  private final UsbHub virtualRootHub;
 
     /**
      * The revision to protocol handler map.
@@ -58,7 +55,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      * the proper protocol handler resolved and assigned to the {@link
      * #protocolHandler instance protocol handler}.
      */
-    private Map<String, UsbProtocolHandler> protocolHandlerMap = new HashMap<String, UsbProtocolHandler>();
+    private final Map<String, UsbProtocolHandler> protocolHandlerMap = new HashMap<>();
 
     /**
      * The protocol handler taking care of this specific instance.
@@ -105,14 +102,13 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         try {
 
-            UsbServices usbServices = UsbHostManager.getUsbServices();
+            var usbServices = UsbHostManager.getUsbServices();
             virtualRootHub = usbServices.getRootUsbHub();
 
             usbServices.addUsbServicesListener(this);
 
         } catch ( UsbException usbex ) {
-
-            throw (IllegalStateException) new IllegalStateException("USB failure").initCause(usbex);
+            throw new IllegalStateException("USB failure", usbex);
         }
     }
 
@@ -179,8 +175,8 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
                 theServoController = findUSB(portName);
 
-                UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
-                UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                var cf = theServoController.getActiveUsbConfiguration();
+                var iface = cf.getUsbInterface((byte)0x00);
 
                 if ( iface.isClaimed() ) {
 
@@ -192,7 +188,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
                 return true;
 
-            } catch ( Throwable t ) {
+            } catch ( Throwable t ) { // NOSONAR Consequences have been considered
 
                 // Uh oh, I don't think so
 
@@ -203,11 +199,11 @@ public abstract class AbstractUsbServoController extends AbstractServoController
     }
 
     protected final UsbDevice findUSB(String portName) throws IOException {
-        
+
         ThreadContext.push("findUsb");
-        
-        logger.info("Looking for device '" + portName + "'");
-        
+
+        logger.info("Looking for device '{}'", portName);
+
         // VT: There are multiple ways to handle this:
 
         // 	- Analyze the portName and figure out which device we're
@@ -236,14 +232,13 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
             lastDetect = System.currentTimeMillis();
 
-            Set<UsbDevice> found = new HashSet<UsbDevice>();
+            var found = new HashSet<UsbDevice>();
 
             try {
 
                 find(portName, virtualRootHub, found, true);
 
             } catch ( BootException bex ) {
-
                 throw new IllegalStateException("BootException shouldn't have propagated here", bex);
             }
 
@@ -263,11 +258,8 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 // of it
 
                 if ( found.isEmpty() ) {
-
                     throw new IOException("No compatible devices found. Make sure you have /proc/bus/usb read/write permissions.");
-
                 } else {
-
                     tooManyDevices(found);
                 }
 
@@ -276,11 +268,8 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 // The caller had specified the serial number
 
                 if ( found.isEmpty() ) {
-
                     throw new IOException("Device with a serial number '" + portName + "' is not connected");
-
                 } else {
-
                     tooManyDevices(found);
                 }
             }
@@ -294,8 +283,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
             throw ule;
 
         } catch ( UsbException usbex ) {
-
-            throw (IOException) new IOException("USB failure").initCause(usbex);
+            throw new IOException("USB failure", usbex);
         } finally {
             ThreadContext.pop();
         }
@@ -323,9 +311,9 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                       UsbDevice root,
                       Set<UsbDevice> found,
                       boolean boot) throws IOException, UsbException, BootException {
-        
+
         ThreadContext.push("find" + (boot ? "&boot" : "!boot"));
-        
+
         try {
 
             if ( root == null ) {
@@ -339,7 +327,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                     + " by " +root.getManufacturerString());
 
             if ( root.isUsbHub() ) {
-                
+
                 List<UsbDevice> devices = ((UsbHub)root).getAttachedUsbDevices();
 
                 for ( Iterator<UsbDevice> i = devices.iterator(); i.hasNext(); ) {
@@ -454,7 +442,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 // device. Generally, this should be uncommented only if we're
                 // debugging.
 
-                logger.debug("Unknown device: " + signature);
+                logger.debug("Unknown device: {}", signature);
             }
 
         } finally {
@@ -525,9 +513,9 @@ public abstract class AbstractUsbServoController extends AbstractServoController
             // from the caller, and just assign it - we don't care if they
             // made a typo
 
-            UsbDeviceDescriptor dd = theServoController.getUsbDeviceDescriptor();
-            String serial = theServoController.getSerialNumberString();
-            String signature = getSignature(dd);
+            var dd = theServoController.getUsbDeviceDescriptor();
+            var serial = theServoController.getSerialNumberString();
+            var signature = getSignature(dd);
 
             // VT: NOTE: Serial number can be null. At least it
             // is with the current firmware release for
@@ -545,7 +533,6 @@ public abstract class AbstractUsbServoController extends AbstractServoController
             protocolHandler = protocolHandlerMap.get(signature);
 
             if ( protocolHandler == null ) {
-
                 throw new UnsupportedOperationException("Vendor/product ID '" + signature + "' is not supported");
             }
 
@@ -558,7 +545,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
             connected = true;
 
-        } catch ( Throwable t ) {
+        } catch ( Throwable t ) { // NOSONAR Consequences have been considered
 
             exception(t);
 
@@ -585,7 +572,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 throw (IOException)t;
             }
 
-            throw (IOException)(new IOException().initCause(t));
+            throw new IOException(t);
         }
 
         // VT: FIXME: Since right now the controller is write-only box and
@@ -597,10 +584,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         // FIXME: set the servos to 0.5 now...
 
-        for (Iterator<Servo> i = getServos().iterator(); i.hasNext(); ) {
-
-            Servo s = i.next();
-
+        for (Servo s : getServos()) {
             s.setPosition(0.5);
         }
     }
@@ -611,7 +595,6 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         checkInit();
 
         if ( protocolHandler == null ) {
-
             throw new IllegalStateException("Hardware not yet connected, try later");
         }
 
@@ -661,6 +644,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         }
     }
 
+    @Override
     public synchronized void reset() throws IOException {
 
         checkInit();
@@ -672,18 +656,17 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 protocolHandler.reset();
 
             } catch ( UsbException usbex ) {
-
-                throw (IOException) new IOException("Failed to reset USB device").initCause(usbex);
+                throw new IOException("Failed to reset USB device", usbex);
             }
         }
     }
 
+    @Override
     public int getServoCount() {
 
         checkInit();
 
         if (protocolHandler == null) {
-
             throw new IllegalStateException("Not Initialized (can't determine hardware type?)");
         }
 
@@ -710,21 +693,20 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         return protocolHandler.createServo(this, id);
     }
 
+    @Override
     public final synchronized void usbDeviceAttached(UsbServicesEvent e) {
 
         try {
 
-            logger.warn("*** USB device attached: " + e.getUsbDevice().getProductString());
+            logger.warn("*** USB device attached: {}", e.getUsbDevice().getProductString());
 
             // Let's see if this is by chance our runaway device
 
-            UsbDevice arrival = e.getUsbDevice();
-            UsbProtocolHandler handler = getProtocolHandler(arrival);
+            var arrival = e.getUsbDevice();
+            var handler = getProtocolHandler(arrival);
 
             if ( handler == null ) {
-
                 // It's not ours
-
                 return;
             }
 
@@ -738,11 +720,10 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 handler.boot(arrival);
 
                 // We'll get another notification shortly
-
                 return;
             }
 
-            String arrivalSerial = arrival.getSerialNumberString();
+            var arrivalSerial = arrival.getSerialNumberString();
 
             if ( portName != null ) {
 
@@ -754,8 +735,8 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                     // become null
 
                     theServoController = arrival;
-                    UsbConfiguration cf = theServoController.getActiveUsbConfiguration();
-                    UsbInterface iface = cf.getUsbInterface((byte)0x00);
+                    var cf = theServoController.getActiveUsbConfiguration();
+                    var iface = cf.getUsbInterface((byte)0x00);
 
                     if ( iface.isClaimed() ) {
 
@@ -784,30 +765,28 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 } else {
 
                     // Nope, it's not ours
-
                     return;
                 }
 
             } else {
 
                 // portName is null, let's see what we have
-
-                throw new Error("Not Implemented: restoring a device with null serial number");
+                throw new IllegalStateException("Not Implemented: restoring a device with null serial number");
             }
 
-        } catch ( Throwable t ) {
-
+        } catch ( Throwable t ) { // NOSONAR Consequences have been considered
             logger.warn("Unhandled exception", t);
         }
     }
 
+    @Override
     public final synchronized void usbDeviceDetached(UsbServicesEvent e) {
 
         try {
 
-            logger.warn("*** USB device detached: " + e.getUsbDevice().getProductString());
+            logger.warn("*** USB device detached: {}", e.getUsbDevice().getProductString());
 
-            UsbDevice departure = e.getUsbDevice();
+            var departure = e.getUsbDevice();
 
             if ( departure == theServoController ) {
 
@@ -819,8 +798,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                 // VT: FIXME: Notify listeners
             }
 
-        } catch ( Throwable t ) {
-
+        } catch ( Throwable t ) { // NOSONAR Consequences have been considered
             logger.warn("Unhandled exception", t);
         }
     }
@@ -834,12 +812,10 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      */
     private void tooManyDevices(Set<UsbDevice> found) throws IOException, UsbException {
 
-        String message = "No port name specified, multiple PhidgetServo devices found:";
+        var message = "No port name specified, multiple PhidgetServo devices found:";
 
-        for ( Iterator<UsbDevice> i = found.iterator(); i.hasNext(); ) {
-
-            UsbDevice next = i.next();
-            String serial = next.getSerialNumberString();
+        for (UsbDevice next : found) {
+            var serial = next.getSerialNumberString();
             message += " " + serial;
         }
 
@@ -852,10 +828,9 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      * enumeration was broken.
      */
     @SuppressWarnings("serial")
-    protected class BootException extends Exception {
+    protected static class BootException extends Exception {
 
         BootException(String message) {
-
             super(message);
         }
     }
@@ -892,7 +867,6 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         protected abstract Meta createMeta();
 
         public final Meta getMeta() {
-
             return meta;
         }
 
@@ -905,12 +879,10 @@ public abstract class AbstractUsbServoController extends AbstractServoController
          * @return true if the device is bootable.
          */
         public boolean isBootable() {
-
             return false;
         }
 
         public void boot(UsbDevice target) throws UsbException {
-
             throw new IllegalAccessError("Operation not supported");
         }
 
@@ -934,7 +906,9 @@ public abstract class AbstractUsbServoController extends AbstractServoController
         public abstract void reset() throws UsbException;
 
         /**
-         * @return the number of servos the controller supports.
+         * Get the number of servos the controller supports.
+         *
+         * @return Servo count.
          */
         public abstract int getServoCount();
 
@@ -975,8 +949,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
 
         public abstract class UsbServo extends HardwareServo {
 
-            protected UsbServo(ServoController sc, int id) throws IOException {
-
+            protected UsbServo(ServoController sc, int id) {
                 super(sc, id);
             }
 
@@ -1001,8 +974,7 @@ public abstract class AbstractUsbServoController extends AbstractServoController
                     if ( !isDisconnectAllowed() ) {
 
                         // Too bad
-
-                        throw (IOException) new IOException("Device departed, disconnect not allowed").initCause(usbex);
+                        throw new IOException("Device departed, disconnect not allowed", usbex);
                     }
 
                     logger.warn("Assumed disconnect, reason:", usbex);

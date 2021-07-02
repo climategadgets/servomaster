@@ -1,20 +1,19 @@
 package net.sf.servomaster.device.impl.debug;
 
-import java.io.IOException;
-
-import org.apache.logging.log4j.ThreadContext;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
+import org.apache.logging.log4j.ThreadContext;
+
+import java.io.IOException;
 
 /**
  * A servo controller implementation requiring no hardware and producing no effect other than debug statements.
- *  
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ *
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public class NullServoController extends AbstractServoController {
 
@@ -56,16 +55,16 @@ public class NullServoController extends AbstractServoController {
     protected Servo createServo(int id) throws IOException {
         return new NullServo(this, id);
     }
-    
+
     @Override
     protected Meta createMeta() {
         return new NullMeta();
     }
-    
+
     protected class NullMeta extends AbstractMeta {
-        
+
         protected NullMeta() {
- 
+
             features.put("controller/allow_disconnect", Boolean.valueOf(false));
 
             properties.put("manufacturer/name", "DIY Zoning Project");
@@ -82,7 +81,7 @@ public class NullServoController extends AbstractServoController {
             properties.put("controller/precision", "1024");
         }
     }
-    
+
     /**
      * Method to simulate the controller-wide bandwidth limitation.
      */
@@ -98,13 +97,13 @@ public class NullServoController extends AbstractServoController {
             // the speed is determined by controller bandwidth, let's emulate a delay similar to one at
             // advertised controller/bandwidth baud.
 
-            long delay = 1000 / (Integer.parseInt((String) getMeta().getProperty("controller/bandwidth")));
+            long delay = 1000 / Integer.parseInt((String) getMeta().getProperty("controller/bandwidth"));
 
             try {
 
                 wait(delay);
 
-            } catch (Throwable t) {
+            } catch (Throwable t) { // NOSONAR Consequences have been considered
                 logger.error("wait interrupted???", t);
             }
 
@@ -114,7 +113,7 @@ public class NullServoController extends AbstractServoController {
     }
 
     protected class NullServo extends HardwareServo {
-        
+
         /**
          * Minimal allowed absolute position for this device.
          */
@@ -127,7 +126,7 @@ public class NullServoController extends AbstractServoController {
 
         short position_min = POSITION_MIN;
         short position_max = POSITION_MAX;
-        
+
         short position = (short) (position_min + (position_max - position_min) / 2);
 
         public NullServo(ServoController servoController, int id) throws IOException {
@@ -144,110 +143,100 @@ public class NullServoController extends AbstractServoController {
 
         @Override
         protected void setActualPosition(double position) throws IOException {
-            
+
             ThreadContext.push("setActualPosition id=" + id);
-            
+
             try {
-                
+
                 checkPosition(position);
 
                 this.position = (short)(position_min + (position_max - position_min) * position);
-                
-                logger.info("requested=" + position);
-                logger.info("actual=" + this.position);
+
+                logger.info("requested={}", position);
+                logger.info("actual={}", this.position);
 
                 delay();
 
                 actualPosition = position;
-                
+
                 actualPositionChanged(actualPosition);
-                
+
                 touch();
 
             } finally {
                 ThreadContext.pop();
             }
-            
+
         }
 
         @Override
         protected void sleep() throws IOException {
-
             logger.info("sleep()");
         }
 
         @Override
         protected void wakeUp() throws IOException {
-
             logger.info("wakeUp()");
         }
 
         protected class NullServoMeta extends AbstractMeta {
-            
+
             protected NullServoMeta() {
 
-                features.put("servo/silent", Boolean.valueOf(true));
-            
+                features.put("servo/silent", Boolean.TRUE);
+
                 properties.put("servo/precision", Integer.toString(position_max - position_min));
-    
-                PropertyWriter pwMin = new PropertyWriter() {
-    
-                    @Override
-                    public void set(String key, Object value) {
-    
-                        short p = Short.parseShort(value.toString());
-    
-                        if (p < POSITION_MIN || p > POSITION_MAX) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + POSITION_MIN + "..." + POSITION_MAX + ")");
-                        }
-    
-                        if (p >= position_max) {
-                            throw new IllegalStateException("position_min (" + p + ") can't be set higher than current position_max (" + position_max + ")");
-                        }
-    
-                        position_min = p;
-    
-                        try {
-    
-                            setActualPosition(actualPosition);
-    
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-    
-                        properties.put("servo/precision", Integer.toString(position_max - position_min));
+
+                PropertyWriter pwMin = (key, value) -> {
+
+                    short p = Short.parseShort(value.toString());
+
+                    if (p < POSITION_MIN || p > POSITION_MAX) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + POSITION_MIN + "..." + POSITION_MAX + ")");
                     }
-                };
-    
-                PropertyWriter pwMax = new PropertyWriter() {
-    
-                    @Override
-                    public void set(String key, Object value) {
-    
-                        short p = Short.parseShort(value.toString());
-    
-                        if (p < POSITION_MIN || p > POSITION_MAX) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + POSITION_MIN + "..." + POSITION_MAX + ")");
-                        }
-    
-                        if (p <= position_min) {
-                            throw new IllegalStateException("position_max (" + p + ") can't be set lower than current position_min (" + position_min + ")");
-                        }
-    
-                        position_max = p;
-    
-                        try {
-    
-                            setActualPosition(actualPosition);
-    
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-    
-                        properties.put("servo/precision", Integer.toString(position_max - position_min));
+
+                    if (p >= position_max) {
+                        throw new IllegalStateException("position_min (" + p + ") can't be set higher than current position_max (" + position_max + ")");
                     }
+
+                    position_min = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(position_max - position_min));
                 };
-    
+
+                PropertyWriter pwMax = (key, value) -> {
+
+                    short p = Short.parseShort(value.toString());
+
+                    if (p < POSITION_MIN || p > POSITION_MAX) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + POSITION_MIN + "..." + POSITION_MAX + ")");
+                    }
+
+                    if (p <= position_min) {
+                        throw new IllegalStateException("position_max (" + p + ") can't be set lower than current position_min (" + position_min + ")");
+                    }
+
+                    position_max = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(position_max - position_min));
+                };
+
                 propertyWriters.put("servo/range/min", pwMin);
                 propertyWriters.put("servo/range/max", pwMax);
             }

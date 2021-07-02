@@ -1,8 +1,5 @@
 package net.sf.servomaster.device.impl.serial.ft;
 
-import java.io.IOException;
-import java.util.Iterator;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
@@ -10,6 +7,9 @@ import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
+
+import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * <a href="http://www.ferrettronics.com/product639.html"
@@ -260,11 +260,9 @@ public class FT639ServoController extends AbstractSerialServoController implemen
         byte upper = (byte)((((position >> 4) & 0x0F) | 0x80) | servo);
         byte lower = (byte)((position & 0x0F) | servo);
 
-        logger.debug(Integer.toHexString(servo) + " [" + Integer.toHexString(lower) + ", " + Integer.toHexString((upper) & 0xFF) + "]");
+        logger.debug( "{} [{}, {}]", () -> Integer.toHexString(servo), () -> Integer.toHexString(lower), () -> Integer.toHexString(upper & 0xFF));
 
-        byte[] result = { lower, upper };
-
-        return result;
+        return new byte[] { lower, upper };
     }
 
     /**

@@ -1,23 +1,18 @@
 package net.sf.servomaster.device.impl.usb.pololu;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.usb.UsbConfiguration;
-import javax.usb.UsbEndpoint;
-import javax.usb.UsbEndpointDescriptor;
-import javax.usb.UsbException;
-import javax.usb.UsbInterface;
-import javax.usb.UsbIrp;
-import javax.usb.UsbPipe;
-
-import org.apache.logging.log4j.ThreadContext;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
+import org.apache.logging.log4j.ThreadContext;
+
+import javax.usb.UsbConfiguration;
+import javax.usb.UsbEndpoint;
+import javax.usb.UsbException;
+import javax.usb.UsbInterface;
+import javax.usb.UsbPipe;
+import java.io.IOException;
 
 /**
  * <a href="http://pololu.com/products/pololu/0390/" target="_top">Pololu USB 16-Servo Controller</a> controller.
@@ -93,11 +88,11 @@ public class USB16ServoController extends AbstractUsbServoController {
                 properties.put("manufacturer/model", getModelName());
                 properties.put("controller/maxservos", Integer.toString(getServoCount()));
 
-                features.put("controller/allow_disconnect", new Boolean(true));
+                features.put("controller/allow_disconnect", Boolean.TRUE);
 
-                features.put(Feature.SILENT.name, new Boolean(true));
-                features.put("controller/protocol/serial", new Boolean(true));
-                features.put("controller/protocol/USB", new Boolean(true));
+                features.put(Feature.SILENT.name, Boolean.TRUE);
+                features.put("controller/protocol/serial", Boolean.TRUE);
+                features.put("controller/protocol/USB", Boolean.TRUE);
 
                 // VT: FIXME
 
@@ -151,14 +146,14 @@ public class USB16ServoController extends AbstractUsbServoController {
                 return new PololuServoMeta();
             }
 
-            protected void setVelocity(byte newVelocity) throws IOException {
+            protected void setVelocity(byte newVelocity) {
 
                 logger.debug("NOT IMPLEMENTED", new Error("Trace"));
             }
 
             protected class PololuServoMeta extends AbstractMeta {
 
-                protected PololuServoMeta() {
+                PololuServoMeta() {
 
                     // VT: NOTE: According to the documentation, valid values are 500-5500
 
@@ -228,24 +223,11 @@ public class USB16ServoController extends AbstractUsbServoController {
                         }
                     };
 
-                    PropertyWriter pwVelocity = new PropertyWriter() {
+                    PropertyWriter pwVelocity = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
-
-                            velocity = Byte.parseByte(value.toString());
-
-                            try {
-
-                                setVelocity(velocity);
-
-                            } catch ( IOException ioex ) {
-
-                                logger.error("setVelocity(" + velocity + ") failed", ioex);
-                            }
-
-                            properties.put("servo/velocity", Byte.toString(velocity));
-                        }
+                        velocity = Byte.parseByte(value.toString());
+                        setVelocity(velocity);
+                        properties.put("servo/velocity", Byte.toString(velocity));
                     };
 
                     propertyWriters.put("servo/range/min", pwMin);
@@ -267,19 +249,16 @@ public class USB16ServoController extends AbstractUsbServoController {
 
         @Override
         public int getServoCount() {
-
             return 16;
         }
 
         @Override
         public String getModelName() {
-
             return "USB 16-Servo";
         }
 
         @Override
         protected Meta createMeta() {
-
             return new PololuMeta();
         }
 
@@ -288,11 +267,11 @@ public class USB16ServoController extends AbstractUsbServoController {
 
             // Tough stuff, we're dealing with timing now...
 
-            PololuServo servo = (PololuServo) USB16ServoController.this.getServo(Integer.toString(id));
+            var servo = (PololuServo) USB16ServoController.this.getServo(Integer.toString(id));
 
             // One unit is 1/2 of a microsecond
 
-            short units = (short)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
+            var units = (short)(servo.min_pulse + (position * (servo.max_pulse - servo.min_pulse)));
 
             setAbsolutePosition((byte)id, units);
         }
@@ -319,28 +298,24 @@ public class USB16ServoController extends AbstractUsbServoController {
 
                 UsbEndpoint endpoint = null;
 
-                for ( Iterator<UsbEndpoint> i = iface.getUsbEndpoints().iterator(); i.hasNext(); ) {
+                for (UsbEndpoint e : (Iterable<UsbEndpoint>) iface.getUsbEndpoints()) {
 
-                    UsbEndpoint e = i.next();
-                    UsbEndpointDescriptor ed = e.getUsbEndpointDescriptor();
-                    logger.info("Endpoint: " + Integer.toHexString(ed.bEndpointAddress() & 0xFF));
+                    var ed = e.getUsbEndpointDescriptor();
+                    logger.info("Endpoint: {}", () -> Integer.toHexString(ed.bEndpointAddress() & 0xFF));
 
-                    if ( ed.bEndpointAddress() == 0x03 ) {
-
+                    if (ed.bEndpointAddress() == 0x03) {
                         endpoint = e;
                         break;
                     }
                 }
 
                 if ( endpoint == null ) {
-
                     throw new UsbException("Can't find endpoint 0x03");
                 }
 
                 out = endpoint.getUsbPipe();
 
                 if ( !out.isOpen() ) {
-
                     out.open();
                 }
             }
@@ -355,15 +330,14 @@ public class USB16ServoController extends AbstractUsbServoController {
                 init();
 
                 if ( out == null ) {
-
                     return;
                 }
 
                 byte[] buffer = PacketBuilder.setAbsolutePosition(servoId, units);
 
-                logger.debug("(" + Integer.toString(servoId) + ", " + units + ")");
+                logger.debug("({}, {})", () -> Integer.toString(servoId), () -> units);
 
-                UsbIrp message = out.createUsbIrp();
+                var message = out.createUsbIrp();
 
                 message.setData(buffer);
 
@@ -392,7 +366,6 @@ public class USB16ServoController extends AbstractUsbServoController {
             // In case the silent mode was set, we have to resend the positions
 
             //sent = false;
-
             //send();
         }
     }

@@ -1,18 +1,16 @@
 package net.sf.servomaster.device.impl.i2c.pca9685;
 
-import java.io.IOException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.ThreadContext;
-
 import com.pi4j.io.i2c.I2CBus;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.HardwareServo;
 import net.sf.servomaster.device.impl.i2c.AbstractI2CServoController;
 import net.sf.servomaster.device.impl.i2c.I2CMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.ThreadContext;
+
+import java.io.IOException;
 
 /**
  * Implementation based on <a href="https://www.adafruit.com/product/2327">Raspberry Pi PWM HAT</a>
@@ -127,7 +125,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
             // go to sleep
 
             device.write(MODE1, newmode);
-            device.write(PRESCALE, (byte) (Math.floor(preScale)));
+            device.write(PRESCALE, (byte) Math.floor(preScale));
             device.write(MODE1, oldmode);
 
             try {
@@ -136,14 +134,14 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
                 Thread.sleep(5);
 
-            } catch (Throwable t) {
+            } catch (Throwable t) { // NOSONAR Consequences have been considered
 
                 throw new IOException("Sleep interrupted", t);
             }
 
             device.write(MODE1, (byte) (oldmode | 0x80));
 
-            logger.debug(hz + "Hz");
+            logger.debug("{}Hz", hz);
 
         } finally {
             ThreadContext.pop();
@@ -163,7 +161,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         try {
 
-            logger.debug("channel=" + channel + ", on=" + onAt + ", off=" + offAt);
+            logger.debug("channel={}, on={}, off={}", channel, onAt, offAt);
 
             // VT: NOTE: Arguments are calculation results, sanity checks are needed
 
@@ -202,7 +200,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         // Do absolutely nothing.
 
-        logger.info("init: " + portName);
+        logger.info("init: {}", portName);
     }
 
     @Override
@@ -217,18 +215,15 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
     @Override
     protected Servo createServo(int id) throws IOException {
-
         return new PCA9685Servo(this, id);
     }
 
     @Override
     protected Meta createMeta() {
-
         return new PCA9685Meta();
     }
 
     protected class PCA9685Meta extends I2CMeta {
-
         protected PCA9685Meta() {
 
             properties.put("manufacturer/name", "Adafruit");
@@ -251,18 +246,16 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
     private final class PCA9685Servo extends HardwareServo {
 
-        short min_pulse = MIN_PULSE;
-        short max_pulse = MAX_PULSE;
+        short minPulse = MIN_PULSE;
+        short maxPulse = MAX_PULSE;
 
-        public PCA9685Servo(PCA9685ServoController sc, int id) throws IOException {
+        public PCA9685Servo(PCA9685ServoController sc, int id) {
             super(sc, id);
-
             setPosition(0.5);
         }
 
         @Override
         protected Meta createMeta() {
-
             return new PCA9685ServoMeta();
         }
 
@@ -275,7 +268,7 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
                 checkPosition(position);
 
-                setPWM(id, 0, (int) (min_pulse + position * (max_pulse - min_pulse)));
+                setPWM(id, 0, (int) (minPulse + position * (maxPulse - minPulse)));
 
                 actualPosition = position;
 
@@ -321,71 +314,63 @@ public class PCA9685ServoController extends AbstractI2CServoController {
 
         protected final class PCA9685ServoMeta extends AbstractMeta {
 
-            protected PCA9685ServoMeta() {
+            PCA9685ServoMeta() {
 
                 // Silent timeout is five seconds
 
                 properties.put("servo/silent", "5000");
-                features.put(META_SILENT, Boolean.valueOf(true));
+                features.put(META_SILENT, Boolean.TRUE);
 
-                properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                properties.put("servo/precision", Integer.toString(maxPulse - minPulse));
 
-                PropertyWriter pwMin = new PropertyWriter() {
+                PropertyWriter pwMin = (key, value) -> {
 
-                    @Override
-                    public void set(String key, Object value) {
+                    var p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if (p < MIN_PULSE || p > MAX_PULSE) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if (p >= max_pulse) {
-                            throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
-                        }
-
-                        min_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if (p < MIN_PULSE || p > MAX_PULSE) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if (p >= maxPulse) {
+                        throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + maxPulse + ")");
+                    }
+
+                    minPulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(maxPulse - minPulse));
                 };
 
-                PropertyWriter pwMax = new PropertyWriter() {
+                PropertyWriter pwMax = (key, value) -> {
 
-                    @Override
-                    public void set(String key, Object value) {
+                    var p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if (p < MIN_PULSE || p > MAX_PULSE) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if (p <= min_pulse) {
-                            throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
-                        }
-
-                        max_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if (p < MIN_PULSE || p > MAX_PULSE) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if (p <= minPulse) {
+                        throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + minPulse + ")");
+                    }
+
+                    maxPulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(maxPulse - minPulse));
                 };
 
                 propertyWriters.put("servo/range/min", pwMin);

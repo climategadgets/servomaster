@@ -1,14 +1,13 @@
 package net.sf.servomaster.device.impl.serial.pololu;
 
-import java.io.IOException;
-import java.util.Iterator;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.serial.AbstractSerialServoController;
 import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
+
+import java.io.IOException;
 
 /**
  * Generic driver for <a
@@ -21,22 +20,22 @@ import net.sf.servomaster.device.model.ServoController;
  * Serial</a>, and <a href="http://www.pololu.com/products/pololu/0390/"
  * target="_top">16-Servo USB</a> connected via serial interface.
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2005-2021
  */
-abstract public class PololuSerialServoController extends AbstractSerialServoController {
+public abstract class PololuSerialServoController extends AbstractSerialServoController {
 
-    public PololuSerialServoController(String portName) {
+    protected PololuSerialServoController(String portName) {
         super(portName);
     }
 
     @Override
-    public synchronized final void reset() throws IOException {
+    public final synchronized void reset() throws IOException {
 
         checkInit();
 
-        for (Iterator<Servo> i = getServos().iterator(); i.hasNext();) {
+        for (Servo value : getServos()) {
 
-            PololuServo servo = (PololuServo) i.next();
+            PololuServo servo = (PololuServo) value;
 
             // Default active
             servo.setOn(true);
@@ -48,15 +47,15 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
     @Override
     protected final synchronized Servo createServo(int id) throws IOException {
-
         return new PololuServo(this, id);
     }
 
-    abstract protected Meta createMeta();
+    @Override
+    protected abstract Meta createMeta();
 
-    abstract protected class PololuMeta extends SerialMeta {
+    protected abstract class PololuMeta extends SerialMeta {
 
-        public PololuMeta() {
+        protected PololuMeta() {
 
             properties.put("manufacturer/name", "Pololu Corp.");
             properties.put("manufacturer/URL", "http://www.pololu.com/");
@@ -67,7 +66,7 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             properties.put("controller/maxservos", Integer.toString(getServoCount()));
             properties.put("controller/protocol/serial/speed", "38400");
 
-            features.put(Feature.SILENT.name, Boolean.valueOf(true));
+            features.put(Feature.SILENT.name, Boolean.TRUE);
 
             // VT: FIXME
 
@@ -110,16 +109,15 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
         short max_pulse = MAX_PULSE;
 
         PololuServo(ServoController sc, int id) {
-
             super(sc, id);
         }
 
         @Override
         public final Meta createMeta() {
-
             return new PololuServoMeta();
         }
 
+        @Override
         protected final void sendPosition(double position) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
@@ -129,17 +127,15 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
             PololuSerialServoController.this.send(PacketBuilder.setAbsolutePosition((byte)id, units));
         }
 
-        protected final void setOn(boolean on) throws IOException {
+        final void setOn(boolean on) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
-
             PololuSerialServoController.this.send(PacketBuilder.setParameters((byte)id, on));
         }
 
-        protected final void setSpeed(byte speed) throws IOException {
+        final void setSpeed(byte speed) throws IOException {
 
             // This method doesn't need to be synchronized because send() is
-
             PololuSerialServoController.this.send(PacketBuilder.setSpeed((byte)id, speed));
         }
 
@@ -151,85 +147,70 @@ abstract public class PololuSerialServoController extends AbstractSerialServoCon
 
                 properties.put("servo/precision", "5000");
 
-                PropertyWriter pwMin = new PropertyWriter() {
+                PropertyWriter pwMin = (key, value) -> {
 
-                    public void set(String key, Object value) {
+                    short p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if ( p < MIN_PULSE || p > MAX_PULSE ) {
-
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if ( p >= max_pulse ) {
-
-                            throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
-                        }
-
-                        min_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch ( IOException ioex ) {
-
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if ( p < MIN_PULSE || p > MAX_PULSE ) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if ( p >= max_pulse ) {
+                        throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
+                    }
+
+                    min_pulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch ( IOException ioex ) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                 };
 
-                PropertyWriter pwMax = new PropertyWriter() {
+                PropertyWriter pwMax = (key, value) -> {
 
-                    public void set(String key, Object value) {
+                    short p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if ( p < MIN_PULSE || p > MAX_PULSE ) {
-
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if ( p <= min_pulse ) {
-
-                            throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
-                        }
-
-                        max_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch ( IOException ioex ) {
-
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if ( p < MIN_PULSE || p > MAX_PULSE ) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if ( p <= min_pulse ) {
+                        throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
+                    }
+
+                    max_pulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch ( IOException ioex ) {
+
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                 };
 
-                PropertyWriter pwVelocity = new PropertyWriter() {
+                PropertyWriter pwVelocity = (key, value) -> {
 
-                    public void set(String key, Object value) {
+                    velocity = Byte.parseByte(value.toString());
 
-                        velocity = Byte.parseByte(value.toString());
+                    try {
 
-                        try {
+                        setSpeed(velocity);
 
-                            setSpeed(velocity);
-
-                        } catch ( IOException ioex ) {
-
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/velocity", Byte.toString(velocity));
+                    } catch ( IOException ioex ) {
+                        logger.warn("Unhandled exception", ioex);
                     }
+
+                    properties.put("servo/velocity", Byte.toString(velocity));
                 };
 
                 propertyWriters.put("servo/range/min", pwMin);

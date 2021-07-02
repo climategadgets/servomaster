@@ -1,13 +1,13 @@
 package net.sf.servomaster.device.model.transform;
 
-import java.io.IOException;
-import java.util.concurrent.Future;
-
 import net.sf.servomaster.device.impl.AbstractServo;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoListener;
 import net.sf.servomaster.device.model.TransitionStatus;
+
+import java.io.IOException;
+import java.util.concurrent.Future;
 
 /**
  * The coordinate transformer skeleton.
@@ -15,7 +15,7 @@ import net.sf.servomaster.device.model.TransitionStatus;
  * Provides the 'wrapper' for the servo being controlled, as well as the
  * means to perform the actual coordinate transformation.
  *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2021
  */
 public abstract class AbstractCoordinateTransformer extends AbstractServo {
 
@@ -30,7 +30,6 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
         super(null, target);
 
         if (getTarget() == null) {
-
             throw new IllegalArgumentException("target can't be null");
         }
     }
@@ -42,7 +41,6 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      */
     @Override
     public String getName() {
-
         return getTarget().getName();
     }
 
@@ -57,7 +55,6 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      */
     @Override
     public Future<TransitionStatus> setPosition(double position) {
-
         return getTarget().setPosition(transform(position));
     }
 
@@ -73,7 +70,6 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      */
     @Override
     public double getPosition() {
-
         return resolve(getTarget().getPosition());
     }
 
@@ -92,39 +88,32 @@ public abstract class AbstractCoordinateTransformer extends AbstractServo {
      */
     @Override
     public double getActualPosition() {
-
         return resolve(getTarget().getActualPosition());
     }
 
     @Override
-    public void addListener(ServoListener listener) {
-
+    public synchronized void addListener(ServoListener listener) {
         getTarget().addListener(listener);
     }
 
     @Override
-    public void removeListener(ServoListener listener) {
-
+    public synchronized void removeListener(ServoListener listener) {
         getTarget().removeListener(listener);
     }
 
     @Override
     public void setEnabled(boolean enabled) throws IOException {
-
         getTarget().setEnabled(enabled);
     }
 
     @Override
     protected Meta createMeta() {
-
         return getTarget().getMeta();
     }
 
     @Override
     protected void setActualPosition(double position) throws IOException {
-
-        throw new Error("How come we ended up here?");
-        //getTarget().setActualPosition(position);
+        throw new IllegalStateException("How come we ended up here?");
     }
 
     /**

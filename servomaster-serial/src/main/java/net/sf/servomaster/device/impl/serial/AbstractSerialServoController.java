@@ -1,19 +1,17 @@
 package net.sf.servomaster.device.impl.serial;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-
 import gnu.io.CommPortIdentifier;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 import net.sf.servomaster.device.impl.AbstractServoController;
 import net.sf.servomaster.device.impl.HardwareServo;
-import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.ServoController;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 /**
  * Base class for all serial servo controllers.
@@ -67,7 +65,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
 
             // This is a stupid way to do it, but oh well, "release early"
 
-            List<String> portsTried = new LinkedList<String>();
+            var portsTried = new ArrayList<String>();
 
             for (Enumeration<?> ports = CommPortIdentifier.getPortIdentifiers(); ports.hasMoreElements();) {
 
@@ -92,7 +90,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                             // able to enumerate the rest of the ports - all
                             // we have to do is to log it.
 
-                            logger.warn("Port in use, skipped", new IOException("Port in use, skipped").initCause(ex));
+                            logger.warn("Port in use, skipped", new IOException("Port in use, skipped", ex));
                         }
 
                         break;
@@ -101,7 +99,6 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
             }
 
             if (port == null) {
-
                 throw new IllegalArgumentException("No suitable port found, tried: " + portsTried);
             }
 
@@ -112,13 +109,12 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
             // And all of the controllers supported far use 8N1, so we'll
             // just leave that as a default.
 
-            int portSpeed = 2400;
-
-            Meta controllerMeta = getMeta();
+            var portSpeed = 2400;
+            var controllerMeta = getMeta();
 
             if (controllerMeta == null) {
 
-                logger.warn("Driver doesn't support meta, port speed is 2400: " + getClass().getName());
+                logger.warn("Driver doesn't support meta, port speed is 2400: {}", getClass().getName());
 
             } else {
 
@@ -127,25 +123,24 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                     // speedObject will never be null - we'll get
                     // UnsupportedOperationException instead
 
-                    Object speedObject = controllerMeta.getProperty(META_SPEED);
+                    var speedObject = controllerMeta.getProperty(META_SPEED);
 
                     try {
 
-                        String speedString = (String) speedObject;
+                        var speedString = (String) speedObject;
 
                         portSpeed = Integer.parseInt(speedString);
 
-                    } catch (Throwable t) {
+                    } catch (Throwable t) { // NOSONAR Consequences have been considered
 
                         // This is serious enough to blow up - somebody did
                         // a bad job, the speed is hardcoded into the driver
 
                         throw (IllegalArgumentException) new IllegalArgumentException("Unable to parse property "
-                                + META_SPEED + ", object class is " + speedObject.getClass().getName() + ", value is '" + speedObject + "'").initCause(t);
+                                + META_SPEED + ", object class is " + speedObject.getClass().getName() + ", value is '" + speedObject + "'", t);
                     }
 
                 } catch (UnsupportedOperationException ex) {
-
                     logger.error("Port speed is 2400, cause: ", ex);
                 }
             }
@@ -160,8 +155,7 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
                     SerialPort.PARITY_NONE);
 
         } catch (UnsupportedCommOperationException ucoex) {
-
-            throw (IOException) new IOException("Unsupported comm operation").initCause(ucoex);
+            throw (IOException) new IOException("Unsupported comm operation", ucoex);
         }
     }
 
@@ -176,7 +170,6 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
      */
     @Override
     public final boolean isConnected() {
-
         checkInit();
         return true;
     }
@@ -190,7 +183,6 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
      * hardware controller.
      */
     protected synchronized void send(byte b) throws IOException {
-
         serialOut.write(b);
         serialOut.flush();
     }
@@ -207,9 +199,8 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
 
         // VT: FIXME: Can be optimized
 
-        for ( int offset = 0; offset < buffer.length; offset++ ) {
-
-            serialOut.write(buffer[offset]);
+        for (byte b : buffer) {
+            serialOut.write(b);
         }
 
         serialOut.flush();
@@ -218,7 +209,6 @@ public abstract class AbstractSerialServoController extends AbstractServoControl
     protected abstract class SerialServo extends HardwareServo {
 
         protected SerialServo(ServoController sc, int id) {
-
             super(sc, id);
         }
 

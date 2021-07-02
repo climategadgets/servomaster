@@ -1,8 +1,5 @@
 package net.sf.servomaster.device.impl.serial.parallax;
 
-import java.io.IOException;
-import java.util.Iterator;
-
 import gnu.io.SerialPort;
 import gnu.io.UnsupportedCommOperationException;
 import net.sf.servomaster.device.impl.AbstractMeta;
@@ -11,6 +8,8 @@ import net.sf.servomaster.device.impl.serial.SerialMeta;
 import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
+
+import java.io.IOException;
 
 /**
  * Generic driver for <a href="http://www.parallax.com/" target="_top">Parallax Serial Servo Controllers</a>.
@@ -35,9 +34,9 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
         checkInit();
 
-        for (Iterator<Servo> i = getServos().iterator(); i.hasNext();) {
+        for (Servo value : getServos()) {
 
-            ParallaxServo servo = (ParallaxServo) i.next();
+            ParallaxServo servo = (ParallaxServo) value;
 
             // Default active
             servo.setOn(true);
@@ -49,10 +48,8 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
     @Override
     protected final synchronized Servo createServo(int id) throws IOException {
-
         return new ParallaxServo(this, id);
     }
-
 
     //TODO: this should really go into the properties and be used in the AbstractSerialServoController
     @Override
@@ -68,6 +65,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         }
     }
 
+    @Override
     protected abstract Meta createMeta();
 
     protected abstract class ParallaxMeta extends SerialMeta {
@@ -85,8 +83,7 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             //properties.put(META_SPEED, "38400");
             properties.put(META_SPEED, "2400");
 
-
-            features.put(Feature.SILENT.name, Boolean.valueOf(true));
+            features.put(Feature.SILENT.name, Boolean.TRUE);
 
             // VT: FIXME
 
@@ -130,13 +127,11 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
         short max_pulse = MAX_PULSE;
 
         ParallaxServo(ServoController sc, int id) {
-
             super(sc, id);
         }
 
         @Override
         public Meta createMeta() {
-
             return new ParallaxServoMeta();
         }
 
@@ -147,8 +142,8 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
 
             short units = (short) (min_pulse + position * (max_pulse - min_pulse));
 
-            logger.debug("Units:" + units);
-            logger.debug("Position:" + position);
+            logger.debug("Units:{}", units);
+            logger.debug("Position:{}", position);
 
             ParallaxSerialServoController.this.send(PacketBuilderNG.setAbsolutePosition(serialBuffer, (byte) id, velocity, units));
         }
@@ -160,93 +155,72 @@ public abstract class ParallaxSerialServoController extends AbstractSerialServoC
             //ParallaxSerialServoController.this.send(PacketBuilder.setParameters(port.getBaudRate()));
         }
 
-        void setSpeed(byte speed) throws IOException {
-
+        void setSpeed(byte speed) {
             velocity = speed;
         }
 
         protected final class ParallaxServoMeta extends AbstractMeta {
 
-            protected ParallaxServoMeta() {
+            ParallaxServoMeta() {
 
                 // VT: NOTE: According to the documentation, valid values are 250-1250
                 properties.put("servo/precision", "1000");
 
-                PropertyWriter pwMin = new PropertyWriter() {
+                PropertyWriter pwMin = (key, value) -> {
 
-                    @Override
-                    public void set(String key, Object value) {
+                    var p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if (p < MIN_PULSE || p > MAX_PULSE) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if (p >= max_pulse) {
-                            throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
-                        }
-
-                        min_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if (p < MIN_PULSE || p > MAX_PULSE) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if (p >= max_pulse) {
+                        throw new IllegalStateException("min_pulse (" + p + ") can't be set higher than current max_pulse (" + max_pulse + ")");
+                    }
+
+                    min_pulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                 };
 
-                PropertyWriter pwMax = new PropertyWriter() {
+                PropertyWriter pwMax = (key, value) -> {
 
-                    @Override
-                    public void set(String key, Object value) {
+                    short p = Short.parseShort(value.toString());
 
-                        short p = Short.parseShort(value.toString());
-
-                        if (p < MIN_PULSE || p > MAX_PULSE) {
-                            throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
-                        }
-
-                        if (p <= min_pulse) {
-                            throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
-                        }
-
-                        max_pulse = p;
-
-                        try {
-
-                            setActualPosition(actualPosition);
-
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                    if (p < MIN_PULSE || p > MAX_PULSE) {
+                        throw new IllegalArgumentException("Value (" + p + ") is outside of valid range (" + MIN_PULSE + "..." + MAX_PULSE + ")");
                     }
+
+                    if (p <= min_pulse) {
+                        throw new IllegalStateException("max_pulse (" + p + ") can't be set lower than current min_pulse (" + min_pulse + ")");
+                    }
+
+                    max_pulse = p;
+
+                    try {
+
+                        setActualPosition(actualPosition);
+
+                    } catch (IOException ioex) {
+                        logger.warn("Unhandled exception", ioex);
+                    }
+
+                    properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                 };
 
-                PropertyWriter pwVelocity = new PropertyWriter() {
+                PropertyWriter pwVelocity = (key, value) -> {
 
-                    @Override
-                    public void set(String key, Object value) {
-
-                        velocity = Byte.parseByte(value.toString());
-
-                        try {
-
-                            setSpeed(velocity);
-
-                        } catch (IOException ioex) {
-                            logger.warn("Unhandled exception", ioex);
-                        }
-
-                        properties.put("servo/velocity", Byte.toString(velocity));
-                    }
+                    velocity = Byte.parseByte(value.toString());
+                    setSpeed(velocity);
+                    properties.put("servo/velocity", Byte.toString(velocity));
                 };
 
                 propertyWriters.put("servo/range/min", pwMin);

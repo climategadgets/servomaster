@@ -1,29 +1,22 @@
 package net.sf.servomaster.device.impl.i2c;
 
-import java.io.IOException;
-
-import org.apache.logging.log4j.ThreadContext;
-
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
-
 import net.sf.servomaster.device.impl.AbstractServoController;
+import org.apache.logging.log4j.ThreadContext;
+
+import java.io.IOException;
 
 /**
  * Base class for I2C based servo controllers.
- * 
+ *
  * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2001-2018
  */
 public abstract class AbstractI2CServoController extends AbstractServoController {
 
-    /**
-     * @see I2CBus
-     */
-    public final int busId;
     public final int deviceAddress;
 
-    private final I2CBus bus;
     protected final I2CDevice device;
 
     protected AbstractI2CServoController(int busId, int deviceAddress) throws IOException {
@@ -36,13 +29,12 @@ public abstract class AbstractI2CServoController extends AbstractServoController
 
         try {
 
-            this.busId = busId;
             this.deviceAddress = deviceAddress;
 
-            bus = I2CFactory.getInstance(busId);
+            I2CBus bus = I2CFactory.getInstance(busId);
             device = bus.getDevice(deviceAddress);
 
-        } catch (Throwable t) {
+        } catch (Throwable t) { // NOSONAR Consequences have been considered
 
             throw new IOException("Oops", t);
 
@@ -52,17 +44,14 @@ public abstract class AbstractI2CServoController extends AbstractServoController
     }
 
     protected AbstractI2CServoController(String portName) throws IOException {
-
         this(parseBusId(portName), parseDeviceAddress(portName));
     }
 
     private static int parseBusId(String portName) {
-
         return Integer.decode(split(portName)[0]);
     }
 
     private static int parseDeviceAddress(String portName) {
-
         return Integer.decode(split(portName)[1]);
     }
 

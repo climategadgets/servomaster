@@ -1,19 +1,5 @@
 package net.sf.servomaster.device.impl.usb.phidget;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import javax.usb.UsbConfiguration;
-import javax.usb.UsbConst;
-import javax.usb.UsbControlIrp;
-import javax.usb.UsbDevice;
-import javax.usb.UsbEndpoint;
-import javax.usb.UsbEndpointDescriptor;
-import javax.usb.UsbException;
-import javax.usb.UsbInterface;
-import javax.usb.UsbIrp;
-import javax.usb.UsbPipe;
-
 import net.sf.servomaster.device.impl.AbstractMeta;
 import net.sf.servomaster.device.impl.usb.AbstractUsbServoController;
 import net.sf.servomaster.device.impl.usb.phidget.firmware.Servo8;
@@ -21,20 +7,26 @@ import net.sf.servomaster.device.model.Meta;
 import net.sf.servomaster.device.model.Servo;
 import net.sf.servomaster.device.model.ServoController;
 
+import javax.usb.UsbConfiguration;
+import javax.usb.UsbConst;
+import javax.usb.UsbControlIrp;
+import javax.usb.UsbDevice;
+import javax.usb.UsbEndpoint;
+import javax.usb.UsbException;
+import javax.usb.UsbInterface;
+import javax.usb.UsbPipe;
+import java.io.IOException;
+
 /**
- * <a
- * href="http://phidgets.com/index.php?module=pncommerce&func=categoryview&CID=7"
- * target="_top">Generic PhidgetServo</a> controller.
+ * Generic PhidgetServo controller.
  *
- * Detailed documentation to follow.
- *
- * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2018
+ * @author Copyright &copy; <a href="mailto:vt@homeclimatecontrol.com">Vadim Tkachenko</a> 2002-2021
  */
 public class PhidgetServoController extends AbstractUsbServoController {
 
     /**
      * Create an instance connected to the device with the given serial number.
-     * 
+     *
      * @param serialNumber Serial number of the device to connect to.
      */
     public PhidgetServoController(String serialNumber) {
@@ -95,7 +87,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 properties.put("manufacturer/model", getModelName());
                 properties.put("controller/maxservos", Integer.toString(getServoCount()));
 
-                features.put("controller/allow_disconnect", new Boolean(true));
+                features.put("controller/allow_disconnect", Boolean.TRUE);
             }
         }
 
@@ -207,7 +199,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
             logger.debug("Position:     " + position);
             logger.debug("Microseconds: " + microseconds);
             logger.debug("Buffer:       " + servoPosition[id]);
-            
+
             send();
         }
 
@@ -312,8 +304,8 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             PhidgetMeta003() {
 
-                features.put(Feature.SILENT.name, new Boolean(true));
-                features.put("controller/protocol/USB", new Boolean(true));
+                features.put(Feature.SILENT.name, Boolean.TRUE);
+                features.put("controller/protocol/USB", Boolean.TRUE);
 
                 // VT: FIXME
 
@@ -356,44 +348,34 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 PhidgetServoMeta003() {
 
-                    PropertyWriter pwMin = new PropertyWriter() {
+                    PropertyWriter pwMin = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        min_pulse = Integer.parseInt(value.toString());
 
-                            min_pulse = Integer.parseInt(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
-
-                            } catch ( IOException ioex ) {
-
-                                logger.error("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                        } catch ( IOException ioex ) {
+                            logger.error("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                     };
 
-                    PropertyWriter pwMax = new PropertyWriter() {
+                    PropertyWriter pwMax = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        max_pulse = Integer.parseInt(value.toString());
 
-                            max_pulse = Integer.parseInt(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
-
-                            } catch ( IOException ioex ) {
-
-                                logger.warn("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
+                        } catch ( IOException ioex ) {
+                            logger.warn("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/precision", Integer.toString(max_pulse - min_pulse));
                     };
 
                     propertyWriters.put("servo/range/min", pwMin);
@@ -410,13 +392,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         protected String getModelName() {
-
             return "PhidgetServo";
         }
 
         @Override
         public int getServoCount() {
-
             return 4;
         }
     }
@@ -430,13 +410,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         protected String getModelName() {
-
             return "UniServo";
         }
 
         @Override
         public int getServoCount() {
-
             return 1;
         }
     }
@@ -454,7 +432,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         protected String getModelName() {
-
             return "PhidgetAdvancedServo";
         }
 
@@ -471,7 +448,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         public int getServoCount() {
-
             return 8;
         }
 
@@ -481,7 +457,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
             PhidgetServo0x3B servo = (PhidgetServo0x3B) PhidgetServoController.this.getServo(Integer.toString(id));
 
             if ( servo == null ) {
-
                 throw new IllegalStateException("servoSet[" + id + "] is still null");
             }
 
@@ -492,7 +467,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
         public void silence() throws UsbException {
 
             // VT: FIXME
-
             logger.warn("silence() is not implemented in " + getClass().getName());
         }
 
@@ -504,7 +478,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 if ( theServoController == null ) {
 
                     // There's nothing we can do at this point
-
                     return;
                 }
 
@@ -518,28 +491,24 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 UsbEndpoint endpoint = null;
 
-                for ( Iterator<UsbEndpoint> i = iface.getUsbEndpoints().iterator(); i.hasNext(); ) {
+                for (UsbEndpoint e : (Iterable<UsbEndpoint>) iface.getUsbEndpoints()) {
 
-                    UsbEndpoint e = i.next();
-                    UsbEndpointDescriptor ed = e.getUsbEndpointDescriptor();
+                    var ed = e.getUsbEndpointDescriptor();
                     logger.info("Endpoint: " + Integer.toHexString(ed.bEndpointAddress() & 0xFF));
 
-                    if ( ed.bEndpointAddress() == 0x01 ) {
-
+                    if (ed.bEndpointAddress() == 0x01) {
                         endpoint = e;
                         break;
                     }
                 }
 
                 if ( endpoint == null ) {
-
                     throw new UsbException("Can't find endpoint 82");
                 }
 
                 out = endpoint.getUsbPipe();
 
                 if ( !out.isOpen() ) {
-
                     out.open();
                 }
             }
@@ -553,11 +522,10 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 // VT: FIXME: I guess a sent flag like for QuadServo will
                 // help
-
                 return;
             }
 
-            UsbIrp message = out.createUsbIrp();
+            var message = out.createUsbIrp();
 
             message.setData(buffer);
 
@@ -568,7 +536,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
             } catch ( UsbException usbex ) {
 
                 // Ouch! The pipe is most probably not valid anymore
-
                 out = null;
                 throw usbex;
             }
@@ -576,7 +543,6 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         public Servo createServo(ServoController sc, int id) throws IOException {
-
             return new PhidgetServo0x3B(sc, id);
         }
 
@@ -652,9 +618,9 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 //logger.debug("Position: " + this.position);
 
                 /*
-                
+
                 StringBuilder sb = new StringBuilder();
-                
+
                 sb.append("Buffer: ");
                 for ( int idx = 0; idx < buffer.length; idx++ ) {
 
@@ -715,84 +681,68 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 PhidgetServoMeta0x3B() {
 
-                    PropertyWriter pwMin = new PropertyWriter() {
+                    PropertyWriter pwMin = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        min_offset = Integer.parseInt(value.toString());
 
-                            min_offset = Integer.parseInt(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
+                        } catch ( IOException ioex ) {
 
-                            } catch ( IOException ioex ) {
-
-                                logger.warn("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/precision", Integer.toString(max_offset - min_offset));
+                            logger.warn("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/precision", Integer.toString(max_offset - min_offset));
                     };
 
-                    PropertyWriter pwMax = new PropertyWriter() {
+                    PropertyWriter pwMax = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        max_offset = Integer.parseInt(value.toString());
 
-                            max_offset = Integer.parseInt(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
+                        } catch ( IOException ioex ) {
 
-                            } catch ( IOException ioex ) {
-
-                                logger.warn("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/precision", Integer.toString(max_offset - min_offset));
+                            logger.warn("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/precision", Integer.toString(max_offset - min_offset));
                     };
 
-                    PropertyWriter pwVelocity = new PropertyWriter() {
+                    PropertyWriter pwVelocity = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        velocity = Float.parseFloat(value.toString());
 
-                            velocity = Float.parseFloat(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
+                        } catch ( IOException ioex ) {
 
-                            } catch ( IOException ioex ) {
-
-                                logger.warn("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/velocity", Float.toString(velocity));
+                            logger.warn("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/velocity", Float.toString(velocity));
                     };
 
-                    PropertyWriter pwAcceleration = new PropertyWriter() {
+                    PropertyWriter pwAcceleration = (key, value) -> {
 
-                        @Override
-                        public void set(String key, Object value) {
+                        acceleration = Float.parseFloat(value.toString());
 
-                            acceleration = Float.parseFloat(value.toString());
+                        try {
 
-                            try {
+                            setActualPosition(actualPosition);
 
-                                setActualPosition(actualPosition);
+                        } catch ( IOException ioex ) {
 
-                            } catch ( IOException ioex ) {
-
-                                logger.warn("Unhandled exception", ioex);
-                            }
-
-                            properties.put("servo/acceleration", Float.toString(acceleration));
+                            logger.warn("Unhandled exception", ioex);
                         }
+
+                        properties.put("servo/acceleration", Float.toString(acceleration));
                     };
 
                     propertyWriters.put("servo/range/min", pwMin);
@@ -819,13 +769,13 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             PhidgetMeta0x3B() {
 
-                features.put(Feature.SILENT.name, new Boolean(true));
-                features.put("controller/protocol/USB", new Boolean(true));
+                features.put(Feature.SILENT.name, Boolean.TRUE);
+                features.put("controller/protocol/USB", Boolean.TRUE);
 
                 // NOTE: This controller does indeed have the 'serial' feature,
                 // but it is permanently disabled
 
-                features.put("controller/protocol/serial", new Boolean(false));
+                features.put("controller/protocol/serial", Boolean.FALSE);
 
                 // Silent timeout is five seconds
 
@@ -895,31 +845,20 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
         @Override
         public void silence() throws UsbException {
-
             throw new IllegalAccessError("Operation not supported");
         }
-
-        /*
-        private void init() throws IOException, UsbException {
-
-            throw new IllegalAccessError("Operation not supported");
-        }
-        */
 
         protected synchronized void send(byte[] buffer) throws IOException, UsbException {
-
             throw new IllegalAccessError("Operation not supported");
         }
 
         @Override
         public Servo createServo(ServoController sc, int id) throws IOException {
-
             throw new IllegalAccessError("Operation not supported");
         }
 
         @Override
         protected Meta createMeta() {
-
             throw new IllegalAccessError("Operation not supported");
         }
 
@@ -935,25 +874,24 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
             try {
 
-                UsbConfiguration cf = target.getActiveUsbConfiguration();
-                UsbInterface iface = cf.getUsbInterface((byte)0x00);
-                UsbEndpoint endpoint = iface.getUsbEndpoint((byte)0x01);
+                var cf = target.getActiveUsbConfiguration();
+                var iface = cf.getUsbInterface((byte)0x00);
+                var endpoint = iface.getUsbEndpoint((byte)0x01);
 
-                Firmware fw = new Servo8();
+                var fw = new Servo8();
                 byte[] buffer = fw.get();
 
                 logger.info("Firmware size " + buffer.length + ", header");
 
-                StringBuilder sb = new StringBuilder();
-                
-                for ( int offset = 0; offset < 4; offset++ ) {
+                var sb = new StringBuilder();
+
+                for (var offset = 0; offset < 4; offset++) {
 
                     sb.append(" 0x");
 
-                    String hex = Integer.toHexString(buffer[offset]&0xFF);
+                    var hex = Integer.toHexString(buffer[offset] & 0xFF);
 
-                    if ( hex.length() == 1 ) {
-
+                    if (hex.length() == 1) {
                         hex = "0" + hex;
                     }
 
@@ -962,8 +900,8 @@ public class PhidgetServoController extends AbstractUsbServoController {
 
                 logger.info(sb.toString());
 
-                UsbPipe pipe = endpoint.getUsbPipe();
-                UsbIrp message = pipe.createUsbIrp();
+                var pipe = endpoint.getUsbPipe();
+                var message = pipe.createUsbIrp();
 
                 message.setData(buffer);
 
@@ -989,12 +927,11 @@ public class PhidgetServoController extends AbstractUsbServoController {
                     if (message.equals("writeBulk -- USB device has been removed -- No such device [19]")) {
 
                         // Yes, this is a classical symptom
-
                         logger.warn("Boot may have failed: device prematurely departed; ignored", usbex);
                     }
                 }
 
-            } catch (Throwable t) {
+            } catch (Throwable t) { // NOSONAR Consequences have been considered
 
                 logger.error("Boot failed:", t);
 
@@ -1011,7 +948,7 @@ public class PhidgetServoController extends AbstractUsbServoController {
                 Thread.sleep(5000);
 
             } catch ( InterruptedException iex ) {
-
+                // Do nothing
             }
         }
     }

@@ -3,7 +3,7 @@ package net.sf.servomaster.device.model;
 /**
  * Allows to track the servo position changes.
  *
- * <h3>Implementation note</h3>
+ * <h2>Implementation note</h2>
  *
  * Tracking may be expensive for the servo implementation. Be sure to make
  * sending notifications asynchronous from the servo operation itself.

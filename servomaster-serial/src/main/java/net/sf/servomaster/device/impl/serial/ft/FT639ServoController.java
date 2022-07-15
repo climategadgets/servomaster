@@ -56,7 +56,7 @@ import java.util.Iterator;
  *
  * </ul>
  *
- * <h3>Implementation note</h3>
+ * <h2>Implementation note</h2>
  *
  * Even though the serial port and the controller hardware itself are
  * singletons, this class doesn't use singletons. The reason is: I hate
@@ -112,7 +112,7 @@ public class FT639ServoController extends AbstractSerialServoController implemen
      * to the port that doesn't have the FT639 connected. There is no way to
      * determine if the controller is there or not.</strong>
      *
-     * <h3>Implementation note</h3>
+     * <h2>Implementation note</h2>
      *
      * The controller instance puts the port into exclusive mode, for
      * safety's sake. You have to specifically release the port if you want

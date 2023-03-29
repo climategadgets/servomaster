@@ -25,14 +25,9 @@ subprojects {
     group = 'net.sf.servomaster'
     version = '3.0.0-SNAPSHOT'
 
-    task javadocJar(type: Jar) {
-        classifier = 'javadoc'
-        from javadoc
-    }
-
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
+    java {
+        withSourcesJar()
+        withJavadocJar()
     }
 
     artifacts {

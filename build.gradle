@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.spotbugs'
     id 'net.ltgt.errorprone' apply false
     id 'org.sonarqube'
 }
@@ -51,15 +50,6 @@ subprojects {
         }
     }
 
-/*
-    apply plugin: 'findbugs'
-
-    findbugs {
-
-        excludeFilter = file("$rootProject.projectDir/findbugs-exclude.xml")
-        ignoreFailures = true
-    }
- */
     repositories {
 
         mavenCentral()

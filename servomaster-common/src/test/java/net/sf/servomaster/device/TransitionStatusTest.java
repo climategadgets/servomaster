@@ -1,62 +1,53 @@
 package net.sf.servomaster.device;
 
 import net.sf.servomaster.device.model.TransitionStatus;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-public class TransitionStatusTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+class TransitionStatusTest {
 
     @Test
-    public void testAuth() {
+    void testAuth() {
 
         TransitionStatus target = new TransitionStatus(0);
 
-        thrown.expect(IllegalAccessError.class);
-        thrown.expectMessage("invalid token, refusing to set status");
-
-        target.complete(1, null);
+        assertThatExceptionOfType(IllegalAccessError.class)
+                .isThrownBy(() -> target.complete(1, null))
+                .withMessage("invalid token, refusing to set status");
     }
 
     @Test
-    public void testCompletion() {
+    void testCompletion() {
 
         TransitionStatus target = new TransitionStatus(0);
 
-        thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("haven't completed yet");
-
-        target.isOK();
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(target::isOK)
+                .withMessage("haven't completed yet");
     }
 
     @Test
-    public void testPass() {
+    void testPass() {
 
         TransitionStatus target = new TransitionStatus(0);
 
         target.complete(0, null);
 
-        assertTrue(target.isOK());
-        assertNull(target.getCause());
+        assertThat(target.isOK()).isTrue();
+        assertThat(target.getCause()).isNull();
     }
 
     @Test
-    public void testFail() {
+    void testFail() {
 
         TransitionStatus target = new TransitionStatus(0);
         Throwable t = new IllegalStateException();
 
         target.complete(0, t);
 
-        assertFalse(target.isOK());
-        assertEquals(t, target.getCause());
+        assertThat(target.isOK()).isFalse();
+        assertThat(target.getCause()).isEqualTo(t);
     }
 }

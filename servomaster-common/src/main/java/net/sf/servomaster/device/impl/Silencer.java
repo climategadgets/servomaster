@@ -1,5 +1,7 @@
 package net.sf.servomaster.device.impl;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -39,6 +41,8 @@ public abstract class Silencer extends Thread {
      * Defines how long the device stays active after the last operation in
      * the silent mode. When this time expires, the callback method is
      * called, thus putting the target device into "sleep" mode.
+     *
+     * @deprecated Need to use {@link Duration} instead.
      */
     private long timeout;
 
@@ -47,16 +51,22 @@ public abstract class Silencer extends Thread {
      *
      * Defines how long the device stays deactivated after the silent
      * timeout expires.
+     *
+     * @deprecated Need to use {@link Duration} instead.
      */
     private long heartbeat;
 
     /**
      * Moment in time when the target has to be shut off.
+     *
+     * @deprecated Need to use {@link Instant} instead.
      */
     private Long silenceAt = null;
 
     /**
      * Moment in time when the target has to be woken up.
+     *
+     * @deprecated Need to use {@link Instant} instead.
      */
     private Long heartbeatAt = null;
 
@@ -67,6 +77,14 @@ public abstract class Silencer extends Thread {
      */
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
+    protected Silencer(Duration timeout, Duration heartbeat) {
+        this(timeout.toMillis(), heartbeat.toMillis());
+    }
+
+    /**
+     * @deprecated Use the constructor using {@code Duration} instead.
+     */
+    @Deprecated
     protected Silencer(long timeout, long heartbeat) {
 
         this.timeout = timeout;
@@ -106,6 +124,14 @@ public abstract class Silencer extends Thread {
         return enabled;
     }
 
+    public synchronized void setSilentTimeout(Duration timeout, Duration heartbeat) {
+        setSilentTimeout(timeout.toMillis(), heartbeat.toMillis());
+    }
+
+    /**
+     * @deprecated Use {@link #setSilentTimeout(Duration, Duration)} instead.
+     */
+    @Deprecated
     public synchronized void setSilentTimeout(long timeout, long heartbeat) {
 
         // VT: FIXME: Check argument sanity

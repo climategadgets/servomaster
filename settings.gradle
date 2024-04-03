@@ -1,3 +1,4 @@
+include("servomaster-api")
 include("servomaster-common")
 include("servomaster-serial")
 include("servomaster-usb")

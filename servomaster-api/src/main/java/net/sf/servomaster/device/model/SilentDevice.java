@@ -1,6 +1,7 @@
 package net.sf.servomaster.device.model;
 
 import java.io.IOException;
+import java.time.Duration;
 
 /**
  * Defines the silent device.
@@ -68,6 +69,12 @@ public interface SilentDevice {
      *
      * @throws UnsupportedOperationException if the hardware controller is not capable of suspending the control pulse.
      */
+    void setSilentTimeout(Duration timeout, Duration heartbeat);
+
+    /**
+     * @deprecated Use {@link #setSilentTimeout(Duration, Duration)} instead.
+     */
+    @Deprecated
     void setSilentTimeout(long timeout, long heartbeat);
 
     /**

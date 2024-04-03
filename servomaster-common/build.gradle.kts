@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+
+    api(project(":servomaster-api"))
     api(libs.log4j.api)
 
     testImplementation(libs.assertj.core)

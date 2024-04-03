@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -258,6 +259,11 @@ public abstract class AbstractServoController implements ServoController {
                 }
             });
         }
+    }
+
+    @Override
+    public void setSilentTimeout(Duration timeout, Duration heartbeat) {
+        setSilentTimeout(timeout.toMillis(), heartbeat.toMillis());
     }
 
     @Override

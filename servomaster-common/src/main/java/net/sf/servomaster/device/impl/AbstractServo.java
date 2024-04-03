@@ -13,6 +13,7 @@ import org.apache.logging.log4j.ThreadContext;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -587,6 +588,15 @@ public abstract class AbstractServo implements Servo {
     }
 
     @Override
+    public void setSilentTimeout(Duration timeout, Duration heartbeat) {
+        setSilentTimeout(timeout.toMillis(), heartbeat.toMillis());
+    }
+
+    /**
+     * @deprecated Use {@link #setSilentTimeout(Duration, Duration)} instead.
+     */
+    @Deprecated
+    @Override
     public void setSilentTimeout(long timeout, long heartbeat) {
 
         checkInit();
@@ -632,6 +642,11 @@ public abstract class AbstractServo implements Servo {
         public void setSilentMode(boolean silent) throws IOException {
 
             throw new IllegalAccessError(NONO);
+        }
+
+        @Override
+        public void setSilentTimeout(Duration timeout, Duration heartbeat) {
+            setSilentTimeout(timeout.toMillis(), heartbeat.toMillis());
         }
 
         @Override
@@ -906,6 +921,14 @@ public abstract class AbstractServo implements Servo {
      */
     private class ServoSilencer extends Silencer {
 
+        protected ServoSilencer(Duration timeout, Duration heartbeat) {
+            super(timeout.toMillis(), heartbeat.toMillis());
+        }
+
+        /**
+         * @deprecated Use the constructor using {@code Duration} instead.
+         */
+        @Deprecated
         protected ServoSilencer(long timeout, long heartbeat) {
             super(timeout, heartbeat);
         }

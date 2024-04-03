@@ -2,8 +2,6 @@ package net.sf.servomaster.device.model;
 
 import java.util.Map;
 
-import net.sf.servomaster.device.impl.AbstractMeta;
-
 /**
  * Describes an object capable of providing and adjusting the metadata.
  *
@@ -81,7 +79,7 @@ public interface Meta {
      * Set the feature.
      *
      * This method is a bit more complicated than it seems - see
-     * {@link AbstractMeta#setFeature(String, boolean)} for details.
+     * {@code AbstractMeta#setFeature(String, boolean)} for details.
      *
      * @param id Feature name.
      *

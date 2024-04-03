@@ -17,6 +17,7 @@ import javax.usb.UsbInterface;
 import javax.usb.event.UsbServicesEvent;
 import javax.usb.event.UsbServicesListener;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -69,6 +70,8 @@ public abstract class AbstractUsbServoController extends AbstractServoController
      *
      * VT: FIXME: This may not be necessary if javax.usb properly supports
      * arrival and departure notifications.
+     *
+     * @deprecated Need to use {@link Instant} instead.
      */
     private long lastDetect;
 

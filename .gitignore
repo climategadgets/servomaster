@@ -1,7 +1,7 @@
 /.gradle/
 /.settings/
 /.project
-/build/
+**/build/
 /target/
 gradlew.bat
 *~

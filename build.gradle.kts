@@ -18,6 +18,14 @@ sonarqube {
     }
 }
 
+doctor {
+    javaHome {
+        // Build breaks in IntelliJ IDEA on macOS even if JAVA_HOME is set correctly
+        // (it picks up JetBrains JDK instead)
+        failOnError.set(false)
+    }
+}
+
 subprojects {
 
     apply(plugin = "java")

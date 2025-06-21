@@ -1,9 +1,9 @@
 [versions]
 
 assertj = "3.25.3"
-errorprone = "2.26.1"
+errorprone = "2.38.0"
 gradle-dependency-analysis = "1.30.0"
-jacoco = "0.8.11"
+jacoco = "0.8.13"
 junit5 = "5.10.2"
 log4j = "2.20.0"
 pi4j = "1.1"

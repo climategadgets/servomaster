@@ -45,6 +45,12 @@ subprojects {
 
     tasks.compileJava {
         options.release = 11
+        options.compilerArgs.add("--should-stop=ifError=FLOW")
+    }
+
+    tasks.compileTestJava {
+        options.release = 11
+        options.compilerArgs.add("--should-stop=ifError=FLOW")
     }
 
     tasks.withType<Javadoc> {

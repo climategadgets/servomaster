@@ -44,12 +44,12 @@ subprojects {
     }
 
     tasks.compileJava {
-        options.release = 11
+        options.release = 17
         options.compilerArgs.add("--should-stop=ifError=FLOW")
     }
 
     tasks.compileTestJava {
-        options.release = 11
+        options.release = 17
         options.compilerArgs.add("--should-stop=ifError=FLOW")
     }
 
@@ -84,6 +84,7 @@ subprojects {
 
     dependencies {
         errorprone(rootProject.libs.errorprone)
+        testRuntimeOnly(rootProject.libs.junit5.launcher)
     }
 
     tasks.test {

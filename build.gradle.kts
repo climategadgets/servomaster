@@ -84,6 +84,7 @@ subprojects {
 
     dependencies {
         errorprone(rootProject.libs.errorprone)
+        testRuntimeOnly(rootProject.libs.junit5.launcher)
     }
 
     tasks.test {
